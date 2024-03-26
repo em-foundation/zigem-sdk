@@ -1,0 +1,18 @@
+const em = @import("../em.zig");
+
+const BusyWait = @import("../scratch/BusyWait.zig");
+const GpioMgr = @import("../scratch/GpioMgr.zig");
+const Mcu = @import("../scratch/Mcu.zig");
+
+const AppLedPin = GpioMgr.create(15);
+
+pub fn @"em$run"() void {
+    Mcu.startup();
+    AppLedPin.makeOutput();
+    var i: u8 = 0;
+    while (i < 10) : (i += 1) {
+        BusyWait.wait(100000);
+        AppLedPin.toggle();
+    }
+    em.halt();
+}
