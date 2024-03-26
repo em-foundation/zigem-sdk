@@ -26,5 +26,5 @@ pub fn flush() void {
 
 pub fn put(data: u8) void {
     REG(hal.UART0_BASE + hal.UART_O_DR).* = data;
-    flush();
+    // flush();
 }
