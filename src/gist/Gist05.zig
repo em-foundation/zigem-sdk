@@ -7,10 +7,13 @@ const Mcu = @import("../scratch/Mcu.zig");
 
 const AppLedPin = GpioMgr.create(15);
 
-pub fn @"em$run"() void {
+pub fn @"em$startup"() void {
     Mcu.startup();
     AppOut.@"em$startup"();
     AppLedPin.makeOutput();
+}
+
+pub fn @"em$run"() void {
     var i: u8 = 0;
     while (i < 10) : (i += 1) {
         BusyWait.wait(100000);

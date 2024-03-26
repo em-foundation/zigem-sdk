@@ -1,6 +1,12 @@
 const std = @import("std");
-const gist = @import("./gist/Gist05.zig");
+const Gist = @import("./gist/Gist05.zig");
+
+const assert = std.debug.assert;
 
 export fn main() void {
-    gist.@"em$run"();
+    if (@hasDecl(Gist, "em$startup")) {
+        Gist.@"em$startup"();
+    }
+    comptime assert(@hasDecl(Gist, "em$run"));
+    Gist.@"em$run"();
 }
