@@ -14,11 +14,10 @@ pub fn @"em$startup"() void {
 }
 
 pub fn @"em$run"() void {
-    var i: u8 = 0;
-    while (i < 10) : (i += 1) {
+    for (0..10) |i| {
         BusyWait.wait(100000);
         AppLedPin.toggle();
-        AppOut.put('A' + i);
+        AppOut.put('A' + @as(u8, @truncate(i)));
     }
     em.halt();
 }

@@ -9,8 +9,7 @@ const AppLedPin = GpioMgr.create(15);
 pub fn @"em$run"() void {
     Mcu.startup();
     AppLedPin.makeOutput();
-    var i: u8 = 0;
-    while (i < 10) : (i += 1) {
+    for (0..10) |_| {
         BusyWait.wait(100000);
         AppLedPin.toggle();
     }

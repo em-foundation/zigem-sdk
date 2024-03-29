@@ -5,8 +5,7 @@ const BusyWait = @import("../scratch/BusyWait.zig");
 
 pub fn @"em$run"() void {
     AppLedPin.makeOutput();
-    var i: u8 = 0;
-    while (i < 10) : (i += 1) {
+    for (0..10) |_| {
         BusyWait.wait(100000);
         AppLedPin.toggle();
     }
