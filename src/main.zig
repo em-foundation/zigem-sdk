@@ -1,12 +1,21 @@
 const std = @import("std");
-const Gist = @import("./gist/Gist05.zig");
+const em = @import("./em.zig");
+//const Gist = @import("./gist/Gist05.zig");
+
+const Mod = @import("./scratch/ModA.zig");
 
 const assert = std.debug.assert;
 
 export fn main() void {
-    if (@hasDecl(Gist, "em$startup")) {
-        Gist.@"em$startup"();
+    comptime {
+        @compileLog(Mod.em__spec.upath);
+        for (Mod.em__spec.uses) |imp| {
+            @compileLog(imp);
+        }
     }
-    comptime assert(@hasDecl(Gist, "em$run"));
-    Gist.@"em$run"();
+    //    if (@hasDecl(Gist, "em$startup")) {
+    //        Gist.@"em$startup"();
+    //    }
+    //    comptime assert(@hasDecl(Gist, "em$run"));
+    //    Gist.@"em$run"();
 }
