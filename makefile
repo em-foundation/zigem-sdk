@@ -13,11 +13,11 @@ ZIGOPTS=\
 	-O ReleaseSmall	\
 
 ZIGEXE=\
+	-fentry=__em_program_start \
 	-femit-asm=zig-out/main.asm \
 	-femit-bin=zig-out/main.out \
 	-femit-llvm-ir=zig-out/main.ir \
 	-fno-strip \
-	--entry __em_program_start \
 	--script etc/linkcmd.ld \
 
 ZIGOBJ=\

@@ -23,6 +23,8 @@ pub const __builtin_log2f = @import("std").zig.c_builtins.__builtin_log2f;
 pub const __builtin_log10 = @import("std").zig.c_builtins.__builtin_log10;
 pub const __builtin_log10f = @import("std").zig.c_builtins.__builtin_log10f;
 pub const __builtin_abs = @import("std").zig.c_builtins.__builtin_abs;
+pub const __builtin_labs = @import("std").zig.c_builtins.__builtin_labs;
+pub const __builtin_llabs = @import("std").zig.c_builtins.__builtin_llabs;
 pub const __builtin_fabs = @import("std").zig.c_builtins.__builtin_fabs;
 pub const __builtin_fabsf = @import("std").zig.c_builtins.__builtin_fabsf;
 pub const __builtin_floor = @import("std").zig.c_builtins.__builtin_floor;
@@ -73,33 +75,29 @@ pub const uintmax_t = c_ulonglong;
 pub const FPTR_VOID_VOID_T = ?*const fn () callconv(.C) void;
 pub const FPTR_VOID_UINT8_T = ?*const fn (u8) callconv(.C) void;
 pub const __UINT32 = c_uint;
-pub const __INTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `LL`"); // (no file):79:9
-pub const __UINTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `ULL`"); // (no file):85:9
-pub const __FLT16_DENORM_MIN__ = @compileError("unable to translate C expr: unexpected token 'IntegerLiteral'"); // (no file):108:9
-pub const __FLT16_EPSILON__ = @compileError("unable to translate C expr: unexpected token 'IntegerLiteral'"); // (no file):112:9
-pub const __FLT16_MAX__ = @compileError("unable to translate C expr: unexpected token 'IntegerLiteral'"); // (no file):118:9
-pub const __FLT16_MIN__ = @compileError("unable to translate C expr: unexpected token 'IntegerLiteral'"); // (no file):121:9
-pub const __INT64_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `LL`"); // (no file):183:9
-pub const __UINT32_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `U`"); // (no file):205:9
-pub const __UINT64_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `ULL`"); // (no file):213:9
-pub const __stdint_join3 = @compileError("unable to translate C expr: unexpected token '##'"); // T:\zig\stable\lib\include/stdint.h:287:9
-pub const __int_c_join = @compileError("unable to translate C expr: unexpected token '##'"); // T:\zig\stable\lib\include/stdint.h:324:9
-pub const __uint_c = @compileError("unable to translate macro: undefined identifier `U`"); // T:\zig\stable\lib\include/stdint.h:326:9
-pub const __INTN_MIN = @compileError("unable to translate macro: undefined identifier `INT`"); // T:\zig\stable\lib\include/stdint.h:894:10
-pub const __INTN_MAX = @compileError("unable to translate macro: undefined identifier `INT`"); // T:\zig\stable\lib\include/stdint.h:895:10
-pub const __UINTN_MAX = @compileError("unable to translate macro: undefined identifier `UINT`"); // T:\zig\stable\lib\include/stdint.h:896:9
-pub const __INTN_C = @compileError("unable to translate macro: undefined identifier `INT`"); // T:\zig\stable\lib\include/stdint.h:897:10
-pub const __UINTN_C = @compileError("unable to translate macro: undefined identifier `UINT`"); // T:\zig\stable\lib\include/stdint.h:898:9
+pub const __INTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `LL`"); // (no file):89:9
+pub const __UINTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `ULL`"); // (no file):95:9
+pub const __INT64_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `LL`"); // (no file):193:9
+pub const __UINT32_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `U`"); // (no file):215:9
+pub const __UINT64_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `ULL`"); // (no file):223:9
+pub const __stdint_join3 = @compileError("unable to translate C expr: unexpected token '##'"); // C:\tools\zig-dev\lib\include/stdint.h:287:9
+pub const __int_c_join = @compileError("unable to translate C expr: unexpected token '##'"); // C:\tools\zig-dev\lib\include/stdint.h:324:9
+pub const __uint_c = @compileError("unable to translate macro: undefined identifier `U`"); // C:\tools\zig-dev\lib\include/stdint.h:326:9
+pub const __INTN_MIN = @compileError("unable to translate macro: undefined identifier `INT`"); // C:\tools\zig-dev\lib\include/stdint.h:894:10
+pub const __INTN_MAX = @compileError("unable to translate macro: undefined identifier `INT`"); // C:\tools\zig-dev\lib\include/stdint.h:895:10
+pub const __UINTN_MAX = @compileError("unable to translate macro: undefined identifier `UINT`"); // C:\tools\zig-dev\lib\include/stdint.h:896:9
+pub const __INTN_C = @compileError("unable to translate macro: undefined identifier `INT`"); // C:\tools\zig-dev\lib\include/stdint.h:897:10
+pub const __UINTN_C = @compileError("unable to translate macro: undefined identifier `UINT`"); // C:\tools\zig-dev\lib\include/stdint.h:898:9
 pub const __STATIC_INLINE = @compileError("unable to translate C expr: unexpected token 'static'"); // hw_types.h:58:9
 pub const HWREG = @compileError("unable to translate C expr: unexpected token 'volatile'"); // hw_types.h:79:9
 pub const HWREGH = @compileError("unable to translate C expr: unexpected token 'volatile'"); // hw_types.h:85:9
 pub const HWREGB = @compileError("unable to translate C expr: unexpected token 'volatile'"); // hw_types.h:91:9
 pub const __llvm__ = @as(c_int, 1);
 pub const __clang__ = @as(c_int, 1);
-pub const __clang_major__ = @as(c_int, 16);
+pub const __clang_major__ = @as(c_int, 17);
 pub const __clang_minor__ = @as(c_int, 0);
 pub const __clang_patchlevel__ = @as(c_int, 6);
-pub const __clang_version__ = "16.0.6 (https://github.com/ziglang/zig-bootstrap 1dda86241204c4649f668d46b6a37feed707c7b4)";
+pub const __clang_version__ = "17.0.6 (https://github.com/ziglang/zig-bootstrap 4c78aa1bba84dbd324e178932cd52221417f63da)";
 pub const __GNUC__ = @as(c_int, 4);
 pub const __GNUC_MINOR__ = @as(c_int, 2);
 pub const __GNUC_PATCHLEVEL__ = @as(c_int, 1);
@@ -115,8 +113,18 @@ pub const __OPENCL_MEMORY_SCOPE_WORK_GROUP = @as(c_int, 1);
 pub const __OPENCL_MEMORY_SCOPE_DEVICE = @as(c_int, 2);
 pub const __OPENCL_MEMORY_SCOPE_ALL_SVM_DEVICES = @as(c_int, 3);
 pub const __OPENCL_MEMORY_SCOPE_SUB_GROUP = @as(c_int, 4);
+pub const __FPCLASS_SNAN = @as(c_int, 0x0001);
+pub const __FPCLASS_QNAN = @as(c_int, 0x0002);
+pub const __FPCLASS_NEGINF = @as(c_int, 0x0004);
+pub const __FPCLASS_NEGNORMAL = @as(c_int, 0x0008);
+pub const __FPCLASS_NEGSUBNORMAL = @as(c_int, 0x0010);
+pub const __FPCLASS_NEGZERO = @as(c_int, 0x0020);
+pub const __FPCLASS_POSZERO = @as(c_int, 0x0040);
+pub const __FPCLASS_POSSUBNORMAL = @as(c_int, 0x0080);
+pub const __FPCLASS_POSNORMAL = @as(c_int, 0x0100);
+pub const __FPCLASS_POSINF = @as(c_int, 0x0200);
 pub const __PRAGMA_REDEFINE_EXTNAME = @as(c_int, 1);
-pub const __VERSION__ = "Clang 16.0.6 (https://github.com/ziglang/zig-bootstrap 1dda86241204c4649f668d46b6a37feed707c7b4)";
+pub const __VERSION__ = "Clang 17.0.6 (https://github.com/ziglang/zig-bootstrap 4c78aa1bba84dbd324e178932cd52221417f63da)";
 pub const __OBJC_BOOL_IS_BOOL = @as(c_int, 0);
 pub const __CONSTANT_CFSTRINGS__ = @as(c_int, 1);
 pub const __clang_literal_encoding__ = "UTF-8";
@@ -198,16 +206,20 @@ pub const __UINTPTR_FMTo__ = "o";
 pub const __UINTPTR_FMTu__ = "u";
 pub const __UINTPTR_FMTx__ = "x";
 pub const __UINTPTR_FMTX__ = "X";
+pub const __FLT16_DENORM_MIN__ = @as(f16, 5.9604644775390625e-8);
 pub const __FLT16_HAS_DENORM__ = @as(c_int, 1);
 pub const __FLT16_DIG__ = @as(c_int, 3);
 pub const __FLT16_DECIMAL_DIG__ = @as(c_int, 5);
+pub const __FLT16_EPSILON__ = @as(f16, 9.765625e-4);
 pub const __FLT16_HAS_INFINITY__ = @as(c_int, 1);
 pub const __FLT16_HAS_QUIET_NAN__ = @as(c_int, 1);
 pub const __FLT16_MANT_DIG__ = @as(c_int, 11);
 pub const __FLT16_MAX_10_EXP__ = @as(c_int, 4);
 pub const __FLT16_MAX_EXP__ = @as(c_int, 16);
+pub const __FLT16_MAX__ = @as(f16, 6.5504e+4);
 pub const __FLT16_MIN_10_EXP__ = -@as(c_int, 4);
 pub const __FLT16_MIN_EXP__ = -@as(c_int, 13);
+pub const __FLT16_MIN__ = @as(f16, 6.103515625e-5);
 pub const __FLT_DENORM_MIN__ = @as(f32, 1.40129846e-45);
 pub const __FLT_HAS_DENORM__ = @as(c_int, 1);
 pub const __FLT_DIG__ = @as(c_int, 6);
@@ -414,10 +426,10 @@ pub const __GCC_ATOMIC_POINTER_LOCK_FREE = @as(c_int, 1);
 pub const __NO_INLINE__ = @as(c_int, 1);
 pub const __FLT_RADIX__ = @as(c_int, 2);
 pub const __DECIMAL_DIG__ = __LDBL_DECIMAL_DIG__;
+pub const __ELF__ = @as(c_int, 1);
 pub const __ARMEL__ = @as(c_int, 1);
 pub const __arm = @as(c_int, 1);
 pub const __arm__ = @as(c_int, 1);
-pub const __ELF__ = @as(c_int, 1);
 pub const __REGISTER_PREFIX__ = "";
 pub const __ARM_ARCH_4T__ = @as(c_int, 1);
 pub const __ARM_ARCH = @as(c_int, 4);
@@ -464,6 +476,8 @@ pub const __intptr_t_defined = "";
 pub const _INTPTR_T = "";
 pub const _UINTPTR_T = "";
 pub inline fn __int_c(v: anytype, suffix: anytype) @TypeOf(__int_c_join(v, suffix)) {
+    _ = &v;
+    _ = &suffix;
     return __int_c_join(v, suffix);
 }
 pub const __int64_c_suffix = __INT64_C_SUFFIX__;
@@ -471,27 +485,35 @@ pub const __int32_c_suffix = __INT64_C_SUFFIX__;
 pub const __int16_c_suffix = __INT64_C_SUFFIX__;
 pub const __int8_c_suffix = __INT64_C_SUFFIX__;
 pub inline fn INT64_C(v: anytype) @TypeOf(__int_c(v, __int64_c_suffix)) {
+    _ = &v;
     return __int_c(v, __int64_c_suffix);
 }
 pub inline fn UINT64_C(v: anytype) @TypeOf(__uint_c(v, __int64_c_suffix)) {
+    _ = &v;
     return __uint_c(v, __int64_c_suffix);
 }
 pub inline fn INT32_C(v: anytype) @TypeOf(__int_c(v, __int32_c_suffix)) {
+    _ = &v;
     return __int_c(v, __int32_c_suffix);
 }
 pub inline fn UINT32_C(v: anytype) @TypeOf(__uint_c(v, __int32_c_suffix)) {
+    _ = &v;
     return __uint_c(v, __int32_c_suffix);
 }
 pub inline fn INT16_C(v: anytype) @TypeOf(__int_c(v, __int16_c_suffix)) {
+    _ = &v;
     return __int_c(v, __int16_c_suffix);
 }
 pub inline fn UINT16_C(v: anytype) @TypeOf(__uint_c(v, __int16_c_suffix)) {
+    _ = &v;
     return __uint_c(v, __int16_c_suffix);
 }
 pub inline fn INT8_C(v: anytype) @TypeOf(__int_c(v, __int8_c_suffix)) {
+    _ = &v;
     return __int_c(v, __int8_c_suffix);
 }
 pub inline fn UINT8_C(v: anytype) @TypeOf(__uint_c(v, __int8_c_suffix)) {
+    _ = &v;
     return __uint_c(v, __int8_c_suffix);
 }
 pub const INT64_MAX = INT64_C(@import("std").zig.c_translation.promoteIntLiteral(c_int, 9223372036854775807, .decimal));
@@ -558,9 +580,11 @@ pub const WINT_MAX = __INTN_MAX(__WINT_WIDTH__);
 pub const WCHAR_MAX = __WCHAR_MAX__;
 pub const WCHAR_MIN = __UINTN_C(__WCHAR_WIDTH__, @as(c_int, 0));
 pub inline fn INTMAX_C(v: anytype) @TypeOf(__int_c(v, __INTMAX_C_SUFFIX__)) {
+    _ = &v;
     return __int_c(v, __INTMAX_C_SUFFIX__);
 }
 pub inline fn UINTMAX_C(v: anytype) @TypeOf(__int_c(v, __UINTMAX_C_SUFFIX__)) {
+    _ = &v;
     return __int_c(v, __UINTMAX_C_SUFFIX__);
 }
 pub const __STDBOOL_H = "";
