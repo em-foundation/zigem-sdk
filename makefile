@@ -25,6 +25,10 @@ ZIGOBJ=\
 	-femit-bin=zig-out/main \
 	-femit-h=zig-out/main.h
 
+build:
+	@rm -rf zig-cache zig-out
+	@zig build
+
 exe:
 	@rm -rf zig-out
 	@mkdir zig-out
