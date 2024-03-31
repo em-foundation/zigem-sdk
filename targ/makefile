@@ -53,6 +53,6 @@ load:
 run: exe load
 
 clean:
-	rm -rf zig-cache
+	rm -rf ../zig-cache
 	rm -rf zig-out
 
