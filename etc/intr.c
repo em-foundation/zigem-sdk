@@ -1,3 +1,6 @@
+#include <stdbool.h>
+#include <stdint.h>
+
 typedef void( *intfunc )( void );
 typedef union { intfunc fxn; void* ptr; } intvec_elem;
 
