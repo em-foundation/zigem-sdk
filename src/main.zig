@@ -1,24 +1,23 @@
 const std = @import("std");
 
-pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+const Config = struct {
+    name: []const u8,
+    val: u8,
+};
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
-
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try bw.flush(); // don't forget to flush!
+fn readConfig(allocr: std.mem.Allocator, path: []const u8) !std.json.Parsed(Config) {
+    const data = try std.fs.cwd().readFileAlloc(allocr, path, 512);
+    defer allocr.free(data);
+    return std.json.parseFromSlice(Config, allocr, data, .{ .allocate = .alloc_always });
 }
 
-test "simple test" {
-    var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
-    try list.append(42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
+pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocr = gpa.allocator();
+
+    const parsed = try readConfig(allocr, "my.json");
+    defer parsed.deinit();
+    const config = parsed.value;
+    std.debug.print("name = {s}, val = {d}\n", .{ config.name, config.val });
 }
