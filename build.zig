@@ -1,8 +1,9 @@
 const std = @import("std");
 
 const DEPS = [_][]const u8{
-    "zig-cli",
     "yaml",
+    "zig-cli",
+    "zon_get_fields",
 };
 
 pub fn build(b: *std.Build) void {
