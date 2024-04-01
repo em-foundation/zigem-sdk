@@ -16,7 +16,6 @@ pub fn build(b: *std.Build) void {
     });
 
     for (DEPS) |name| {
-        std.debug.print("name = {s}\n", .{name});
         const dep = b.dependency(name, .{
             .target = target,
             .optimize = optimize,
