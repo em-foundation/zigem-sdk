@@ -35,3 +35,11 @@ test "02_dir_walk" {
         std.debug.print("\t{s}\n", .{e.basename});
     }
 }
+
+test "03_cwd" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocr = arena.allocator();
+    const path = try std.fs.cwd().realpathAlloc(allocr, ".");
+    std.debug.print("path = {s}\n", .{path});
+}
