@@ -1,5 +1,10 @@
 const std = @import("std");
 
+const DEPS = [_][]const u8{
+    "zig-cli",
+    "yaml",
+};
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -10,11 +15,14 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    //    const zgf = b.dependency("zon_get_fields", .{
-    //        .target = target,
-    //        .optimize = optimize,
-    //    });
-    //    exe.root_module.addImport("zon_get_fields", zgf.module("zon_get_fields"));
+    for (DEPS) |name| {
+        std.debug.print("name = {s}\n", .{name});
+        const dep = b.dependency(name, .{
+            .target = target,
+            .optimize = optimize,
+        });
+        exe.root_module.addImport(name, dep.module(name));
+    }
 
     b.installArtifact(exe);
 

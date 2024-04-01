@@ -1,3 +1,8 @@
 const std = @import("std");
 
-pub fn main() !void {}
+const cli = @import("zig-cli");
+const yaml = @import("yaml");
+
+pub fn main() !void {
+    //    std.debug.print("\n{any}\n", .{cli.ColorUsage.auto});
+}
