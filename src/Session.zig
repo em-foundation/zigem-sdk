@@ -2,6 +2,7 @@ const std = @import("std");
 
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
+const Zgf = @import("zon_get_fields");
 
 pub const Mode = enum {
     BUILD,
@@ -23,5 +24,10 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
         return;
     }
     Fs.chdir(work_root);
-    std.log.debug("{s}", .{Fs.cwd()});
+    {
+        const path = Fs.join(&.{ cur_bpath, "bundle.zon" });
+        if (!Fs.exists(path)) std.zig.fatal("can't find {s}/bundle.zon", .{Fs.basename(cur_bpath)});
+        const txt = Fs.readFile(path);
+        std.log.debug("{s}", .{txt});
+    }
 }

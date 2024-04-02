@@ -1,29 +1,47 @@
 const std = @import("std");
 
+const fatal = std.zig.fatal;
+const fs = std.fs;
+
 const Heap = @import("./Heap.zig");
+
+pub fn basename(path: []const u8) []const u8 {
+    return fs.path.basename(path);
+}
 
 pub fn chdir(path: []const u8) void {
     std.posix.chdir(path) catch unreachable;
 }
 
 pub fn cwd() []const u8 {
-    const res = std.fs.cwd().realpathAlloc(Heap.get(), ".") catch unreachable;
+    const res = fs.cwd().realpathAlloc(Heap.get(), ".") catch unreachable;
     return res;
 }
 
 pub fn delete(abs_path: []const u8) void {
-    std.fs.deleteTreeAbsolute(abs_path) catch return;
+    fs.deleteTreeAbsolute(abs_path) catch return;
 }
 
 pub fn dirname(path: []const u8) []const u8 {
-    return if (std.fs.path.dirname(path)) |dn| dn else "";
+    return if (fs.path.dirname(path)) |dn| dn else "";
+}
+
+pub fn exists(path: []const u8) bool {
+    fs.accessAbsolute(path, .{ .mode = .read_only }) catch return false;
+    return true;
 }
 
 pub fn join(paths: []const []const u8) []const u8 {
-    const res = std.fs.path.join(Heap.get(), paths) catch unreachable;
+    const res = fs.path.join(Heap.get(), paths) catch unreachable;
     return res;
 }
 
 pub fn normalize(path: []const u8) ![]const u8 {
-    return std.fs.cwd().realpathAlloc(Heap.get(), path);
+    return fs.cwd().realpathAlloc(Heap.get(), path);
+}
+
+pub fn readFile(path: []const u8) []const u8 {
+    const file = fs.openFileAbsolute(path, .{ .mode = .read_only }) catch fatal("Path.readFile", .{});
+    const buf = file.readToEndAlloc(Heap.get(), 1000) catch fatal("Path.readFile", .{});
+    return buf;
 }
