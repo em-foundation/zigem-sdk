@@ -1,7 +1,7 @@
 const std = @import("std");
 
+const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
-const Path = @import("./Path.zig");
 
 pub const Mode = enum {
     BUILD,
@@ -14,13 +14,14 @@ var out_root: []const u8 = undefined;
 var work_root: []const u8 = undefined;
 
 pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
-    cur_bpath = try Path.normalize(bundle);
+    cur_bpath = try Fs.normalize(bundle);
     cur_mode = mode;
-    out_root = Path.join(&.{ cur_bpath, ".out" });
-    work_root = Path.dirname(cur_bpath);
-    std.log.debug("work = {s}", .{work_root});
+    out_root = Fs.join(&.{ cur_bpath, ".out" });
+    work_root = Fs.dirname(cur_bpath);
     if (mode == .CLEAN) {
-        Path.delete(out_root);
+        Fs.delete(out_root);
         return;
     }
+    Fs.chdir(work_root);
+    std.log.debug("{s}", .{Fs.cwd()});
 }

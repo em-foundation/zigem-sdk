@@ -2,6 +2,15 @@ const std = @import("std");
 
 const Heap = @import("./Heap.zig");
 
+pub fn chdir(path: []const u8) void {
+    std.posix.chdir(path) catch unreachable;
+}
+
+pub fn cwd() []const u8 {
+    const res = std.fs.cwd().realpathAlloc(Heap.get(), ".") catch unreachable;
+    return res;
+}
+
 pub fn delete(abs_path: []const u8) void {
     std.fs.deleteTreeAbsolute(abs_path) catch return;
 }
