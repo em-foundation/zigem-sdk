@@ -1,8 +1,9 @@
 const std = @import("std");
 
 const cli = @import("zig-cli");
-const heap = @import("./heap.zig");
-const zgf = @import("zon_get_fields");
+
+const Heap = @import("./Heap.zig");
+const Session = @import("./Session.zig");
 
 var params = struct {
     bundle: []const u8 = ".",
@@ -63,14 +64,14 @@ const app = &cli.App{
 };
 
 fn doBuild() !void {
-    std.log.debug("build: bundle = {s}, unit = {s}", .{ params.bundle, params.unit });
+    try Session.activate(params.bundle, .BUILD, null);
 }
 
 fn doClean() !void {
-    std.log.debug("clean: bundle = {s}", .{params.bundle});
+    try Session.activate(params.bundle, .CLEAN, null);
 }
 
 pub fn main() !void {
-    defer heap.deinit();
-    return cli.run(app, heap.get());
+    defer Heap.deinit();
+    return cli.run(app, Heap.get());
 }

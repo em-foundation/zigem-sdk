@@ -1,0 +1,4 @@
+.{
+    .name = "ti.cc23xx.A",
+    .requires = &.{},
+}

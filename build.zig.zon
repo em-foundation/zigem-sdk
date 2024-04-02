@@ -15,5 +15,9 @@
             .url = "https://github.com/em-foundation/zon_get_fields/archive/7547af6aae1bac2ad9b942712e09d05e3eb734f7.tar.gz",
             .hash = "122053d5bb6884d09fdabbed6c4c002ddb805429c3024880308cfaf26f653843cbcc",
         },
+        .ziggy = .{
+            .url = "https://github.com/kristoff-it/ziggy/archive/0.0.1.tar.gz",
+            .hash = "12205312ab1be81c5ea0f34ad65cd91a0d8d4a1437261da964cb1a78a58ea22cb308",
+        },
     },
 }
