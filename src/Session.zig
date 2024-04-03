@@ -2,11 +2,16 @@ const std = @import("std");
 
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
-const Zgf = @import("zon_get_fields");
+const Zon = @import("./Zon.zig");
 
 pub const Mode = enum {
     BUILD,
     CLEAN,
+};
+
+const BundleSpec = struct {
+    name: []const u8 = "",
+    requires: [5][]const u8 = [_][]const u8{&.{}} ** 5,
 };
 
 var cur_bpath: []const u8 = undefined;
@@ -27,7 +32,13 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     {
         const path = Fs.join(&.{ cur_bpath, "bundle.zon" });
         if (!Fs.exists(path)) std.zig.fatal("can't find {s}/bundle.zon", .{Fs.basename(cur_bpath)});
-        const txt = Fs.readFile(path);
-        std.log.debug("{s}", .{txt});
+        var spec = BundleSpec{};
+        Zon.read(path, &spec);
+        std.log.debug("name = {s}, len = {d}", .{ spec.name, spec.requires.len });
+        for (0..spec.requires.len) |i| std.log.debug("req[{d}] = {s}", .{ i, spec.requires[i] });
+
+        //  Props.read(path);
+        //        const txt = Fs.readFile(path);
+        //        std.log.debug("{s}", .{txt});
     }
 }

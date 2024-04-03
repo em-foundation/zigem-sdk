@@ -40,8 +40,21 @@ pub fn normalize(path: []const u8) ![]const u8 {
     return fs.cwd().realpathAlloc(Heap.get(), path);
 }
 
+pub fn openFile(path: []const u8) fs.File {
+    const file = fs.openFileAbsolute(path, .{ .mode = .read_only }) catch fatal("Path.openFile", .{});
+    return file;
+}
+
 pub fn readFile(path: []const u8) []const u8 {
-    const file = fs.openFileAbsolute(path, .{ .mode = .read_only }) catch fatal("Path.readFile", .{});
+    const file = openFile(path);
+    defer file.close();
     const buf = file.readToEndAlloc(Heap.get(), 1000) catch fatal("Path.readFile", .{});
+    return buf;
+}
+
+pub fn readFileZ(path: []const u8) [:0]const u8 {
+    const file = openFile(path);
+    defer file.close();
+    const buf = file.readToEndAllocOptions(Heap.get(), 1000, null, @alignOf(u8), 0) catch fatal("Path.readFile", .{});
     return buf;
 }
