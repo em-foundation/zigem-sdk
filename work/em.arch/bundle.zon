@@ -1,4 +1,4 @@
 .{
-    .name = "em.core",
+    .name = "em.arch",
     .requires = .{},
 }
