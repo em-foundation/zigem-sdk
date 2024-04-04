@@ -25,5 +25,7 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     }
     Fs.chdir(work_root);
     const bname = Fs.basename(cur_bpath);
-    BundlePath.add(work_root, bname);
+    try BundlePath.add(work_root, "em.core");
+    try BundlePath.add(work_root, bname);
+    for (BundlePath.get()) |bp| std.log.debug("{s}", .{bp});
 }
