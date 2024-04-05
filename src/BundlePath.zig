@@ -14,7 +14,7 @@ pub fn add(root_dir: []const u8, name: []const u8) !void {
 
     try work_set.put(name, {});
 
-    std.log.info("adding {s}", .{name});
+    // std.log.info("adding {s}", .{name});
     const bpath = Fs.join(&.{ root_dir, name, "bundle.zon" });
     if (!Fs.exists(bpath)) std.zig.fatal("can't find file: {s}/bundle.zon", .{name});
     var json = std.ArrayList(u8).init(Heap.get());

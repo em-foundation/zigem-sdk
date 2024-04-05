@@ -40,6 +40,11 @@ pub fn normalize(path: []const u8) ![]const u8 {
     return fs.cwd().realpathAlloc(Heap.get(), path);
 }
 
+pub fn openDir(path: []const u8) fs.Dir {
+    const dir = fs.openDirAbsolute(path, .{ .iterate = true }) catch fatal("Path.openDir", .{});
+    return dir;
+}
+
 pub fn openFile(path: []const u8) fs.File {
     const file = fs.openFileAbsolute(path, .{ .mode = .read_only }) catch fatal("Path.openFile", .{});
     return file;
