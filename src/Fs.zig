@@ -36,6 +36,11 @@ pub fn join(paths: []const []const u8) []const u8 {
     return res;
 }
 
+pub fn mkdirs(root: []const u8, subpath: []const u8) void {
+    var dir = openDir(root);
+    dir.makePath(subpath) catch unreachable;
+}
+
 pub fn normalize(path: []const u8) ![]const u8 {
     return fs.cwd().realpathAlloc(Heap.get(), path);
 }
