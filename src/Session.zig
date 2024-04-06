@@ -35,7 +35,7 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
 }
 
 fn genUnitBindings() !void {
-    // var unit_map = std.StringArrayHashMap([]const u8).init(Heap.get());
+    var unit_map = std.StringHashMap([]const u8).init(Heap.get());
     for (BundlePath.get()) |bp| {
         var iter = Fs.openDir(bp).iterate();
         while (try iter.next()) |ent| {
@@ -44,10 +44,26 @@ fn genUnitBindings() !void {
             var iter2 = Fs.openDir(Fs.join(&.{ bp, ent.name })).iterate();
             while (try iter2.next()) |ent2| {
                 if (ent2.kind != .file) continue;
-                std.log.debug("idx = {d}", .{std.mem.indexOf(u8, ent2.name, ".zig.em").?});
-                if (!std.mem.endsWith(u8, ent2.name, ".zig.em")) continue;
-                std.log.debug("{s}/{s}", .{ ent.name, Fs.basename(ent2.name) });
+                const idx = std.mem.indexOf(u8, ent2.name, ".zig.em");
+                if (idx == null) continue;
+                const upath = try std.fmt.allocPrint(
+                    Heap.get(),
+                    "{s}/{s}",
+                    .{
+                        ent.name,
+                        ent2.name[0..idx.?],
+                    },
+                );
+                if (unit_map.contains(upath)) {
+                    _ = unit_map.remove(upath);
+                    std.log.debug("{s}", .{upath});
+                }
+                try unit_map.put(upath, bp);
             }
         }
+    }
+    var iter2 = unit_map.iterator();
+    while (iter2.next()) |ent2| {
+        std.log.debug("k = {s}, v = {s}", .{ ent2.key_ptr.*, ent2.value_ptr.* });
     }
 }
