@@ -34,7 +34,7 @@ build:
 exe:
 	@rm -rf zig-out
 	@mkdir zig-out
-	@zig build-exe $(ZIGOPTS) $(ZIGEXE) src/main.zig etc/startup.c
+	@zig build-exe $(ZIGOPTS) $(ZIGEXE) etc/startup.c --dep em -Mmain=src/main.zig -Mem=src/em.zig
 	@$(OBJCOPY) -O ihex $(ODIR)/main.out $(ODIR)/main.out.hex
 	@$(OBJDUMP) -h -d  $(ODIR)/main.out >$(ODIR)/main.out.dis
 

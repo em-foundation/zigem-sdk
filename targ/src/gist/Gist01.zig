@@ -1,4 +1,4 @@
-const em = @import("../em.zig");
+const em = @import("em");
 const hal = @import("../hal.zig");
 const BusyWait = @import("../scratch/BusyWait.zig");
 
