@@ -2,3 +2,5 @@
 junk
 zig-cache
 zig-out
+.gen
+.out

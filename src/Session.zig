@@ -21,12 +21,12 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     cur_mode = mode;
     gen_root = Fs.join(&.{ cur_bpath, ".gen" });
     out_root = Fs.join(&.{ cur_bpath, ".out" });
+    Fs.delete(gen_root);
+    Fs.delete(out_root);
+    if (mode == .CLEAN) return;
+    Fs.mkdirs(cur_bpath, ".gen");
+    Fs.mkdirs(cur_bpath, ".out");
     work_root = Fs.dirname(cur_bpath);
-    if (mode == .CLEAN) {
-        Fs.delete(gen_root);
-        Fs.delete(out_root);
-        return;
-    }
     Fs.chdir(work_root);
     const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
@@ -57,12 +57,10 @@ fn genUnitBindings() !void {
             }
         }
     }
-    Fs.mkdirs(cur_bpath, ".gen");
-    var file = try Out.open(Fs.join(&.{ gen_root, "test.out" }));
-    file.print("line1\n", .{});
-    file.close();
-    //var iter2 = unit_map.iterator();
-    //while (iter2.next()) |ent2| {
-    //    std.log.debug("k = {s}, v = {s}", .{ ent2.key_ptr.*, ent2.value_ptr.* });
-    //}
+    var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
+    defer file.close();
+    var iter = unit_map.iterator();
+    while (iter.next()) |ent| {
+        file.print("const @\"{0s}\" = @import(\"{1s}/{0s}\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
+    }
 }
