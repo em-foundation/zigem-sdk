@@ -19,14 +19,14 @@ var work_root: []const u8 = undefined;
 pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     cur_bpath = try Fs.normalize(bundle);
     cur_mode = mode;
-    gen_root = Fs.join(&.{ cur_bpath, ".gen" });
-    out_root = Fs.join(&.{ cur_bpath, ".out" });
+    work_root = Fs.dirname(cur_bpath);
+    gen_root = Fs.join(&.{ work_root, ".gen" });
+    out_root = Fs.join(&.{ work_root, ".out" });
     Fs.delete(gen_root);
     Fs.delete(out_root);
     if (mode == .CLEAN) return;
-    Fs.mkdirs(cur_bpath, ".gen");
-    Fs.mkdirs(cur_bpath, ".out");
-    work_root = Fs.dirname(cur_bpath);
+    Fs.mkdirs(work_root, ".gen");
+    Fs.mkdirs(work_root, ".out");
     Fs.chdir(work_root);
     const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
@@ -57,11 +57,16 @@ fn genUnitBindings() !void {
             }
         }
     }
+    // units.zig
     var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
-    defer file.close();
-    file.print("const em = @import(\"../../em.core/em.lang/em.zig\");\n", .{});
     var iter = unit_map.iterator();
     while (iter.next()) |ent| {
-        file.print("const @\"{0s}\" = @import(\"../../{1s}/{0s}.em.zig\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
+        file.print("pub const @\"{0s}\" = @import(\"../{1s}/{0s}.em.zig\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
     }
+    file.close();
+    // em.zig
+    file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
+    file.print("pub usingnamespace @import(\"../em.core/em.lang/em.zig\");\n", .{});
+    file.print("pub const Unit = @import(\"units.zig\");\n", .{});
+    file.close();
 }
