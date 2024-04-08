@@ -43,7 +43,7 @@ fn genUnitBindings() !void {
             var iter2 = Fs.openDir(Fs.join(&.{ bp, ent.name })).iterate();
             while (try iter2.next()) |ent2| {
                 if (ent2.kind != .file) continue;
-                const idx = std.mem.indexOf(u8, ent2.name, ".zig.em");
+                const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
                 const upath = try std.fmt.allocPrint(
                     Heap.get(),
@@ -59,8 +59,9 @@ fn genUnitBindings() !void {
     }
     var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
     defer file.close();
+    file.print("const em = @import(\"../../em.core/em.lang/em.zig\");\n", .{});
     var iter = unit_map.iterator();
     while (iter.next()) |ent| {
-        file.print("const @\"{0s}\" = @import(\"{1s}/{0s}\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
+        file.print("const @\"{0s}\" = @import(\"../../{1s}/{0s}.em.zig\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
     }
 }
