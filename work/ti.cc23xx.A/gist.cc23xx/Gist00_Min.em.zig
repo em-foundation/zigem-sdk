@@ -1,11 +1,19 @@
 const em = @import("../../.gen/em.zig");
+const me = @This();
 
 const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
 const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
 
-const REG = em.REG;
+pub const em__unit = em.UnitSpec{
+    .kind = .module,
+    .upath = "gist.cc23xx/Gist00_Min",
+    .self = me,
+};
 
-pub fn @"em$run"() void {
+pub fn em__declare() void {}
+
+pub fn em__run() void {
+    const REG = em.REG;
     const pin = 15;
     const mask = (1 << pin);
     REG(Hal.GPIO_BASE + Hal.GPIO_O_DOESET31_0).* = mask;
