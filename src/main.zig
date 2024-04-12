@@ -65,6 +65,7 @@ const app = &cli.App{
 
 fn doBuild() !void {
     try Session.activate(params.bundle, .BUILD, null);
+    try Session.generate(params.unit);
 }
 
 fn doClean() !void {

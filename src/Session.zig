@@ -31,7 +31,32 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
     try BundlePath.add(work_root, bname);
+    //try genUnitBindings();
+}
+
+pub fn generate(upath: []const u8) !void {
     try genUnitBindings();
+    const uname = mkUname(upath);
+    try genMainStub("host", uname);
+    try genMainStub("targ", uname);
+}
+
+fn genMainStub(kind: []const u8, uname: []const u8) !void {
+    const fname = try sprint(".main-{s}.zig", .{kind});
+    var file = try Out.open(Fs.join(&.{ work_root, fname }));
+    const fmt =
+        \\const em = @import(".gen/em.zig");
+        \\
+        \\export fn em__start() void {{
+        \\    main();
+        \\}}
+        \\
+        \\pub fn main() void {{
+        \\    @import("em.core/em.lang/{s}-main.zig").exec(em.Unit.@"{s}".em__unit) catch em.halt();
+        \\}}
+    ;
+    file.print(fmt, .{ kind, uname });
+    file.close();
 }
 
 fn genUnitBindings() !void {
@@ -45,14 +70,7 @@ fn genUnitBindings() !void {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                const upath = try std.fmt.allocPrint(
-                    Heap.get(),
-                    "{s}/{s}",
-                    .{
-                        ent.name,
-                        ent2.name[0..idx.?],
-                    },
-                );
+                const upath = try sprint("{s}/{s}", .{ ent.name, ent2.name[0..idx.?] });
                 if (!unit_map.contains(upath)) try unit_map.put(upath, Fs.basename(bp));
             }
         }
@@ -69,4 +87,14 @@ fn genUnitBindings() !void {
     file.print("pub usingnamespace @import(\"../em.core/em.lang/em.zig\");\n", .{});
     file.print("pub const Unit = @import(\"units.zig\");\n", .{});
     file.close();
+}
+
+fn mkUname(upath: []const u8) []const u8 {
+    const idx = std.mem.indexOf(u8, upath, ".em.zig");
+    if (idx == null) return upath;
+    return upath[0..idx.?];
+}
+
+fn sprint(comptime fmt: []const u8, args: anytype) ![]const u8 {
+    return try std.fmt.allocPrint(Heap.get(), fmt, args);
 }

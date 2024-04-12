@@ -1,8 +1,8 @@
-all:
+host:
 	@rm -rf zig-out
 	@mkdir zig-out
-	@zig build-exe -femit-bin=zig-out/meta-main.exe meta-main.zig
-	@zig-out/meta-main.exe
+	@zig build-exe -femit-bin=zig-out/host-main.exe .main-host.zig
+	@zig-out/host-main.exe
 
 ## -----------------
 
