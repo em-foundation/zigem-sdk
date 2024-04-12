@@ -1,8 +1,12 @@
-const em = @import("../../.gen/em.zig");
+const std = @import("std");
 
-pub const @"em$unit" = em.UnitSpec{
+const em = @import("../../.gen/em.zig");
+const me = @This();
+
+pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "ti.mcu.cc23xx/Hal",
+    .self = me,
 };
 
 pub usingnamespace @import("hal/hw_memmap.zig");
