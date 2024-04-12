@@ -40,10 +40,12 @@ pub const UnitSpec = struct {
     self: type,
 };
 
-pub fn halt() void {
+pub fn halt() noreturn {
     var dummy: u32 = 0xCAFE;
     const vp: *volatile u32 = &dummy;
-    while (vp.* != 0) {}
+    while (true) {
+        if (vp.* != 0) continue;
+    }
 }
 
 pub fn REG(adr: u32) *volatile u32 {
