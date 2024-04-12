@@ -2,18 +2,23 @@ const std = @import("std");
 const em = @import("em.zig");
 
 pub fn exec(top: em.UnitSpec) !void {
-    _ = @call(.auto, @field(top.self, "em__init"), .{});
+    if (@hasDecl(top.self, "em__init")) {
+        _ = @call(.auto, @field(top.self, "em__init"), .{});
+    }
     printCfgs(top);
 }
 
 fn printCfgs(unit: em.UnitSpec) void {
-    inline for (@typeInfo(unit.self).Struct.decls) |decl| {
-        const fld = @field(unit.self, decl.name);
-        const FT = @TypeOf(fld);
-        const ti = @typeInfo(FT);
-        if (ti == .Struct and @hasDecl(FT, "_em__config")) {
-            std.debug.print("found {s}\n", .{decl.name});
-            fld.print();
+    if (!@hasDecl(unit.self, "c")) return;
+    const cs = @field(unit.self, "c");
+    const CS = @TypeOf(cs);
+    inline for (@typeInfo(CS).Struct.fields) |fld| {
+        const cfg = @field(cs, fld.name);
+        const CfgT = @TypeOf(cfg);
+        const ti = @typeInfo(CfgT);
+        if (ti == .Struct and @hasDecl(CfgT, "_em__config")) {
+            std.debug.print("\nconfig {s}\n", .{fld.name});
+            cfg.print();
         }
     }
 }

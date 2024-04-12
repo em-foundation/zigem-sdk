@@ -9,10 +9,17 @@ pub const em__unit = em.UnitSpec{
     .self = me,
 };
 
+pub var c = em.CfgDecls(struct {
+    max: em.Config(u32) = em.Config(u32).init(),
+    min: em.Config(u32) = em.Config(u32).init(),
+});
+
 pub fn em__init() void {
-    std.log.debug("hi there", .{});
+    c.max.set(20);
+    c.min.set(10);
 }
 
 pub fn em__run() void {
-    em.REG(1111).* = 10;
+    c.max.set(20);
+    em.REG(1111).* = c.max.get();
 }
