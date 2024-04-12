@@ -26,7 +26,7 @@ TARG_OPTS=\
 targ:
 	@rm -rf zig-out
 	@mkdir zig-out
-	@zig build-exe $(TARG_OPTS) targ-main.zig
+	@zig build-exe $(TARG_OPTS) .main-targ.zig
 	@rm -f $(ODIR)/main.out.o
 #	@$(OBJDUMP) -h -d  $(ODIR)/main.out >$(ODIR)/main.out.dis
 	@size $(ODIR)/main.out
