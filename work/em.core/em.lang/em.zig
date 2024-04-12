@@ -42,7 +42,6 @@ pub const UnitSpec = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
-    Cfgs: type = struct {},
 };
 
 pub fn halt() noreturn {
