@@ -68,3 +68,9 @@ pub fn readFileZ(path: []const u8) [:0]const u8 {
     const buf = file.readToEndAllocOptions(Heap.get(), 1000, null, @alignOf(u8), 0) catch fatal("Path.readFile", .{});
     return buf;
 }
+
+pub fn slashify(path: []const u8) []const u8 {
+    const dupe = Heap.get().dupe(u8, path) catch fatal("Path.slashify", .{});
+    std.mem.replaceScalar(u8, dupe, '\\', '/');
+    return dupe;
+}

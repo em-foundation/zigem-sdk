@@ -1,11 +1,17 @@
 const std = @import("std");
-const em = @import("em.zig");
+const em = @import("../../.gen/em.zig");
 
 pub fn exec(top: em.UnitSpec) !void {
     if (@hasDecl(top.self, "em__init")) {
         _ = @call(.auto, @field(top.self, "em__init"), .{});
     }
+    genTarg();
     printCfgs(top);
+}
+
+fn genTarg() void {
+    const file = std.fs.createFileAbsolute(em._targ_file, .{}) catch em.halt();
+    file.close();
 }
 
 fn printCfgs(unit: em.UnitSpec) void {

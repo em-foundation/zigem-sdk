@@ -22,6 +22,10 @@ pub fn Config(T: type) type {
             return .{ ._val = null };
         }
 
+        pub fn initV(v: T) Self {
+            return .{ ._val = v };
+        }
+
         pub fn print(self: Self) void {
             std.log.debug("{any}", .{self._val});
         }

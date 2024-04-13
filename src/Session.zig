@@ -35,10 +35,26 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
 }
 
 pub fn generate(upath: []const u8) !void {
-    try genUnitBindings();
+    try genUnits();
     const uname = mkUname(upath);
+    try genEmStub(uname);
     try genMainStub("host", uname);
     try genMainStub("targ", uname);
+}
+
+fn genEmStub(uname: []const u8) !void {
+    var file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
+    const fmt =
+        \\pub usingnamespace @import("../em.core/em.lang/em.zig");
+        \\
+        \\pub const Unit = @import("units.zig");
+        \\
+        \\pub const _Root = Unit.@"{s}".em__unit;
+        \\
+        \\pub const _targ_file = "{s}/targ.zig";
+    ;
+    file.print(fmt, .{ uname, Fs.slashify(gen_root) });
+    file.close();
 }
 
 fn genMainStub(kind: []const u8, uname: []const u8) !void {
@@ -59,7 +75,7 @@ fn genMainStub(kind: []const u8, uname: []const u8) !void {
     file.close();
 }
 
-fn genUnitBindings() !void {
+fn genUnits() !void {
     var unit_map = std.StringHashMap([]const u8).init(Heap.get());
     for (BundlePath.get()) |bp| {
         var iter = Fs.openDir(bp).iterate();
@@ -81,11 +97,6 @@ fn genUnitBindings() !void {
     while (iter.next()) |ent| {
         file.print("pub const @\"{0s}\" = @import(\"../{1s}/{0s}.em.zig\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
     }
-    file.close();
-    // em.zig
-    file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
-    file.print("pub usingnamespace @import(\"../em.core/em.lang/em.zig\");\n", .{});
-    file.print("pub const Unit = @import(\"units.zig\");\n", .{});
     file.close();
 }
 

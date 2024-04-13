@@ -10,13 +10,13 @@ pub const em__unit = em.UnitSpec{
 };
 
 pub var c = em.CfgDecls(struct {
-    max: em.Config(u32) = em.Config(u32).init(),
-    min: em.Config(u32) = em.Config(u32).init(),
+    max: em.Config(u32) = em.Config(u32).initV(20),
+    min: em.Config(u32) = em.Config(u32).initV(10),
 });
 
 pub fn em__init() void {
-    c.max.set(20);
-    c.min.set(10);
+    //    c.max.set(20);
+    //    c.min.set(10);
 }
 
 pub fn em__run() void {
