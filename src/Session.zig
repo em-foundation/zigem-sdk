@@ -35,6 +35,7 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
 }
 
 pub fn generate(upath: []const u8) !void {
+    try genTarg();
     try genUnits();
     const uname = mkUname(upath);
     try genEmStub(uname);
@@ -50,6 +51,9 @@ fn genEmStub(uname: []const u8) !void {
         \\pub const Unit = @import("units.zig");
         \\
         \\pub const _Root = Unit.@"{s}".em__unit;
+        \\pub const _Targ = @import("targ.zig");
+        \\
+        \\pub const hosted = !@hasDecl(_Targ, "_em_targ");
         \\
         \\pub const _targ_file = "{s}/targ.zig";
     ;
@@ -72,6 +76,11 @@ fn genMainStub(kind: []const u8, uname: []const u8) !void {
         \\}}
     ;
     file.print(fmt, .{ kind, uname });
+    file.close();
+}
+
+fn genTarg() !void {
+    var file = try Out.open(Fs.join(&.{ gen_root, "targ.zig" }));
     file.close();
 }
 

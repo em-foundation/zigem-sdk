@@ -11,6 +11,10 @@ pub fn exec(top: em.UnitSpec) !void {
 
 fn genTarg() void {
     const file = std.fs.createFileAbsolute(em._targ_file, .{}) catch em.halt();
+    const fmt =
+        \\pub const _em_targ = {{}};
+    ;
+    file.writer().print(fmt, .{}) catch unreachable;
     file.close();
 }
 

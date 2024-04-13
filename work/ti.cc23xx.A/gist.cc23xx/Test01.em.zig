@@ -15,11 +15,12 @@ pub var c = em.CfgDecls(struct {
 });
 
 pub fn em__init() void {
+    std.log.debug("hosted = {any}", .{em.hosted});
     //    c.max.set(20);
     //    c.min.set(10);
 }
 
 pub fn em__run() void {
-    c.max.set(20);
-    em.REG(1111).* = c.max.get();
+    //c.max.set(20);
+    em.REG(1111).* = if (em.hosted) 10 else 20;
 }
