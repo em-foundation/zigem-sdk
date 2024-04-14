@@ -1,10 +1,17 @@
 const std = @import("std");
+const _Targ = @import("../../.gen/targ.zig");
+
+pub const hosted = !@hasDecl(_Targ, "_em_targ");
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 const heap = arena.allocator();
 
 pub fn CfgDecls(T: type) T {
-    return T{};
+    if (hosted) {
+        return T{};
+    } else {
+        return @as(T, _Targ.@"gist.cc23xx/Test01".c);
+    }
 }
 
 pub fn Config(T: type) type {
