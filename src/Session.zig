@@ -35,29 +35,20 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
 }
 
 pub fn generate(upath: []const u8) !void {
+    try genEmStub();
     try genTarg();
     try genUnits();
     const uname = mkUname(upath);
-    try genEmStub(uname);
     try genMainStub("host", uname);
     try genMainStub("targ", uname);
 }
 
-fn genEmStub(uname: []const u8) !void {
+fn genEmStub() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
     const fmt =
         \\pub usingnamespace @import("../em.core/em.lang/em.zig");
-        \\
-        \\pub const Unit = @import("units.zig");
-        \\
-        \\pub const _Root = Unit.@"{s}".em__unit;
-        \\pub const _Targ = @import("targ.zig");
-        \\
-        \\pub const hosted = !@hasDecl(_Targ, "_em_targ");
-        \\
-        \\pub const _targ_file = "{s}/targ.zig";
     ;
-    file.print(fmt, .{ uname, Fs.slashify(gen_root) });
+    file.print(fmt, .{});
     file.close();
 }
 
@@ -106,6 +97,11 @@ fn genUnits() !void {
     while (iter.next()) |ent| {
         file.print("pub const @\"{0s}\" = @import(\"../{1s}/{0s}.em.zig\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
     }
+    const fmt =
+        \\
+        \\pub const _targ_file = "{s}/targ.zig";
+    ;
+    file.print(fmt, .{Fs.slashify(gen_root)});
     file.close();
 }
 

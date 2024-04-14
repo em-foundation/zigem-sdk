@@ -1,10 +1,11 @@
 const std = @import("std");
 const _Targ = @import("../../.gen/targ.zig");
 
+pub const Unit = @import("../../.gen/units.zig");
+
 pub const hosted = !@hasDecl(_Targ, "_em_targ");
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-const heap = arena.allocator();
 
 pub fn Config(T: type) type {
     return struct {
@@ -56,7 +57,17 @@ pub const UnitSpec = struct {
             return @as(Decls, @field(_Targ, self.upath));
         }
     }
+
+    pub fn import(_: Self, _: []const u8) type {}
 };
+
+pub fn fail() noreturn {
+    halt();
+}
+
+pub fn getHeap() std.mem.Allocator {
+    return arena.allocator();
+}
 
 pub fn halt() noreturn {
     var dummy: u32 = 0xCAFE;
