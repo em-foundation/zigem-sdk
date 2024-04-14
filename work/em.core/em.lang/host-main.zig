@@ -5,7 +5,7 @@ pub fn exec(top: em.UnitSpec) !void {
     if (@hasDecl(top.self, "em__init")) {
         _ = @call(.auto, @field(top.self, "em__init"), .{});
     }
-    genTarg();
+    //genTarg();
     printCfgs(top);
 }
 

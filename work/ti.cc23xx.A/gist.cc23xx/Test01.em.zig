@@ -9,7 +9,7 @@ pub const em__unit = em.UnitSpec{
     .self = me,
 };
 
-pub var c = em.CfgDecls(struct {
+pub var c = em__unit.declare(struct {
     max: em.Config(u32) = em.Config(u32).initV(20),
     min: em.Config(u32) = em.Config(u32).initV(10),
 });

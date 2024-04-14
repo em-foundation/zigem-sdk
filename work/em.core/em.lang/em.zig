@@ -6,14 +6,6 @@ pub const hosted = !@hasDecl(_Targ, "_em_targ");
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 const heap = arena.allocator();
 
-pub fn CfgDecls(T: type) T {
-    if (hosted) {
-        return T{};
-    } else {
-        return @as(T, _Targ.@"gist.cc23xx/Test01".c);
-    }
-}
-
 pub fn Config(T: type) type {
     return struct {
         const Self = @This();
@@ -50,9 +42,20 @@ pub const UnitKind = enum {
 };
 
 pub const UnitSpec = struct {
+    const Self = @This();
+
     kind: UnitKind,
     upath: []const u8,
     self: type,
+
+    pub fn declare(self: Self, Decls: type) Decls {
+        if (hosted) {
+            return Decls{};
+        } else {
+            //return @as(Decls, _Targ.@"gist.cc23xx/Test01");
+            return @as(Decls, @field(_Targ, self.upath));
+        }
+    }
 };
 
 pub fn halt() noreturn {
