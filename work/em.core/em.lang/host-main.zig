@@ -1,22 +1,59 @@
 const std = @import("std");
 const em = @import("../../.gen/em.zig");
 
-var units = struct {
-    const Self = @This();
-    set: std.StringHashMap(void) = std.StringHashMap(void).init(em.getHeap()),
-    fn add(self: *Self, upath: []const u8) void {
-        if (self.set.contains(upath)) return;
-        self.set.put(upath, {}) catch em.fail();
+//var units = struct {
+//    const Self = @This();
+//    set: std.StringHashMap(void) = std.StringHashMap(void).init(em.getHeap()),
+//    fn add(self: *Self, upath: []const u8) void {
+//        if (self.set.contains(upath)) return;
+//        self.set.put(upath, {}) catch em.fail();
+//    }
+//}{};
+
+fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
+    comptime var res = ulist;
+    inline for (ulist) |u| {
+        if (std.mem.eql(u8, u.upath, unit.upath)) return res;
     }
-}{};
+    inline for (unit.imports) |iu| {
+        res = mkUnitList(iu, res);
+    }
+    return res ++ .{unit};
+}
+
+fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
+    comptime var res: []const em.UnitSpec = &.{};
+    inline for (ulist) |u| {
+        res = .{u} ++ res;
+    }
+    return res;
+}
 
 pub fn exec(top: em.UnitSpec) !void {
-    units.add(top.upath);
+    const ulist_bot = mkUnitList(top, &.{});
+    const ulist_top = revUnitList(ulist_bot);
+    std.log.debug("ulist_bot", .{});
+    inline for (ulist_bot) |u| {
+        std.log.debug("{s}", .{u.upath});
+    }
+    std.log.debug("ulist_top", .{});
+    inline for (ulist_top) |u| {
+        std.log.debug("{s}", .{u.upath});
+    }
+
+    //inline for (mkUnitList(top, &.{})) |u| {
+    //    std.log.debug("unit {s}", .{u.upath});
+    //}
+
+    //inline for (top.imports) |iu| {
+    //    std.log.debug("imports {s}", .{iu.upath});
+    //}
+
     if (@hasDecl(top.self, "em__init")) {
         _ = @call(.auto, @field(top.self, "em__init"), .{});
     }
     //genTarg();
-    printCfgs(top);
+    //printCfgs(top);
 }
 
 //fn genDecls(out: std.fs.File.Writer, unit: em.UnitSpec) !void {}

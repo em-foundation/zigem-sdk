@@ -48,6 +48,7 @@ pub const UnitSpec = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
+    imports: []const UnitSpec = &.{},
 
     pub fn getSelf(self: Self) type {
         std.log.debug("hasDecl: {any}", .{@hasDecl(Unit, self.upath)});

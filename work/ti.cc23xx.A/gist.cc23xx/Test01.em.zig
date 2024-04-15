@@ -3,16 +3,19 @@ const std = @import("std");
 const em = @import("../../.gen/em.zig");
 const me = @This();
 
+const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
 const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
+const Uart = em.Unit.@"ti.mcu.cc23xx/Uart";
 
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Test01",
     .self = me,
-};
-
-pub const em__imports = [_]em.UnitSpec{
-    Hal.em__unit,
+    .imports = &[_]em.UnitSpec{
+        BusyWait.em__unit,
+        Hal.em__unit,
+        Uart.em__unit,
+    },
 };
 
 pub const d_ = &em__decls;
