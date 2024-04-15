@@ -11,6 +11,10 @@ pub const em__unit = em.UnitSpec{
     .self = me,
 };
 
+pub const em__imports = [_]em.UnitSpec{
+    Hal.em__unit,
+};
+
 pub const d_ = &em__decls;
 pub var em__decls = em__unit.declare(struct {
     max: em.Config(u32) = em.Config(u32).initV(20),
@@ -19,6 +23,13 @@ pub var em__decls = em__unit.declare(struct {
 
 pub fn em__init() void {
     std.log.debug("hosted = {any}", .{em.hosted});
+    //em.getUnit(Hal.em__unit.upath);
+    //if (@hasDecl(em.Unit, em__unit.upath)) {
+    //    const m = @field(em.Unit, em__unit.upath);
+    //    const M = @TypeOf(m);
+    //    std.log.debug("typeName = {s}", .{@typeName(M)});
+    //}
+
     d_.max.set(20);
 }
 

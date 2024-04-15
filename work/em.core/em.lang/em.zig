@@ -10,8 +10,8 @@ var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 pub fn Config(T: type) type {
     return struct {
         const Self = @This();
-        pub const _em__config = null;
 
+        comptime _em__config: void = void{},
         _val: ?T,
 
         pub fn get(self: Self) T {
@@ -49,6 +49,14 @@ pub const UnitSpec = struct {
     upath: []const u8,
     self: type,
 
+    pub fn getSelf(self: Self) type {
+        std.log.debug("hasDecl: {any}", .{@hasDecl(Unit, self.upath)});
+        const u = @field(Unit, self.upath);
+        const U = @TypeOf(u);
+        std.log.debug("getSelf: {any}", .{u});
+        return U;
+    }
+
     pub fn declare(self: Self, Decls: type) Decls {
         if (hosted) {
             return Decls{};
@@ -67,6 +75,18 @@ pub fn fail() noreturn {
 
 pub fn getHeap() std.mem.Allocator {
     return arena.allocator();
+}
+
+pub fn getUnit(comptime upath: []const u8) void {
+    if (@hasDecl(Unit, upath)) {
+        const m = @field(Unit, upath);
+        const M = @TypeOf(m);
+        if (@hasDecl(M, "em__unit")) {
+            const u = @field(Unit, "em__unit");
+            const U = @TypeOf(u);
+            std.log.debug("typeName = {s}", .{@typeName(U)});
+        }
+    }
 }
 
 pub fn halt() noreturn {

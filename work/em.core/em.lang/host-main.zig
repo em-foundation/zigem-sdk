@@ -40,7 +40,7 @@ fn printCfgs(unit: em.UnitSpec) void {
         const cfg = @field(cs, fld.name);
         const CfgT = @TypeOf(cfg);
         const ti = @typeInfo(CfgT);
-        if (ti == .Struct and @hasDecl(CfgT, "_em__config")) {
+        if (ti == .Struct and @hasField(CfgT, "_em__config")) {
             std.debug.print("\nconfig {s}\n", .{fld.name});
             cfg.print();
         }
