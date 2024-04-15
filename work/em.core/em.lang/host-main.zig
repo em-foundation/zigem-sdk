@@ -1,15 +1,6 @@
 const std = @import("std");
 const em = @import("../../.gen/em.zig");
 
-//var units = struct {
-//    const Self = @This();
-//    set: std.StringHashMap(void) = std.StringHashMap(void).init(em.getHeap()),
-//    fn add(self: *Self, upath: []const u8) void {
-//        if (self.set.contains(upath)) return;
-//        self.set.put(upath, {}) catch em.fail();
-//    }
-//}{};
-
 fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
     comptime var res = ulist;
     inline for (ulist) |u| {
@@ -31,55 +22,46 @@ fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
 
 pub fn exec(top: em.UnitSpec) !void {
     const ulist_bot = mkUnitList(top, &.{});
-    const ulist_top = revUnitList(ulist_bot);
-    std.log.debug("ulist_bot", .{});
     inline for (ulist_bot) |u| {
-        std.log.debug("{s}", .{u.upath});
+        if (@hasDecl(u.self, "em__init")) {
+            _ = @call(.auto, @field(u.self, "em__init"), .{});
+        }
     }
-    std.log.debug("ulist_top", .{});
-    inline for (ulist_top) |u| {
-        std.log.debug("{s}", .{u.upath});
-    }
-
-    //inline for (mkUnitList(top, &.{})) |u| {
-    //    std.log.debug("unit {s}", .{u.upath});
+    genTarg(ulist_bot);
+    //inline for (ulist_bot) |u| {
+    //    printDecls(u);
     //}
-
-    //inline for (top.imports) |iu| {
-    //    std.log.debug("imports {s}", .{iu.upath});
-    //}
-
-    if (@hasDecl(top.self, "em__init")) {
-        _ = @call(.auto, @field(top.self, "em__init"), .{});
-    }
-    //genTarg();
-    //printCfgs(top);
 }
 
-//fn genDecls(out: std.fs.File.Writer, unit: em.UnitSpec) !void {}
-
-fn genTarg() void {
-    const file = std.fs.createFileAbsolute(em._targ_file, .{}) catch em.halt();
+fn genTarg(ulist: []const em.UnitSpec) void {
+    const file = std.fs.createFileAbsolute(em.Unit._targ_file, .{}) catch em.fail();
     const fmt =
         \\pub const _em_targ = {{}};
         \\
         \\const em = @import("em.zig");
+        \\
+        \\
     ;
     file.writer().print(fmt, .{}) catch unreachable;
+    inline for (ulist) |u| {
+        file.writer().print("pub var @\"{s}\" = .{{", .{u.upath}) catch em.fail();
+        file.writer().print("}};\n", .{}) catch em.fail();
+    }
     file.close();
 }
 
-fn printCfgs(unit: em.UnitSpec) void {
+fn printDecls(unit: em.UnitSpec) void {
     if (!@hasDecl(unit.self, "em__decls")) return;
-    const cs = @field(unit.self, "em__decls");
-    const CS = @TypeOf(cs);
-    inline for (@typeInfo(CS).Struct.fields) |fld| {
-        const cfg = @field(cs, fld.name);
-        const CfgT = @TypeOf(cfg);
-        const ti = @typeInfo(CfgT);
-        if (ti == .Struct and @hasField(CfgT, "_em__config")) {
+    std.debug.print("\nunit {s}\n", .{unit.upath});
+    const decl_struct = @field(unit.self, "em__decls");
+    const Decl_Struct = @TypeOf(decl_struct);
+    inline for (@typeInfo(Decl_Struct).Struct.fields) |fld| {
+        const decl = @field(decl_struct, fld.name);
+        const Decl = @TypeOf(decl);
+        const ti = @typeInfo(Decl);
+        if (ti == .Struct and @hasField(Decl, "_em__config")) {
             std.debug.print("\nconfig {s}\n", .{fld.name});
-            cfg.print();
+            decl.print();
         }
     }
 }

@@ -1,4 +1,6 @@
 host:
+	@rm -f .gen/targ.zig
+	@touch .gen/targ.zig
 	@rm -rf zig-out
 	@mkdir zig-out
 	@zig build-exe -femit-bin=zig-out/host-main.exe .main-host.zig

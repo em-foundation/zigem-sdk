@@ -26,14 +26,7 @@ pub var em__decls = em__unit.declare(struct {
 
 pub fn em__init() void {
     std.log.debug("hosted = {any}", .{em.hosted});
-    //em.getUnit(Hal.em__unit.upath);
-    //if (@hasDecl(em.Unit, em__unit.upath)) {
-    //    const m = @field(em.Unit, em__unit.upath);
-    //    const M = @TypeOf(m);
-    //    std.log.debug("typeName = {s}", .{@typeName(M)});
-    //}
-
-    d_.max.set(20);
+    d_.max.set(40);
 }
 
 pub fn em__run() void {
