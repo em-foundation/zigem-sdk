@@ -1,7 +1,4 @@
-const std = @import("std");
-
 const em = @import("../../.gen/em.zig");
-const me = @This();
 
 const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
 const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
@@ -10,7 +7,7 @@ const Uart = em.Unit.@"ti.mcu.cc23xx/Uart";
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Test01",
-    .self = me,
+    .self = @This(),
     .imports = &[_]em.UnitSpec{
         BusyWait.em__unit,
         Hal.em__unit,
@@ -25,7 +22,7 @@ pub var em__decls = em__unit.declare(struct {
 });
 
 pub fn em__init() void {
-    std.log.debug("hosted = {any}", .{em.hosted});
+    em.print("hosted = {any}", .{em.hosted});
     d_.max.set(40);
 }
 

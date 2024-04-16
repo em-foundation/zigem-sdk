@@ -1,5 +1,5 @@
-const std = @import("std");
 const em = @import("../../.gen/em.zig");
+const std = @import("std");
 
 fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
     comptime var res = ulist;

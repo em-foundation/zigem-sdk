@@ -1,9 +1,9 @@
-const std = @import("std");
+pub const std = @import("std");
+pub const Unit = @import("../../.gen/units.zig");
 const _Targ = @import("../../.gen/targ.zig");
 
-pub const Unit = @import("../../.gen/units.zig");
-
 pub const hosted = !@hasDecl(_Targ, "_em_targ");
+pub const print = std.log.debug;
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 

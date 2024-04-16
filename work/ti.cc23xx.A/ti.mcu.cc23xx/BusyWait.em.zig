@@ -1,12 +1,9 @@
-const std = @import("std");
-
 const em = @import("../../.gen/em.zig");
-const me = @This();
 
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "ti.mcu.cc23xx/BusyWait",
-    .self = me,
+    .self = @This(),
 };
 
 pub const d_ = &em__decls;
