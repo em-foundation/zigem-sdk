@@ -1,9 +1,5 @@
 const em = @import("../../.gen/em.zig");
 
-const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
-const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
-const Uart = em.Unit.@"ti.mcu.cc23xx/Uart";
-
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Test01",
@@ -15,13 +11,17 @@ pub const em__unit = em.UnitSpec{
     },
 };
 
+const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
+const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
+const Uart = em.Unit.@"ti.mcu.cc23xx/Uart";
+
 pub const d_ = &em__decls;
 pub var em__decls = em__unit.declare(struct {
     max: em.Config(u32) = em.Config(u32).initV(20),
     min: em.Config(u32) = em.Config(u32).initV(10),
 });
 
-pub fn em__init() void {
+pub fn em__initH() void {
     em.print("hosted = {any}", .{em.hosted});
     d_.max.set(40);
 }

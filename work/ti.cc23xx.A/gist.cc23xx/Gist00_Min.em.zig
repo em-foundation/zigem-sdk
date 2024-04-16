@@ -19,8 +19,8 @@ pub const em__unit = em.UnitSpec{
 
 pub var c_max = em.Config(u8).init(10);
 
-pub fn em__init() void {
-    std.log.debug("em__init: {s}", .{me.em__unit.upath});
+pub fn em__initH() void {
+    std.log.debug("em__initH: {s}", .{me.em__unit.upath});
     c_max.set(20);
 }
 

@@ -102,3 +102,14 @@ pub fn REG(adr: u32) *volatile u32 {
     const reg: *volatile u32 = @ptrFromInt(adr);
     return reg;
 }
+
+pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
+    return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
+}
+
+pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
+    const fpath = sprint("{s}/{s}", .{ dpath, fname }) catch unreachable;
+    const file = std.fs.createFileAbsolute(fpath, .{}) catch unreachable;
+    file.write(txt) catch unreachable;
+    file.close();
+}

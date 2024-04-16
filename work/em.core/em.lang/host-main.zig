@@ -23,8 +23,8 @@ fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
 pub fn exec(top: em.UnitSpec) !void {
     const ulist_bot = mkUnitList(top, &.{});
     inline for (ulist_bot) |u| {
-        if (@hasDecl(u.self, "em__init")) {
-            _ = @call(.auto, @field(u.self, "em__init"), .{});
+        if (@hasDecl(u.self, "em__initH")) {
+            _ = @call(.auto, @field(u.self, "em__initH"), .{});
         }
     }
     try genTarg(ulist_bot);
@@ -50,7 +50,7 @@ fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
 }
 
 fn genTarg(ulist: []const em.UnitSpec) !void {
-    const file = try std.fs.createFileAbsolute(em.Unit._targ_file, .{});
+    const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
     const fmt =
         \\pub const _em_targ = {{}};
