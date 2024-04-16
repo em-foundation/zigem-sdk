@@ -27,14 +27,31 @@ pub fn exec(top: em.UnitSpec) !void {
             _ = @call(.auto, @field(u.self, "em__init"), .{});
         }
     }
-    genTarg(ulist_bot);
+    try genTarg(ulist_bot);
     //inline for (ulist_bot) |u| {
     //    printDecls(u);
     //}
 }
 
-fn genTarg(ulist: []const em.UnitSpec) void {
-    const file = std.fs.createFileAbsolute(em.Unit._targ_file, .{}) catch em.fail();
+fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
+    if (!@hasDecl(unit.self, "em__decls")) return;
+    const decl_struct = @field(unit.self, "em__decls");
+    const Decl_Struct = @TypeOf(decl_struct);
+    inline for (@typeInfo(Decl_Struct).Struct.fields) |fld| {
+        const decl = @field(decl_struct, fld.name);
+        const Decl = @TypeOf(decl);
+        const ti = @typeInfo(Decl);
+        if (ti == .Struct and @hasField(Decl, "_em__config")) {
+            const tn = @typeName(Decl);
+            const idx = std.mem.indexOf(u8, tn, ".em.Config(").?;
+            try out.print("    .{s} = {s}.initV({any}),\n", .{ fld.name, tn[idx + 1 ..], decl.get() });
+        }
+    }
+}
+
+fn genTarg(ulist: []const em.UnitSpec) !void {
+    const file = try std.fs.createFileAbsolute(em.Unit._targ_file, .{});
+    const out = file.writer();
     const fmt =
         \\pub const _em_targ = {{}};
         \\
@@ -42,10 +59,11 @@ fn genTarg(ulist: []const em.UnitSpec) void {
         \\
         \\
     ;
-    file.writer().print(fmt, .{}) catch unreachable;
+    try out.print(fmt, .{});
     inline for (ulist) |u| {
-        file.writer().print("pub var @\"{s}\" = .{{", .{u.upath}) catch em.fail();
-        file.writer().print("}};\n", .{}) catch em.fail();
+        try out.print("pub var @\"{s}\" = .{{\n", .{u.upath});
+        try genDecls(u, out);
+        try out.print("}};\n\n", .{});
     }
     file.close();
 }
