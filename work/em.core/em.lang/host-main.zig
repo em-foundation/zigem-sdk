@@ -27,10 +27,12 @@ pub fn exec(top: em.UnitSpec) !void {
             _ = @call(.auto, @field(u.self, "em__initH"), .{});
         }
     }
+    inline for (ulist_bot) |u| {
+        if (@hasDecl(u.self, "em__generateH")) {
+            _ = @call(.auto, @field(u.self, "em__generateH"), .{});
+        }
+    }
     try genTarg(ulist_bot);
-    //inline for (ulist_bot) |u| {
-    //    printDecls(u);
-    //}
 }
 
 fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
@@ -66,20 +68,4 @@ fn genTarg(ulist: []const em.UnitSpec) !void {
         try out.print("}};\n\n", .{});
     }
     file.close();
-}
-
-fn printDecls(unit: em.UnitSpec) void {
-    if (!@hasDecl(unit.self, "em__decls")) return;
-    std.debug.print("\nunit {s}\n", .{unit.upath});
-    const decl_struct = @field(unit.self, "em__decls");
-    const Decl_Struct = @TypeOf(decl_struct);
-    inline for (@typeInfo(Decl_Struct).Struct.fields) |fld| {
-        const decl = @field(decl_struct, fld.name);
-        const Decl = @TypeOf(decl);
-        const ti = @typeInfo(Decl);
-        if (ti == .Struct and @hasField(Decl, "_em__config")) {
-            std.debug.print("\nconfig {s}\n", .{fld.name});
-            decl.print();
-        }
-    }
 }

@@ -5,12 +5,14 @@ pub const em__unit = em.UnitSpec{
     .upath = "gist.cc23xx/Test01",
     .self = @This(),
     .imports = &[_]em.UnitSpec{
+        BuildC.em__unit,
         BusyWait.em__unit,
         Hal.em__unit,
         Uart.em__unit,
     },
 };
 
+const BuildC = em.Unit.@"em.lang/BuildC";
 const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
 const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
 const Uart = em.Unit.@"ti.mcu.cc23xx/Uart";

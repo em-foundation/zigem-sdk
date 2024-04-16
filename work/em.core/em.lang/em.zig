@@ -108,8 +108,8 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
 }
 
 pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
-    const fpath = sprint("{s}/{s}", .{ dpath, fname }) catch unreachable;
+    const fpath = sprint("{s}/{s}", .{ dpath, fname });
     const file = std.fs.createFileAbsolute(fpath, .{}) catch unreachable;
-    file.write(txt) catch unreachable;
+    _ = file.write(txt) catch unreachable;
     file.close();
 }
