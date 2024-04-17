@@ -44,9 +44,11 @@ fn genTarg(ulist: []const em.UnitSpec) !void {
     ;
     try out.print(fmt, .{});
     inline for (ulist) |u| {
-        try out.print("pub var @\"{s}\" = .{{\n", .{u.upath});
-        try genDecls(u, out);
-        try out.print("}};\n\n", .{});
+        if (u.kind == .module) {
+            try out.print("pub var @\"{s}\" = .{{\n", .{u.upath});
+            try genDecls(u, out);
+            try out.print("}};\n\n", .{});
+        }
     }
     file.close();
 }

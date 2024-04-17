@@ -1,10 +1,9 @@
 host:
 	@rm -f .gen/targ.zig
 	@touch .gen/targ.zig
-	@rm -rf zig-out
-	@mkdir zig-out
-	@zig build-exe -femit-bin=zig-out/host-main.exe .main-host.zig
-	@zig-out/host-main.exe
+	@rm -rf .out/*
+	@zig build-exe -femit-bin=.out/host-main.exe .main-host.zig
+	@.out/host-main.exe
 
 ## -----------------
 
@@ -13,8 +12,6 @@ TOOLS=C:/Users/biosb/em-sdk/tools
 OBJCOPY=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objcopy.exe
 OBJDUMP=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objdump.exe
 
-ODIR=zig-out
-
 TARG_OPTS=\
 	--name main \
 	-fentry=em__start \
@@ -22,13 +19,11 @@ TARG_OPTS=\
 	-mcpu cortex_m0plus \
 	-target thumb-freestanding-eabi \
 	-O ReleaseSmall	\
-	-femit-asm=$(ODIR)/main.asm \
-	-femit-bin=$(ODIR)/main.out \
+	-femit-asm=.out/main.asm \
+	-femit-bin=.out/main.out \
 
 targ:
-	@rm -rf zig-out
-	@mkdir zig-out
-	@zig build-exe $(TARG_OPTS) .main-targ.zig
-	@rm -f $(ODIR)/main.out.o
-#	@$(OBJDUMP) -h -d  $(ODIR)/main.out >$(ODIR)/main.out.dis
-	@size $(ODIR)/main.out
+	@zig build-exe $(TARG_OPTS) --script .out/linkcmd.ld .out/startup.c .main-targ.zig
+	@rm -f .out/main.out.o
+	@$(OBJDUMP) -h -d  .out/main.out >.out/main.out.dis
+	@$(OBJDUMP) -h .out/main.out

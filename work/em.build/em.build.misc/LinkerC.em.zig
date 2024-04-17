@@ -1,7 +1,7 @@
 const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.UnitSpec{
-    .kind = .module,
+    .kind = .composite,
     .upath = "em.build.misc/LinkerC",
     .self = @This(),
 };
@@ -28,6 +28,8 @@ fn genLinkerCmd() void {
         \\         *(.text .text.*)
         \\         . = ALIGN(., 4);
         \\    } > IMEM
+        \\
+        \\    .ARM.exidx : { } > IMEM
         \\ 
         \\    .const : {
         \\        *(.rodata .rodata.* .constdata .constdata.*)
@@ -47,7 +49,7 @@ fn genLinkerCmd() void {
         \\        . = ALIGN(., 4);
         \\    } > DMEM
         \\ 
-        \\    .ccfg : { KEEP(*(.ccfg)); . = 0x00000800; } > FLASH_CCFG
+        \\    .ccfg : { KEEP(*(.ccfg)); } > FLASH_CCFG
         \\
         \\    __bss_addr__ = ADDR(.bss);
         \\    __bss_size__ = SIZEOF(.bss) / 4;
