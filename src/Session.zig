@@ -68,7 +68,7 @@ fn genMainStub(kind: []const u8, uname: []const u8) !void {
         \\}}
         \\
         \\pub fn main() void {{
-        \\    @import("em.core/em.lang/{s}-main.zig").exec(em.import("{s}").em__unit) catch em.halt();
+        \\    @import("em.core/em.lang/{s}-main.zig").exec(em.import.@"{s}".em__unit) catch em.halt();
         \\}}
     ;
     file.print(fmt, .{ kind, uname });

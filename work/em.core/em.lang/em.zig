@@ -1,6 +1,8 @@
-const std = @import("std");
+pub const std = @import("std");
+
+pub const import = @import("../../.gen/units.zig");
+
 const targ = @import("../../.gen/targ.zig");
-const units = @import("../../.gen/units.zig");
 
 pub const hosted = !@hasDecl(targ, "_em_targ");
 pub const print = std.log.debug;
@@ -48,15 +50,7 @@ pub const UnitSpec = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
-    imports: []const UnitSpec = &.{},
-
-    pub fn getSelf(self: Self) type {
-        std.log.debug("hasDecl: {any}", .{@hasDecl(units, self.upath)});
-        const u = @field(units, self.upath);
-        const U = @TypeOf(u);
-        std.log.debug("getSelf: {any}", .{u});
-        return U;
-    }
+    legacy: bool = false,
 
     pub fn declare(self: Self, Decls: type) Decls {
         if (hosted) {
@@ -78,18 +72,6 @@ pub fn getHeap() std.mem.Allocator {
     return arena.allocator();
 }
 
-pub fn getUnit(comptime upath: []const u8) void {
-    if (@hasDecl(units, upath)) {
-        const m = @field(units, upath);
-        const M = @TypeOf(m);
-        if (@hasDecl(M, "em__unit")) {
-            const u = @field(units, "em__unit");
-            const U = @TypeOf(u);
-            std.log.debug("typeName = {s}", .{@typeName(U)});
-        }
-    }
-}
-
 pub fn halt() noreturn {
     var dummy: u32 = 0xCAFE;
     const vp: *volatile u32 = &dummy;
@@ -98,10 +80,13 @@ pub fn halt() noreturn {
     }
 }
 
-pub fn import(comptime upath: []const u8) type {
-    std.debug.assert(@hasDecl(units, upath));
-    return @field(units, upath);
-}
+//pub fn import(comptime upath: []const u8) type {
+//    std.debug.assert(@hasDecl(units, upath));
+//    const U = @field(units, upath);
+//    // @compileLog("import", U);
+//    std.debug.assert(@hasDecl(U, "em__unit"));
+//    return U;
+//}
 
 pub fn REG(adr: u32) *volatile u32 {
     const reg: *volatile u32 = @ptrFromInt(adr);

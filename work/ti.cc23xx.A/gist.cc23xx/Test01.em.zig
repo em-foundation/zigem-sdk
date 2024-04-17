@@ -4,19 +4,13 @@ pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Test01",
     .self = @This(),
-    .imports = &[_]em.UnitSpec{
-        LinkerC.em__unit,
-        BusyWait.em__unit,
-        Hal.em__unit,
-        Uart.em__unit,
-    },
 };
 
-const LinkerC = em.import("em.build.misc/LinkerC");
+pub const LinkerC = em.import.@"em.build.misc/LinkerC";
 
-const BusyWait = em.import("ti.mcu.cc23xx/BusyWait");
-const Hal = em.import("ti.mcu.cc23xx/Hal");
-const Uart = em.import("ti.mcu.cc23xx/Uart");
+pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
+pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
+pub const Uart = em.import.@"ti.mcu.cc23xx/Uart";
 
 pub const d_ = &em__decls;
 pub var em__decls = em__unit.declare(struct {

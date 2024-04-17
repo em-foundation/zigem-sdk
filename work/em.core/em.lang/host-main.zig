@@ -1,25 +1,6 @@
 const em = @import("../../.gen/em.zig");
 const std = @import("std");
 
-fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
-    comptime var res = ulist;
-    inline for (ulist) |u| {
-        if (std.mem.eql(u8, u.upath, unit.upath)) return res;
-    }
-    inline for (unit.imports) |iu| {
-        res = mkUnitList(iu, res);
-    }
-    return res ++ .{unit};
-}
-
-fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
-    comptime var res: []const em.UnitSpec = &.{};
-    inline for (ulist) |u| {
-        res = .{u} ++ res;
-    }
-    return res;
-}
-
 pub fn exec(top: em.UnitSpec) !void {
     const ulist_bot = mkUnitList(top, &.{});
     inline for (ulist_bot) |u| {
@@ -68,4 +49,29 @@ fn genTarg(ulist: []const em.UnitSpec) !void {
         try out.print("}};\n\n", .{});
     }
     file.close();
+}
+
+fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
+    comptime var res = ulist;
+    inline for (ulist) |u| {
+        if (std.mem.eql(u8, u.upath, unit.upath)) return res;
+    }
+    std.debug.assert(@typeInfo(unit.self) == .Struct);
+    if (!unit.legacy) {
+        inline for (@typeInfo(unit.self).Struct.decls) |d| {
+            const iu = @field(unit.self, d.name);
+            if (@TypeOf(iu) == type and @typeInfo(iu) == .Struct and @hasDecl(iu, "em__unit")) {
+                res = mkUnitList(@as(em.UnitSpec, @field(iu, "em__unit")), res);
+            }
+        }
+    }
+    return res ++ .{unit};
+}
+
+fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
+    comptime var res: []const em.UnitSpec = &.{};
+    inline for (ulist) |u| {
+        res = .{u} ++ res;
+    }
+    return res;
 }

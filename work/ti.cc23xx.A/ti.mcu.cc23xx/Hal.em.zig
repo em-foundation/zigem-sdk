@@ -4,6 +4,7 @@ pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "ti.mcu.cc23xx/Hal",
     .self = @This(),
+    .legacy = true,
 };
 
 pub usingnamespace @import("hal/hw_memmap.zig");
