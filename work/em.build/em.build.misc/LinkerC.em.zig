@@ -1,16 +1,10 @@
 const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.UnitSpec{
-    .kind = .composite,
-    .upath = "em.lang/BuildC",
+    .kind = .module,
+    .upath = "em.build.misc/LinkerC",
     .self = @This(),
 };
-
-pub const d_ = &em__decls;
-pub var em__decls = em__unit.declare(struct {
-    max: em.Config(u32) = em.Config(u32).initV(20),
-    min: em.Config(u32) = em.Config(u32).initV(10),
-});
 
 pub fn em__generateH() void {
     genLinkerCmd();
