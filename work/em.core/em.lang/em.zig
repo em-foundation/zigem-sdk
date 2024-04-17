@@ -1,8 +1,8 @@
-pub const std = @import("std");
-pub const Unit = @import("../../.gen/units.zig");
-const _Targ = @import("../../.gen/targ.zig");
+const std = @import("std");
+const targ = @import("../../.gen/targ.zig");
+const units = @import("../../.gen/units.zig");
 
-pub const hosted = !@hasDecl(_Targ, "_em_targ");
+pub const hosted = !@hasDecl(targ, "_em_targ");
 pub const print = std.log.debug;
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -51,8 +51,8 @@ pub const UnitSpec = struct {
     imports: []const UnitSpec = &.{},
 
     pub fn getSelf(self: Self) type {
-        std.log.debug("hasDecl: {any}", .{@hasDecl(Unit, self.upath)});
-        const u = @field(Unit, self.upath);
+        std.log.debug("hasDecl: {any}", .{@hasDecl(units, self.upath)});
+        const u = @field(units, self.upath);
         const U = @TypeOf(u);
         std.log.debug("getSelf: {any}", .{u});
         return U;
@@ -63,7 +63,7 @@ pub const UnitSpec = struct {
             return Decls{};
         } else {
             //return @as(Decls, _Targ.@"gist.cc23xx/Test01");
-            return @as(Decls, @field(_Targ, self.upath));
+            return @as(Decls, @field(targ, self.upath));
         }
     }
 
@@ -79,11 +79,11 @@ pub fn getHeap() std.mem.Allocator {
 }
 
 pub fn getUnit(comptime upath: []const u8) void {
-    if (@hasDecl(Unit, upath)) {
-        const m = @field(Unit, upath);
+    if (@hasDecl(units, upath)) {
+        const m = @field(units, upath);
         const M = @TypeOf(m);
         if (@hasDecl(M, "em__unit")) {
-            const u = @field(Unit, "em__unit");
+            const u = @field(units, "em__unit");
             const U = @TypeOf(u);
             std.log.debug("typeName = {s}", .{@typeName(U)});
         }
@@ -96,6 +96,11 @@ pub fn halt() noreturn {
     while (true) {
         if (vp.* != 0) continue;
     }
+}
+
+pub fn import(comptime upath: []const u8) type {
+    std.debug.assert(@hasDecl(units, upath));
+    return @field(units, upath);
 }
 
 pub fn REG(adr: u32) *volatile u32 {

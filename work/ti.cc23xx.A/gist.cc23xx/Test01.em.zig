@@ -12,11 +12,11 @@ pub const em__unit = em.UnitSpec{
     },
 };
 
-const LinkerC = em.Unit.@"em.build.misc/LinkerC";
+const LinkerC = em.import("em.build.misc/LinkerC");
 
-const BusyWait = em.Unit.@"ti.mcu.cc23xx/BusyWait";
-const Hal = em.Unit.@"ti.mcu.cc23xx/Hal";
-const Uart = em.Unit.@"ti.mcu.cc23xx/Uart";
+const BusyWait = em.import("ti.mcu.cc23xx/BusyWait");
+const Hal = em.import("ti.mcu.cc23xx/Hal");
+const Uart = em.import("ti.mcu.cc23xx/Uart");
 
 pub const d_ = &em__decls;
 pub var em__decls = em__unit.declare(struct {
