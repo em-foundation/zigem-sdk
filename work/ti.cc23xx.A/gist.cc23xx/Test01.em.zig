@@ -25,6 +25,13 @@ pub fn em__initH() void {
 }
 
 pub fn em__run() void {
-    //c.max.set(20);
-    em.REG(1111).* = d_.max.get();
+    const REG = em.REG;
+    const pin = 14;
+    const mask = (1 << pin);
+    REG(Hal.GPIO_BASE + Hal.GPIO_O_DOESET31_0).* = mask;
+    REG(Hal.IOC_BASE + Hal.IOC_O_IOC0 + pin * 4).* &= ~Hal.IOC_IOC0_INPEN;
+    for (0..10) |_| {
+        BusyWait.wait(100000);
+        REG(Hal.GPIO_BASE + Hal.GPIO_O_DOUTTGL31_0).* = mask;
+    }
 }

@@ -16,6 +16,7 @@ TARG_OPTS=\
 	--name main \
 	-fentry=em__start \
 	-fno-lto \
+	-fno-strip \
 	-mcpu cortex_m0plus \
 	-target thumb-freestanding-eabi \
 	-O ReleaseSmall	\
@@ -27,3 +28,7 @@ targ:
 	@rm -f .out/main.out.o
 	@$(OBJDUMP) -h -d  .out/main.out >.out/main.out.dis
 	@$(OBJDUMP) -h .out/main.out
+
+load:
+	@$(TOOLS)/ti-uniflash/dslite.bat -c ../targ/etc/CC2340R5.ccxml .out/main.out
+
