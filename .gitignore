@@ -5,3 +5,4 @@ zig-out
 .gen
 .out
 .main-*.zig
+local.zon
