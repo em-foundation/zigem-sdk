@@ -1,9 +1,10 @@
 const std = @import("std");
 
-const BundlePath = @import("BundlePath.zig");
-const Fs = @import("Fs.zig");
-const Heap = @import("Heap.zig");
-const Out = @import("Out.zig");
+const BundlePath = @import("./BundlePath.zig");
+const Fs = @import("./Fs.zig");
+const Heap = @import("./Heap.zig");
+const Out = @import("./Out.zig");
+const Setup = @import("./Setup.zig");
 
 pub const Mode = enum {
     BUILD,
@@ -31,7 +32,8 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
     try BundlePath.add(work_root, bname);
-    //try genUnitBindings();
+    try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
+    try Setup.dump();
 }
 
 pub fn generate(upath: []const u8) !void {
@@ -39,8 +41,8 @@ pub fn generate(upath: []const u8) !void {
     try genTarg();
     try genUnits();
     const uname = mkUname(upath);
-    try genMainStub("host", uname);
-    try genMainStub("targ", uname);
+    try genMainStub("host", uname, "pub");
+    try genMainStub("targ", uname, "export");
 }
 
 fn genEmStub() !void {
@@ -57,21 +59,17 @@ fn genEmStub() !void {
     file.close();
 }
 
-fn genMainStub(kind: []const u8, uname: []const u8) !void {
+fn genMainStub(kind: []const u8, uname: []const u8, pre: []const u8) !void {
     const fname = try sprint(".main-{s}.zig", .{kind});
     var file = try Out.open(Fs.join(&.{ work_root, fname }));
     const fmt =
         \\const em = @import(".gen/em.zig");
         \\
-        \\export fn em__start() void {{
-        \\    main();
-        \\}}
-        \\
-        \\pub fn main() void {{
-        \\    @import("em.core/em.lang/{s}-main.zig").exec(em.import.@"{s}".em__unit) catch em.halt();
+        \\{2s} fn main() void {{
+        \\    @import("em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__unit) catch em.halt();
         \\}}
     ;
-    file.print(fmt, .{ kind, uname });
+    file.print(fmt, .{ kind, uname, pre });
     file.close();
 }
 

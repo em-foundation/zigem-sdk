@@ -27,7 +27,7 @@ targ:
 	@zig build-exe $(TARG_OPTS) --script .out/linkcmd.ld .out/startup.c .main-targ.zig
 	@rm -f .out/main.out.o
 	@$(OBJDUMP) -h -d  .out/main.out >.out/main.out.dis
-	@$(OBJDUMP) -h .out/main.out
+	#@$(OBJDUMP) -h .out/main.out
 
 load:
 	@$(TOOLS)/ti-uniflash/dslite.bat -c ../targ/etc/CC2340R5.ccxml .out/main.out
