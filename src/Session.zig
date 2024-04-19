@@ -40,8 +40,8 @@ pub fn generate(upath: []const u8) !void {
     try genTarg();
     try genUnits();
     const uname = mkUname(upath);
-    try genMainStub("host", uname, "pub");
-    try genMainStub("targ", uname, "export");
+    try genStubs("host", uname, "pub");
+    try genStubs("targ", uname, "export");
 }
 
 fn genEmStub() !void {
@@ -58,18 +58,27 @@ fn genEmStub() !void {
     file.close();
 }
 
-fn genMainStub(kind: []const u8, uname: []const u8, pre: []const u8) !void {
-    const fname = try sprint(".main-{s}.zig", .{kind});
-    var file = try Out.open(Fs.join(&.{ work_root, fname }));
+fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
+    // .main-<kind>.zig
+    const fn1 = try sprint(".main-{s}.zig", .{kind});
+    var file = try Out.open(Fs.join(&.{ work_root, fn1 }));
+    const fmt1 =
+        \\{0s} fn main() void {{ @import(".gen/{1s}.zig").exec(); }}
+    ;
+    file.print(fmt1, .{ pre, kind });
+    file.close();
+    // .gen/<kind>.zig
+    const fn2 = try sprint("{s}.zig", .{kind});
+    file = try Out.open(Fs.join(&.{ gen_root, fn2 }));
     const idx = std.mem.indexOf(u8, uname, "/");
-    const fmt =
-        \\const em = @import(".gen/em.zig");
+    const fmt2 =
+        \\const em = @import("./em.zig");
         \\
-        \\{0s} fn main() void {{
-        \\    @import("em.core/em.lang/{1s}-main.zig").exec(em.import.@"{2s}".{3s}.em__unit) catch em.halt();
+        \\pub fn exec() void {{
+        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".{2s}.em__unit) catch em.halt();
         \\}}
     ;
-    file.print(fmt, .{ pre, kind, uname[0..idx.?], uname[idx.? + 1 ..] });
+    file.print(fmt2, .{ kind, uname[0..idx.?], uname[idx.? + 1 ..] });
     file.close();
 }
 

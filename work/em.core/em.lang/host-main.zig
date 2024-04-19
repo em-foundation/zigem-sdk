@@ -13,7 +13,7 @@ pub fn exec(top: em.UnitSpec) !void {
             _ = @call(.auto, @field(u.self, "em__generateH"), .{});
         }
     }
-    try genTarg(ulist_bot);
+    try genTarg(ulist_bot, top);
 }
 
 fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
@@ -32,7 +32,7 @@ fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genTarg(ulist: []const em.UnitSpec) !void {
+fn genTarg(ulist: []const em.UnitSpec, top: em.UnitSpec) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
     const fmt =
@@ -50,7 +50,21 @@ fn genTarg(ulist: []const em.UnitSpec) !void {
             try out.print("}};\n\n", .{});
         }
     }
+    try out.print("pub fn exec() void {{\n", .{});
+    inline for (ulist) |u| {
+        if (@hasDecl(u.self, "em__startup")) {
+            try out.print("    {s}.em__startup();\n", .{mkImport(u.upath)});
+        }
+    }
+    try out.print("    {s}.em__run();\n", .{mkImport(top.upath)});
+    try out.print("    em.halt();\n", .{});
+    try out.print("}}\n", .{});
     file.close();
+}
+
+fn mkImport(upath: []const u8) []const u8 {
+    const idx = std.mem.indexOf(u8, upath, "/");
+    return em.sprint("em.import.@\"{s}\".{s}", .{ upath[0..idx.?], upath[idx.? + 1 ..] });
 }
 
 fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
