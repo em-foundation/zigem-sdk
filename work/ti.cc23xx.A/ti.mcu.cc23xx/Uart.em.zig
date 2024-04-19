@@ -6,4 +6,4 @@ pub const em__unit = em.UnitSpec{
     .self = @This(),
 };
 
-pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
+pub const Hal = em.import.@"ti.mcu.cc23xx".Hal;

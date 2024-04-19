@@ -6,12 +6,12 @@ pub const em__unit = em.UnitSpec{
     .self = @This(),
 };
 
-pub const LinkerC = em.import.@"em.build.misc/LinkerC";
-pub const StartupC = em.import.@"em.arch.arm/StartupC";
+pub const LinkerC = em.import.@"em.build.misc".LinkerC;
+pub const StartupC = em.import.@"em.arch.arm".StartupC;
 
-pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
-pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
-pub const Uart = em.import.@"ti.mcu.cc23xx/Uart";
+pub const BusyWait = em.import.@"ti.mcu.cc23xx".BusyWait;
+pub const Hal = em.import.@"ti.mcu.cc23xx".Hal;
+pub const Uart = em.import.@"ti.mcu.cc23xx".Uart;
 
 pub const d_ = &em__decls;
 pub var em__decls = em__unit.declare(struct {
@@ -26,7 +26,7 @@ pub fn em__initH() void {
 
 pub fn em__run() void {
     const REG = em.REG;
-    const pin = 14;
+    const pin = 15;
     const mask = (1 << pin);
     REG(Hal.GPIO_BASE + Hal.GPIO_O_DOESET31_0).* = mask;
     REG(Hal.IOC_BASE + Hal.IOC_O_IOC0 + pin * 4).* &= ~Hal.IOC_IOC0_INPEN;

@@ -32,8 +32,8 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
     try BundlePath.add(work_root, bname);
-    try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
-    try Setup.dump();
+    //try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
+    //try Setup.dump();
 }
 
 pub fn generate(upath: []const u8) !void {
@@ -62,14 +62,15 @@ fn genEmStub() !void {
 fn genMainStub(kind: []const u8, uname: []const u8, pre: []const u8) !void {
     const fname = try sprint(".main-{s}.zig", .{kind});
     var file = try Out.open(Fs.join(&.{ work_root, fname }));
+    const idx = std.mem.indexOf(u8, uname, "/");
     const fmt =
         \\const em = @import(".gen/em.zig");
         \\
-        \\{2s} fn main() void {{
-        \\    @import("em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__unit) catch em.halt();
+        \\{0s} fn main() void {{
+        \\    @import("em.core/em.lang/{1s}-main.zig").exec(em.import.@"{2s}".{3s}.em__unit) catch em.halt();
         \\}}
     ;
-    file.print(fmt, .{ kind, uname, pre });
+    file.print(fmt, .{ pre, kind, uname[0..idx.?], uname[idx.? + 1 ..] });
     file.close();
 }
 
@@ -79,26 +80,27 @@ fn genTarg() !void {
 }
 
 fn genUnits() !void {
-    var unit_map = std.StringHashMap([]const u8).init(Heap.get());
+    var pkg_set = std.StringArrayHashMap(void).init(Heap.get());
+    var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
     for (BundlePath.get()) |bp| {
         var iter = Fs.openDir(bp).iterate();
+        const bname = Fs.basename(bp);
         while (try iter.next()) |ent| {
             if (ent.kind != .directory) continue;
+            const pname = ent.name;
+            if (pkg_set.contains(pname)) continue;
+            try pkg_set.put(pname, {});
             var iter2 = Fs.openDir(Fs.join(&.{ bp, ent.name })).iterate();
+            file.print("const @\"{s}__T\" = struct{{\n", .{pname});
             while (try iter2.next()) |ent2| {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                const upath = try sprint("{s}/{s}", .{ ent.name, ent2.name[0..idx.?] });
-                if (!unit_map.contains(upath)) try unit_map.put(upath, Fs.basename(bp));
+                file.print("    {s}: type = @import(\"../{s}/{s}/{s}\"),\n", .{ ent2.name[0..idx.?], bname, pname, ent2.name });
             }
+            file.print("}};\n", .{});
+            file.print("pub const @\"{0s}\" = @\"{0s}__T\"{{}};\n\n", .{pname});
         }
-    }
-    // units.zig
-    var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
-    var iter = unit_map.iterator();
-    while (iter.next()) |ent| {
-        file.print("pub const @\"{0s}\" = @import(\"../{1s}/{0s}.em.zig\");\n", .{ ent.key_ptr.*, ent.value_ptr.* });
     }
     file.close();
 }
