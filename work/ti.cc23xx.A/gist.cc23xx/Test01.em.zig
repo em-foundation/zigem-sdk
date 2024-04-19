@@ -6,8 +6,7 @@ pub const em__unit = em.UnitSpec{
     .self = @This(),
 };
 
-pub const LinkerC = em.import.@"em.build.misc".LinkerC;
-pub const StartupC = em.import.@"em.arch.arm".StartupC;
+pub const BoardC = em.import.em__distro.BoardC;
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx".BusyWait;
 pub const Hal = em.import.@"ti.mcu.cc23xx".Hal;

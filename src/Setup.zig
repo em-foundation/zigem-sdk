@@ -18,3 +18,7 @@ pub fn add(spath: []const u8) !void {
 pub fn dump() !void {
     try std.json.stringify(cur_jval, .{ .whitespace = .indent_4 }, std.io.getStdOut().writer());
 }
+
+pub fn get() std.json.Value {
+    return cur_jval;
+}

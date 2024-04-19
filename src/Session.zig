@@ -32,8 +32,7 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
     try BundlePath.add(work_root, bname);
-    //try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
-    //try Setup.dump();
+    try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
 }
 
 pub fn generate(upath: []const u8) !void {
@@ -102,6 +101,8 @@ fn genUnits() !void {
             file.print("pub const @\"{0s}\" = @\"{0s}__T\"{{}};\n\n", .{pname});
         }
     }
+    const distro_pkg = Setup.get().object.get("em__distro").?.string;
+    file.print("pub const em__distro = @\"{s}\";\n", .{distro_pkg});
     file.close();
 }
 
