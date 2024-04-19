@@ -63,8 +63,7 @@ fn genTarg(ulist: []const em.UnitSpec, top: em.UnitSpec) !void {
 }
 
 fn mkImport(upath: []const u8) []const u8 {
-    const idx = std.mem.indexOf(u8, upath, "/");
-    return em.sprint("em.import.@\"{s}\".{s}", .{ upath[0..idx.?], upath[idx.? + 1 ..] });
+    return em.sprint("em.import.@\"{s}\"", .{upath});
 }
 
 fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {

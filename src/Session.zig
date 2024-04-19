@@ -70,15 +70,14 @@ fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
     // .gen/<kind>.zig
     const fn2 = try sprint("{s}.zig", .{kind});
     file = try Out.open(Fs.join(&.{ gen_root, fn2 }));
-    const idx = std.mem.indexOf(u8, uname, "/");
     const fmt2 =
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
-        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".{2s}.em__unit) catch em.halt();
+        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__unit) catch em.halt();
         \\}}
     ;
-    file.print(fmt2, .{ kind, uname[0..idx.?], uname[idx.? + 1 ..] });
+    file.print(fmt2, .{ kind, uname });
     file.close();
 }
 
@@ -88,6 +87,7 @@ fn genTarg() !void {
 }
 
 fn genUnits() !void {
+    const distro_pkg = Setup.get().object.get("em__distro").?.string;
     var pkg_set = std.StringArrayHashMap(void).init(Heap.get());
     var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
     for (BundlePath.get()) |bp| {
@@ -96,22 +96,19 @@ fn genUnits() !void {
         while (try iter.next()) |ent| {
             if (ent.kind != .directory) continue;
             const pname = ent.name;
+            const is_distro = std.mem.eql(u8, pname, distro_pkg);
             if (pkg_set.contains(pname)) continue;
             try pkg_set.put(pname, {});
             var iter2 = Fs.openDir(Fs.join(&.{ bp, ent.name })).iterate();
-            file.print("const @\"{s}__T\" = struct{{\n", .{pname});
             while (try iter2.next()) |ent2| {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                file.print("    {s}: type = @import(\"../{s}/{s}/{s}\"),\n", .{ ent2.name[0..idx.?], bname, pname, ent2.name });
+                file.print("pub const @\"{0s}/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
-            file.print("}};\n", .{});
-            file.print("pub const @\"{0s}\" = @\"{0s}__T\"{{}};\n\n", .{pname});
         }
     }
-    const distro_pkg = Setup.get().object.get("em__distro").?.string;
-    file.print("pub const em__distro = @\"{s}\";\n", .{distro_pkg});
     file.close();
 }
 

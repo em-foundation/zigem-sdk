@@ -1,8 +1,8 @@
 const em = @import("../../.gen/em.zig");
 
-pub const BoardC = em.import.em__distro.BoardC;
+pub const BoardC = em.import.@"em__distro/BoardC";
 
-pub const BusyWait = em.import.@"scratch.cc23xx".BusyWait;
+pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
 
 pub const em__unit = em.UnitSpec{
     .kind = .module,

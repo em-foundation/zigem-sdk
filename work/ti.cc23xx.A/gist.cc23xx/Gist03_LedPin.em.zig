@@ -2,29 +2,24 @@ const em = @import("../../.gen/em.zig");
 
 pub const BoardC = em.import.@"em__distro/BoardC";
 
+pub const AppLedPin = em.import.@"scratch.cc23xx/AppLedPin";
 pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
 pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
 
 pub const em__unit = em.UnitSpec{
     .kind = .module,
-    .upath = "gist.cc23xx/Gist02_Mcu",
+    .upath = "gist.cc23xx/Gist03_LedPin",
     .self = @This(),
 };
-
-const Hal: type = BoardC.Hal;
-const REG = em.REG;
 
 pub fn em__startup() void {
     Mcu.startup();
 }
 
 pub fn em__run() void {
-    const pin = 15;
-    const mask = (1 << pin);
-    REG(Hal.GPIO_BASE + Hal.GPIO_O_DOESET31_0).* = mask;
-    REG(Hal.IOC_BASE + Hal.IOC_O_IOC0 + pin * 4).* &= ~Hal.IOC_IOC0_INPEN;
+    AppLedPin.makeOutput();
     for (0..10) |_| {
         BusyWait.wait(100000);
-        REG(Hal.GPIO_BASE + Hal.GPIO_O_DOUTTGL31_0).* = mask;
+        AppLedPin.toggle();
     }
 }
