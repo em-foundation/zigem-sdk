@@ -1,15 +1,15 @@
 const em = @import("../../.gen/em.zig");
 
-pub const BoardC = em.import.@"em__distro/BoardC";
-
-pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
-pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
-
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Gist02_Mcu",
     .self = @This(),
 };
+
+pub const BoardC = em.import.@"em__distro/BoardC";
+
+pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
+pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
 
 const Hal: type = BoardC.Hal;
 const REG = em.REG;

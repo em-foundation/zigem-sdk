@@ -1,16 +1,16 @@
 const em = @import("../../.gen/em.zig");
 
-pub const BoardC = em.import.@"em__distro/BoardC";
-
-pub const AppLedPin = em.import.@"scratch.cc23xx/AppLedPin";
-pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
-pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
-
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Gist03_LedPin",
     .self = @This(),
 };
+
+pub const BoardC = em.import.@"em__distro/BoardC";
+
+pub const AppLedPin = em.import.@"scratch.cc23xx/AppLedPin";
+pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
+pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
 
 pub fn em__startup() void {
     Mcu.startup();

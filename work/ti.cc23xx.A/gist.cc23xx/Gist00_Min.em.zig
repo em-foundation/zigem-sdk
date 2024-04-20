@@ -1,12 +1,12 @@
 const em = @import("../../.gen/em.zig");
 
-pub const BoardC = em.import.@"em__distro/BoardC";
-
 pub const em__unit = em.UnitSpec{
     .kind = .module,
     .upath = "gist.cc23xx/Gist00_Min",
     .self = @This(),
 };
+
+pub const BoardC = em.import.@"em__distro/BoardC";
 
 const Hal: type = BoardC.Hal;
 const REG = em.REG;
