@@ -9,46 +9,46 @@ pub const print = std.log.debug;
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub fn Config(T: type) type {
-    if (hosted) {
-        return struct {
-            const Self = @This();
-
-            comptime _em__config: void = void{},
-            _val: ?T = null,
-
-            pub fn get(self: Self) T {
-                return self._val.?;
-            }
-
-            pub fn initH(self: *Self, v: T) void {
-                self._val = v;
-            }
-
-            pub fn print(self: Self) void {
-                std.log.debug("{any}", .{self._val});
-            }
-
-            pub fn set(self: *Self, v: T) void {
-                self._val = v;
-            }
-        };
-    } else {
-        return struct {
-            const Self = @This();
-
-            _val: ?T = null,
-
-            pub fn get(self: Self) T {
-                return self._val.?;
-            }
-
-            pub fn initV(v: T) Self {
-                return .{ ._val = v };
-            }
-        };
-    }
-}
+//pub fn Config(T: type) type {
+//    if (hosted) {
+//        return struct {
+//            const Self = @This();
+//
+//            comptime _em__config: void = void{},
+//            _val: ?T = null,
+//
+//            pub fn get(self: Self) T {
+//                return self._val.?;
+//            }
+//
+//            pub fn initH(self: *Self, v: T) void {
+//                self._val = v;
+//            }
+//
+//            pub fn print(self: Self) void {
+//                std.log.debug("{any}", .{self._val});
+//            }
+//
+//            pub fn set(self: *Self, v: T) void {
+//                self._val = v;
+//            }
+//        };
+//    } else {
+//        return struct {
+//            const Self = @This();
+//
+//            _val: ?T = null,
+//
+//            pub fn get(self: Self) T {
+//                return self._val.?;
+//            }
+//
+//            pub fn initV(v: T) Self {
+//                return .{ ._val = v };
+//            }
+//        };
+//    }
+//}
 
 pub fn _ConfigD(cn: []const u8, T: type) type {
     return struct {
