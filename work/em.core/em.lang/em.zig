@@ -15,18 +15,14 @@ pub fn Config(T: type) type {
             const Self = @This();
 
             comptime _em__config: void = void{},
-            _val: ?T,
+            _val: ?T = null,
 
             pub fn get(self: Self) T {
                 return self._val.?;
             }
 
-            pub fn init() Self {
-                return .{ ._val = null };
-            }
-
-            pub fn initV(v: T) Self {
-                return .{ ._val = v };
+            pub fn initH(self: *Self, v: T) void {
+                self._val = v;
             }
 
             pub fn print(self: Self) void {
@@ -41,7 +37,7 @@ pub fn Config(T: type) type {
         return struct {
             const Self = @This();
 
-            _val: ?T,
+            _val: ?T = null,
 
             pub fn get(self: Self) T {
                 return self._val.?;
@@ -52,6 +48,58 @@ pub fn Config(T: type) type {
             }
         };
     }
+}
+
+pub fn _ConfigD(cn: []const u8, T: type) type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__config = {};
+        const _name = cn;
+        var _val: ?T = null;
+
+        pub fn get(_: Self) T {
+            return _val.?;
+        }
+
+        pub fn initH(_: Self, v: T) void {
+            _val = v;
+        }
+
+        pub fn nameH(_: Self) []const u8 {
+            return _name;
+        }
+
+        pub fn print(_: Self) void {
+            std.log.debug("{any}", .{_val});
+        }
+
+        pub fn set(_: Self, v: T) void {
+            _val = v;
+        }
+    };
+}
+
+pub fn _ConfigV(T: type, v: T) type {
+    return struct {
+        const Self = @This();
+        const _val: T = v;
+        pub fn get(_: Self) T {
+            return _val;
+        }
+    };
+}
+
+pub fn _Config(T: type, v: T) type {
+    return struct {
+        const Self = @This();
+
+        _val: T = v,
+
+        pub fn get(self: Self) T {
+            return self._val;
+        }
+    };
 }
 
 pub const UnitKind = enum {
@@ -78,7 +126,22 @@ pub const UnitSpec = struct {
         }
     }
 
+    pub fn declareConfig(self: Self, name: []const u8, T: type) type {
+        const dname = self.upath ++ "__" ++ name;
+        if (hosted) {
+            return _ConfigD(dname, T);
+        } else {
+            return @as(type, @field(targ, dname));
+        }
+    }
+
     pub fn import(_: Self, _: []const u8) type {}
+};
+
+pub const DeclKind = enum {
+    config,
+    proxy,
+    variable,
 };
 
 pub fn fail() noreturn {

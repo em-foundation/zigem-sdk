@@ -20,6 +20,23 @@ pub fn exec(top: em.UnitSpec) !void {
 }
 
 fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
+    if (unit.legacy) return;
+    const ti = @typeInfo(unit.self);
+    inline for (ti.Struct.decls) |d| {
+        const decl = @field(unit.self, d.name);
+        const Decl = @TypeOf(decl);
+        const ti_decl = @typeInfo(Decl);
+        if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
+            const tn_decl = @typeName(Decl);
+            const idx = std.mem.indexOf(u8, tn_decl, ",").?;
+            const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
+            try out.print("pub const @\"{s}\" = em._ConfigV({s}, {any});\n", .{ decl.nameH(), tn, decl.get() });
+            em.print("{s}: {s} = {any}", .{ decl.nameH(), tn, decl.get() });
+        }
+    }
+}
+
+fn genDeclsOld(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
     if (!@hasDecl(unit.self, "em__decls")) return;
     const decl_struct = @field(unit.self, "em__decls");
     const Decl_Struct = @TypeOf(decl_struct);
@@ -48,9 +65,9 @@ fn genTarg(ulist: []const em.UnitSpec, top: em.UnitSpec) !void {
     try out.print(fmt, .{});
     inline for (ulist) |u| {
         if (u.kind == .module) {
-            try out.print("pub var @\"{s}\" = .{{\n", .{u.upath});
+            try out.print("// {s}\n", .{u.upath});
             try genDecls(u, out);
-            try out.print("}};\n\n", .{});
+            try out.print("\n", .{});
         }
     }
     try out.print("pub fn exec() void {{\n", .{});
@@ -84,6 +101,19 @@ fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) [
         }
     }
     return res ++ .{unit};
+}
+
+fn printDecls(unit: em.UnitSpec) !void {
+    const ti = @typeInfo(unit.self);
+    inline for (ti.Struct.decls) |d| {
+        const decl = @field(unit.self, d.name);
+        const Decl = @TypeOf(decl);
+        const ti_decl = @typeInfo(Decl);
+        if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
+            const tn = @typeName(Decl);
+            em.print("{s}: {s} = {any}", .{ d.name, tn, decl.get() });
+        }
+    }
 }
 
 fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {

@@ -8,8 +8,12 @@ pub const em__unit = em.UnitSpec{
 
 pub const d_ = &em__decls;
 pub var em__decls = em__unit.declare(struct {
-    scalar: em.Config(u8) = em.Config(u8).initV(6),
+    scalar: em.Config(u8) = em.Config(u8){},
 });
+
+pub fn em__initH() void {
+    d_.scalar.initH(6);
+}
 
 pub fn wait(usecs: u32) void {
     if (usecs == 0) return;
