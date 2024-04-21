@@ -1,18 +1,21 @@
 const em = @import("../../.gen/em.zig");
 const std = @import("std");
 
+inline fn callAll(comptime fname: []const u8, ulist: []const em.UnitSpec) void {
+    inline for (ulist) |u| {
+        if (@hasDecl(u.self, fname)) {
+            _ = @call(.auto, @field(u.self, fname), .{});
+        }
+    }
+}
+
 pub fn exec(top: em.UnitSpec) !void {
     const ulist_bot = mkUnitList(top, &.{});
-    inline for (ulist_bot) |u| {
-        if (@hasDecl(u.self, "em__initH")) {
-            _ = @call(.auto, @field(u.self, "em__initH"), .{});
-        }
-    }
-    inline for (ulist_bot) |u| {
-        if (@hasDecl(u.self, "em__generateH")) {
-            _ = @call(.auto, @field(u.self, "em__generateH"), .{});
-        }
-    }
+    const ulist_top = revUnitList(ulist_bot);
+    callAll("em__initH", ulist_bot);
+    callAll("em__configureH", ulist_top);
+    callAll("em__constructH", ulist_top);
+    callAll("em__generateH", ulist_bot);
     try genTarg(ulist_bot, top);
 }
 

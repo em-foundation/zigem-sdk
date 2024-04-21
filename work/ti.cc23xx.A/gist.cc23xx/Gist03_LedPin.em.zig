@@ -12,6 +12,10 @@ pub const AppLedPin = em.import.@"scratch.cc23xx/AppLedPin";
 pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
 pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
 
+pub fn em__configureH() void {
+    AppLedPin.d_.pin.set(15);
+}
+
 pub fn em__startup() void {
     Mcu.startup();
 }

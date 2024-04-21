@@ -10,38 +10,55 @@ pub const print = std.log.debug;
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
 pub fn Config(T: type) type {
-    return struct {
-        const Self = @This();
+    if (hosted) {
+        return struct {
+            const Self = @This();
 
-        comptime _em__config: void = void{},
-        _val: ?T,
+            comptime _em__config: void = void{},
+            _val: ?T,
 
-        pub fn get(self: Self) T {
-            return self._val.?;
-        }
+            pub fn get(self: Self) T {
+                return self._val.?;
+            }
 
-        pub fn init() Self {
-            return .{ ._val = null };
-        }
+            pub fn init() Self {
+                return .{ ._val = null };
+            }
 
-        pub fn initV(v: T) Self {
-            return .{ ._val = v };
-        }
+            pub fn initV(v: T) Self {
+                return .{ ._val = v };
+            }
 
-        pub fn print(self: Self) void {
-            std.log.debug("{any}", .{self._val});
-        }
+            pub fn print(self: Self) void {
+                std.log.debug("{any}", .{self._val});
+            }
 
-        pub fn set(self: *Self, v: T) void {
-            self._val = v;
-        }
-    };
+            pub fn set(self: *Self, v: T) void {
+                self._val = v;
+            }
+        };
+    } else {
+        return struct {
+            const Self = @This();
+
+            _val: ?T,
+
+            pub fn get(self: Self) T {
+                return self._val.?;
+            }
+
+            pub fn initV(v: T) Self {
+                return .{ ._val = v };
+            }
+        };
+    }
 }
 
 pub const UnitKind = enum {
     composite,
     interface,
     module,
+    template,
 };
 
 pub const UnitSpec = struct {
