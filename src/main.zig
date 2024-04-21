@@ -22,7 +22,7 @@ var bundle_opt = cli.Option{
 var unit_opt = cli.Option{
     .long_name = "unit",
     .short_alias = 'u',
-    .help = "Specify the unit path",
+    .help = "Workspace-relative path to <unit>.em.zig file",
     .required = true,
     .value_name = "UPATH",
     .value_ref = cli.mkRef(&params.unit),
@@ -31,7 +31,6 @@ var unit_opt = cli.Option{
 var build_cmd = cli.Command{
     .name = "build",
     .options = &.{
-        &bundle_opt,
         &unit_opt,
     },
     .target = cli.CommandTarget{
@@ -64,8 +63,12 @@ const app = &cli.App{
 };
 
 fn doBuild() !void {
-    try Session.activate(params.bundle, .BUILD, null);
-    try Session.generate(params.unit);
+    const path = params.unit;
+    const idx = std.mem.indexOf(u8, path, "/").?;
+    const bn = path[0..idx];
+    const un = path[idx + 1 ..];
+    try Session.activate(bn, .BUILD, null);
+    try Session.generate(un);
 }
 
 fn doClean() !void {
