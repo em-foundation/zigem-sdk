@@ -22,11 +22,9 @@ pub fn exec(top: em.UnitSpec) !void {
 fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
     if (unit.legacy) return;
     const ti = @typeInfo(unit.self);
-    em.print("unit {s}:", .{unit.upath});
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
         if (std.mem.startsWith(u8, d.name, "EM__")) break;
-        em.print("    {s}", .{d.name});
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
         if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
