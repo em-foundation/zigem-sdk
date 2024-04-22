@@ -9,57 +9,22 @@ pub const print = std.log.debug;
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-//pub fn Config(T: type) type {
-//    if (hosted) {
-//        return struct {
-//            const Self = @This();
-//
-//            comptime _em__config: void = void{},
-//            _val: ?T = null,
-//
-//            pub fn get(self: Self) T {
-//                return self._val.?;
-//            }
-//
-//            pub fn initH(self: *Self, v: T) void {
-//                self._val = v;
-//            }
-//
-//            pub fn print(self: Self) void {
-//                std.log.debug("{any}", .{self._val});
-//            }
-//
-//            pub fn set(self: *Self, v: T) void {
-//                self._val = v;
-//            }
-//        };
-//    } else {
-//        return struct {
-//            const Self = @This();
-//
-//            _val: ?T = null,
-//
-//            pub fn get(self: Self) T {
-//                return self._val.?;
-//            }
-//
-//            pub fn initV(v: T) Self {
-//                return .{ ._val = v };
-//            }
-//        };
-//    }
-//}
-
 pub fn _ConfigD(cn: []const u8, T: type) type {
     return struct {
         const Self = @This();
 
+        const S = struct {
+            v: T,
+        };
+
+        const s = std.mem.zeroInit(S, .{});
+
         pub const _em__config = {};
         const _name = cn;
-        var _val: ?T = null;
+        var _val: T = s.v;
 
         pub fn get(_: Self) T {
-            return _val.?;
+            return _val;
         }
 
         pub fn initH(_: Self, v: T) void {
@@ -77,6 +42,10 @@ pub fn _ConfigD(cn: []const u8, T: type) type {
         pub fn set(_: Self, v: T) void {
             _val = v;
         }
+
+        pub fn unwrap(_: Self) T {
+            return s.v;
+        }
     };
 }
 
@@ -84,7 +53,7 @@ pub fn _ConfigV(T: type, v: T) type {
     return struct {
         const Self = @This();
         const _val: T = v;
-        pub fn get(_: Self) T {
+        pub fn unwrap(_: Self) T {
             return _val;
         }
     };
@@ -116,15 +85,6 @@ pub const UnitSpec = struct {
     upath: []const u8,
     self: type,
     legacy: bool = false,
-
-    pub fn declare(self: Self, Decls: type) Decls {
-        if (hosted) {
-            return Decls{};
-        } else {
-            //return @as(Decls, _Targ.@"gist.cc23xx/Test01");
-            return @as(Decls, @field(targ, self.upath));
-        }
-    }
 
     pub fn declareConfig(self: Self, name: []const u8, T: type) type {
         const dname = self.upath ++ "__" ++ name;

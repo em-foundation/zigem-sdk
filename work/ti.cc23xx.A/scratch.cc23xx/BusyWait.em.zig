@@ -6,17 +6,19 @@ pub const em__unit = em.UnitSpec{
     .self = @This(),
 };
 
-pub var scalar = em__unit.declareConfig("scalar", u8){};
+pub var c_scalar = em__unit.declareConfig("scalar", u8){};
 
 pub fn em__initH() void {
-    scalar.initH(6);
+    c_scalar.initH(6);
 }
+
+const scalar = c_scalar.unwrap();
 
 pub fn wait(usecs: u32) void {
     if (usecs == 0) return;
     var dummy: u32 = undefined;
     const p: *volatile u32 = &dummy;
-    for (0..(usecs * scalar.get())) |_| {
+    for (0..(usecs * scalar)) |_| {
         p.* = 0;
     }
 }
