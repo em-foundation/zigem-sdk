@@ -8,9 +8,13 @@ pub const em__unit = em.UnitSpec{
 
 pub var c_scalar = em__unit.declareConfig("scalar", u8){};
 
+pub const EM__HOST = {};
+
 pub fn em__initH() void {
     c_scalar.initH(6);
 }
+
+pub const EM__TARG = {};
 
 const scalar = c_scalar.unwrap();
 

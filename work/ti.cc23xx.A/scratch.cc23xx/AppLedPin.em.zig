@@ -10,9 +10,13 @@ pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
 
 pub var c_pin = em__unit.declareConfig("pin", i16){};
 
+pub const EM__HOST = {};
+
 pub fn em__initH() void {
     c_pin.initH(-1);
 }
+
+pub const EM__TARG = {};
 
 const REG = em.REG;
 
