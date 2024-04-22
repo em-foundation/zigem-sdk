@@ -33,7 +33,7 @@ fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
             const tn_decl = @typeName(Decl);
             const idx = std.mem.indexOf(u8, tn_decl, ",").?;
             const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
-            try out.print("pub const @\"{s}\" = em._ConfigV({s}, {any});\n", .{ decl.nameH(), tn, decl.get() });
+            try out.print("pub const @\"{s}\": {s} = {any};\n", .{ decl.nameH(), tn, decl.get() });
         }
     }
 }

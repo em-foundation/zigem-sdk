@@ -59,18 +59,6 @@ pub fn _ConfigV(T: type, v: T) type {
     };
 }
 
-pub fn _Config(T: type, v: T) type {
-    return struct {
-        const Self = @This();
-
-        _val: T = v,
-
-        pub fn get(self: Self) T {
-            return self._val;
-        }
-    };
-}
-
 pub const UnitKind = enum {
     composite,
     interface,
@@ -91,7 +79,7 @@ pub const UnitSpec = struct {
         if (hosted) {
             return _ConfigD(dname, T);
         } else {
-            return @as(type, @field(targ, dname));
+            return _ConfigV(T, @field(targ, dname));
         }
     }
 
