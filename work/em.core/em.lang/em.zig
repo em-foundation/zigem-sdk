@@ -36,7 +36,7 @@ pub fn _ConfigD(cn: []const u8, T: type) type {
         }
 
         pub fn print(_: Self) void {
-            std.log.debug("{any}", .{_val});
+            std.log.debug("{s} = {any}", .{ _name, _val });
         }
 
         pub fn set(_: Self, v: T) void {
