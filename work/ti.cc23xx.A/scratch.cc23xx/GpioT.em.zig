@@ -1,10 +1,10 @@
 const em = @import("../../.gen/em.zig");
 
-//pub const em__unit = em.UnitSpec{
-//    .kind = .template,
-//    .upath = "scratch.cc23xx/GpioT",
-//    .self = @This(),
-//};
+pub const em__unit = em.UnitSpec{
+    .kind = .template,
+    .upath = "scratch.cc23xx/GpioT",
+    .self = @This(),
+};
 
 pub fn em__Generate(comptime name: []const u8) type {
     return struct {
@@ -16,7 +16,7 @@ pub fn em__Generate(comptime name: []const u8) type {
 
         pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
 
-        pub const c_pin = em__unit.declareConfig("pin", i16);
+        pub const c_pin = @This().em__unit.declareConfig("pin", i16);
 
         pub const EM__HOST = {};
 

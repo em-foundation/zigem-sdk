@@ -2,7 +2,7 @@ const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.UnitSpec{
     .kind = .module,
-    .upath = "gist.cc23xx/Gist03_LedPin",
+    .upath = "gist.cc23xx/Gist04_Gpio",
     .self = @This(),
 };
 
