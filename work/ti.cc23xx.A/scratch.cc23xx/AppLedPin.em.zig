@@ -8,7 +8,7 @@ pub const em__unit = em.UnitSpec{
 
 pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
 
-pub var c_pin = em__unit.declareConfig("pin", i16){};
+pub var c_pin = em__unit.declareConfig("pin", i16);
 
 pub const EM__HOST = {};
 

@@ -42,10 +42,6 @@ pub fn _ConfigD(cn: []const u8, T: type) type {
         pub fn set(_: Self, v: T) void {
             _val = v;
         }
-
-        pub fn unwrap(_: Self) T {
-            return s.v;
-        }
     };
 }
 
@@ -74,12 +70,16 @@ pub const UnitSpec = struct {
     self: type,
     legacy: bool = false,
 
-    pub fn declareConfig(self: Self, name: []const u8, T: type) type {
-        const dname = self.upath ++ "__" ++ name;
+    fn declPath(self: Self, comptime name: []const u8) []const u8 {
+        return self.upath ++ "__" ++ name;
+    }
+
+    pub fn declareConfig(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.declPath(name), T) else _ConfigV(T, @field(targ, self.declPath(name))) {
+        const dname = self.declPath(name);
         if (hosted) {
-            return _ConfigD(dname, T);
+            return _ConfigD(dname, T){};
         } else {
-            return _ConfigV(T, @field(targ, dname));
+            return _ConfigV(T, @field(targ, dname)){};
         }
     }
 
