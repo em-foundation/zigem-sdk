@@ -11,7 +11,7 @@ pub var c_scalar = em__unit.declareConfig("scalar", u8);
 pub const EM__HOST = {};
 
 pub fn em__initH() void {
-    c_scalar.initH(6);
+    c_scalar.init(6);
 }
 
 pub const EM__TARG = {};

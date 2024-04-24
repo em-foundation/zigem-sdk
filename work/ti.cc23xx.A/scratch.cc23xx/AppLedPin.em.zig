@@ -13,7 +13,7 @@ pub var c_pin = em__unit.declareConfig("pin", i16);
 pub const EM__HOST = {};
 
 pub fn em__initH() void {
-    c_pin.initH(-1);
+    c_pin.init(-1);
 }
 
 pub const EM__TARG = {};

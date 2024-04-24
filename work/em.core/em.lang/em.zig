@@ -9,7 +9,7 @@ pub const print = std.log.debug;
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub fn _ConfigD(cn: []const u8, T: type) type {
+fn _ConfigD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
 
@@ -20,23 +20,23 @@ pub fn _ConfigD(cn: []const u8, T: type) type {
         const s = std.mem.zeroInit(S, .{});
 
         pub const _em__config = {};
-        const _name = cn;
+        const _dpath = dp;
         var _val: T = s.v;
 
         pub fn get(_: Self) T {
             return _val;
         }
 
-        pub fn initH(_: Self, v: T) void {
+        pub fn init(_: Self, v: T) void {
             _val = v;
         }
 
-        pub fn nameH(_: Self) []const u8 {
-            return _name;
+        pub fn dpath(_: Self) []const u8 {
+            return _dpath;
         }
 
         pub fn print(_: Self) void {
-            std.log.debug("{s} = {any}", .{ _name, _val });
+            std.log.debug("{s} = {any}", .{ _dpath, _val });
         }
 
         pub fn set(_: Self, v: T) void {
@@ -49,7 +49,7 @@ pub fn _ConfigD(cn: []const u8, T: type) type {
     };
 }
 
-pub fn _ConfigV(T: type, v: T) type {
+fn _ConfigV(T: type, v: T) type {
     return struct {
         const Self = @This();
         const _val: T = v;
