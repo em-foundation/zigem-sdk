@@ -74,17 +74,21 @@ pub const UnitSpec = struct {
     self: type,
     legacy: bool = false,
 
-    fn declPath(self: Self, comptime name: []const u8) []const u8 {
+    fn extendPath(self: Self, comptime name: []const u8) []const u8 {
         return self.upath ++ "__" ++ name;
     }
 
-    pub fn declareConfig(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.declPath(name), T) else _ConfigV(T, @field(targ, self.declPath(name))) {
-        const dname = self.declPath(name);
+    pub fn declareConfig(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
+        const dname = self.extendPath(name);
         if (hosted) {
             return _ConfigD(dname, T){};
         } else {
             return _ConfigV(T, @field(targ, dname)){};
         }
+    }
+
+    pub fn Generate(self: Self, name: []const u8, comptime Template: type) type {
+        return Template.em__Generate(self.extendPath(name));
     }
 
     pub fn import(_: Self, _: []const u8) type {}
