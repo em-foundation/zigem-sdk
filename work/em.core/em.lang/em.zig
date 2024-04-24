@@ -42,6 +42,10 @@ pub fn _ConfigD(cn: []const u8, T: type) type {
         pub fn set(_: Self, v: T) void {
             _val = v;
         }
+
+        pub fn unwrap(_: Self) T {
+            return s.v;
+        }
     };
 }
 

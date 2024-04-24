@@ -6,7 +6,7 @@ pub const em__unit = em.UnitSpec{
     .self = @This(),
 };
 
-pub var c_scalar = em__unit.declareConfig("scalar", u8){};
+pub var c_scalar = em__unit.declareConfig("scalar", u8);
 
 pub const EM__HOST = {};
 
