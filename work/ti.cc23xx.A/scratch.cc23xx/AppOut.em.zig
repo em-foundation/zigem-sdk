@@ -2,8 +2,8 @@ const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.Module(@This(), .{});
 
-pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
-pub const TxPin = em__unit.Generate("AppLedPin", em.import.@"scratch.cc23xx/GpioT");
+pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";
+pub const TxPin = em__unit.Generate("AppLedPin", em.Import.@"scratch.cc23xx/GpioT");
 
 pub fn em__configureH() void {
     TxPin.c_pin.set(20);

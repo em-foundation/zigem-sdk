@@ -74,7 +74,7 @@ fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
-        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__unit) catch em.halt();
+        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.Import.@"{1s}".em__unit) catch em.halt();
         \\}}
     ;
     file.print(fmt2, .{ kind, uname });
@@ -90,7 +90,7 @@ fn genUnits() !void {
     const distro_pkg = Setup.get().object.get("em__distro").?.string;
     var pkg_set = std.StringArrayHashMap(void).init(Heap.get());
     var type_map = std.StringArrayHashMap([]const u8).init(Heap.get());
-    var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
+    var file = try Out.open(Fs.join(&.{ gen_root, "imports.zig" }));
     for (BundlePath.get()) |bp| {
         var iter = Fs.openDir(bp).iterate();
         const bname = Fs.basename(bp);
@@ -120,6 +120,15 @@ fn genUnits() !void {
         const un = type_map.get(tn).?;
         file.print("pub const @\"{s}\" = \"{s}\";\n", .{ tn, un });
     }
+    file.close();
+    //
+    file = try Out.open(Fs.join(&.{ gen_root, "unit_names.zig" }));
+    file.print("pub const UnitName = enum{{\n", .{});
+    for (type_map.keys()) |tn| {
+        const un = type_map.get(tn).?;
+        file.print("    @\"{s}\",\n", .{un});
+    }
+    file.print("}};\n", .{});
     file.close();
 }
 

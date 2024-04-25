@@ -2,10 +2,10 @@ const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.Module(@This(), .{});
 
-pub const BoardC = em.import.@"em__distro/BoardC";
+pub const BoardC = em.Import.@"em__distro/BoardC";
 
-pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
-pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
+pub const BusyWait = em.Import.@"scratch.cc23xx/BusyWait";
+pub const Mcu = em.Import.@"scratch.cc23xx/Mcu";
 
 const Hal: type = BoardC.Hal;
 const REG = em.REG;

@@ -86,7 +86,7 @@ fn genTarg(ulist: []const em.Unit, top: em.Unit) !void {
 }
 
 fn mkImport(upath: []const u8) []const u8 {
-    return em.sprint("em.import.@\"{s}\"", .{upath});
+    return em.sprint("em.Import.@\"{s}\"", .{upath});
 }
 
 fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {

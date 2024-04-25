@@ -2,7 +2,7 @@ const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.Module(@This(), .{});
 
-pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
+pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";
 
 pub const c_pin = em__unit.declareConfig("pin", i16);
 

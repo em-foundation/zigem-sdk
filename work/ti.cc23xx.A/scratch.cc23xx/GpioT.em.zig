@@ -9,7 +9,7 @@ pub fn em__Generate(comptime name: []const u8) type {
             .{ .generated = true, .name = name },
         );
 
-        pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
+        pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";
 
         pub const c_pin = @This().em__unit.declareConfig("pin", i16);
 

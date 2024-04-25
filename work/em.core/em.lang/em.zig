@@ -1,6 +1,8 @@
 pub const std = @import("std");
 
-pub const import = @import("../../.gen/units.zig");
+pub const Import = @import("../../.gen/imports.zig");
+
+pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
 
 const targ = @import("../../.gen/targ.zig");
 const type_map = @import("../../.gen/type_map.zig");
