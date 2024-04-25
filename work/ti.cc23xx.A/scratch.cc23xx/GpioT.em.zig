@@ -1,19 +1,13 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.Unit{
-    .kind = .template,
-    .upath = "scratch.cc23xx/GpioT",
-    .self = @This(),
-};
+pub const em__unit = em.Template(@This(), .{});
 
 pub fn em__Generate(comptime name: []const u8) type {
     return struct {
-        pub const em__unit = em.Unit{
-            .kind = .module,
-            .upath = name,
-            .self = @This(),
-            .generated = true,
-        };
+        pub const em__unit = em.Module(
+            @This(),
+            .{ .generated = true, .name = name },
+        );
 
         pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
 

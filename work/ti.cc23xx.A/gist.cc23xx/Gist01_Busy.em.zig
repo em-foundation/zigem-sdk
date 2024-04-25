@@ -1,10 +1,7 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.Unit{
-    .kind = .module,
-    .upath = "gist.cc23xx/Gist01_Busy",
-    .self = @This(),
-};
+pub const em__unit = em.Module(@This(), .{});
+
 pub const BoardC = em.import.@"em__distro/BoardC";
 
 pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";

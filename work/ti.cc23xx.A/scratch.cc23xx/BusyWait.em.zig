@@ -1,10 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.Unit{
-    .kind = .module,
-    .upath = "scratch.cc23xx/BusyWait",
-    .self = @This(),
-};
+pub const em__unit = em.Module(@This(), .{});
 
 pub const c_scalar = em__unit.declareConfig("scalar", u8);
 

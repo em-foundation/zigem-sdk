@@ -95,8 +95,8 @@ pub const Unit = struct {
         }
     }
 
-    pub fn Generate(self: Self, name: []const u8, comptime Template: type) type {
-        return Template.em__Generate(self.extendPath(name));
+    pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
+        return Template_Unit.em__Generate(self.extendPath(as_name));
     }
 
     pub fn import(_: Self, _: []const u8) type {}
@@ -106,15 +106,20 @@ pub const Unit = struct {
     }
 };
 
-pub fn declareUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
-    const un = if (opts.name) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
-    return Unit{
-        .generated = opts.generated,
-        .kind = kind,
-        .legacy = opts.legacy,
-        .self = This,
-        .upath = un,
-    };
+pub fn Composite(This: type, opts: UnitOpts) Unit {
+    return mkUnit(This, .composite, opts);
+}
+
+pub fn Interface(This: type, opts: UnitOpts) Unit {
+    return mkUnit(This, .interface, opts);
+}
+
+pub fn Module(This: type, opts: UnitOpts) Unit {
+    return mkUnit(This, .module, opts);
+}
+
+pub fn Template(This: type, opts: UnitOpts) Unit {
+    return mkUnit(This, .template, opts);
 }
 
 pub fn fail() noreturn {
@@ -140,6 +145,17 @@ pub fn halt() noreturn {
 //    std.debug.assert(@hasDecl(U, "em__unit"));
 //    return U;
 //}
+
+fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
+    const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
+    return Unit{
+        .generated = opts.generated,
+        .kind = kind,
+        .legacy = opts.legacy,
+        .self = This,
+        .upath = un,
+    };
+}
 
 pub fn REG(adr: u32) *volatile u32 {
     const reg: *volatile u32 = @ptrFromInt(adr);

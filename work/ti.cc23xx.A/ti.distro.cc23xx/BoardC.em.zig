@@ -1,10 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.Unit{
-    .kind = .composite,
-    .upath = "ti.distro.cc23xx/BoardC",
-    .self = @This(),
-};
+pub const em__unit = em.Composite(@This(), .{});
 
 pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
 

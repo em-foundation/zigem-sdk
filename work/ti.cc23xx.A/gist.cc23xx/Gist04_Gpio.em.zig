@@ -1,5 +1,7 @@
 const em = @import("../../.gen/em.zig");
 
+pub const em__unit = em.Module(@This(), .{});
+
 pub const BoardC = em.import.@"em__distro/BoardC";
 
 pub const AppLedPin = em__unit.Generate(
@@ -8,12 +10,6 @@ pub const AppLedPin = em__unit.Generate(
 );
 pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
 pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
-
-pub const em__unit = em.Unit{
-    .kind = .module,
-    .upath = "gist.cc23xx/Gist04_Gpio",
-    .self = @This(),
-};
 
 pub fn em__configureH() void {
     AppLedPin.c_pin.set(15);

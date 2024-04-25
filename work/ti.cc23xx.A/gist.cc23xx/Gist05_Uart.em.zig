@@ -1,10 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.declareUnit(
-    @This(),
-    .module,
-    .{},
-);
+pub const em__unit = em.Module(@This(), .{});
 
 pub const BoardC = em.import.@"em__distro/BoardC";
 

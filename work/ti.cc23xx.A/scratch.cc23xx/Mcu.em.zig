@@ -1,10 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.Unit{
-    .kind = .module,
-    .upath = "scratch.cc23xx/Mcu",
-    .self = @This(),
-};
+pub const em__unit = em.Module(@This(), .{});
 
 pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";
 

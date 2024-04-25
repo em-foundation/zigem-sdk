@@ -1,10 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.Unit{
-    .kind = .composite,
-    .upath = "em.arch.arm/StartupC",
-    .self = @This(),
-};
+pub const em__unit = em.Composite(@This(), .{});
 
 pub fn em__generateH() void {
     genArmStartup();
