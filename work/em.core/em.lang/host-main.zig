@@ -3,7 +3,7 @@ const std = @import("std");
 
 const type_map = @import("../../.gen/type_map.zig");
 
-inline fn callAll(comptime fname: []const u8, ulist: []const em.UnitSpec) void {
+inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit) void {
     inline for (ulist) |u| {
         if (@hasDecl(u.self, fname)) {
             _ = @call(.auto, @field(u.self, fname), .{});
@@ -11,7 +11,7 @@ inline fn callAll(comptime fname: []const u8, ulist: []const em.UnitSpec) void {
     }
 }
 
-pub fn exec(top: em.UnitSpec) !void {
+pub fn exec(top: em.Unit) !void {
     const ulist_bot = mkUnitList(top, &.{});
     const ulist_top = revUnitList(ulist_bot);
     try validate(ulist_bot);
@@ -22,7 +22,7 @@ pub fn exec(top: em.UnitSpec) !void {
     try genTarg(ulist_bot, top);
 }
 
-fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
+fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     if (unit.legacy) return;
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
@@ -39,7 +39,7 @@ fn genDecls(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genDeclsOld(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
+fn genDeclsOld(unit: em.Unit, out: std.fs.File.Writer) !void {
     if (!@hasDecl(unit.self, "em__decls")) return;
     const decl_struct = @field(unit.self, "em__decls");
     const Decl_Struct = @TypeOf(decl_struct);
@@ -55,7 +55,7 @@ fn genDeclsOld(unit: em.UnitSpec, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genTarg(ulist: []const em.UnitSpec, top: em.UnitSpec) !void {
+fn genTarg(ulist: []const em.Unit, top: em.Unit) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
     const fmt =
@@ -89,7 +89,7 @@ fn mkImport(upath: []const u8) []const u8 {
     return em.sprint("em.import.@\"{s}\"", .{upath});
 }
 
-fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
+fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {
     comptime var res = ulist;
     inline for (ulist) |u| {
         if (std.mem.eql(u8, u.upath, unit.upath)) return res;
@@ -99,14 +99,14 @@ fn mkUnitList(comptime unit: em.UnitSpec, comptime ulist: []const em.UnitSpec) [
         inline for (@typeInfo(unit.self).Struct.decls) |d| {
             const iu = @field(unit.self, d.name);
             if (@TypeOf(iu) == type and @typeInfo(iu) == .Struct and @hasDecl(iu, "em__unit")) {
-                res = mkUnitList(@as(em.UnitSpec, @field(iu, "em__unit")), res);
+                res = mkUnitList(@as(em.Unit, @field(iu, "em__unit")), res);
             }
         }
     }
     return res ++ .{unit};
 }
 
-fn printDecls(unit: em.UnitSpec) !void {
+fn printDecls(unit: em.Unit) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
@@ -119,15 +119,15 @@ fn printDecls(unit: em.UnitSpec) !void {
     }
 }
 
-fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
-    comptime var res: []const em.UnitSpec = &.{};
+fn revUnitList(comptime ulist: []const em.Unit) []const em.Unit {
+    comptime var res: []const em.Unit = &.{};
     inline for (ulist) |u| {
         res = .{u} ++ res;
     }
     return res;
 }
 
-fn validate(comptime ulist: []const em.UnitSpec) !void {
+fn validate(comptime ulist: []const em.Unit) !void {
     inline for (ulist) |u| {
         if (!u.generated) {
             const un = @as([]const u8, @field(type_map, @typeName(u.self)));

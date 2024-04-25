@@ -9,7 +9,7 @@ pub const AppLedPin = em__unit.Generate(
 pub const BusyWait = em.import.@"scratch.cc23xx/BusyWait";
 pub const Mcu = em.import.@"scratch.cc23xx/Mcu";
 
-pub const em__unit = em.UnitSpec{
+pub const em__unit = em.Unit{
     .kind = .module,
     .upath = "gist.cc23xx/Gist04_Gpio",
     .self = @This(),

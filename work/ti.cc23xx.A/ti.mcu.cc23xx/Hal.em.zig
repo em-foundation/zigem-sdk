@@ -1,6 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.UnitSpec{
+pub const em__unit = em.Unit{
     .kind = .module,
     .upath = "ti.mcu.cc23xx/Hal",
     .self = @This(),

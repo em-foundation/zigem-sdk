@@ -73,7 +73,7 @@ pub const UnitOpts = struct {
     generated: bool = false,
 };
 
-pub const UnitSpec = struct {
+pub const Unit = struct {
     const Self = @This();
 
     kind: UnitKind,
@@ -106,9 +106,9 @@ pub const UnitSpec = struct {
     }
 };
 
-pub fn declareUnit(This: type, kind: UnitKind, opts: UnitOpts) UnitSpec {
+pub fn declareUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
-    return UnitSpec{
+    return Unit{
         .generated = opts.generated,
         .kind = kind,
         .legacy = opts.legacy,

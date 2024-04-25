@@ -1,6 +1,6 @@
 const em = @import("../../.gen/em.zig");
 
-pub const em__unit = em.UnitSpec{
+pub const em__unit = em.Unit{
     .kind = .template,
     .upath = "scratch.cc23xx/GpioT",
     .self = @This(),
@@ -8,7 +8,7 @@ pub const em__unit = em.UnitSpec{
 
 pub fn em__Generate(comptime name: []const u8) type {
     return struct {
-        pub const em__unit = em.UnitSpec{
+        pub const em__unit = em.Unit{
             .kind = .module,
             .upath = name,
             .self = @This(),
