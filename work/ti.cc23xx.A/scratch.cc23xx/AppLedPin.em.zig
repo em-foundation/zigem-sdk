@@ -4,7 +4,7 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";
 
-pub const c_pin = em__unit.declareConfig("pin", i16);
+pub const c_pin = em__unit.Config("pin", i16);
 
 pub const EM__HOST = {};
 

@@ -84,17 +84,17 @@ pub const Unit = struct {
     legacy: bool = false,
     generated: bool = false,
 
-    fn extendPath(self: Self, comptime name: []const u8) []const u8 {
-        return self.upath ++ "__" ++ name;
-    }
-
-    pub fn declareConfig(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
+    pub fn Config(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (hosted) {
             return _ConfigD(dname, T){};
         } else {
             return _ConfigV(T, @field(targ, dname)){};
         }
+    }
+
+    fn extendPath(self: Self, comptime name: []const u8) []const u8 {
+        return self.upath ++ "__" ++ name;
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {

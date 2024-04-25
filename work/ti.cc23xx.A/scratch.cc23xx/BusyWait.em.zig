@@ -2,7 +2,7 @@ const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.Module(@This(), .{});
 
-pub const c_scalar = em__unit.declareConfig("scalar", u8);
+pub const c_scalar = em__unit.Config("scalar", u8);
 
 pub const EM__HOST = {};
 
