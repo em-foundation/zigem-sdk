@@ -89,6 +89,7 @@ fn genTarg() !void {
 fn genUnits() !void {
     const distro_pkg = Setup.get().object.get("em__distro").?.string;
     var pkg_set = std.StringArrayHashMap(void).init(Heap.get());
+    var type_map = std.StringArrayHashMap([]const u8).init(Heap.get());
     var file = try Out.open(Fs.join(&.{ gen_root, "units.zig" }));
     for (BundlePath.get()) |bp| {
         var iter = Fs.openDir(bp).iterate();
@@ -105,9 +106,19 @@ fn genUnits() !void {
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
                 file.print("pub const @\"{0s}/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
+                const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
+                try type_map.put(tn, un);
                 if (is_distro) file.print("pub const @\"em__distro/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
         }
+    }
+    file.close();
+    //
+    file = try Out.open(Fs.join(&.{ gen_root, "type_map.zig" }));
+    for (type_map.keys()) |tn| {
+        const un = type_map.get(tn).?;
+        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ tn, un });
     }
     file.close();
 }

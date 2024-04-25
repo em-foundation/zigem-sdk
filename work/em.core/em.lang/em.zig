@@ -3,6 +3,7 @@ pub const std = @import("std");
 pub const import = @import("../../.gen/units.zig");
 
 const targ = @import("../../.gen/targ.zig");
+const type_map = @import("../../.gen/type_map.zig");
 
 pub const hosted = !@hasDecl(targ, "_em_targ");
 pub const print = std.log.debug;
@@ -92,6 +93,10 @@ pub const UnitSpec = struct {
     }
 
     pub fn import(_: Self, _: []const u8) type {}
+
+    pub fn path(self: Self) []const u8 {
+        return @field(type_map, @typeName(self.self));
+    }
 };
 
 pub const DeclKind = enum {
