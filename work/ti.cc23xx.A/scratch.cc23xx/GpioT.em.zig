@@ -12,6 +12,7 @@ pub fn em__Generate(comptime name: []const u8) type {
             .kind = .module,
             .upath = name,
             .self = @This(),
+            .generated = true,
         };
 
         pub const Hal = em.import.@"ti.mcu.cc23xx/Hal";

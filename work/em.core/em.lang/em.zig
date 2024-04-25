@@ -74,6 +74,7 @@ pub const UnitSpec = struct {
     upath: []const u8,
     self: type,
     legacy: bool = false,
+    generated: bool = false,
 
     fn extendPath(self: Self, comptime name: []const u8) []const u8 {
         return self.upath ++ "__" ++ name;
@@ -97,12 +98,6 @@ pub const UnitSpec = struct {
     pub fn path(self: Self) []const u8 {
         return @field(type_map, @typeName(self.self));
     }
-};
-
-pub const DeclKind = enum {
-    config,
-    proxy,
-    variable,
 };
 
 pub fn fail() noreturn {

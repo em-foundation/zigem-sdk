@@ -1,6 +1,8 @@
 const em = @import("../../.gen/em.zig");
 const std = @import("std");
 
+const type_map = @import("../../.gen/type_map.zig");
+
 inline fn callAll(comptime fname: []const u8, ulist: []const em.UnitSpec) void {
     inline for (ulist) |u| {
         if (@hasDecl(u.self, fname)) {
@@ -12,6 +14,7 @@ inline fn callAll(comptime fname: []const u8, ulist: []const em.UnitSpec) void {
 pub fn exec(top: em.UnitSpec) !void {
     const ulist_bot = mkUnitList(top, &.{});
     const ulist_top = revUnitList(ulist_bot);
+    try validate(ulist_bot);
     callAll("em__initH", ulist_bot);
     callAll("em__configureH", ulist_top);
     callAll("em__constructH", ulist_top);
@@ -122,4 +125,16 @@ fn revUnitList(comptime ulist: []const em.UnitSpec) []const em.UnitSpec {
         res = .{u} ++ res;
     }
     return res;
+}
+
+fn validate(comptime ulist: []const em.UnitSpec) !void {
+    inline for (ulist) |u| {
+        if (!u.generated) {
+            const un = @as([]const u8, @field(type_map, @typeName(u.self)));
+            if (!std.mem.eql(u8, u.upath, un)) {
+                std.log.err("found unit named \"{s}\", expected \"{s}\"", .{ u.upath, un });
+                std.process.exit(1);
+            }
+        }
+    }
 }
