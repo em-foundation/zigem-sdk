@@ -67,6 +67,12 @@ pub const UnitKind = enum {
     template,
 };
 
+pub const UnitOpts = struct {
+    name: ?[]const u8 = null,
+    legacy: bool = false,
+    generated: bool = false,
+};
+
 pub const UnitSpec = struct {
     const Self = @This();
 
@@ -99,6 +105,17 @@ pub const UnitSpec = struct {
         return @field(type_map, @typeName(self.self));
     }
 };
+
+pub fn declareUnit(This: type, kind: UnitKind, opts: UnitOpts) UnitSpec {
+    const un = if (opts.name) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
+    return UnitSpec{
+        .generated = opts.generated,
+        .kind = kind,
+        .legacy = opts.legacy,
+        .self = This,
+        .upath = un,
+    };
+}
 
 pub fn fail() noreturn {
     halt();
