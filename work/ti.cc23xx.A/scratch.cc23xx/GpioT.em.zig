@@ -41,6 +41,11 @@ pub fn em__Generate(comptime name: []const u8) type {
             if (is_def) REG(Hal.GPIO_BASE + Hal.GPIO_O_DOUTCLR31_0).* = mask;
         }
 
+        pub fn functionSelect(select: u8) void {
+            const off = @as(u32, Hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
+            if (is_def) REG(@as(u32, Hal.IOC_BASE) + off).* = select;
+        }
+
         pub fn makeOutput() void {
             if (is_def) REG(Hal.GPIO_BASE + Hal.GPIO_O_DOESET31_0).* = mask;
             const off = @as(u32, Hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
