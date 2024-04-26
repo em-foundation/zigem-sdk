@@ -1,5 +1,5 @@
 .history
-**/bob.junk/
+**/.junk/
 zig-cache
 zig-out
 .gen
