@@ -1,3 +1,5 @@
+pub const EM__SPEC = {};
+
 const em = @import("../../.gen/em.zig");
 
 pub const em__unit = em.Module(@This(), .{});
