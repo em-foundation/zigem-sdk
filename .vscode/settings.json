@@ -9,5 +9,12 @@
         ".vscode": false,
         ".history": true
     },
-    "explorerExclude.backup": {}
+    "explorerExclude.backup": {},
+    "zig.zls.enableInlayHints": false,
+    "zig.zls.inlayHintsHideRedundantParamNamesLastToken": true,
+    "zig.zls.inlayHintsShowVariableTypeHints": true,
+    "zig.zls.inlayHintsShowBuiltin": true,
+    "zig.zls.inlayHintsShowParameterName": true,
+    "zig.zls.inlayHintsHideRedundantParamNames": false,
+    "zig.zls.inlayHintsExcludeSingleArgument": false
 }

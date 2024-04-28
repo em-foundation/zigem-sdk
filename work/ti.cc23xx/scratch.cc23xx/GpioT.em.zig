@@ -3,7 +3,7 @@ pub const EM__SPEC = {};
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Template(@This(), .{});
 
-pub fn em__Generate(comptime name: []const u8) type {
+pub fn em__generateS(comptime name: []const u8) type {
     return struct {
         pub const EM__SPEC = {};
 

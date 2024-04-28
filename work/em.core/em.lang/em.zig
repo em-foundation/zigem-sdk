@@ -98,7 +98,7 @@ pub const Unit = struct {
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
-        return Template_Unit.em__Generate(self.extendPath(as_name));
+        return Template_Unit.em__generateS(self.extendPath(as_name));
     }
 
     pub fn import(_: Self, _: []const u8) type {}
