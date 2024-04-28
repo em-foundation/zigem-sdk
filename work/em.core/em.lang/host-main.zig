@@ -27,7 +27,7 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
-        if (std.mem.startsWith(u8, d.name, "EM__")) break;
+        if (std.mem.eql(u8, d.name, "EM__HOST")) break;
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
         if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
