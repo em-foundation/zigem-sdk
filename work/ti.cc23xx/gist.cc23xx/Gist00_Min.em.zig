@@ -1,8 +1,13 @@
-const em = @import("../../.gen/em.zig");
+pub const EM__SPEC = {};
 
+pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const BoardC = em.Import.@"em__distro/BoardC";
+
+pub const EM__HOST = {};
+
+pub const EM__TARG = {};
 
 const Hal: type = BoardC.Hal;
 const REG = em.REG;

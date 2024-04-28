@@ -1,5 +1,6 @@
-const em = @import("../../.gen/em.zig");
+pub const EM__SPEC = {};
 
+pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";

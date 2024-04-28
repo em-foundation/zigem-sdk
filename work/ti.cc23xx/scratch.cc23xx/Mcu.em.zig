@@ -1,8 +1,13 @@
-const em = @import("../../.gen/em.zig");
+pub const EM__SPEC = {};
 
+pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";
+
+pub const EM__HOST = {};
+
+pub const EM__TARG = {};
 
 pub fn startup() void {
     const REG = em.REG;
