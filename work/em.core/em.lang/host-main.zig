@@ -35,6 +35,8 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
             const idx = std.mem.indexOf(u8, tn_decl, ",").?;
             const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
             try out.print("pub const @\"{s}\": {s} = {any};\n", .{ decl.dpath(), tn, decl.get() });
+        } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
+            try out.print("pub const @\"{s}\" = em.Import.@\"{s}\";\n", .{ decl.dpath(), decl.get() });
         }
     }
 }

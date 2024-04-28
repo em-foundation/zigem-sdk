@@ -120,6 +120,11 @@ fn genUnits() !void {
         const un = type_map.get(tn).?;
         file.print("pub const @\"{s}\" = \"{s}\";\n", .{ tn, un });
     }
+    file.print("\n", .{});
+    for (type_map.keys()) |tn| {
+        const un = type_map.get(tn).?;
+        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ un, tn });
+    }
     file.close();
     //
     file = try Out.open(Fs.join(&.{ gen_root, "unit_names.zig" }));

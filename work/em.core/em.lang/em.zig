@@ -62,6 +62,45 @@ fn _ConfigV(T: type, v: T) type {
     };
 }
 
+fn _ProxyD(dp: []const u8, I: type) type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__proxy = {};
+        const _dpath = dp;
+        var _del: []const u8 = toUnit(I).upath;
+
+        pub fn get(_: Self) @TypeOf(_del) {
+            return _del;
+        }
+
+        pub fn dpath(_: Self) []const u8 {
+            return _dpath;
+        }
+
+        pub fn print(_: Self) void {
+            std.log.debug("{s} = {s}", .{ _dpath, _del });
+        }
+
+        pub fn set(_: Self, u: type) void {
+            _del = toUnit(u).upath;
+        }
+
+        pub fn unwrap(_: Self) type {
+            return I;
+        }
+    };
+}
+
+fn _ProxyV(u: type) type {
+    return struct {
+        const Self = @This();
+        pub fn unwrap(_: Self) type {
+            return u;
+        }
+    };
+}
+
 pub const UnitKind = enum {
     composite,
     interface,
@@ -73,6 +112,7 @@ pub const UnitOpts = struct {
     name: ?[]const u8 = null,
     legacy: bool = false,
     generated: bool = false,
+    inherits: type = void,
 };
 
 pub const Unit = struct {
@@ -83,6 +123,7 @@ pub const Unit = struct {
     self: type,
     legacy: bool = false,
     generated: bool = false,
+    inherits: type = void,
 
     pub fn Config(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
@@ -90,6 +131,15 @@ pub const Unit = struct {
             return _ConfigD(dname, T){};
         } else {
             return _ConfigV(T, @field(targ, dname)){};
+        }
+    }
+
+    pub fn Proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
+        const dname = self.extendPath(name);
+        if (hosted) {
+            return _ProxyD(dname, I){};
+        } else {
+            return _ProxyV(@field(targ, dname)){};
         }
     }
 
@@ -152,6 +202,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
         .generated = opts.generated,
+        .inherits = opts.inherits,
         .kind = kind,
         .legacy = opts.legacy,
         .self = This,
@@ -166,6 +217,15 @@ pub fn REG(adr: u32) *volatile u32 {
 
 pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
+}
+
+pub fn toUnit(U: type) Unit {
+    return @as(Unit, @field(U, "em__unit"));
+}
+
+fn unitTypeName(unit: type) []const u8 {
+    const tn: []const u8 = @typeName(unit);
+    return tn[0 .. tn.len - 3];
 }
 
 pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
