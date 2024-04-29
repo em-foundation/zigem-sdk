@@ -19,7 +19,18 @@ pub fn exec(top: em.Unit) !void {
     callAll("em__configureH", ulist_top);
     callAll("em__constructH", ulist_top);
     callAll("em__generateH", ulist_bot);
-    try genTarg(ulist_bot, top);
+    try genTarg(ulist_bot, ulist_top);
+}
+
+fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
+    inline for (ulist) |u| {
+        if (@hasDecl(u.self, fname)) {
+            try out.print("    ", .{});
+            try genImport(u.upath, out);
+            try out.print(".{s}();\n", .{fname});
+            if (mode == .first) break;
+        }
+    }
 }
 
 fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
@@ -51,7 +62,7 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genTarg(ulist: []const em.Unit, top: em.Unit) !void {
+fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
     const fmt =
@@ -62,7 +73,7 @@ fn genTarg(ulist: []const em.Unit, top: em.Unit) !void {
         \\
     ;
     try out.print(fmt, .{});
-    inline for (ulist) |u| {
+    inline for (ulist_bot) |u| {
         if (u.kind == .module) {
             try out.print("// {s}\n", .{u.upath});
             try genDecls(u, out);
@@ -70,15 +81,11 @@ fn genTarg(ulist: []const em.Unit, top: em.Unit) !void {
         }
     }
     try out.print("pub fn exec() void {{\n", .{});
-    inline for (ulist) |u| {
-        if (@hasDecl(u.self, "em__startup")) {
-            try out.print("    ", .{});
-            try genImport(u.upath, out);
-            try out.print(".em__startup();\n", .{});
-        }
-    }
+    try genCall("em__reset", ulist_top, .first, out);
+    try genCall("em__startup", ulist_bot, .all, out);
+    try genCall("em__ready", ulist_top, .first, out);
     try out.print("    ", .{});
-    try genImport(top.upath, out);
+    try genImport(ulist_top[0].upath, out);
     try out.print(".em__run();\n", .{});
     try out.print("    em.halt();\n", .{});
     try out.print("}}\n", .{});
