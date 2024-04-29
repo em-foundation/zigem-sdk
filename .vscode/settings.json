@@ -16,5 +16,50 @@
     "zig.zls.inlayHintsShowBuiltin": true,
     "zig.zls.inlayHintsShowParameterName": true,
     "zig.zls.inlayHintsHideRedundantParamNames": false,
-    "zig.zls.inlayHintsExcludeSingleArgument": false
+    "zig.zls.inlayHintsExcludeSingleArgument": false,
+
+    "vsicons.associations.files": [
+        {
+            "icon": "emunit",
+            "extensions": [
+                ".em.zig"
+            ],
+            "format": "svg"
+        },
+    ],
+    "vsicons.customIconFolderPath": "c:\\Users\\biosb\\vsc-projs\\em-prime\\dev\\em-builder\\etc",
+
+    
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "zigem-0",
+                "settings": {
+                    "foreground": "#fa6424",
+                    "fontStyle": "bold"
+                }
+            },
+            {
+                "scope": "zigem",
+                "settings": {
+                    "foreground": "#f99165",
+                    "fontStyle": "bold"
+                }
+            },
+            {
+                "scope": "zigem-2",
+                "settings": {
+                    "foreground": "#c0e3f9",
+                    "fontStyle": "bold"
+                }
+            },
+            {
+                "scope": "zigemMarker",
+                "settings": {
+                    "foreground": "#bbffee",
+                    "fontStyle": "bold"
+                }
+            },
+        ]
+    }
 }
