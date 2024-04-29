@@ -36,14 +36,18 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
             const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
             try out.print("pub const @\"{s}\": {s} = {any};\n", .{ decl.dpath(), tn, decl.get() });
         } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
-            const tn: []const u8 = decl.get();
-            var it = std.mem.splitSequence(u8, tn, "__");
-            try out.print("pub const @\"{s}\" = em.Import.@\"{s}\"", .{ decl.dpath(), it.first() });
-            while (it.next()) |seg| {
-                try out.print(".{s}", .{seg});
-            }
+            try out.print("pub const @\"{s}\" = ", .{decl.dpath()});
+            try genImport(decl.get(), out);
             try out.print(";\n", .{});
         }
+    }
+}
+
+fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
+    var it = std.mem.splitSequence(u8, path, "__");
+    try out.print("em.Import.@\"{s}\"", .{it.first()});
+    while (it.next()) |seg| {
+        try out.print(".{s}", .{seg});
     }
 }
 
@@ -68,17 +72,17 @@ fn genTarg(ulist: []const em.Unit, top: em.Unit) !void {
     try out.print("pub fn exec() void {{\n", .{});
     inline for (ulist) |u| {
         if (@hasDecl(u.self, "em__startup")) {
-            try out.print("    {s}.em__startup();\n", .{mkImport(u.upath)});
+            try out.print("    ", .{});
+            try genImport(u.upath, out);
+            try out.print(".em__startup();\n", .{});
         }
     }
-    try out.print("    {s}.em__run();\n", .{mkImport(top.upath)});
+    try out.print("    ", .{});
+    try genImport(top.upath, out);
+    try out.print(".em__run();\n", .{});
     try out.print("    em.halt();\n", .{});
     try out.print("}}\n", .{});
     file.close();
-}
-
-fn mkImport(upath: []const u8) []const u8 {
-    return em.sprint("em.Import.@\"{s}\"", .{upath});
 }
 
 fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {
