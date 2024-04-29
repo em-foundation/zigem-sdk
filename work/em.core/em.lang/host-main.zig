@@ -36,23 +36,13 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
             const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
             try out.print("pub const @\"{s}\": {s} = {any};\n", .{ decl.dpath(), tn, decl.get() });
         } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
-            try out.print("pub const @\"{s}\" = em.Import.@\"{s}\";\n", .{ decl.dpath(), decl.get() });
-        }
-    }
-}
-
-fn genDeclsOld(unit: em.Unit, out: std.fs.File.Writer) !void {
-    if (!@hasDecl(unit.self, "em__decls")) return;
-    const decl_struct = @field(unit.self, "em__decls");
-    const Decl_Struct = @TypeOf(decl_struct);
-    inline for (@typeInfo(Decl_Struct).Struct.fields) |fld| {
-        const decl = @field(decl_struct, fld.name);
-        const Decl = @TypeOf(decl);
-        const ti = @typeInfo(Decl);
-        if (ti == .Struct and @hasField(Decl, "_em__config")) {
-            const tn = @typeName(Decl);
-            const idx = std.mem.indexOf(u8, tn, ".em.Config(").?;
-            try out.print("    .{s} = {s}.initV({any}),\n", .{ fld.name, tn[idx + 1 ..], decl.get() });
+            const tn: []const u8 = decl.get();
+            var it = std.mem.splitSequence(u8, tn, "__");
+            try out.print("pub const @\"{s}\" = em.Import.@\"{s}\"", .{ decl.dpath(), it.first() });
+            while (it.next()) |seg| {
+                try out.print(".{s}", .{seg});
+            }
+            try out.print(";\n", .{});
         }
     }
 }

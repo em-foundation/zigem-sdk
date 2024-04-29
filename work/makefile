@@ -30,5 +30,5 @@ targ:
 #	@$(OBJDUMP) -h .out/main.out
 
 load:
-	@$(TOOLS)/ti-uniflash/dslite.bat -c ti.cc23xx.A/ti.distro.cc23xx/CC2340R5.ccxml .out/main.out
+	@$(TOOLS)/ti-uniflash/dslite.bat -c ti.cc23xx/ti.distro.cc23xx/CC2340R5.ccxml .out/main.out
 
