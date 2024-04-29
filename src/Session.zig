@@ -33,6 +33,17 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     try BundlePath.add(work_root, "em.core");
     try BundlePath.add(work_root, bname);
     try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
+    try BundlePath.add(work_root, getDistroBundle());
+}
+
+fn getDistroBundle() []const u8 {
+    const distro = Setup.get().object.get("em__distro").?.string;
+    return distro[0..std.mem.indexOf(u8, distro, "://").?];
+}
+
+fn getDistroPkg() []const u8 {
+    const distro = Setup.get().object.get("em__distro").?.string;
+    return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
 }
 
 pub fn generate(upath: []const u8) !void {
@@ -87,7 +98,7 @@ fn genTarg() !void {
 }
 
 fn genUnits() !void {
-    const distro_pkg = Setup.get().object.get("em__distro").?.string;
+    const distro_pkg = getDistroPkg();
     var pkg_set = std.StringArrayHashMap(void).init(Heap.get());
     var type_map = std.StringArrayHashMap([]const u8).init(Heap.get());
     var file = try Out.open(Fs.join(&.{ gen_root, "imports.zig" }));

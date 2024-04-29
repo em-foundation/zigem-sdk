@@ -18,11 +18,27 @@
     "zig.zls.inlayHintsHideRedundantParamNames": false,
     "zig.zls.inlayHintsExcludeSingleArgument": false,
 
+    "vsicons.associations.folders": [
+        {
+            "icon": "embundle",
+            "extensions": [
+                "em.arch",
+                "em.build",
+                "em.core",
+                "em.test",
+                "ti.cc23xx",
+            ],
+            "format": "svg"
+        },
+    ],
+
+
     "vsicons.associations.files": [
         {
             "icon": "emunit",
             "extensions": [
-                ".em.zig"
+                ".em.zig",
+                ".zigem"
             ],
             "format": "svg"
         },
