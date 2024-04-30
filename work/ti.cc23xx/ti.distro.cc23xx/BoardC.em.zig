@@ -10,7 +10,6 @@ pub const AppOutUart = em.Import.@"ti.mcu.cc23xx/ConsoleUart0";
 pub const BoardController = em.Import.@"em.utils/BoardController";
 pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
 pub const Common = em.Import.@"em.mcu/Common";
-pub const Hal = em.Import.@"ti.mcu.cc23xx/Hal";
 pub const LinkerC = em.Import.@"em.build.misc/LinkerC";
 pub const Mcu = em.Import.@"ti.mcu.cc23xx/Mcu";
 pub const StartupC = em.Import.@"em.arch.arm/StartupC";
