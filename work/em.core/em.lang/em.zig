@@ -208,9 +208,9 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     };
 }
 
-pub fn REG(adr: u32) *volatile u32 {
-    const reg: *volatile u32 = @ptrFromInt(adr);
-    return reg;
+pub fn reg(adr: u32) *volatile u32 {
+    const r: *volatile u32 = @ptrFromInt(adr);
+    return r;
 }
 
 pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
