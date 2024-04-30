@@ -232,3 +232,57 @@ pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
     _ = file.write(txt) catch unreachable;
     file.close();
 }
+
+const Debug = @import("Debug.em.zig");
+
+pub fn @"%%[a]"() void {
+    Debug.pulse('A');
+}
+pub fn @"%%[a+]"() void {
+    Debug.plus('A');
+}
+pub fn @"%%[a-]"() void {
+    Debug.minus('A');
+}
+pub fn @"%%[a:]"(k: u8) void {
+    Debug.mark('A', k);
+}
+
+pub fn @"%%[b]"() void {
+    Debug.pulse('B');
+}
+pub fn @"%%[b+]"() void {
+    Debug.plus('B');
+}
+pub fn @"%%[b-]"() void {
+    Debug.minus('B');
+}
+pub fn @"%%[b:]"(k: u8) void {
+    Debug.mark('B', k);
+}
+
+pub fn @"%%[c]"() void {
+    Debug.pulse('C');
+}
+pub fn @"%%[c+]"() void {
+    Debug.plus('C');
+}
+pub fn @"%%[c-]"() void {
+    Debug.minus('C');
+}
+pub fn @"%%[c:]"(k: u8) void {
+    Debug.mark('C', k);
+}
+
+pub fn @"%%[d]"() void {
+    Debug.pulse('D');
+}
+pub fn @"%%[d+]"() void {
+    Debug.plus('D');
+}
+pub fn @"%%[d-]"() void {
+    Debug.minus('D');
+}
+pub fn @"%%[d:]"(k: u8) void {
+    Debug.mark('D', k);
+}

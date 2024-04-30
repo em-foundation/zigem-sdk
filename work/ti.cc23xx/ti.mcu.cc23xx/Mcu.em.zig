@@ -5,6 +5,8 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/McuI",
 });
 
+pub const Debug = em.Import.@"em.lang/Debug";
+
 pub const EM__HOST = {};
 
 pub const EM__TARG = {};
@@ -13,6 +15,7 @@ const hal = em.hal;
 const reg = em.reg;
 
 pub fn startup() void {
+    Debug.startup();
     // cc23xx already running at 48MHz after reset
     // the following code is strictly not needed for level A
     reg(hal.CKMD_BASE + hal.CKMD_O_TRIM1).* |= hal.CKMD_TRIM1_NABIAS_LFOSC;

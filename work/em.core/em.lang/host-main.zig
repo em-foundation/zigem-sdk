@@ -12,6 +12,7 @@ inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit) void {
 }
 
 pub fn exec(top: em.Unit) !void {
+    @setEvalBranchQuota(5000);
     const ulist_bot = mkUnitList(top, &.{});
     const ulist_top = revUnitList(ulist_bot);
     try validate(ulist_bot);
