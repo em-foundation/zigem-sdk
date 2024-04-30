@@ -175,7 +175,12 @@ pub fn Template(This: type, opts: UnitOpts) Unit {
 }
 
 pub fn fail() noreturn {
-    halt();
+    if (hosted) {
+        std.log.info("em.fail", .{});
+        std.process.exit(1);
+    } else {
+        targ.em__fail();
+    }
 }
 
 pub fn getHeap() std.mem.Allocator {
@@ -183,20 +188,13 @@ pub fn getHeap() std.mem.Allocator {
 }
 
 pub fn halt() noreturn {
-    var dummy: u32 = 0xCAFE;
-    const vp: *volatile u32 = &dummy;
-    while (true) {
-        if (vp.* != 0) continue;
+    if (hosted) {
+        std.log.info("em.halt", .{});
+        std.process.exit(0);
+    } else {
+        targ.em__halt();
     }
 }
-
-//pub fn import(comptime upath: []const u8) type {
-//    std.debug.assert(@hasDecl(units, upath));
-//    const U = @field(units, upath);
-//    // @compileLog("import", U);
-//    std.debug.assert(@hasDecl(U, "em__unit"));
-//    return U;
-//}
 
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));

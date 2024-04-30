@@ -34,9 +34,15 @@ pub fn em__ready() void {
     Uart.flush();
 }
 
-pub fn em__fail() void {}
+pub fn em__fail() void {
+    while (true) {
+        blink(2, blinkRate);
+    }
+}
 
-pub fn em__halt() void {}
+pub fn em__halt() void {
+    Led.on();
+}
 
 fn blink(times: u8, usecs: u32) void {
     for (0..times * 2) |_| {

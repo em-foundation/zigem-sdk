@@ -80,7 +80,20 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
             try out.print("\n", .{});
         }
     }
-    try out.print("pub fn exec() void {{\n", .{});
+    const fmt2 =
+        \\pub fn em__done() noreturn {{
+        \\    var dummy: u32 = 0xCAFE;
+        \\    const vp: *volatile u32 = &dummy;
+        \\    while (true) {{
+        \\        if (vp.* != 0) continue;
+        \\    }}
+        \\}}
+        \\
+    ;
+    try out.print(fmt2, .{});
+    try genTermFn("em__fail", ulist_top, out);
+    try genTermFn("em__halt", ulist_top, out);
+    try out.print("pub fn exec() noreturn {{\n", .{});
     try genCall("em__reset", ulist_top, .first, out);
     try genCall("em__startup", ulist_bot, .all, out);
     try genCall("em__ready", ulist_top, .first, out);
@@ -90,6 +103,13 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     try out.print("    em.halt();\n", .{});
     try out.print("}}\n", .{});
     file.close();
+}
+
+fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File.Writer) !void {
+    try out.print("pub fn {s}() noreturn {{\n", .{name});
+    try genCall(name, ulist, .first, out);
+    try out.print("    em__done();\n", .{});
+    try out.print("}}\n", .{});
 }
 
 fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {

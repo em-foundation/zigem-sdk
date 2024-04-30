@@ -5,6 +5,8 @@ const cli = @import("zig-cli");
 const Heap = @import("./Heap.zig");
 const Session = @import("./Session.zig");
 
+var t0: f80 = 0.0;
+
 var params = struct {
     bundle: []const u8 = ".",
     unit: []const u8 = undefined,
@@ -92,7 +94,6 @@ fn doBuild() !void {
     const idx = std.mem.indexOf(u8, path, "/").?;
     const bn = path[0..idx];
     const un = path[idx + 1 ..];
-    const t0: f80 = @floatFromInt(std.time.milliTimestamp());
     try Session.activate(bn, .BUILD, null);
     try Session.generate(un);
     try writer.print("compiling HOST ...\n", .{});
@@ -126,5 +127,6 @@ fn execMake(goal: []const u8) ![]const u8 {
 
 pub fn main() !void {
     defer Heap.deinit();
+    t0 = @floatFromInt(std.time.milliTimestamp());
     return cli.run(app, Heap.get());
 }
