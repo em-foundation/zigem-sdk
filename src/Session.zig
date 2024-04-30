@@ -60,12 +60,14 @@ fn genEmStub() !void {
     const fmt =
         \\pub usingnamespace @import("../em.core/em.lang/em.zig");
         \\
-        \\pub const gen_root = "{s}";
-        \\pub const out_root = "{s}";
+        \\pub const gen_root = "{0s}";
+        \\pub const out_root = "{1s}";
         \\
         \\pub const _targ_file = "{0s}/targ.zig";
+        \\
+        \\pub const hal = @import("../{2s}/{3s}/hal.zig");
     ;
-    file.print(fmt, .{ gen_root, out_root });
+    file.print(fmt, .{ gen_root, out_root, getDistroBundle(), getDistroPkg() });
     file.close();
 }
 

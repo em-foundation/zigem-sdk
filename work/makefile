@@ -1,9 +1,14 @@
+DISTRO = ti.cc23xx/ti.distro.cc23xx
+
 host:
 	@rm -f .gen/targ.zig
 	@touch .gen/targ.zig
 	@rm -rf .out/*
 	@zig build-exe -femit-bin=.out/host-main.exe .main-host.zig
 	@.out/host-main.exe
+
+hal:
+	@zig translate-c $(DISTRO)/hal.h > $(DISTRO)/hal.zig
 
 ## -----------------
 
