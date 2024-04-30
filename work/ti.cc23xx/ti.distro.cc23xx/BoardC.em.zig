@@ -24,6 +24,7 @@ pub fn em__configureH() void {
     AppLed.x_Pin.set(AppLedPin);
     AppOutPin.c_pin.set(20);
     AppOutUart.x_TxPin.set(AppOutPin);
+    BoardController.x_Led.set(SysLed);
     Common.x_BusyWait.set(BusyWait);
     Common.x_ConsoleUart.set(AppOutUart);
     Common.x_Mcu.set(Mcu);

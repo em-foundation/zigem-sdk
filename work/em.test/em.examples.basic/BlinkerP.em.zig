@@ -15,7 +15,7 @@ const AppLed = BoardC.AppLed;
 pub fn em__run() void {
     AppLed.on();
     for (0..10) |_| {
-        Common.BusyWait.wait(500_1000);
+        Common.BusyWait.wait(500_000);
         AppLed.toggle();
     }
     AppLed.off();
