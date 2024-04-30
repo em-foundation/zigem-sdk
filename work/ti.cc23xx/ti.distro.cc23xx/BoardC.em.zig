@@ -10,6 +10,7 @@ pub const AppOutUart = em.Import.@"ti.mcu.cc23xx/ConsoleUart0";
 pub const BoardController = em.Import.@"em.utils/BoardController";
 pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
 pub const Common = em.Import.@"em.mcu/Common";
+pub const GlobalInterrupts = em.Import.@"em.arch.arm/GlobalInterrupts";
 pub const LinkerC = em.Import.@"em.build.misc/LinkerC";
 pub const Mcu = em.Import.@"ti.mcu.cc23xx/Mcu";
 pub const StartupC = em.Import.@"em.arch.arm/StartupC";
@@ -25,6 +26,7 @@ pub fn em__configureH() void {
     AppOutUart.x_TxPin.set(AppOutPin);
     BoardController.x_Led.set(SysLed);
     Common.x_BusyWait.set(BusyWait);
+    Common.x_GlobalInterrupts.set(GlobalInterrupts);
     Common.x_ConsoleUart.set(AppOutUart);
     Common.x_Mcu.set(Mcu);
     SysLedPin.c_pin.set(14);

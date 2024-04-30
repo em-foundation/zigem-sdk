@@ -10,17 +10,36 @@ pub const EM__HOST = {};
 pub const EM__TARG = {};
 
 pub fn disable() u32 {
-
-    //auto key = <uarg_t>(^^__get_PRIMASK()^^)
-    //^^__set_PRIMASK(1)^^
-    //return key
+    const key = get_PRIMASK();
+    set_PRIMASK(1);
+    return key;
 }
 
 pub fn enable() void {
-    //^^__set_PRIMASK(0)^^
+    set_PRIMASK(0);
 }
 
 pub fn restore(key: u32) void {
-    _ = key;
-    // ^^__set_PRIMASK(key)^^
+    set_PRIMASK(key);
+}
+
+fn get_PRIMASK() u32 {
+    if (em.hosted) return 0;
+    const key: u32 = 0;
+    asm volatile (
+        \\mrs %[key], primask        
+        :
+        : [key] "r" (key),
+        : "memory"
+    );
+    return key;
+}
+
+fn set_PRIMASK(m: u32) void {
+    if (em.hosted) return;
+    asm volatile ("msr primask, %[m]"
+        :
+        : [m] "r" (m),
+        : "memory"
+    );
 }

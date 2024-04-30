@@ -16,7 +16,6 @@ const EOT_BYTE = 0x4;
 const Led = x_Led.unwrap();
 const SOT_BYTE = 0x3;
 const SOT_COUNT = 13;
-const Uart = Common.ConsoleUart;
 
 pub fn em__reset() void {
     Common.Mcu.startup();
@@ -25,22 +24,24 @@ pub fn em__reset() void {
 pub fn em__ready() void {
     Led.off();
     blink(2, blinkRate);
-    Uart.flush();
-    Uart.put(0);
-    Uart.put(0);
+    Common.ConsoleUart.flush();
+    Common.ConsoleUart.put(0);
+    Common.ConsoleUart.put(0);
     for (0..SOT_COUNT) |_| {
-        Uart.put(SOT_BYTE);
+        Common.ConsoleUart.put(SOT_BYTE);
     }
-    Uart.flush();
+    Common.ConsoleUart.flush();
 }
 
 pub fn em__fail() void {
+    _ = Common.GlobalInterrupts.disable();
     while (true) {
         blink(2, blinkRate);
     }
 }
 
 pub fn em__halt() void {
+    _ = Common.GlobalInterrupts.disable();
     Led.on();
 }
 
