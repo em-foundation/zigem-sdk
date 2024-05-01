@@ -8,7 +8,6 @@ const targ = @import("../../.gen/targ.zig");
 const type_map = @import("../../.gen/type_map.zig");
 
 pub const hosted = !@hasDecl(targ, "_em_targ");
-pub const print = std.log.debug;
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
@@ -231,6 +230,20 @@ pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
     const file = std.fs.createFileAbsolute(fpath, .{}) catch unreachable;
     _ = file.write(txt) catch unreachable;
     file.close();
+}
+
+const Console = @import("Console.em.zig");
+
+pub fn print(comptime fmt: []const u8, args: anytype) void {
+    if (hosted) {
+        std.log.debug(fmt, args);
+    } else {
+        std.fmt.format(Console.writer(), fmt, args) catch fail();
+    }
+}
+
+pub fn @"%%[>]"(v: anytype) void {
+    Console.wrN(v);
 }
 
 const Debug = @import("Debug.em.zig");

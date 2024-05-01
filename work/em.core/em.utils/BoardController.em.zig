@@ -42,6 +42,8 @@ pub fn em__fail() void {
 
 pub fn em__halt() void {
     _ = Common.GlobalInterrupts.disable();
+    Common.ConsoleUart.put(EOT_BYTE);
+    Common.ConsoleUart.flush();
     Led.on();
 }
 
