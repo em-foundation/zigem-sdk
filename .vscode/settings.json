@@ -70,6 +70,13 @@
                 }
             },
             {
+                "scope": "zigemDebug",
+                "settings": {
+                    "foreground": "#ff0000",
+                    "fontStyle": "bold"
+                }
+            },
+            {
                 "scope": "zigemMarker",
                 "settings": {
                     "foreground": "#bbffee",

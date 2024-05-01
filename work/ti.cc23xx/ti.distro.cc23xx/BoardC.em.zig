@@ -9,6 +9,7 @@ pub const AppOutPin = em__unit.Generate("AppOutPin", em.Import.@"ti.mcu.cc23xx/G
 pub const AppOutUart = em.Import.@"ti.mcu.cc23xx/ConsoleUart0";
 pub const BoardController = em.Import.@"em.utils/BoardController";
 pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
+pub const Console = em.Import.@"em.lang/Console";
 pub const Common = em.Import.@"em.mcu/Common";
 pub const DbgA = em__unit.Generate("DbgA", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const DbgB = em__unit.Generate("DbgB", em.Import.@"ti.mcu.cc23xx/GpioT");

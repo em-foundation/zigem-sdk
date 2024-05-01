@@ -5,7 +5,6 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const BoardC = em.Import.@"em__distro/BoardC";
 pub const Common = em.Import.@"em.mcu/Common";
-pub const Console = em.Import.@"em.lang/Console";
 
 pub const c_dbg_flag = em__unit.Config("dbg_flag", bool);
 pub const c_min_cnt = em__unit.Config("min_cnt", u16);
