@@ -118,8 +118,11 @@ fn execMake(goal: []const u8) ![]const u8 {
         .argv = &argv,
     });
 
+    if (proc.stderr.len > 0) {
+        try std.io.getStdErr().writeAll(proc.stderr);
+    }
     if (proc.term.Exited != 0) {
-        std.log.err("make {s} failed: {s}", .{ goal, proc.stderr });
+        std.log.err("make {s} failed", .{goal});
         std.process.exit(1);
     }
     return proc.stdout;

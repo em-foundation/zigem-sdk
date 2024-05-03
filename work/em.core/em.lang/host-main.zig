@@ -44,10 +44,21 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
         if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
-            const tn_decl = @typeName(Decl);
-            const idx = std.mem.indexOf(u8, tn_decl, ",").?;
-            const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
-            try out.print("pub const @\"{s}\": {s} = {any};\n", .{ decl.dpath(), tn, decl.get() });
+            if (@typeInfo(decl.Type()) == .Enum) {
+                const tn_type = @typeName(decl.Type());
+                const tun = comptime mkImportPath(tn_type, 2);
+                em.print("config {s}: {s} {s}", .{ d.name, tun, decl.toString() });
+                try out.print("pub const @\"{s}\": ", .{decl.dpath()});
+                try genImport(tun, out);
+                try out.print(" = ", .{});
+                try genImport(tun, out);
+                try out.print(".{s};\n", .{decl.toString()});
+            } else {
+                const tn_decl = @typeName(Decl);
+                const idx = std.mem.indexOf(u8, tn_decl, ",").?;
+                const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
+                try out.print("pub const @\"{s}\": {s} = {s};\n", .{ decl.dpath(), tn, decl.toString() });
+            }
         } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
             try out.print("pub const @\"{s}\" = ", .{decl.dpath()});
             try genImport(decl.get(), out);
@@ -112,6 +123,15 @@ fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File
     try genCall(name, ulist, .first, out);
     try out.print("    em__done();\n", .{});
     try out.print("}}\n", .{});
+}
+
+fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
+    var idx: ?usize = path.len;
+    inline for (1..suf_cnt) |_| {
+        idx = std.mem.lastIndexOf(u8, path[0..idx.?], ".");
+    }
+    const un = @as([]const u8, @field(type_map, path[0..idx.?]));
+    return un ++ "__" ++ path[idx.? + 1 ..];
 }
 
 fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {

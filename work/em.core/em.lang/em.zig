@@ -11,6 +11,47 @@ pub const hosted = !@hasDecl(targ, "_em_targ");
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
+pub fn Array(T: type) @TypeOf(ArrayInit(T, [_]T{})) {
+    return ArrayInit(T, [_]T{});
+}
+
+pub fn ArrayOf(T: type) type {
+    if (hosted) return _ArrayD(T) else return _ArrayV(T, [_]T{});
+}
+
+pub fn ArrayInit(T: type, comptime v: anytype) if (hosted) _ArrayD(T) else _ArrayV(T, v) {
+    if (hosted) return _ArrayD(T){} else return _ArrayV(T, v){};
+}
+
+pub fn _ArrayD(T: type) type {
+    return struct {
+        var _val = std.ArrayList(T).init(arena.allocator());
+        pub fn unwrap(_: @This()) std.ArrayList(T) {
+            return _val;
+        }
+    };
+}
+
+pub fn ArrayE(a: anytype) type {
+    return struct {
+        const T = @typeInfo(@TypeOf(a)).Array.child;
+        var _arr: [a.len]T = a;
+        pub fn unwrap(_: @This()) []T {
+            return _arr[0..];
+        }
+    };
+}
+
+pub fn _ArrayV(T: type, v: anytype) type {
+    return struct {
+        const Self = @This();
+        var _val: [v.len]T = v;
+        pub fn unwrap(_: Self) []T {
+            return _val[0..];
+        }
+    };
+}
+
 fn _ConfigD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
@@ -43,6 +84,24 @@ fn _ConfigD(dp: []const u8, T: type) type {
 
         pub fn set(_: Self, v: T) void {
             _val = v;
+        }
+
+        pub fn toString(_: Self) []const u8 {
+            const ti = @typeInfo(T);
+            const vs = sprint("{any}", .{_val});
+            switch (ti) {
+                .Enum => {
+                    const idx = std.mem.lastIndexOf(u8, vs, ".");
+                    return vs[idx.? + 1 ..];
+                },
+                else => {
+                    return vs;
+                },
+            }
+        }
+
+        pub fn Type(_: Self) type {
+            return T;
         }
 
         pub fn unwrap(_: Self) T {
