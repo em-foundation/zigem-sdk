@@ -49,12 +49,9 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
                 .Enum, .Struct => {
                     const tn_type = @typeName(decl.Type());
                     const tun = comptime mkImportPath(tn_type, 2);
-                    em.print("config {s}: {s} {s}", .{ d.name, tun, decl.toString() });
                     try out.print("pub const @\"{s}\": ", .{decl.dpath()});
                     try genImport(tun, out);
                     try out.print(" = ", .{});
-                    try genImport(tun, out);
-                    if (ti2 == .Enum) try out.print(".", .{});
                     try out.print("{s};\n", .{decl.toString()});
                 },
                 else => {

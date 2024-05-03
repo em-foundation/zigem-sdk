@@ -87,21 +87,7 @@ fn _ConfigD(dp: []const u8, T: type) type {
         }
 
         pub fn toString(_: Self) []const u8 {
-            const ti = @typeInfo(T);
-            const vs = sprint("{any}", .{_val});
-            switch (ti) {
-                .Enum => {
-                    const idx = std.mem.lastIndexOf(u8, vs, ".");
-                    return vs[idx.? + 1 ..];
-                },
-                .Struct => {
-                    const idx = std.mem.lastIndexOf(u8, vs, "{");
-                    return vs[idx.?..];
-                },
-                else => {
-                    return vs;
-                },
-            }
+            return toStringAux(_val);
         }
 
         pub fn Type(_: Self) type {
@@ -277,6 +263,36 @@ pub fn reg(adr: u32) *volatile u32 {
 
 pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
+}
+
+fn toStringAux(v: anytype) []const u8 {
+    const ti = @typeInfo(@TypeOf(v));
+    switch (ti) {
+        .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
+            return sprint("{any}", .{v});
+        },
+        .Enum => {
+            const res = sprint("{any}", .{v});
+            return res[std.mem.lastIndexOf(u8, res, ".").?..];
+        },
+        .Struct => {
+            var res: []const u8 = ".{";
+            inline for (ti.Struct.fields) |fld| {
+                res = sprint("{s} .{s} = {s},", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
+            }
+            return sprint("{s} }}", .{res});
+        },
+        .Array => {
+            var res: []const u8 = ".{";
+            inline for (0..v.len) |i| {
+                res = sprint("{s} {s},", .{ res, toStringAux(v[i]) });
+            }
+            return sprint("{s} }}", .{res});
+        },
+        else => {
+            return "<<unknown>>";
+        },
+    }
 }
 
 pub fn toUnit(U: type) Unit {
