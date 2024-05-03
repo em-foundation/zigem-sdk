@@ -94,6 +94,10 @@ fn _ConfigD(dp: []const u8, T: type) type {
                     const idx = std.mem.lastIndexOf(u8, vs, ".");
                     return vs[idx.? + 1 ..];
                 },
+                .Struct => {
+                    const idx = std.mem.lastIndexOf(u8, vs, "{");
+                    return vs[idx.?..];
+                },
                 else => {
                     return vs;
                 },
