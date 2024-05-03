@@ -1,11 +1,11 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Template(@This(), .{});
 
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
-        pub const EM__SPEC = {};
+        pub const EM__SPEC = null;
 
         pub const em__unit = em.Module(@This(), .{
             .generated = true,
@@ -15,13 +15,13 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const c_active_low = @This().em__unit.Config("active_low", bool);
         pub const x_Pin = @This().em__unit.Proxy("Pin", em.Import.@"em.hal/GpioI");
 
-        pub const EM__HOST = {};
+        pub const EM__HOST = null;
 
         pub fn em__initH() void {
             c_active_low.init(false);
         }
 
-        pub const EM__TARG = {};
+        pub const EM__TARG = null;
 
         const active_low = c_active_low.unwrap();
         const Pin = x_Pin.unwrap();

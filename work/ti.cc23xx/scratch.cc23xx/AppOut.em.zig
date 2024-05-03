@@ -1,17 +1,17 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const TxPin = em__unit.Generate("AppLedPin", em.Import.@"scratch.cc23xx/GpioT");
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
 pub fn em__configureH() void {
     TxPin.c_pin.set(20);
 }
 
-pub const EM__TARG = {};
+pub const EM__TARG = null;
 
 const hal = em.hal;
 const reg = em.reg;

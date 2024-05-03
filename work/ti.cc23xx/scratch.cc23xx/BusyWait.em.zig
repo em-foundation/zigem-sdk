@@ -1,17 +1,17 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const c_scalar = em__unit.Config("scalar", u8);
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
 pub fn em__initH() void {
     c_scalar.init(6);
 }
 
-pub const EM__TARG = {};
+pub const EM__TARG = null;
 
 const scalar = c_scalar.unwrap();
 

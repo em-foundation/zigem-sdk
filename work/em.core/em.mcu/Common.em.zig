@@ -1,4 +1,4 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
@@ -15,6 +15,6 @@ pub const GlobalInterrupts = x_GlobalInterrupts.unwrap();
 pub const x_Mcu = em__unit.Proxy("Mcu", em.Import.@"em.hal/McuI");
 pub const Mcu = x_Mcu.unwrap();
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
-pub const EM__TARG = {};
+pub const EM__TARG = null;

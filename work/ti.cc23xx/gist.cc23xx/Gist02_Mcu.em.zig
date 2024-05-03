@@ -1,4 +1,4 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
@@ -6,9 +6,9 @@ pub const em__unit = em.Module(@This(), .{});
 pub const BusyWait = em.Import.@"scratch.cc23xx/BusyWait";
 pub const Mcu = em.Import.@"scratch.cc23xx/Mcu";
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
-pub const EM__TARG = {};
+pub const EM__TARG = null;
 
 const hal = em.hal;
 const reg = em.reg;

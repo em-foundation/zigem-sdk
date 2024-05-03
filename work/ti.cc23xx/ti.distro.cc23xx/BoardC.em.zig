@@ -1,4 +1,4 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Composite(@This(), .{});
@@ -23,7 +23,7 @@ pub const StartupC = em.Import.@"em.arch.arm/StartupC";
 pub const SysLed = em__unit.Generate("SysLed", em.Import.@"em.utils/LedT");
 pub const SysLedPin = em__unit.Generate("SysLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
 pub fn em__configureH() void {
     AppLedPin.c_pin.set(15);

@@ -1,13 +1,13 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/GlobalInterruptsI",
 });
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
-pub const EM__TARG = {};
+pub const EM__TARG = null;
 
 pub fn disable() u32 {
     const key = get_PRIMASK();

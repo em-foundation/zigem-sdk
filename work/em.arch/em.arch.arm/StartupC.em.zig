@@ -1,9 +1,9 @@
-pub const EM__SPEC = {};
+pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Composite(@This(), .{});
 
-pub const EM__HOST = {};
+pub const EM__HOST = null;
 
 pub fn em__generateH() void {
     genArmStartup();
