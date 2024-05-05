@@ -88,7 +88,12 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
 
 fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     var it = std.mem.splitSequence(u8, path, "__");
-    try out.print("em.Import.@\"{s}\"", .{it.first()});
+    const un = it.first();
+    if (std.mem.eql(u8, un, "em")) {
+        try out.print("em", .{});
+    } else {
+        try out.print("em.Import.@\"{s}\"", .{un});
+    }
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});
     }
@@ -149,7 +154,8 @@ fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
     inline for (1..suf_cnt) |_| {
         idx = std.mem.lastIndexOf(u8, path[0..idx.?], ".");
     }
-    const un = @as([]const u8, @field(type_map, path[0..idx.?]));
+    const ut = path[0..idx.?];
+    const un = if (std.mem.eql(u8, ut, "em.core.em.lang.em")) "em" else @as([]const u8, @field(type_map, ut));
     return un ++ "__" ++ path[idx.? + 1 ..];
 }
 
