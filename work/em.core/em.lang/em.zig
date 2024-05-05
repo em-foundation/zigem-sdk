@@ -11,14 +11,6 @@ pub const hosted = !@hasDecl(targ, "_em_targ");
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-//pub fn Array(T: type) @TypeOf(ArrayInit(T, [_]T{})) {
-//    return ArrayInit(T, [_]T{});
-//}
-
-pub fn ArrayInit(T: type, comptime v: anytype) if (hosted) _ArrayD(T) else _ArrayV(T, v) {
-    if (hosted) return _ArrayD(T){} else return _ArrayV(T, v){};
-}
-
 pub fn _ArrayD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
@@ -31,6 +23,12 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
 
         pub fn Type(_: Self) type {
             return T;
+        }
+
+        pub fn alloc(_: Self, init: anytype) Ref(T) {
+            const idx = _list.items.len;
+            _list.append(std.mem.zeroInit(T, init)) catch fail();
+            return Ref(T){ .obj = &_list.items[idx], .apath = dp, .idx = idx };
         }
 
         pub fn list(_: Self) *std.ArrayList(T) {
@@ -123,6 +121,19 @@ fn _ConfigV(T: type, v: T) type {
     };
 }
 
+pub fn _Fxn(FT: type) type {
+    return struct {
+        const Self = @This();
+        upath: []const u8,
+        fname: []const u8,
+        pub fn unwrap(self: Self) FT {
+            const u = @field(Import, self.upath);
+            const f = @field(u, self.fname);
+            return f;
+        }
+    };
+}
+
 fn _ProxyD(dp: []const u8, I: type) type {
     return struct {
         const Self = @This();
@@ -159,6 +170,22 @@ fn _ProxyV(u: type) type {
         pub fn unwrap(_: Self) type {
             return u;
         }
+    };
+}
+
+pub fn Ref(T: type) type {
+    return struct {
+        obj: *T,
+        apath: []const u8,
+        idx: usize,
+    };
+}
+
+pub fn _RefD(T: type, obj: ?*T, apath: []const u8, idx: usize) type {
+    return struct {
+        obj: ?*T = obj,
+        apath: []const u8 = apath,
+        idx: usize = idx,
     };
 }
 
@@ -202,6 +229,10 @@ pub const Unit = struct {
         } else {
             return _ConfigV(T, @field(targ, dname)){};
         }
+    }
+
+    pub fn Fxn(self: Self, name: []const u8, fxn: anytype) _Fxn(@TypeOf(fxn)) {
+        return _Fxn(@TypeOf(fxn)){ .upath = self.upath, .fname = name };
     }
 
     pub fn Proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
@@ -310,6 +341,13 @@ fn toStringAux(v: anytype) []const u8 {
                 res = sprint("{s} {s},", .{ res, toStringAux(v[i]) });
             }
             return sprint("{s} }}", .{res});
+        },
+        .Pointer => |ptr_info| {
+            if (ptr_info.size == .Slice and ptr_info.child == u8) {
+                return sprint("\"{s}\"", .{v});
+            } else {
+                return "<<ptr>>";
+            }
         },
         else => {
             return "<<unknown>>";
