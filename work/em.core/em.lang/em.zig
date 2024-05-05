@@ -189,6 +189,8 @@ pub fn _RefD(T: type, obj: ?*T, apath: []const u8, idx: usize) type {
     };
 }
 
+pub const text_t = []const u8;
+
 pub const UnitKind = enum {
     composite,
     interface,
