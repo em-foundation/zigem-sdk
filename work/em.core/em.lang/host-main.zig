@@ -43,7 +43,27 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
         if (std.mem.eql(u8, d.name, "EM__HOST")) break;
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
-        if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
+        if (ti_decl == .Struct and @hasDecl(Decl, "_em__array")) {
+            const ti2 = @typeInfo(decl.Type());
+            switch (ti2) {
+                .Enum, .Struct => {
+                    //const tn_type = @typeName(decl.Type());
+                    //const tun = comptime mkImportPath(tn_type, 2);
+                    //try out.print("pub const @\"{s}\" = em._ArrayV(", .{decl.dpath()});
+                    //try genImport(tun, out);
+                    //try out.print(" = ", .{});
+                    //try out.print("{s};\n", .{decl.toString()});
+                },
+                else => {
+                    const tn_decl = @typeName(Decl);
+                    const idx = std.mem.indexOf(u8, tn_decl, ",").?;
+                    const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
+                    try out.print("pub const @\"{s}\" = [_]{s}{s};\n", .{ decl.dpath(), tn, decl.toString() });
+                },
+            }
+            //try out.print("pub const @\"{s}\" = em._ArrayV(", .{decl.dpath()});
+            //try out.print(");\n", .{});
+        } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
             const ti2 = @typeInfo(decl.Type());
             switch (ti2) {
                 .Enum, .Struct => {

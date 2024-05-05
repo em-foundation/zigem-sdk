@@ -11,43 +11,56 @@ pub const hosted = !@hasDecl(targ, "_em_targ");
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub fn Array(T: type) @TypeOf(ArrayInit(T, [_]T{})) {
-    return ArrayInit(T, [_]T{});
-}
-
-pub fn ArrayOf(T: type) type {
-    if (hosted) return _ArrayD(T) else return _ArrayV(T, [_]T{});
-}
+//pub fn Array(T: type) @TypeOf(ArrayInit(T, [_]T{})) {
+//    return ArrayInit(T, [_]T{});
+//}
 
 pub fn ArrayInit(T: type, comptime v: anytype) if (hosted) _ArrayD(T) else _ArrayV(T, v) {
     if (hosted) return _ArrayD(T){} else return _ArrayV(T, v){};
 }
 
-pub fn _ArrayD(T: type) type {
-    return struct {
-        var _val = std.ArrayList(T).init(arena.allocator());
-        pub fn unwrap(_: @This()) std.ArrayList(T) {
-            return _val;
-        }
-    };
-}
-
-pub fn ArrayE(a: anytype) type {
-    return struct {
-        const T = @typeInfo(@TypeOf(a)).Array.child;
-        var _arr: [a.len]T = a;
-        pub fn unwrap(_: @This()) []T {
-            return _arr[0..];
-        }
-    };
-}
-
-pub fn _ArrayV(T: type, v: anytype) type {
+pub fn _ArrayD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
-        var _val: [v.len]T = v;
+
+        pub const _em__array = {};
+
+        var _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator());
+
+        const _dpath = dp;
+
+        pub fn Type(_: Self) type {
+            return T;
+        }
+
+        pub fn list(_: Self) *std.ArrayList(T) {
+            return &_list;
+        }
+
+        pub fn dpath(_: Self) []const u8 {
+            return _dpath;
+        }
+
+        pub fn toString(_: Self) []const u8 {
+            var res: []const u8 = "{\n";
+            for (_list.items) |e| {
+                res = sprint("{s}    {s},\n", .{ res, toStringAux(e) });
+            }
+            return sprint("{s}}}", .{res});
+        }
+
         pub fn unwrap(_: Self) []T {
-            return _val[0..];
+            return {};
+        }
+    };
+}
+
+pub fn _ArrayV(T: type, comptime v: anytype) type {
+    return struct {
+        const Self = @This();
+        const _val: [v.len]T = v;
+        pub fn unwrap(_: Self) @TypeOf(_val) {
+            return _val;
         }
     };
 }
@@ -172,6 +185,15 @@ pub const Unit = struct {
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,
+
+    pub fn Array(self: Self, name: []const u8, T: type) if (hosted) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))) {
+        const dname = self.extendPath(name);
+        if (hosted) {
+            return _ArrayD(dname, T){};
+        } else {
+            return _ArrayV(T, @field(targ, dname)){};
+        }
+    }
 
     pub fn Config(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
