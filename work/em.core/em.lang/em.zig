@@ -121,7 +121,7 @@ fn _ConfigV(T: type, v: T) type {
     };
 }
 
-pub fn _Fxn(FT: type) type {
+pub fn Func(FT: type) type {
     return struct {
         const Self = @This();
         upath: []const u8,
@@ -233,8 +233,8 @@ pub const Unit = struct {
         }
     }
 
-    pub fn Fxn(self: Self, name: []const u8, fxn: anytype) _Fxn(@TypeOf(fxn)) {
-        return _Fxn(@TypeOf(fxn)){ .upath = self.upath, .fname = name };
+    pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn)) {
+        return Func(@TypeOf(fxn)){ .upath = self.upath, .fname = name };
     }
 
     pub fn Proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
