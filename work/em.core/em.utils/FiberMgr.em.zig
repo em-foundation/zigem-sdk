@@ -3,10 +3,13 @@ pub const EM__SPEC = {};
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
+pub const Common = em.Import.@"em.mcu/Common";
+
 pub const FiberBodyFxn = em.Func(*const fn (arg: usize) void);
 
 pub const Fiber = struct {
     const Self = @This();
+    link: ?*Fiber = null,
     fxn: FiberBodyFxn,
     arg: usize = 0,
     pub fn post(self: *Self) void {
@@ -25,10 +28,57 @@ pub fn createH(fxn: FiberBodyFxn) em.Ref(Fiber) {
 
 pub const EM__TARG = {};
 
-pub fn run() void {
-    //
+var ready_list = struct {
+    const Self = @This();
+    const arr = a_heap.unwrap();
+    head: ?*Fiber = null,
+    tail: ?*Fiber = null,
+    fn empty(self: *Self) bool {
+        return self.head != null;
+    }
+    fn give(self: *Self, elem: *Fiber) void {
+        if (self.empty()) self.head = elem;
+        self.tail = elem;
+    }
+    fn take(self: *Self) *Fiber {
+        const e = self.head.?;
+        self.head = e.link;
+        e.link = null;
+        if (self.head == null) self.tail = null;
+        return e;
+    }
+}{};
+
+pub fn dispatch() void {
+    while (!ready_list.empty()) {
+        const fiber = ready_list.take();
+        const fxn = fiber.fxn.unwrap();
+        Common.GlobalInterrupts.enable();
+        fxn(fiber.arg);
+        _ = Common.GlobalInterrupts.enable();
+    }
+}
+
+pub fn run() noreturn {
+    Common.GlobalInterrupts.enable();
+    while (true) {
+        _ = Common.GlobalInterrupts.enable();
+        dispatch();
+    }
 }
 
 fn Fiber_post(self: *Fiber) void {
-    _ = self;
+    const key = Common.GlobalInterrupts.disable();
+    if (self.link != null) ready_list.give(self);
+    Common.GlobalInterrupts.restore(key);
 }
+
+//def run()
+//    Common.Idle.wakeup()
+//    Common.GlobalInterrupts.enable()
+//    for ;;
+//        Common.GlobalInterrupts.disable()
+//        dispatch()
+//        Common.Idle.exec()
+//    end
+//end
