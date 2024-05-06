@@ -17,7 +17,7 @@ pub const Fiber = struct {
     }
 };
 
-pub const a_heap = em__unit.Array("a_heap", Fiber);
+pub const a_heap = em__unit.array("a_heap", Fiber);
 
 pub const EM__HOST = {};
 

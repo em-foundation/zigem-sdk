@@ -244,7 +244,7 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: type = void,
 
-    pub fn Array(self: Self, name: []const u8, T: type) if (hosted) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))) {
+    pub fn array(self: Self, name: []const u8, T: type) if (hosted) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (hosted) {
             return _ArrayD(dname, T){};
