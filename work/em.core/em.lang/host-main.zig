@@ -64,12 +64,15 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
             const ti2 = @typeInfo(decl.Type());
             switch (ti2) {
                 .Enum, .Struct => {
-                    const tn_type = @typeName(decl.Type());
-                    const tun = comptime mkImportPath(tn_type, 2);
-                    try out.print("pub const @\"{s}\": ", .{decl.dpath()});
-                    try genImport(tun, out);
-                    try out.print(" = ", .{});
-                    try out.print("{s};\n", .{decl.toString()});
+                    const isRef = try genRef(decl, out);
+                    if (!isRef) {
+                        const tn_type = @typeName(decl.Type());
+                        const tun = comptime mkImportPath(tn_type, 2);
+                        try out.print("pub const @\"{s}\": ", .{decl.dpath()});
+                        try genImport(tun, out);
+                        try out.print(" = ", .{});
+                        try out.print("{s};\n", .{decl.toString()});
+                    }
                 },
                 else => {
                     const tn_decl = @typeName(Decl);
@@ -97,6 +100,24 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});
     }
+}
+
+fn genRef(decl: anytype, out: std.fs.File.Writer) !bool {
+    const tn_type = @typeName(decl.Type());
+    if (!std.mem.startsWith(u8, tn_type, "em.core.em.lang.em.Ref(")) return false;
+    try out.print("pub const @\"{s}\": em.Ref(", .{decl.dpath()});
+    const idx = comptime std.mem.indexOf(u8, tn_type, "(").?;
+    const rt = comptime tn_type[idx + 1 .. tn_type.len - 1];
+    const tun = comptime mkImportPath(rt, 2);
+    try genImport(tun, out);
+    try out.print(") = ", .{});
+    try out.print("{s};\n", .{em.toStringAux(decl.get())});
+    //const tn_type = @typeName(decl.Type());
+
+    //const tn_type = @typeName(decl.Type());
+    //const tun = comptime mkImportPath(tn_type, 2);
+    //try genImport(tun, out);
+    return true;
 }
 
 fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
@@ -155,8 +176,14 @@ fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
         idx = std.mem.lastIndexOf(u8, path[0..idx.?], ".");
     }
     const ut = path[0..idx.?];
-    const un = if (std.mem.eql(u8, ut, "em.core.em.lang.em")) "em" else @as([]const u8, @field(type_map, ut));
-    return un ++ "__" ++ path[idx.? + 1 ..];
+    if (std.mem.startsWith(u8, ut, "em.core.em.lang.em.Ref(")) {
+        return "em__" ++ ut[std.mem.indexOf(u8, ut, ".Ref(").? + 1 ..];
+    } else if (std.mem.eql(u8, ut, "em.core.em.lang.em")) {
+        return "em__" ++ path[idx.? + 1 ..];
+    } else {
+        const un = @as([]const u8, @field(type_map, ut));
+        return un ++ "__" ++ path[idx.? + 1 ..];
+    }
 }
 
 fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {

@@ -26,9 +26,10 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn alloc(_: Self, init: anytype) Ref(T) {
-            const idx = _list.items.len;
+            const len = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
-            return Ref(T){ .obj = &_list.items[idx], .apath = dp, .idx = idx };
+            const idx = std.mem.indexOf(u8, dp, "__").?;
+            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = len };
         }
 
         pub fn list(_: Self) *std.ArrayList(T) {
@@ -175,17 +176,15 @@ fn _ProxyV(u: type) type {
 
 pub fn Ref(T: type) type {
     return struct {
-        obj: *T,
-        apath: []const u8,
+        const Self = @This();
+        upath: []const u8,
+        aname: []const u8,
         idx: usize,
-    };
-}
-
-pub fn _RefD(T: type, obj: ?*T, apath: []const u8, idx: usize) type {
-    return struct {
-        obj: ?*T = obj,
-        apath: []const u8 = apath,
-        idx: usize = idx,
+        pub fn obj(self: Self) *T {
+            const u = @field(Import, self.upath);
+            const a = @field(u, self.aname);
+            return @constCast(&(a.unwrap()[self.idx]));
+        }
     };
 }
 
@@ -320,7 +319,7 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
 }
 
-fn toStringAux(v: anytype) []const u8 {
+pub fn toStringAux(v: anytype) []const u8 {
     const ti = @typeInfo(@TypeOf(v));
     switch (ti) {
         .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
