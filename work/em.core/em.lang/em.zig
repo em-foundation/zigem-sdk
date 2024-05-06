@@ -26,10 +26,24 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn alloc(_: Self, init: anytype) Ref(T) {
-            const len = _list.items.len;
+            const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             const idx = std.mem.indexOf(u8, dp, "__").?;
-            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = len };
+            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l };
+        }
+
+        pub fn getElem(_: Self, idx: usize) *T {
+            return &_list.items[idx];
+        }
+
+        pub fn indexOf(_: Self, elem: *T) usize {
+            const p0 = @intFromPtr(&_list.items[0]);
+            const p1 = @intFromPtr(elem);
+            return (p1 - p0) / @sizeOf(T);
+        }
+
+        pub fn len(_: Self) usize {
+            return _list.items.len;
         }
 
         pub fn list(_: Self) *std.ArrayList(T) {
@@ -57,7 +71,23 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
 pub fn _ArrayV(T: type, comptime v: anytype) type {
     return struct {
         const Self = @This();
+
         const _val: [v.len]T = v;
+
+        pub fn getElem(_: Self, idx: usize) *const T {
+            return &_val[idx];
+        }
+
+        pub fn indexOf(_: Self, elem: *T) usize {
+            const p0 = @intFromPtr(&_val[0]);
+            const p1 = @intFromPtr(elem);
+            return (p1 - p0) / @sizeOf(T);
+        }
+
+        pub fn len(_: Self) usize {
+            return _val.len;
+        }
+
         pub fn unwrap(_: Self) @TypeOf(_val) {
             return _val;
         }
