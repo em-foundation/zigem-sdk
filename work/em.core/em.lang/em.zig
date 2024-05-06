@@ -352,6 +352,16 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
 pub fn toStringAux(v: anytype) []const u8 {
     const ti = @typeInfo(@TypeOf(v));
     switch (ti) {
+        .Null => {
+            return "null";
+        },
+        .Optional => {
+            if (v == null) {
+                return "null";
+            } else {
+                return "<<optional>>";
+            }
+        },
         .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
             return sprint("{any}", .{v});
         },
