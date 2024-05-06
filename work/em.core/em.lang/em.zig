@@ -152,18 +152,37 @@ fn _ConfigV(T: type, v: T) type {
     };
 }
 
-pub fn Func(FT: type) type {
+//pub fn Func(FT: type) type {
+//    return struct {
+//        _f: FT,
+//        pub fn unwrap(self: @This()) FT {
+//            return self._f;
+//        }
+//    };
+//}
+
+fn Func(FT: type, comptime upath: []const u8, comptime fname: []const u8) type {
     return struct {
-        const Self = @This();
-        upath: []const u8,
-        fname: []const u8,
-        pub fn unwrap(self: Self) FT {
-            const u = @field(Import, self.upath);
-            const f = @field(u, self.fname);
+        const _up = upath;
+        const _fn = fname;
+        pub fn unwrap(_: @This()) FT {
+            const u = @field(Import, _up);
+            const f = @field(u, _fn);
             return f;
         }
     };
 }
+
+//fn _FuncV(FT: type, comptime upath: []const u8, comptime fname: []const u8) type {
+//    const u = @field(Import, upath);
+//    const f = @field(u, fname);
+//    return struct {
+//        _f: FT = &f,
+//        pub fn unwrap(self: @This()) FT {
+//            return self._f;
+//        }
+//    };
+//}
 
 fn _ProxyD(dp: []const u8, I: type) type {
     return struct {
@@ -262,8 +281,8 @@ pub const Unit = struct {
         }
     }
 
-    pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn)) {
-        return Func(@TypeOf(fxn)){ .upath = self.upath, .fname = name };
+    pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn), self.upath, name) {
+        return Func(@TypeOf(fxn), self.upath.name){};
     }
 
     pub fn proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
