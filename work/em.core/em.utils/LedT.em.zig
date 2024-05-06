@@ -12,7 +12,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             .name = name,
         });
 
-        pub const c_active_low = @This().em__unit.Config("active_low", bool);
+        pub const c_active_low = @This().em__unit.config("active_low", bool);
         pub const x_Pin = @This().em__unit.Proxy("Pin", em.Import.@"em.hal/GpioI");
 
         pub const EM__HOST = null;

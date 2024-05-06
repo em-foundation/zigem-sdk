@@ -7,7 +7,7 @@ pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const c_blinkF = em__unit.Config("blinkF", em.Ref(FiberMgr.Fiber));
+pub const c_blinkF = em__unit.config("blinkF", em.Ref(FiberMgr.Fiber));
 
 pub const EM__HOST = null;
 

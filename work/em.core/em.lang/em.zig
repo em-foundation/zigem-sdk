@@ -253,7 +253,7 @@ pub const Unit = struct {
         }
     }
 
-    pub fn Config(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
+    pub fn config(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (hosted) {
             return _ConfigD(dname, T){};

@@ -5,7 +5,7 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/BusyWaitI",
 });
 
-pub const c_scalar = em__unit.Config("scalar", u8);
+pub const c_scalar = em__unit.config("scalar", u8);
 
 pub const EM__HOST = null;
 

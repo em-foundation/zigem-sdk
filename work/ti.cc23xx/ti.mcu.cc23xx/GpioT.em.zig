@@ -16,7 +16,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             },
         );
 
-        pub const c_pin = @This().em__unit.Config("pin", i16);
+        pub const c_pin = @This().em__unit.config("pin", i16);
 
         pub const EM__HOST = null;
 
