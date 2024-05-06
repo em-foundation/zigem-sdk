@@ -31,7 +31,9 @@ TARG_OPTS=\
 targ:
 	@zig build-exe $(TARG_OPTS) --script .out/linkcmd.ld .out/startup.c .main-targ.zig
 	@rm -f .out/main.out.o
-	@$(OBJDUMP) -h -d  .out/main.out >.out/main.out.dis
+	@$(OBJCOPY) -O ihex .out/main.out .out/main.out.hex
+	@$(OBJDUMP) -h -d .out/main.out >.out/main.out.dis
+	@$(OBJDUMP) -h -t .out/main.out >.out/main.out.sym
 	@$(OBJDUMP) -h .out/main.out
 
 load:
