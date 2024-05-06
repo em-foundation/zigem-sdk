@@ -6,10 +6,10 @@ pub const em__unit = em.Module(@This(), .{});
 const Common = em.Import.@"em.mcu/Common";
 const GpioI = em.Import.@"em.hal/GpioI";
 
-pub const x_DbgA = em__unit.Proxy("DbgA", GpioI);
-pub const x_DbgB = em__unit.Proxy("DbgB", GpioI);
-pub const x_DbgC = em__unit.Proxy("DbgC", GpioI);
-pub const x_DbgD = em__unit.Proxy("DbgD", GpioI);
+pub const x_DbgA = em__unit.proxy("DbgA", GpioI);
+pub const x_DbgB = em__unit.proxy("DbgB", GpioI);
+pub const x_DbgC = em__unit.proxy("DbgC", GpioI);
+pub const x_DbgD = em__unit.proxy("DbgD", GpioI);
 
 pub const EM__HOST = null;
 

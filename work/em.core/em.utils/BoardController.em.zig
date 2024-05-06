@@ -5,7 +5,7 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const x_Led = em__unit.Proxy("Led", em.Import.@"em.hal/LedI");
+pub const x_Led = em__unit.proxy("Led", em.Import.@"em.hal/LedI");
 
 pub const EM__HOST = null;
 

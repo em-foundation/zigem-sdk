@@ -5,7 +5,7 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/ConsoleUartI",
 });
 
-pub const x_TxPin = em__unit.Proxy("TxPin", em.Import.@"em.hal/GpioI");
+pub const x_TxPin = em__unit.proxy("TxPin", em.Import.@"em.hal/GpioI");
 
 pub const EM__HOST = null;
 

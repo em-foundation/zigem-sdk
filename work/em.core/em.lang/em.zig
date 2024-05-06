@@ -266,7 +266,7 @@ pub const Unit = struct {
         return Func(@TypeOf(fxn)){ .upath = self.upath, .fname = name };
     }
 
-    pub fn Proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
+    pub fn proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (hosted) {
             return _ProxyD(dname, I){};
