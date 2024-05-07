@@ -394,11 +394,15 @@ pub fn toStringAux(v: anytype) []const u8 {
             return res[std.mem.lastIndexOf(u8, res, ".").?..];
         },
         .Struct => {
-            var res: []const u8 = ".{";
+            const tn = comptime @typeName(@TypeOf(v));
+            const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
+            const tun = comptime tn[0..idx];
+            const iun = comptime @as([]const u8, @field(type_map, tun));
+            var res: []const u8 = sprint("em.Import.@\"{s}\".{s}{{", .{ iun, tn[idx + 1 ..] });
             inline for (ti.Struct.fields) |fld| {
                 res = sprint("{s} .{s} = {s},", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
             }
-            return sprint("{s} }}", .{res});
+            return sprint("{s}}}", .{res});
         },
         .Array => {
             var res: []const u8 = ".{";
