@@ -351,6 +351,12 @@ pub fn halt() noreturn {
     }
 }
 
+fn mkTypeImport(comptime tn: []const u8) []const u8 {
+    const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
+    const tun = comptime tn[0..idx];
+    return "em.Import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
+}
+
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
@@ -374,6 +380,7 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
 
 pub fn toStringAux(v: anytype) []const u8 {
     const ti = @typeInfo(@TypeOf(v));
+    const tn = @typeName(@TypeOf(v));
     switch (ti) {
         .Null => {
             return "null";
@@ -386,19 +393,13 @@ pub fn toStringAux(v: anytype) []const u8 {
             }
         },
         .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
-            const tn = @typeName(@TypeOf(v));
             return sprint("@as({s}, {any})", .{ tn, v });
         },
         .Enum => {
-            const res = sprint("{any}", .{v});
-            return res[std.mem.lastIndexOf(u8, res, ".").?..];
+            return sprint("{s}.{s}", .{ mkTypeImport(tn), @tagName(v) });
         },
         .Struct => {
-            const tn = comptime @typeName(@TypeOf(v));
-            const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
-            const tun = comptime tn[0..idx];
-            const iun = comptime @as([]const u8, @field(type_map, tun));
-            var res: []const u8 = sprint("em.Import.@\"{s}\".{s}{{", .{ iun, tn[idx + 1 ..] });
+            var res: []const u8 = sprint("{s}{{", .{mkTypeImport(tn)});
             inline for (ti.Struct.fields) |fld| {
                 res = sprint("{s} .{s} = {s},", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
             }
