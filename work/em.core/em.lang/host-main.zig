@@ -61,26 +61,7 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
                 },
             }
         } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
-            const ti2 = @typeInfo(decl.Type());
-            switch (ti2) {
-                .Enum, .Struct => {
-                    const done = try genBuiltin(decl, out);
-                    if (!done) {
-                        const tn_type = @typeName(decl.Type());
-                        const tun = comptime mkImportPath(tn_type, 2);
-                        try out.print("pub const @\"{s}\": ", .{decl.dpath()});
-                        try genImport(tun, out);
-                        try out.print(" = ", .{});
-                        try out.print("{s};\n", .{decl.toString()});
-                    }
-                },
-                else => {
-                    const tn_decl = @typeName(Decl);
-                    const idx = std.mem.indexOf(u8, tn_decl, ",").?;
-                    const tn = tn_decl[idx + 1 .. tn_decl.len - 1];
-                    try out.print("pub const @\"{s}\": {s} = {s};\n", .{ decl.dpath(), tn, decl.toString() });
-                },
-            }
+            try out.print("pub const @\"{s}\" = {s};\n", .{ decl.dpath(), decl.toString() });
         } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
             try out.print("pub const @\"{s}\" = ", .{decl.dpath()});
             try genImport(decl.get(), out);
