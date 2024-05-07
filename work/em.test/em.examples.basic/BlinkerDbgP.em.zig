@@ -6,9 +6,9 @@ pub const em__unit = em.Module(@This(), .{});
 pub const BoardC = em.Import.@"em__distro/BoardC";
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const c_dbg_flag = em__unit.Config("dbg_flag", bool);
-pub const c_min_cnt = em__unit.Config("min_cnt", u16);
-pub const c_max_cnt = em__unit.Config("max_cnt", u16);
+pub const c_dbg_flag = em__unit.config("dbg_flag", bool);
+pub const c_min_cnt = em__unit.config("min_cnt", u16);
+pub const c_max_cnt = em__unit.config("max_cnt", u16);
 
 pub const EM__HOST = null;
 

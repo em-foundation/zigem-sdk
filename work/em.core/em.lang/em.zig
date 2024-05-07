@@ -15,6 +15,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
 
+        pub const _em__builtin = {};
         pub const _em__array = {};
 
         var _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator());
@@ -55,7 +56,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn toString(_: Self) []const u8 {
-            var res: []const u8 = "{\n";
+            var res: []const u8 = sprint("[_]{s}{{\n", .{mkTypeName(T)});
             for (_list.items) |e| {
                 res = sprint("{s}    {s},\n", .{ res, toStringAux(e) });
             }
@@ -104,7 +105,9 @@ fn _ConfigD(dp: []const u8, T: type) type {
 
         const s = std.mem.zeroInit(S, .{});
 
+        pub const _em__builtin = {};
         pub const _em__config = {};
+
         const _dpath = dp;
         var _val: T = s.v;
 
@@ -163,6 +166,7 @@ fn _ConfigV(T: type, v: T) type {
 
 pub fn Func(FT: type) type {
     if (hosted) return struct {
+        pub const _em__builtin = {};
         _upath: []const u8,
         _fname: []const u8,
         _fxn: ?*const FT,
@@ -192,7 +196,9 @@ fn _ProxyD(dp: []const u8, I: type) type {
     return struct {
         const Self = @This();
 
+        pub const _em__builtin = {};
         pub const _em__proxy = {};
+
         const _dpath = dp;
         var _del: []const u8 = toUnit(I).upath;
 
@@ -210,6 +216,15 @@ fn _ProxyD(dp: []const u8, I: type) type {
 
         pub fn set(_: Self, u: type) void {
             _del = toUnit(u).upath;
+        }
+
+        pub fn toString(_: Self) []const u8 {
+            var it = std.mem.splitSequence(u8, _del, "__");
+            var res = sprint("em.Import.@\"{s}\"", .{it.first()});
+            while (it.next()) |seg| {
+                res = sprint("{s}.{s}", .{ res, seg });
+            }
+            return res;
         }
 
         pub fn unwrap(_: Self) type {
@@ -230,6 +245,7 @@ fn _ProxyV(u: type) type {
 pub fn Ref(T: type) type {
     return struct {
         const Self = @This();
+        pub const _em__builtin = {};
         upath: []const u8,
         aname: []const u8,
         idx: usize,
@@ -351,6 +367,22 @@ pub fn halt() noreturn {
     }
 }
 
+fn mkTypeName(T: type) []const u8 {
+    const ti = @typeInfo(T);
+    const tn = @typeName(T);
+    switch (ti) {
+        .Enum => {
+            return mkTypeImport(tn);
+        },
+        .Struct => {
+            return mkTypeImport(tn);
+        },
+        else => {
+            return tn;
+        },
+    }
+}
+
 fn mkTypeImport(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
     const tun = comptime tn[0..idx];
@@ -378,7 +410,7 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
 }
 
-pub fn toStringAux(v: anytype) []const u8 {
+pub fn toStringAux(v: anytype) []const u8 { // TODO -- generalze indent
     const ti = @typeInfo(@TypeOf(v));
     const tn = @typeName(@TypeOf(v));
     switch (ti) {
