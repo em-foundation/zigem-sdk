@@ -161,14 +161,18 @@ fn _ConfigV(T: type, v: T) type {
 //    };
 //}
 
-fn Func(FT: type, comptime upath: []const u8, comptime fname: []const u8) type {
-    return struct {
-        const _up = upath;
-        const _fn = fname;
-        pub fn unwrap(_: @This()) FT {
-            const u = @field(Import, _up);
-            const f = @field(u, _fn);
-            return f;
+pub fn Func(FT: type) type {
+    if (hosted) return struct {
+        _upath: []const u8,
+        _fname: []const u8,
+        _fxn: ?*const FT,
+        pub fn unwrap(self: @This()) *const FT {
+            return self._fxn.?;
+        }
+    } else return struct {
+        _fxn: ?*const FT,
+        pub fn unwrap(self: @This()) *const FT {
+            return self._fxn.?;
         }
     };
 }
@@ -281,8 +285,8 @@ pub const Unit = struct {
         }
     }
 
-    pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn), self.upath, name) {
-        return Func(@TypeOf(fxn), self.upath.name){};
+    pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn)) {
+        return Func(@TypeOf(fxn)){ ._upath = self.upath, ._fname = name, ._fxn = &fxn };
     }
 
     pub fn proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
@@ -382,7 +386,8 @@ pub fn toStringAux(v: anytype) []const u8 {
             }
         },
         .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
-            return sprint("{any}", .{v});
+            const tn = @typeName(@TypeOf(v));
+            return sprint("@as({s}, {any})", .{ tn, v });
         },
         .Enum => {
             const res = sprint("{any}", .{v});
