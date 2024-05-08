@@ -18,6 +18,9 @@ pub const Idle = x_Idle.unwrap();
 pub const x_Mcu = em__unit.proxy("Mcu", em.Import.@"em.hal/McuI");
 pub const Mcu = x_Mcu.unwrap();
 
+pub const x_MsCounter = em__unit.proxy("MsCounter", em.Import.@"em.hal/MsCounterI");
+pub const MsCounter = x_MsCounter.unwrap();
+
 pub const EM__HOST = null;
 
 pub const EM__TARG = null;
