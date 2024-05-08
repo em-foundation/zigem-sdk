@@ -3,10 +3,14 @@
 #include <stdint.h>
 
 typedef int __copy_table_t;
-#define __COMPILER_BARRIER()  // suppress
 
 #include "inc/cc23x0r5.h"
 #include "../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h"
+
+#define __COMPILER_BARRIER()  // suppress
+#define __DSB()  // suppress
+#define __ISB()  // suppress
+
 #include "../../em.arch/em.arch.arm/cmsis/core_cm0plus.h"
 
 #include "inc/hw_ckmd.h"

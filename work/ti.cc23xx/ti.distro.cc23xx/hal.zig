@@ -309,8 +309,6 @@ pub fn __NVIC_DisableIRQ(arg_IRQn_1: IRQn_Type) callconv(.C) void {
     _ = &IRQn_1;
     if (@as(i32, @bitCast(IRQn_1)) >= @as(c_int, 0)) {
         @as([*c]NVIC_Type, @ptrFromInt(@as(c_ulong, 3758153728) +% @as(c_ulong, 256))).*.ICER[@as(c_uint, 0)] = @as(u32, @bitCast(@as(c_uint, @truncate(@as(c_ulong, 1) << @intCast(@as(c_ulong, @bitCast(@as(c_ulong, @as(u32, @bitCast(IRQn_1))))) & @as(c_ulong, 31))))));
-        __DSB();
-        __ISB();
     }
 }
 pub fn __NVIC_GetPendingIRQ(arg_IRQn_1: IRQn_Type) callconv(.C) u32 {
@@ -461,7 +459,6 @@ pub const __INTN_MAX = @compileError("unable to translate macro: undefined ident
 pub const __UINTN_MAX = @compileError("unable to translate macro: undefined identifier `UINT`"); // C:\tools\zig-dev\lib\include/stdint.h:896:9
 pub const __INTN_C = @compileError("unable to translate macro: undefined identifier `INT`"); // C:\tools\zig-dev\lib\include/stdint.h:897:10
 pub const __UINTN_C = @compileError("unable to translate macro: undefined identifier `UINT`"); // C:\tools\zig-dev\lib\include/stdint.h:898:9
-pub const __COMPILER_BARRIER = @compileError("unable to translate C expr: unexpected token ''"); // ti.cc23xx/ti.distro.cc23xx/hal.h:6:9
 pub const __ASM = @compileError("unable to translate C expr: unexpected token '__asm'"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:11
 pub const __INLINE = @compileError("unable to translate C expr: unexpected token 'inline'"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:44:11
 pub const __STATIC_INLINE = @compileError("unable to translate C expr: unexpected token 'static'"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:47:11
@@ -478,6 +475,7 @@ pub const __UNALIGNED_UINT32_WRITE = @compileError("unable to translate C expr: 
 pub const __UNALIGNED_UINT32_READ = @compileError("unable to translate C expr: unexpected token 'const'"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:108:11
 pub const __ALIGNED = @compileError("unable to translate macro: undefined identifier `aligned`"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:111:11
 pub const __RESTRICT = @compileError("unable to translate C expr: unexpected token '__restrict'"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:114:11
+pub const __COMPILER_BARRIER = @compileError("unable to translate C expr: unexpected token 'volatile'"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:117:11
 pub const __PROGRAM_START = @compileError("unable to translate macro: undefined identifier `__cmsis_start`"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:169:9
 pub const __INITIAL_SP = @compileError("unable to translate macro: undefined identifier `__StackTop`"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:173:9
 pub const __STACK_LIMIT = @compileError("unable to translate macro: undefined identifier `__StackLimit`"); // ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:177:9
