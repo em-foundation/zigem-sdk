@@ -12,6 +12,9 @@ pub const ConsoleUart = x_ConsoleUart.unwrap();
 pub const x_GlobalInterrupts = em__unit.proxy("GlobalInterrupts", em.Import.@"em.hal/GlobalInterruptsI");
 pub const GlobalInterrupts = x_GlobalInterrupts.unwrap();
 
+pub const x_Idle = em__unit.proxy("Idle", em.Import.@"em.hal/IdleI");
+pub const Idle = x_Idle.unwrap();
+
 pub const x_Mcu = em__unit.proxy("Mcu", em.Import.@"em.hal/McuI");
 pub const Mcu = x_Mcu.unwrap();
 

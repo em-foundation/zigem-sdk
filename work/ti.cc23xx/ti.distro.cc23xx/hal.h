@@ -10,8 +10,10 @@ typedef int __copy_table_t;
 
 #include "inc/hw_ckmd.h"
 #include "inc/hw_clkctl.h"
+#include "inc/hw_evtull.h"
 #include "inc/hw_gpio.h"
 #include "inc/hw_ioc.h"
 #include "inc/hw_memmap.h"
+#include "inc/hw_pmctl.h"
 #include "inc/hw_types.h"
 #include "inc/hw_uart.h"

@@ -60,10 +60,12 @@ pub fn dispatch() void {
 }
 
 pub fn run() noreturn {
+    Common.Idle.wakeup();
     Common.GlobalInterrupts.enable();
     while (true) {
         _ = Common.GlobalInterrupts.enable();
         dispatch();
+        Common.Idle.exec();
     }
 }
 

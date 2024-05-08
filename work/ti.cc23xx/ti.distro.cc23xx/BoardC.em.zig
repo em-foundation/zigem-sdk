@@ -17,6 +17,7 @@ pub const DbgC = em__unit.Generate("DbgC", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const DbgD = em__unit.Generate("DbgD", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const Debug = em.Import.@"em.lang/Debug";
 pub const GlobalInterrupts = em.Import.@"em.arch.arm/GlobalInterrupts";
+pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
 pub const LinkerC = em.Import.@"em.build.misc/LinkerC";
 pub const Mcu = em.Import.@"ti.mcu.cc23xx/Mcu";
 pub const StartupC = em.Import.@"em.arch.arm/StartupC";
@@ -32,8 +33,9 @@ pub fn em__configureH() void {
     AppOutUart.x_TxPin.set(AppOutPin);
     BoardController.x_Led.set(SysLed);
     Common.x_BusyWait.set(BusyWait);
-    Common.x_GlobalInterrupts.set(GlobalInterrupts);
     Common.x_ConsoleUart.set(AppOutUart);
+    Common.x_GlobalInterrupts.set(GlobalInterrupts);
+    Common.x_Idle.set(Idle);
     Common.x_Mcu.set(Mcu);
     DbgA.c_pin.set(23);
     DbgB.c_pin.set(25);
