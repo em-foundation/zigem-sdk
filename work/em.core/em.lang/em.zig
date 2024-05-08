@@ -28,6 +28,10 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             return T;
         }
 
+        pub fn addElem(_: Self, elem: T) void {
+            _list.append(elem) catch fail();
+        }
+
         pub fn alloc(_: Self, init: anytype) Ref(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
@@ -282,6 +286,17 @@ pub fn Ref(T: type) type {
         obj: *T,
     };
 }
+
+pub const StringH = struct {
+    const Self = @This();
+    _txt: []const u8 = "",
+    pub fn add(self: *Self, txt: []const u8) void {
+        self._txt = sprint("{s}{s}", .{ self._txt, txt });
+    }
+    pub fn get(self: Self) []const u8 {
+        return self._txt;
+    }
+};
 
 pub const text_t = []const u8;
 

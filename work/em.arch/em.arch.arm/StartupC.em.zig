@@ -7,7 +7,6 @@ pub const EM__HOST = null;
 
 pub fn em__generateH() void {
     genArmStartup();
-    genIntr();
     genStartup();
 }
 
@@ -71,39 +70,6 @@ fn genArmStartup() void {
         \\#endif
     ;
     em.writeFile(em.out_root, "arm-startup.c", txt);
-}
-
-fn genIntr() void {
-    const txt =
-        \\#include <stdbool.h>
-        \\#include <stdint.h>
-        \\
-        \\typedef void( *intfunc )( void );
-        \\typedef union { intfunc fxn; void* ptr; } intvec_elem;
-        \\
-        \\extern uint32_t __stack_top__;
-        \\extern void em__start( void );
-        \\const intvec_elem  __attribute__((section(".intvec"))) __vector_table[] = {
-        \\    { .ptr = (void*)&__stack_top__ },
-        \\    { .fxn = em__start },
-        \\
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\ };
-    ;
-    em.writeFile(em.out_root, "intr.c", txt);
 }
 
 fn genStartup() void {
