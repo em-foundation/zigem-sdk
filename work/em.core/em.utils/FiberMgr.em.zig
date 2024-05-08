@@ -5,12 +5,12 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const FiberBodyFxn = em.Func(*const fn (arg: usize) void);
+pub const FiberBodyFxn = fn (arg: usize) void;
 
 pub const Fiber = struct {
     const Self = @This();
     link: ?*Fiber = null,
-    fxn: FiberBodyFxn,
+    fxn: em.Func(FiberBodyFxn),
     arg: usize = 0,
     pub fn post(self: *Self) void {
         Fiber_post(self);
@@ -21,7 +21,7 @@ pub const a_heap = em__unit.array("a_heap", Fiber);
 
 pub const EM__HOST = {};
 
-pub fn createH(fxn: FiberBodyFxn) em.Ref(Fiber) {
+pub fn createH(fxn: em.Func(FiberBodyFxn)) em.Ref(Fiber) {
     const fiber = a_heap.alloc(.{ .fxn = fxn });
     return fiber;
 }
@@ -34,7 +34,7 @@ var ready_list = struct {
     head: ?*Fiber = null,
     tail: ?*Fiber = null,
     fn empty(self: *Self) bool {
-        return self.head != null;
+        return self.head == null;
     }
     fn give(self: *Self, elem: *Fiber) void {
         if (self.empty()) self.head = elem;
@@ -69,16 +69,6 @@ pub fn run() noreturn {
 
 fn Fiber_post(self: *Fiber) void {
     const key = Common.GlobalInterrupts.disable();
-    if (self.link != null) ready_list.give(self);
+    if (self.link == null) ready_list.give(self);
     Common.GlobalInterrupts.restore(key);
 }
-
-//def run()
-//    Common.Idle.wakeup()
-//    Common.GlobalInterrupts.enable()
-//    for ;;
-//        Common.GlobalInterrupts.disable()
-//        dispatch()
-//        Common.Idle.exec()
-//    end
-//end

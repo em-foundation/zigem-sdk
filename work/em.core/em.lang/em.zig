@@ -170,6 +170,17 @@ pub fn Func(FT: type) type {
         _upath: []const u8,
         _fname: []const u8,
         _fxn: ?*const FT,
+        pub fn toString(self: @This()) []const u8 {
+            const fmt =
+                \\blk: {{
+                \\    const u = @field(em.Import, "{s}");
+                \\    const f = @field(u, "{s}");
+                \\    break :blk f;
+                \\}}
+            ;
+            const fval = sprint(fmt, .{ self._upath, self._fname });
+            return sprint("em.Func({s}){{ ._fxn = {s} }}", .{ mkTypeName(FT), fval });
+        }
         pub fn unwrap(self: @This()) *const FT {
             return self._fxn.?;
         }
@@ -243,7 +254,7 @@ fn _ProxyV(u: type) type {
 }
 
 pub fn Ref(T: type) type {
-    return struct {
+    if (hosted) return struct {
         const Self = @This();
         pub const _em__builtin = {};
         upath: []const u8,
@@ -254,6 +265,19 @@ pub fn Ref(T: type) type {
             const a = @field(u, self.aname);
             return @constCast(&(a.unwrap()[self.idx]));
         }
+        pub fn toString(self: Self) []const u8 {
+            const fmt =
+                \\blk: {{
+                \\    const u = @field(em.Import, "{s}");
+                \\    const a = @field(u, "{s}");
+                \\    break :blk @constCast(&(a.unwrap()[{d}]));
+                \\}}
+            ;
+            const oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
+            return sprint("em.Ref({s}){{ .obj = {s} }}", .{ mkTypeName(T), oval });
+        }
+    } else return struct {
+        obj: *T,
     };
 }
 
@@ -411,8 +435,9 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
 }
 
 pub fn toStringAux(v: anytype) []const u8 { // TODO -- generalze indent
-    const ti = @typeInfo(@TypeOf(v));
-    const tn = @typeName(@TypeOf(v));
+    const T = @TypeOf(v);
+    const ti = @typeInfo(T);
+    const tn = @typeName(T);
     switch (ti) {
         .Null => {
             return "null";
@@ -431,11 +456,15 @@ pub fn toStringAux(v: anytype) []const u8 { // TODO -- generalze indent
             return sprint("{s}.{s}", .{ mkTypeImport(tn), @tagName(v) });
         },
         .Struct => {
-            var res: []const u8 = sprint("{s}{{", .{mkTypeImport(tn)});
-            inline for (ti.Struct.fields) |fld| {
-                res = sprint("{s} .{s} = {s},", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
+            if (@hasDecl(T, "_em__builtin")) {
+                return v.toString();
+            } else {
+                var res: []const u8 = sprint("{s}{{", .{mkTypeImport(tn)});
+                inline for (ti.Struct.fields) |fld| {
+                    res = sprint("{s} .{s} = {s},", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
+                }
+                return sprint("{s}}}", .{res});
             }
-            return sprint("{s}}}", .{res});
         },
         .Array => {
             var res: []const u8 = ".{";
