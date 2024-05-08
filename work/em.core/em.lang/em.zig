@@ -70,7 +70,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn unwrap(_: Self) []T {
-            return {};
+            return _list.items;
         }
     };
 }

@@ -40,7 +40,21 @@ pub fn em__initH() void {
 
 pub fn em__generateH() void {
     var sbuf = em.StringH{};
+    for (a_name_tab.unwrap()) |n| {
+        if (n == null) continue;
+        sbuf.add(em.sprint("#define __{s}_isr DEFAULT_isr\n", .{n.?}));
+    }
+    sbuf.add("// used\n");
+    for (a_used_tab.unwrap()) |n| {
+        sbuf.add(em.sprint(
+            \\#undef __{s}_isr
+            \\#define __{0s}_isr {0s}_isr
+            \\extern void {0s}_isr( void );
+            \\
+        , .{n}));
+    }
     sbuf.add(
+        \\
         \\#include <stdbool.h>
         \\#include <stdint.h>
         \\
@@ -49,26 +63,18 @@ pub fn em__generateH() void {
         \\
         \\extern uint32_t __stack_top__;
         \\extern void em__start( void );
+        \\extern void DEFAULT_isr( void );
+        \\
         \\const intvec_elem  __attribute__((section(".intvec"))) __vector_table[] = {
         \\    { .ptr = (void*)&__stack_top__ },
         \\    { .fxn = em__start },
         \\
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\     0,
-        \\};
     );
+    for (a_name_tab.unwrap()) |n| {
+        const s = if (n == null) "0" else em.sprint("__{s}_isr", .{n.?});
+        sbuf.add(em.sprint("    {s},\n", .{s}));
+    }
+    sbuf.add("};\n");
     em.writeFile(em.out_root, "intr.c", sbuf.get());
 }
 
