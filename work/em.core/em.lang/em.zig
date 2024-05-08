@@ -259,6 +259,8 @@ fn _ProxyV(u: type) type {
     };
 }
 
+pub const ptr_t = ?*anyopaque;
+
 pub fn Ref(T: type) type {
     if (hosted) return struct {
         const Self = @This();
