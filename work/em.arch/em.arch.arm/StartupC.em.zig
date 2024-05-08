@@ -37,7 +37,7 @@ fn genArmStartup() void {
         \\    unsigned int bssSize;
         \\} __em_desc_t;
         \\
-        \\extern void __attribute__((section(".start"))) em__start() {
+        \\extern void __attribute__((section(".start"), noreturn)) em__start() {
         \\
         \\    if (!__is_warm()) {
         \\        uint32_t *src;
@@ -60,6 +60,7 @@ fn genArmStartup() void {
         \\    }
         \\
         \\    main();
+        \\    __builtin_unreachable();
         \\}
         \\
         \\#if __EM_BOOT_FLASH__ == 1
