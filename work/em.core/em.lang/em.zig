@@ -7,6 +7,8 @@ pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
 const targ = @import("../../.gen/targ.zig");
 const type_map = @import("../../.gen/type_map.zig");
 
+pub const assert = std.debug.assert;
+
 pub const hosted = !@hasDecl(targ, "_em_targ");
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -369,7 +371,7 @@ pub fn Template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
-pub fn fail() noreturn {
+pub fn fail() void {
     if (hosted) {
         std.log.info("em.fail", .{});
         std.process.exit(1);
@@ -382,7 +384,7 @@ pub fn getHeap() std.mem.Allocator {
     return arena.allocator();
 }
 
-pub fn halt() noreturn {
+pub fn halt() void {
     if (hosted) {
         std.log.info("em.halt", .{});
         std.process.exit(0);

@@ -59,7 +59,7 @@ pub fn dispatch() void {
     }
 }
 
-pub fn run() noreturn {
+pub fn run() void {
     Common.Idle.wakeup();
     Common.GlobalInterrupts.enable();
     while (true) {
