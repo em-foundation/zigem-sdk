@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 typedef int __copy_table_t;
+#define __COMPILER_BARRIER()  // suppress
 
 #include "inc/cc23x0r5.h"
 #include "../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h"
