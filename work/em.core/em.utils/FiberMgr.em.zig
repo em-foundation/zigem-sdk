@@ -5,13 +5,13 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const FiberBodyFxn = fn (arg: usize) void;
+pub const FiberBodyFxn = fn (arg: em.ptr_t) void;
 
 pub const Fiber = struct {
     const Self = @This();
     link: ?*Fiber = null,
     fxn: em.Func(FiberBodyFxn),
-    arg: usize = 0,
+    arg: em.ptr_t = null,
     pub fn post(self: *Self) void {
         Fiber_post(self);
     }

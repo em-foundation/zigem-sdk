@@ -30,7 +30,7 @@ pub fn em__run() void {
 
 var count: u8 = 5;
 
-pub fn blinkFB(_: usize) void {
+pub fn blinkFB(_: em.ptr_t) void {
     if (em.hosted) return;
     em.@"%%[d]"();
     count -= 1;
