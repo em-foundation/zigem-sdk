@@ -8,18 +8,9 @@ const Session = @import("./Session.zig");
 var t0: f80 = 0.0;
 
 var params = struct {
-    bundle: []const u8 = ".",
     unit: []const u8 = undefined,
+    work: []const u8 = ".",
 }{};
-
-var bundle_opt = cli.Option{
-    .long_name = "bundle",
-    .short_alias = 'b',
-    .help = "Specify the working bundle",
-    .required = false,
-    .value_name = "BPATH",
-    .value_ref = cli.mkRef(&params.bundle),
-};
 
 var unit_opt = cli.Option{
     .long_name = "unit",
@@ -30,10 +21,20 @@ var unit_opt = cli.Option{
     .value_ref = cli.mkRef(&params.unit),
 };
 
+var work_opt = cli.Option{
+    .long_name = "workspace",
+    .short_alias = 'w',
+    .help = "Root location of the workspace",
+    .required = false,
+    .value_name = "WPATH",
+    .value_ref = cli.mkRef(&params.work),
+};
+
 var build_cmd = cli.Command{
     .name = "build",
     .options = &.{
         &unit_opt,
+        &work_opt,
     },
     .target = cli.CommandTarget{
         .action = cli.CommandAction{ .exec = doBuild },
@@ -43,10 +44,20 @@ var build_cmd = cli.Command{
 var clean_cmd = cli.Command{
     .name = "clean",
     .options = &.{
-        &bundle_opt,
+        &work_opt,
     },
     .target = cli.CommandTarget{
         .action = cli.CommandAction{ .exec = doClean },
+    },
+};
+
+var refresh_cmd = cli.Command{
+    .name = "refresh",
+    .options = &.{
+        &work_opt,
+    },
+    .target = cli.CommandTarget{
+        .action = cli.CommandAction{ .exec = doRefresh },
     },
 };
 
@@ -57,6 +68,7 @@ const app = &cli.App{
             .subcommands = &.{
                 &build_cmd,
                 &clean_cmd,
+                &refresh_cmd,
             },
         },
     },
@@ -94,8 +106,9 @@ fn doBuild() !void {
     const idx = std.mem.indexOf(u8, path, "/").?;
     const bn = path[0..idx];
     const un = path[idx + 1 ..];
-    try Session.activate(bn, .BUILD, null);
-    try Session.generate(un);
+    try Session.activate(params.work, .BUILD, bn);
+    try Session.doRefresh();
+    try Session.doBuild(un);
     try writer.print("compiling HOST ...\n", .{});
     var stdout = try execMake("host");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
@@ -108,7 +121,12 @@ fn doBuild() !void {
 }
 
 fn doClean() !void {
-    try Session.activate(params.bundle, .CLEAN, null);
+    try Session.activate(params.work, .CLEAN, null);
+}
+
+fn doRefresh() !void {
+    try Session.activate(params.work, .REFRESH, null);
+    try Session.doRefresh();
 }
 
 fn execMake(goal: []const u8) ![]const u8 {

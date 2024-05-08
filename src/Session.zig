@@ -9,18 +9,17 @@ const Setup = @import("./Setup.zig");
 pub const Mode = enum {
     BUILD,
     CLEAN,
+    REFRESH,
 };
 
-var cur_bpath: []const u8 = undefined;
 var cur_mode: Mode = undefined;
 var gen_root: []const u8 = undefined;
 var out_root: []const u8 = undefined;
 var work_root: []const u8 = undefined;
 
-pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
-    cur_bpath = try Fs.normalize(bundle);
+pub fn activate(work: []const u8, mode: Mode, bundle: ?[]const u8) !void {
+    work_root = try Fs.normalize(work);
     cur_mode = mode;
-    work_root = Fs.dirname(cur_bpath);
     gen_root = Fs.slashify(Fs.join(&.{ work_root, ".gen" }));
     out_root = Fs.slashify(Fs.join(&.{ work_root, ".out" }));
     Fs.delete(gen_root);
@@ -29,11 +28,22 @@ pub fn activate(bundle: []const u8, mode: Mode, _: ?[]const u8) !void {
     Fs.mkdirs(work_root, ".gen");
     Fs.mkdirs(work_root, ".out");
     Fs.chdir(work_root);
-    const bname = Fs.basename(cur_bpath);
     try BundlePath.add(work_root, "em.core");
-    try BundlePath.add(work_root, bname);
+    if (bundle != null) try BundlePath.add(work_root, bundle.?);
     try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
     try BundlePath.add(work_root, getDistroBundle());
+}
+
+pub fn doBuild(upath: []const u8) !void {
+    const uname = mkUname(upath);
+    try genStubs("host", uname, "pub");
+    try genStubs("targ", uname, "export");
+}
+
+pub fn doRefresh() !void {
+    try genEmStub();
+    try genTarg();
+    try genUnits();
 }
 
 fn getDistroBundle() []const u8 {
@@ -44,15 +54,6 @@ fn getDistroBundle() []const u8 {
 fn getDistroPkg() []const u8 {
     const distro = Setup.get().object.get("em__distro").?.string;
     return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
-}
-
-pub fn generate(upath: []const u8) !void {
-    try genEmStub();
-    try genTarg();
-    try genUnits();
-    const uname = mkUname(upath);
-    try genStubs("host", uname, "pub");
-    try genStubs("targ", uname, "export");
 }
 
 fn genEmStub() !void {
