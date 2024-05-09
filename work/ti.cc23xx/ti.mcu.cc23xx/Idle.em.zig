@@ -20,7 +20,7 @@ pub fn em__startup() void {
 
 fn doWait() void {
     if (em.hosted) return;
-    em.@"%%[b:]"(1);
+    em.@"%%[b:]"(0);
     em.@"%%[b-]"();
     set_PRIMASK(1);
     asm volatile ("wfi");
