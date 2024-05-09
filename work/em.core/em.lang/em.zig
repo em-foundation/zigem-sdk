@@ -372,6 +372,10 @@ pub const Unit = struct {
     }
 };
 
+pub fn CB(ParamsType: type) type {
+    return *const fn (params: ParamsType) void;
+}
+
 pub fn Composite(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .composite, opts);
 }
@@ -386,10 +390,6 @@ pub fn Module(This: type, opts: UnitOpts) Unit {
 
 pub fn Template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
-}
-
-pub fn Handler(ParamsType: type) type {
-    return *const fn (params: ParamsType) void;
 }
 
 pub fn fail() void {

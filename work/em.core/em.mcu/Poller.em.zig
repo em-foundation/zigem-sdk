@@ -16,7 +16,7 @@ pub const EM__TARG = null;
 
 var active_flag: bool = false;
 
-fn handler(_: em.ptr_t) void {
+fn handler(_: OneShot.Handler_CB) void {
     active_flag = false;
 }
 

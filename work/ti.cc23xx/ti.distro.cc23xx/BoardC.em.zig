@@ -21,7 +21,7 @@ pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
 pub const LinkerC = em.Import.@"em.build.misc/LinkerC";
 pub const Mcu = em.Import.@"ti.mcu.cc23xx/Mcu";
 pub const MsCounter = em.Import.@"ti.mcu.cc23xx/MsCounterGpt3";
-//pub const OneShot = em.Import.@"ti.mcu.cc23xx/OneShotGpt3";
+pub const OneShot = em.Import.@"ti.mcu.cc23xx/OneShotGpt3";
 pub const Poller = em.Import.@"em.mcu/Poller";
 pub const StartupC = em.Import.@"em.arch.arm/StartupC";
 pub const SysLed = em__unit.Generate("SysLed", em.Import.@"em.utils/LedT");
@@ -49,7 +49,7 @@ pub fn em__configureH() void {
     Debug.x_DbgB.set(DbgB);
     Debug.x_DbgC.set(DbgC);
     Debug.x_DbgD.set(DbgD);
-    //Poller.x_OneShot.set(OneShot);
+    Poller.x_OneShot.set(OneShot);
     SysLedPin.c_pin.set(14);
     SysLed.x_Pin.set(SysLedPin);
 }

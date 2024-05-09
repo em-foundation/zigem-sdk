@@ -11,47 +11,24 @@ pub const EM__HOST = null;
 
 pub const EM__TARG = null;
 
+var active_flag = false;
+
 pub fn em__run() void {
-    em.halt();
+    Common.GlobalInterrupts.enable();
+    for (0..5) |_| {
+        em.@"%%[d]"();
+        AppLed.on();
+        Common.BusyWait.wait(5000);
+        AppLed.off();
+        active_flag = true;
+        OneShot.enable(100, &handler, null);
+        while (active_flag) {
+            Common.Idle.exec();
+        }
+    }
 }
 
-//package em.examples.basic
-//
-//from em$distro import BoardC
-//from BoardC import AppLed
-//
-//from em$distro import McuC
-//from McuC import OneShotMilli
-//
-//from em.mcu import Common
-//
-//module OneShot1P
-//
-//private:
-//
-//    function handler: OneShotMilli.Handler
-//
-//    var doneFlag: bool volatile = true
-//
-//end
-//
-//def em$run()
-//    Common.GlobalInterrupts.enable()
-//    for auto i = 0; i < 5; i++
-//        %%[d]
-//        AppLed.on()
-//        Common.BusyWait.wait(5000)
-//        AppLed.off()
-//        doneFlag = false
-//        OneShotMilli.enable(100, handler)
-//        while !doneFlag
-//            Common.Idle.exec()
-//        end
-//    end
-//end
-//
-//def handler(arg)
-//    %%[c]
-//    doneFlag = true
-//end
-//
+fn handler(_: OneShot.Handler_CB) void {
+    em.@"%%[c]"();
+    active_flag = false;
+}
