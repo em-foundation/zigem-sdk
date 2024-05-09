@@ -388,6 +388,10 @@ pub fn Template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
+pub fn Handler(ParamsType: type) type {
+    return *const fn (params: ParamsType) void;
+}
+
 pub fn fail() void {
     if (hosted) {
         std.log.info("em.fail", .{});

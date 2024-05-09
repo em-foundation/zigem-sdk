@@ -17,6 +17,6 @@ pub fn em__run() void {
     Common.Idle.exec();
 }
 
-fn handler(_: em.ptr_t) void {
+fn handler(_: OneShotMilli.HandlerP) void {
     em.@"%%[d-]"();
 }

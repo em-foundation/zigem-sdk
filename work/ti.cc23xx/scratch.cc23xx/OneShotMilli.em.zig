@@ -21,7 +21,10 @@ const reg = em.reg;
 var cur_arg: em.ptr_t = null;
 var cur_fxn: ?Handler = null;
 
-pub const Handler = *const fn (arg: em.ptr_t) void;
+pub const Handler = em.Handler(HandlerP);
+pub const HandlerP = struct {
+    arg: em.ptr_t,
+};
 
 pub fn disable() void {
     cur_fxn = null;
@@ -42,5 +45,5 @@ pub fn enable(msecs: u32, handler: Handler, arg: em.ptr_t) void {
 export fn LGPT3_COMB_isr() void {
     const fxn = cur_fxn;
     disable();
-    if (fxn != null) fxn.?(cur_arg);
+    if (fxn != null) fxn.?(HandlerP{ .arg = cur_arg });
 }
