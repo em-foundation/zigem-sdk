@@ -12,6 +12,8 @@ pub fn em__generateS(comptime name: []const u8) type {
             .name = name,
         });
 
+        pub const Poller = em.Import.@"em.mcu/Poller";
+
         pub const c_active_low = @This().em__unit.config("active_low", bool);
         pub const x_Pin = @This().em__unit.proxy("Pin", em.Import.@"em.hal/GpioI");
 
@@ -41,6 +43,12 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub fn toggle() void {
             Pin.toggle();
+        }
+
+        pub fn wink(msecs: u32) void {
+            on();
+            Poller.pause(msecs);
+            off();
         }
     };
 }
