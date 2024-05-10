@@ -1,4 +1,4 @@
 .{
     .name = "ti.cc23xx.A",
-    .requires = .{ "em.arch", "em.build" },
+    .requires = .{ "em.arch", "em.bench", "em.build" },
 }

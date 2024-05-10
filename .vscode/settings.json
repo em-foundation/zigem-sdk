@@ -23,6 +23,7 @@
             "icon": "embundle",
             "extensions": [
                 "em.arch",
+                "em.bench",
                 "em.build",
                 "em.core",
                 "em.test",
