@@ -175,7 +175,7 @@ pub fn Func(FT: type) type {
         pub const _em__builtin = {};
         _upath: []const u8,
         _fname: []const u8,
-        _fxn: ?*const FT,
+        _fxn: ?FT,
         pub fn toString(self: @This()) []const u8 {
             const fmt =
                 \\blk: {{
@@ -185,14 +185,18 @@ pub fn Func(FT: type) type {
                 \\}}
             ;
             const fval = sprint(fmt, .{ self._upath, self._fname });
-            return sprint("em.Func({s}){{ ._fxn = {s} }}", .{ mkTypeName(FT), fval });
+            const tn = comptime @typeName(FT);
+            const idx1 = comptime std.mem.indexOf(u8, tn, "(").?;
+            const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
+            const tn_par = comptime tn[idx1 + 1 .. idx2];
+            return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
         }
-        pub fn unwrap(self: @This()) *const FT {
+        pub fn unwrap(self: @This()) FT {
             return self._fxn.?;
         }
     } else return struct {
-        _fxn: ?*const FT,
-        pub fn unwrap(self: @This()) *const FT {
+        _fxn: ?FT,
+        pub fn unwrap(self: @This()) FT {
             return self._fxn.?;
         }
     };
@@ -345,7 +349,7 @@ pub const Unit = struct {
     }
 
     pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn)) {
-        return Func(@TypeOf(fxn)){ ._upath = self.upath, ._fname = name, ._fxn = &fxn };
+        return Func(@TypeOf(fxn)){ ._upath = self.upath, ._fname = name, ._fxn = fxn };
     }
 
     pub fn proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
@@ -457,7 +461,7 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
 }
 
-pub fn toStringAux(v: anytype) []const u8 { // TODO -- generalze indent
+pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
     const T = @TypeOf(v);
     const ti = @typeInfo(T);
     const tn = @typeName(T);
@@ -482,11 +486,11 @@ pub fn toStringAux(v: anytype) []const u8 { // TODO -- generalze indent
             if (@hasDecl(T, "_em__builtin")) {
                 return v.toString();
             } else {
-                var res: []const u8 = sprint("{s}{{", .{mkTypeImport(tn)});
+                var res: []const u8 = sprint("{s}{{\n", .{mkTypeImport(tn)});
                 inline for (ti.Struct.fields) |fld| {
-                    res = sprint("{s} .{s} = {s},", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
+                    res = sprint("    {s} .{s} = {s},\n", .{ res, fld.name, toStringAux(@field(v, fld.name)) });
                 }
-                return sprint("{s}}}", .{res});
+                return sprint("{s}}}\n", .{res});
             }
         },
         .Array => {

@@ -5,12 +5,15 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const FiberBodyFxn = fn (arg: em.ptr_t) void;
+pub const FiberBody = em.CB(FiberBody_CB);
+pub const FiberBody_CB = struct {
+    arg: em.ptr_t,
+};
 
 pub const Fiber = struct {
     const Self = @This();
     link: ?*Fiber = null,
-    fxn: em.Func(FiberBodyFxn),
+    body: em.Func(FiberBody),
     arg: em.ptr_t = null,
     pub fn post(self: *Self) void {
         Fiber_post(self);
@@ -21,8 +24,8 @@ pub const a_heap = em__unit.array("a_heap", Fiber);
 
 pub const EM__HOST = {};
 
-pub fn createH(fxn: em.Func(FiberBodyFxn)) em.Ref(Fiber) {
-    const fiber = a_heap.alloc(.{ .fxn = fxn });
+pub fn createH(body: em.Func(FiberBody)) em.Ref(Fiber) {
+    const fiber = a_heap.alloc(.{ .body = body });
     return fiber;
 }
 
@@ -52,9 +55,9 @@ var ready_list = struct {
 pub fn dispatch() void {
     while (!ready_list.empty()) {
         const fiber = ready_list.take();
-        const fxn = fiber.fxn.unwrap();
+        const body = fiber.body.unwrap();
         Common.GlobalInterrupts.enable();
-        fxn(fiber.arg);
+        body(FiberBody_CB{ .arg = fiber.arg });
         _ = Common.GlobalInterrupts.enable();
     }
 }
