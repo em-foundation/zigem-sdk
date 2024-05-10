@@ -446,6 +446,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
         .generated = opts.generated,
+        .host_only = opts.host_only,
         .inherits = opts.inherits,
         .kind = kind,
         .legacy = opts.legacy,

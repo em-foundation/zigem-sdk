@@ -41,7 +41,6 @@ fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all,
 }
 
 fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
-    if (unit.legacy) return;
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
@@ -104,7 +103,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     ;
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
-        if (u.kind == .module) {
+        if (u.kind == .module and !u.host_only and !u.legacy) {
             try out.print("// {s}\n", .{u.upath});
             try genDecls(u, out);
             try out.print("\n", .{});
