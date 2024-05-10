@@ -2,25 +2,30 @@ const em = @import("../../.gen/em.zig");
 const std = @import("std");
 
 const type_map = @import("../../.gen/type_map.zig");
+var used_set = std.StringHashMap(void).init(em.getHeap());
 
-inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit) void {
+inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_used: bool) void {
     inline for (ulist) |u| {
-        if (@hasDecl(u.self, fname)) {
+        if (@hasDecl(u.self, fname) and (!filter_used or used_set.contains(u.upath))) {
             _ = @call(.auto, @field(u.self, fname), .{});
         }
     }
 }
 
 pub fn exec(top: em.Unit) !void {
-    const BuildC = em.Import.@"em__distro/BuildC";
+    const BuildH = em.Import.@"em__distro/BuildH";
     @setEvalBranchQuota(100_000);
-    const ulist_bot = mkUnitList(top, mkUnitList(BuildC.em__unit, &.{}));
+    const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__unit, &.{}));
     const ulist_top = revUnitList(ulist_bot);
     try validate(ulist_bot);
-    callAll("em__initH", ulist_bot);
-    callAll("em__configureH", ulist_top);
-    callAll("em__constructH", ulist_top);
-    callAll("em__generateH", ulist_bot);
+    callAll("em__initH", ulist_bot, false);
+    callAll("em__configureH", ulist_top, false);
+    try mkUsedSet(top);
+    try mkUsedSet(BuildH.em__unit);
+    //var it = used_set.keyIterator();
+    //while (it.next()) |k| em.print("{s}", .{k.*});
+    callAll("em__constructH", ulist_top, true);
+    callAll("em__generateH", ulist_bot, true);
     try genTarg(ulist_bot, ulist_top);
 }
 
@@ -172,6 +177,26 @@ fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const e
         }
     }
     return res ++ .{unit};
+}
+
+fn mkUsedSet(comptime unit: em.Unit) !void {
+    if (unit.kind == .composite or unit.kind == .template) return;
+    if (!unit.legacy) {
+        try used_set.put(unit.upath, {});
+        inline for (@typeInfo(unit.self).Struct.decls) |d| {
+            const ud = @field(unit.self, d.name);
+            if (@TypeOf(ud) == type and @typeInfo(ud) == .Struct) {
+                if (@hasDecl(ud, "em__unit")) {
+                    try mkUsedSet(@as(em.Unit, @field(ud, "em__unit")));
+                } else if (@hasDecl(ud, "_em_proxy")) {
+                    try used_set.put(ud.get(), {});
+                }
+            }
+            if (@TypeOf(ud) == type and @typeInfo(ud) == .Struct and @hasDecl(ud, "em__unit")) {
+                try mkUsedSet(@as(em.Unit, @field(ud, "em__unit")));
+            }
+        }
+    }
 }
 
 fn printDecls(unit: em.Unit) !void {

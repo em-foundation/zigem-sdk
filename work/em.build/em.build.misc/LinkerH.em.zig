@@ -1,7 +1,9 @@
 pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Composite(@This(), .{});
+pub const em__unit = em.Module(@This(), .{
+    .host_only = true,
+});
 
 pub const EM__HOST = null;
 

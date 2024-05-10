@@ -1,12 +1,14 @@
 pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Composite(@This(), .{});
+pub const em__unit = em.Module(@This(), .{
+    .host_only = true,
+});
 
 pub const BoardC = em.Import.@"em__distro/BoardC";
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
-pub const LinkerC = em.Import.@"em.build.misc/LinkerC";
-pub const StartupC = em.Import.@"em.arch.arm/StartupC";
+pub const LinkerH = em.Import.@"em.build.misc/LinkerH";
+pub const StartupH = em.Import.@"em.arch.arm/StartupH";
 
 pub const EM__HOST = null;
 

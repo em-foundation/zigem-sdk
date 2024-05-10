@@ -315,6 +315,7 @@ pub const UnitKind = enum {
 
 pub const UnitOpts = struct {
     name: ?[]const u8 = null,
+    host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,
@@ -326,6 +327,7 @@ pub const Unit = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
+    host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,

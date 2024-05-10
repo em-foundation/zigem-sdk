@@ -18,12 +18,10 @@ pub const DbgD = em__unit.Generate("DbgD", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const Debug = em.Import.@"em.lang/Debug";
 pub const GlobalInterrupts = em.Import.@"em.arch.arm/GlobalInterrupts";
 pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
-pub const LinkerC = em.Import.@"em.build.misc/LinkerC";
 pub const Mcu = em.Import.@"ti.mcu.cc23xx/Mcu";
 pub const MsCounter = em.Import.@"ti.mcu.cc23xx/MsCounterGpt3";
 pub const OneShot = em.Import.@"ti.mcu.cc23xx/OneShotGpt3";
 pub const Poller = em.Import.@"em.mcu/Poller";
-pub const StartupC = em.Import.@"em.arch.arm/StartupC";
 pub const SysLed = em__unit.Generate("SysLed", em.Import.@"em.utils/LedT");
 pub const SysLedPin = em__unit.Generate("SysLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
 

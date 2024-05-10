@@ -9,7 +9,7 @@ pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 
 pub const EM__HOST = null;
 
-pub fn em__configureH() void {
+pub fn em__constructH() void {
     IntrVec.useIntrH("LGPT3_COMB");
 }
 
