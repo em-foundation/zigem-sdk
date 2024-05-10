@@ -5,7 +5,8 @@ host:
 	@touch .gen/targ.zig
 	@rm -rf .out/*
 	@zig build-exe -femit-bin=.out/host-main.exe .main-host.zig
-	@.out/host-main.exe
+	@.out/host-main.exe 
+	@zig fmt .gen/targ.zig 2>&1 >/dev/null
 
 hal:
 	@zig translate-c $(DISTRO)/hal.h > $(DISTRO)/hal.zig
