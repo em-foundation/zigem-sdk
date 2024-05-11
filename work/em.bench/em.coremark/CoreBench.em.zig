@@ -1,8 +1,14 @@
 pub const EM__SPEC = null;
 
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__unit = em.Module(@This(), .{
+    .inherits = em.Import.@"em.coremark/BenchAlgI",
+});
 
+pub const Crc = em.Import.@"em.coremark/Crc";
+pub const ListBench = em.Import.@"em.coremark/ListBench";
+pub const MatrixBench = em.Import.@"em.coremark/MatrixBench";
+pub const StateBench = em.Import.@"em.coremark/StateBench";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_NUM_ALGS = em__unit.config("NUM_ALGS", u8);
@@ -16,7 +22,10 @@ pub fn em__initH() void {
 }
 
 pub fn em__configureH() void {
-    //
+    const memsize = c_TOTAL_DATA_SIZE.get() / c_NUM_ALGS.get();
+    ListBench.c_memsize.set(memsize);
+    MatrixBench.c_memsize.set(memsize);
+    StateBench.c_memsize.set(memsize);
 }
 
 pub fn em__constructH() void {
@@ -26,6 +35,37 @@ pub fn em__constructH() void {
 }
 
 pub const EM__TARG = null;
+
+pub fn dump() void {
+    ListBench.dump();
+    MatrixBench.dump();
+    StateBench.dump();
+}
+
+pub fn kind() Utils.Kind {
+    return .FINAL;
+}
+
+pub fn print() void {
+    ListBench.print();
+    MatrixBench.print();
+    StateBench.print();
+}
+
+pub fn run(_: i16) Utils.sum_t {
+    var crc = ListBench.run(1);
+    Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
+    crc = ListBench.run(-1);
+    Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
+    Utils.bindCrc(.LIST, Utils.getCrc(.FINAL));
+    return Utils.getCrc(.FINAL);
+}
+
+pub fn setup() void {
+    ListBench.setup();
+    MatrixBench.setup();
+    StateBench.setup();
+}
 
 //package em.coremark
 //
