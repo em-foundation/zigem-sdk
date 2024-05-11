@@ -26,6 +26,8 @@ pub fn bindSeedH(idx: u8, val: seed_t) void {
 
 pub const EM__TARG = null;
 
+export const v_seed_tab = if (!em.hosted) seed_tab.unwrap() else [_]seed_t{0};
+
 pub fn bindCrc(kind: Kind, crc: sum_t) void {
     const p = &crc_tab.unwrap()[@intFromEnum(kind)];
     if (p.* == 0) p.* = crc;
@@ -36,7 +38,8 @@ pub fn getCrc(kind: Kind) sum_t {
 }
 
 pub fn getSeed(idx: u8) seed_t {
-    return seed_tab.unwrap()[idx - 1];
+    const p: *volatile u16 = @constCast(&v_seed_tab[idx - 1]);
+    return p.*;
 }
 
 pub fn setCrc(kind: Kind, crc: sum_t) void {

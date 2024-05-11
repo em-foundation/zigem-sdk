@@ -126,6 +126,9 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     try genCall("em__reset", ulist_top, .first, out);
     try genCall("em__startup", ulist_bot, .all, out);
     try genCall("em__ready", ulist_top, .first, out);
+    for (0..3) |_| {
+        try out.print("    asm volatile (\"nop\");\n", .{});
+    }
     try out.print("    ", .{});
     try genImport(ulist_top[0].upath, out);
     try out.print(".em__run();\n", .{});

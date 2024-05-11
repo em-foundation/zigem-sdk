@@ -5,6 +5,7 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
 
+pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_memsize = em__unit.config("memsize", u16);
@@ -28,9 +29,7 @@ pub fn print() void {
 }
 
 pub fn run(arg: i16) Utils.sum_t {
-    // TODO
-    _ = arg;
-    return 0;
+    return Crc.add16(arg, Utils.getSeed(2));
 }
 
 pub fn setup() void {
