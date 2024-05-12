@@ -5,21 +5,115 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
 
+pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
+pub const matdat_t = i16;
+pub const matres_t = i32;
+
+pub const c_dimN = em__unit.config("dimN", usize);
+
+pub var a_matA = em__unit.array("a_matA", matdat_t);
+pub var a_matB = em__unit.array("a_matB", matdat_t);
+pub var a_matC = em__unit.array("a_matC", matres_t);
+
 pub const EM__HOST = null;
 
+pub fn em__constructH() void {
+    var i: usize = 0;
+    var j: usize = 0;
+    while (j < c_memsize.get()) {
+        i += 1;
+        j = i * i * 2 * 4;
+    }
+    const d = i - 1;
+    a_matA.setLen(d * d);
+    a_matB.setLen(d * d);
+    a_matC.setLen(d * d);
+    c_dimN.set(d);
+}
+
 pub const EM__TARG = null;
+
+const dimN = c_dimN.unwrap();
+
+var matA = a_matA.unwrap();
+var matB = a_matB.unwrap();
+var matC = a_matC.unwrap();
+
+fn addVal(val: matdat_t) void {
+    for (0..dimN) |i| {
+        for (0..dimN) |j| {
+            matA[i * dimN + j] += val;
+        }
+    }
+}
+
+fn bix(res: matres_t, lower: u8, upper: u8) matres_t {
+    const r: u32 = @intCast(@as(i32, (@bitCast(res))));
+    const l: u5 = @intCast(lower);
+    const u: u5 = @intCast(upper);
+    return @bitCast((r >> l) & (~(@as(u32, 0xffffffff) << u)));
+}
+
+fn clip(d: matdat_t, b: bool) matdat_t {
+    const x: u16 = @bitCast(d);
+    return @bitCast(x & (if (b) @as(u16, 0x0ff) else @as(u16, 0x0ffff)));
+}
 
 pub fn dump() void {
     // TODO
     return;
 }
 
+fn enlarge(val: matdat_t) matdat_t {
+    return @bitCast(@as(u16, 0xf000) | @as(u16, @bitCast(val)));
+}
+
 pub fn kind() Utils.Kind {
     return .MATRIX;
+}
+
+fn mulMat() void {
+    for (0..dimN) |i| {
+        for (0..dimN) |j| {
+            matC[i * dimN + j] = 0;
+            for (0..dimN) |k| {
+                matC[i * dimN + j] += @as(matres_t, matA[i * dimN + k] * @as(matres_t, matB[i * dimN + j]));
+            }
+        }
+    }
+}
+
+fn mulMatBix() void {
+    for (0..dimN) |i| {
+        for (0..dimN) |j| {
+            matC[i * dimN + j] = 0;
+            for (0..dimN) |k| {
+                const tmp = @as(matres_t, matA[i * dimN + k] * @as(matres_t, matB[i * dimN + j]));
+                matC[i * dimN + j] += bix(tmp, 2, 4) * bix(tmp, 5, 7);
+            }
+        }
+    }
+}
+
+fn mulVal(val: matdat_t) void {
+    for (0..dimN) |i| {
+        for (0..dimN) |j| {
+            matC[i * dimN + j] = @as(matres_t, matA[i * dimN + j]) * @as(matres_t, val);
+        }
+    }
+}
+
+fn mulVec() void {
+    for (0..dimN) |i| {
+        matC[i] = 0;
+        for (0..dimN) |j| {
+            matC[i] += @as(matres_t, matA[i * dimN + j]) * @as(matres_t, matB[j]);
+        }
+    }
 }
 
 pub fn print() void {
@@ -28,14 +122,65 @@ pub fn print() void {
 }
 
 pub fn run(arg: i16) Utils.sum_t {
-    // TODO
-    _ = arg;
-    return 0;
+    var crc: Crc.sum_t = 0;
+    const val: matdat_t = arg;
+    const clipval = enlarge(val);
+    //
+    addVal(val);
+    mulVal(val);
+    crc = Crc.add16(sumDat(clipval), crc);
+    //
+    mulVec();
+    crc = Crc.add16(sumDat(clipval), crc);
+    //
+    mulMat();
+    crc = Crc.add16(sumDat(clipval), crc);
+    //
+    mulMatBix();
+    crc = Crc.add16(sumDat(clipval), crc);
+    //
+    addVal(-val);
+    return Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL));
 }
 
 pub fn setup() void {
-    // TODO
-    return;
+    const s32 = @as(u32, Utils.getSeed(1)) | (@as(u32, Utils.getSeed(2)) << 16);
+    var sd: matdat_t = @intCast(@as(i32, @bitCast(s32)));
+    if (sd == 0) sd = 1;
+    var order: matdat_t = 1;
+    for (0..dimN) |i| {
+        for (0..dimN) |j| {
+            sd = @intCast(@rem(@as(i32, @intCast((order * sd))), 65536));
+            var val: matdat_t = sd + order;
+            val = clip(val, false);
+            matB[i * dimN + j] = val;
+            val += order;
+            val = clip(val, true);
+            matA[i * dimN + j] = val;
+            order += 1;
+        }
+    }
+}
+
+fn sumDat(clipval: matdat_t) matdat_t {
+    var cur: matres_t = 0;
+    var prev: matres_t = 0;
+    var tmp: matres_t = 0;
+    var ret: matdat_t = 0;
+    for (0..dimN) |i| {
+        for (0..dimN) |j| {
+            cur = matC[i * dimN + j];
+            tmp += cur;
+            if (tmp > clipval) {
+                ret += 10;
+                tmp = 0;
+            } else {
+                ret += if (cur > prev) 1 else 0;
+            }
+            prev = cur;
+        }
+    }
+    return ret;
 }
 
 //package em.coremark

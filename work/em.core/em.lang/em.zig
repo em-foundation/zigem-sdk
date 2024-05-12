@@ -20,7 +20,8 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         pub const _em__builtin = {};
         pub const _em__array = {};
 
-        var _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator());
+        _is_virgin: bool = true,
+        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
         const _dpath = dp;
 
@@ -28,49 +29,62 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             return T;
         }
 
-        pub fn addElem(_: Self, elem: T) void {
-            _list.append(elem) catch fail();
+        pub fn addElem(self: *Self, elem: T) void {
+            self._is_virgin = false;
+            self._list.append(elem) catch fail();
         }
 
-        pub fn alloc(_: Self, init: anytype) Ref(T) {
-            const l = _list.items.len;
-            _list.append(std.mem.zeroInit(T, init)) catch fail();
+        pub fn alloc(self: Self, init: anytype) Ref(T) {
+            const l = self._list.items.len;
+            self._list.append(std.mem.zeroInit(T, init)) catch fail();
             const idx = std.mem.indexOf(u8, dp, "__").?;
             return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l };
-        }
-
-        pub fn getElem(_: Self, idx: usize) *T {
-            return &_list.items[idx];
-        }
-
-        pub fn indexOf(_: Self, elem: *T) usize {
-            const p0 = @intFromPtr(&_list.items[0]);
-            const p1 = @intFromPtr(elem);
-            return (p1 - p0) / @sizeOf(T);
-        }
-
-        pub fn len(_: Self) usize {
-            return _list.items.len;
-        }
-
-        pub fn list(_: Self) *std.ArrayList(T) {
-            return &_list;
         }
 
         pub fn dpath(_: Self) []const u8 {
             return _dpath;
         }
 
-        pub fn toString(_: Self) []const u8 {
-            var res: []const u8 = sprint("[_]{s}{{\n", .{mkTypeName(T)});
-            for (_list.items) |e| {
-                res = sprint("{s}    {s},\n", .{ res, toStringAux(e) });
-            }
-            return sprint("{s}}}", .{res});
+        pub fn getElem(self: Self, idx: usize) *T {
+            return &self._list.items[idx];
         }
 
-        pub fn unwrap(_: Self) []T {
-            return _list.items;
+        pub fn indexOf(self: Self, elem: *T) usize {
+            const p0 = @intFromPtr(&self._list.items[0]);
+            const p1 = @intFromPtr(elem);
+            return (p1 - p0) / @sizeOf(T);
+        }
+
+        pub fn len(self: Self) usize {
+            return self._list.items.len;
+        }
+
+        pub fn list(self: Self) *std.ArrayList(T) {
+            return &self._list;
+        }
+
+        pub fn setLen(self: *Self, l: usize) void {
+            if (self.len() >= l) return;
+            const save = self._is_virgin;
+            for (0..l - self.len()) |_| self.addElem(std.mem.zeroes(T));
+            self._is_virgin = save;
+        }
+
+        pub fn toString(self: Self) []const u8 {
+            const tn = mkTypeName(T);
+            if (self._is_virgin) {
+                return sprint("std.mem.zeroes([{d}]{s})", .{ self.len(), tn });
+            }
+            var sb = StringH{};
+            sb.add(sprint("[_]{s}{{", .{tn}));
+            for (self._list.items) |e| {
+                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+            }
+            return sprint("{s}}}", .{sb.get()});
+        }
+
+        pub fn unwrap(self: Self) []T {
+            return self._list.items;
         }
     };
 }

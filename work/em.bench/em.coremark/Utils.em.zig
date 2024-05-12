@@ -10,14 +10,14 @@ pub const Kind = enum { FINAL, LIST, MATRIX, STATE, ZZZ_ };
 pub const seed_t = u16;
 pub const sum_t = u16;
 
-pub const crc_tab = em__unit.array("crc_tab", sum_t);
-pub const seed_tab = em__unit.array("seed_tab", seed_t);
+pub var crc_tab = em__unit.array("crc_tab", sum_t);
+pub var seed_tab = em__unit.array("seed_tab", seed_t);
 
 pub const EM__HOST = null;
 
 pub fn em__initH() void {
-    for (0..@intFromEnum(Kind.ZZZ_)) |_| crc_tab.addElem(0);
-    for (0..NUM_SEEDS) |_| seed_tab.addElem(0);
+    crc_tab.setLen(@intFromEnum(Kind.ZZZ_));
+    seed_tab.setLen(NUM_SEEDS);
 }
 
 pub fn bindSeedH(idx: u8, val: seed_t) void {

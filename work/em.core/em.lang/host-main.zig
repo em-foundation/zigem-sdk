@@ -44,7 +44,7 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
-        if (std.mem.eql(u8, d.name, "EM__HOST")) break;
+        if (std.mem.eql(u8, d.name, "EM__TARG")) break;
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
         if (ti_decl == .Struct and @hasDecl(Decl, "_em__builtin")) {
@@ -98,6 +98,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
         \\pub const _em_targ = {{}};
         \\
         \\const em = @import("em.zig");
+        \\const std = @import("std");
         \\
         \\
     ;

@@ -10,6 +10,10 @@ pub const c_ITERATIONS = em__unit.config("ITERATIONS", u16);
 
 pub const EM__HOST = null;
 
+pub fn em__initH() void {
+    c_ITERATIONS.init(10);
+}
+
 pub const EM__TARG = null;
 
 const ITERATIONS = c_ITERATIONS.unwrap();
@@ -19,13 +23,14 @@ pub fn em__startup() void {
 }
 
 pub fn em__run() void {
-    em.@"%%[d+]"();
+    //em.reg(0x1111).* = Utils.getSeed(3);
+    //em.@"%%[d+]"();
     var i: u16 = 0;
     while (i < ITERATIONS) : (i += 1) {
-        CoreBench.run(0);
+        em.reg(0x1111).* = CoreBench.run(0);
     }
-    em.@"%%[d-]"();
-    em.@"%%[>]"(Utils.getCrc(.FINAL));
+    //em.@"%%[d-]"();
+    //em.@"%%[>]"(Utils.getCrc(.FINAL));
 }
 
 //package em.coremark

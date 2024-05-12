@@ -11,7 +11,61 @@ pub const c_memsize = em__unit.config("memsize", u16);
 
 pub const EM__HOST = null;
 
+pub var a_membuf = em__unit.array("a_membuf", u8);
+
+pub var a_errpat = em__unit.array("a_errpat", []const u8);
+pub var a_fltpat = em__unit.array("a_fltpat", []const u8);
+pub var a_intpat = em__unit.array("a_intpat", []const u8);
+pub var a_scipat = em__unit.array("a_scipat", []const u8);
+
+pub const c_errpat_len = em__unit.config("errpat_len", usize);
+pub const c_fltpat_len = em__unit.config("fltpat_len", usize);
+pub const c_intpat_len = em__unit.config("intpat_len", usize);
+pub const c_scipat_len = em__unit.config("scipat_len", usize);
+
+const errpat_vals = [_][]const u8{ "T0.3e-1F", "-T.T++Tq", "1T3.4e4z", "34.0e-T^" };
+const fltpat_vals = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400" };
+const intpat_vals = [_][]const u8{ "5012", "1234", "-874", "+122" };
+const scipat_vals = [_][]const u8{ "5.500e+3", "-.123e-2", "-87e+832", "+0.6e-12" };
+
+pub fn em__initH() void {
+    for (errpat_vals) |v| a_errpat.addElem(v);
+    for (fltpat_vals) |v| a_fltpat.addElem(v);
+    for (intpat_vals) |v| a_intpat.addElem(v);
+    for (scipat_vals) |v| a_scipat.addElem(v);
+}
+
+pub fn em__constructH() void {
+    a_membuf.setLen(c_memsize.get());
+    c_errpat_len.set(a_errpat.getElem(0).*.len);
+    c_fltpat_len.set(a_fltpat.getElem(0).*.len);
+    c_intpat_len.set(a_intpat.getElem(0).*.len);
+    c_scipat_len.set(a_scipat.getElem(0).*.len);
+}
+
 pub const EM__TARG = null;
+
+const State = enum {
+    START,
+    INVALID,
+    S1,
+    S2,
+    INT,
+    FLOAT,
+    EXPONENT,
+    SCIENTIFIC,
+};
+
+const NUM_STATES = @typeInfo(State).Enum.fields.len;
+
+const memsize = c_memsize.unwrap();
+
+const errpat_len = c_errpat_len.unwrap();
+const fltpat_len = c_fltpat_len.unwrap();
+const intpat_len = c_intpat_len.unwrap();
+const scipat_len = c_scipat_len.unwrap();
+
+var membuf = a_membuf.unwrap();
 
 pub fn dump() void {
     // TODO
@@ -33,9 +87,43 @@ pub fn run(arg: i16) Utils.sum_t {
     return 0;
 }
 
-pub fn setup() void {
-    // TODO
-    return;
+pub fn setup() void { //    auto seed = Utils.getSeed(1)
+    //    auto p = &memBuf[0]
+    //    auto total = 0
+    //    auto pat = ""
+    //    auto plen = 0
+    //    while (total + plen + 1) < (memSize - 1)
+    //        if plen
+    //            for auto i = 0; i < plen; i++
+    //                *p++ = pat[i]
+    //            end
+    //            *p++ = ','
+    //            total += plen + 1
+    //        end
+    //        switch ++seed & 0x7
+    //        case 0
+    //        case 1
+    //        case 2
+    //            pat  = intPat[(seed >> 3) & 0x3]
+    //            plen = intPatLen
+    //            break
+    //        case 3
+    //        case 4
+    //            pat  = fltPat[(seed >> 3) & 0x3]
+    //            plen = fltPatLen
+    //            break
+    //        case 5
+    //        case 6
+    //            pat  = sciPat[(seed >> 3) & 0x3]
+    //            plen = sciPatLen
+    //            break
+    //        case 7
+    //            pat  = errPat[(seed >> 3) & 0x3]
+    //            plen = errPatLen
+    //            break
+    //        end
+    //    end
+    //end
 }
 
 //package em.coremark
