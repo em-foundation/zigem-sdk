@@ -60,6 +60,11 @@ const NUM_STATES = @typeInfo(State).Enum.fields.len;
 
 const memsize = c_memsize.unwrap();
 
+const errpat = a_errpat.unwrap();
+const fltpat = a_fltpat.unwrap();
+const intpat = a_intpat.unwrap();
+const scipat = a_scipat.unwrap();
+
 const errpat_len = c_errpat_len.unwrap();
 const fltpat_len = c_fltpat_len.unwrap();
 const intpat_len = c_intpat_len.unwrap();
@@ -87,43 +92,43 @@ pub fn run(arg: i16) Utils.sum_t {
     return 0;
 }
 
-pub fn setup() void { //    auto seed = Utils.getSeed(1)
-    //    auto p = &memBuf[0]
-    //    auto total = 0
-    //    auto pat = ""
-    //    auto plen = 0
-    //    while (total + plen + 1) < (memSize - 1)
-    //        if plen
-    //            for auto i = 0; i < plen; i++
-    //                *p++ = pat[i]
-    //            end
-    //            *p++ = ','
-    //            total += plen + 1
-    //        end
-    //        switch ++seed & 0x7
-    //        case 0
-    //        case 1
-    //        case 2
-    //            pat  = intPat[(seed >> 3) & 0x3]
-    //            plen = intPatLen
-    //            break
-    //        case 3
-    //        case 4
-    //            pat  = fltPat[(seed >> 3) & 0x3]
-    //            plen = fltPatLen
-    //            break
-    //        case 5
-    //        case 6
-    //            pat  = sciPat[(seed >> 3) & 0x3]
-    //            plen = sciPatLen
-    //            break
-    //        case 7
-    //            pat  = errPat[(seed >> 3) & 0x3]
-    //            plen = errPatLen
-    //            break
-    //        end
-    //    end
-    //end
+pub fn setup() void {
+    if (em.hosted) return;
+    var seed = Utils.getSeed(1);
+    var idx = @as(usize, 0);
+    var total = @as(usize, 0);
+    var pat: []const u8 = "";
+    var plen = @as(usize, 0);
+    while ((total + plen + 1) < (memsize - 1)) {
+        if (plen > 0) {
+            for (0..plen) |i| {
+                membuf[idx] = pat[i];
+                idx += 1;
+            }
+            membuf[idx] = ',';
+            idx += 1;
+            total += plen + 1;
+            seed += 1;
+            switch (@as(u3, @intCast(seed & 0x7))) {
+                0, 1, 2 => {
+                    pat = intpat[(seed >> 3) & 0x3];
+                    plen = intpat_len;
+                },
+                3, 4 => {
+                    pat = fltpat[(seed >> 3) & 0x3];
+                    plen = fltpat_len;
+                },
+                5, 6 => {
+                    pat = scipat[(seed >> 3) & 0x3];
+                    plen = scipat_len;
+                },
+                7 => {
+                    pat = errpat[(seed >> 3) & 0x3];
+                    plen = errpat_len;
+                },
+            }
+        }
+    }
 }
 
 //package em.coremark
