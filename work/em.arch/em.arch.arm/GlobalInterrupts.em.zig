@@ -24,7 +24,6 @@ pub const EM__TARG = struct {
     }
 
     fn get_PRIMASK() u32 {
-        if (em.hosted) return 0;
         const key: u32 = 0;
         asm volatile (
             \\mrs %[key], primask        
@@ -36,7 +35,6 @@ pub const EM__TARG = struct {
     }
 
     fn set_PRIMASK(m: u32) void {
-        if (em.hosted) return;
         asm volatile ("msr primask, %[m]"
             :
             : [m] "r" (m),

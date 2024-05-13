@@ -196,7 +196,6 @@ pub fn Func(FT: type) type {
                 pub const _em__builtin = {};
                 _upath: []const u8,
                 _fname: []const u8,
-                _fxn: ?FT,
                 pub fn toString(self: @This()) []const u8 {
                     const fmt =
                         \\blk: {{
@@ -211,9 +210,6 @@ pub fn Func(FT: type) type {
                     const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
                     const tn_par = comptime tn[idx1 + 1 .. idx2];
                     return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
-                }
-                pub fn unwrap(self: @This()) FT {
-                    return self._fxn.?;
                 }
             };
         },
@@ -384,8 +380,8 @@ pub const Unit = struct {
         }
     }
 
-    pub fn func(self: Self, name: []const u8, fxn: anytype) Func(@TypeOf(fxn)) {
-        return Func(@TypeOf(fxn)){ ._upath = self.upath, ._fname = name, ._fxn = fxn };
+    pub fn func(self: Self, name: []const u8, FT: type) Func(FT) {
+        return Func(FT){ ._upath = self.upath, ._fname = name };
     }
 
     pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {

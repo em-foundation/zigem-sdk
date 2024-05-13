@@ -11,7 +11,7 @@ pub const c_blinkF = em__unit.config("blinkF", em.Ref(FiberMgr.Fiber));
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        c_blinkF.set(FiberMgr.createH(em__unit.func("blinkFB", @as(FiberMgr.FiberBody, blinkFB))));
+        c_blinkF.set(FiberMgr.createH(em__unit.func("blinkFB", FiberMgr.FiberBody)));
     }
 };
 
