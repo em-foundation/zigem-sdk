@@ -1,5 +1,3 @@
-pub const EM__SPEC = {};
-
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
@@ -22,14 +20,14 @@ pub const Fiber = struct {
 
 pub const a_heap = em__unit.array("a_heap", Fiber);
 
-pub const EM__HOST = {};
+pub const EM__HOST = struct {};
 
 pub fn createH(body: em.Func(FiberBody)) em.Ref(Fiber) {
     const fiber = a_heap.alloc(.{ .body = body });
     return fiber;
 }
 
-pub const EM__TARG = {};
+pub const EM__TARG = struct {};
 
 var ready_list = struct {
     const Self = @This();
