@@ -59,7 +59,7 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     if (std.mem.eql(u8, un, "em")) {
         try out.print("em", .{});
     } else {
-        try out.print("em.Import.@\"{s}\"", .{un});
+        try out.print("em.unitScope(em.Import.@\"{s}\", em.DOMAIN)", .{un});
     }
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});

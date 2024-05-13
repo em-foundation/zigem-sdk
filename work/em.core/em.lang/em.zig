@@ -1,5 +1,10 @@
 pub const std = @import("std");
 
+pub const Domain = enum {
+    HOST,
+    TARG,
+};
+
 pub const Import = @import("../../.gen/imports.zig");
 
 pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
@@ -9,7 +14,8 @@ const type_map = @import("../../.gen/type_map.zig");
 
 pub const assert = std.debug.assert;
 
-pub const hosted = !@hasDecl(targ, "_em_targ");
+pub const DOMAIN: Domain = if (@hasDecl(targ, "_em_targ")) .TARG else .HOST;
+pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
@@ -186,35 +192,42 @@ fn _ConfigV(T: type, v: T) type {
 //}
 
 pub fn Func(FT: type) type {
-    if (hosted) return struct {
-        pub const _em__builtin = {};
-        _upath: []const u8,
-        _fname: []const u8,
-        _fxn: ?FT,
-        pub fn toString(self: @This()) []const u8 {
-            const fmt =
-                \\blk: {{
-                \\    const u = @field(em.Import, "{s}");
-                \\    const f = @field(u, "{s}");
-                \\    break :blk f;
-                \\}}
-            ;
-            const fval = sprint(fmt, .{ self._upath, self._fname });
-            const tn = comptime @typeName(FT);
-            const idx1 = comptime std.mem.indexOf(u8, tn, "(").?;
-            const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
-            const tn_par = comptime tn[idx1 + 1 .. idx2];
-            return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
-        }
-        pub fn unwrap(self: @This()) FT {
-            return self._fxn.?;
-        }
-    } else return struct {
-        _fxn: ?FT,
-        pub fn unwrap(self: @This()) FT {
-            return self._fxn.?;
-        }
-    };
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                pub const _em__builtin = {};
+                _upath: []const u8,
+                _fname: []const u8,
+                _fxn: ?FT,
+                pub fn toString(self: @This()) []const u8 {
+                    const fmt =
+                        \\blk: {{
+                        \\    const u = @field(em.Import, "{s}");
+                        \\    const f = @field(u, "{s}");
+                        \\    break :blk f;
+                        \\}}
+                    ;
+                    const fval = sprint(fmt, .{ self._upath, self._fname });
+                    const tn = comptime @typeName(FT);
+                    const idx1 = comptime std.mem.indexOf(u8, tn, "(").?;
+                    const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
+                    const tn_par = comptime tn[idx1 + 1 .. idx2];
+                    return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
+                }
+                pub fn unwrap(self: @This()) FT {
+                    return self._fxn.?;
+                }
+            };
+        },
+        .TARG => {
+            return struct {
+                _fxn: ?FT,
+                pub fn unwrap(self: @This()) FT {
+                    return self._fxn.?;
+                }
+            };
+        },
+    }
 }
 
 //fn _FuncV(FT: type, comptime upath: []const u8, comptime fname: []const u8) type {
@@ -281,31 +294,38 @@ fn _ProxyV(u: type) type {
 pub const ptr_t = ?*anyopaque;
 
 pub fn Ref(T: type) type {
-    if (hosted) return struct {
-        const Self = @This();
-        pub const _em__builtin = {};
-        upath: []const u8,
-        aname: []const u8,
-        idx: usize,
-        pub fn obj(self: Self) *T {
-            const u = @field(Import, self.upath);
-            const a = @field(u, self.aname);
-            return @constCast(&(a.unwrap()[self.idx]));
-        }
-        pub fn toString(self: Self) []const u8 {
-            const fmt =
-                \\blk: {{
-                \\    const u = @field(em.Import, "{s}");
-                \\    const a = @field(u, "{s}");
-                \\    break :blk @constCast(&(a.unwrap()[{d}]));
-                \\}}
-            ;
-            const oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
-            return sprint("em.Ref({s}){{ .obj = {s} }}", .{ mkTypeName(T), oval });
-        }
-    } else return struct {
-        obj: *T,
-    };
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
+                pub const _em__builtin = {};
+                upath: []const u8,
+                aname: []const u8,
+                idx: usize,
+                pub fn obj(self: Self) *T {
+                    const u = @field(Import, self.upath);
+                    const a = @field(u, self.aname);
+                    return @constCast(&(a.unwrap()[self.idx]));
+                }
+                pub fn toString(self: Self) []const u8 {
+                    const fmt =
+                        \\blk: {{
+                        \\    const u = @field(em.Import, "{s}");
+                        \\    const a = @field(u, "{s}");
+                        \\    break :blk @constCast(&(a.unwrap()[{d}]));
+                        \\}}
+                    ;
+                    const oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
+                    return sprint("em.Ref({s}){{ .obj = {s} }}", .{ mkTypeName(T), oval });
+                }
+            };
+        },
+        .TARG => {
+            return struct {
+                obj: *T,
+            };
+        },
+    }
 }
 
 pub const StringH = struct {
@@ -348,18 +368,18 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: type = void,
 
-    pub fn array(self: Self, name: []const u8, T: type) if (hosted) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))) {
+    pub fn array(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
-        if (hosted) {
+        if (DOMAIN == .HOST) {
             return _ArrayD(dname, T){};
         } else {
             return _ArrayV(T, @field(targ, dname)){};
         }
     }
 
-    pub fn config(self: Self, name: []const u8, T: type) if (hosted) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
+    pub fn config(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
-        if (hosted) {
+        if (DOMAIN == .HOST) {
             return _ConfigD(dname, T){};
         } else {
             return _ConfigV(T, @field(targ, dname)){};
@@ -370,9 +390,9 @@ pub const Unit = struct {
         return Func(@TypeOf(fxn)){ ._upath = self.upath, ._fname = name, ._fxn = fxn };
     }
 
-    pub fn proxy(self: Self, name: []const u8, I: type) if (hosted) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
+    pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
-        if (hosted) {
+        if (DOMAIN == .HOST) {
             return _ProxyD(dname, I){};
         } else {
             return _ProxyV(@field(targ, dname)){};
@@ -415,11 +435,14 @@ pub fn Template(This: type, opts: UnitOpts) Unit {
 }
 
 pub fn fail() void {
-    if (hosted) {
-        std.log.info("em.fail", .{});
-        std.process.exit(1);
-    } else {
-        targ.em__fail();
+    switch (DOMAIN) {
+        .HOST => {
+            std.log.info("em.fail", .{});
+            std.process.exit(1);
+        },
+        .TARG => {
+            targ.em__fail();
+        },
     }
 }
 
@@ -428,11 +451,14 @@ pub fn getHeap() std.mem.Allocator {
 }
 
 pub fn halt() void {
-    if (hosted) {
-        std.log.info("em.halt", .{});
-        std.process.exit(0);
-    } else {
-        targ.em__halt();
+    switch (DOMAIN) {
+        .HOST => {
+            std.log.info("em.halt", .{});
+            std.process.exit(0);
+        },
+        .TARG => {
+            targ.em__halt();
+        },
     }
 }
 
@@ -467,16 +493,8 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .kind = kind,
         .legacy = opts.legacy,
         .self = This,
-        .scope = _unitScope(This),
+        .scope = unitScope(This, DOMAIN),
         .upath = un,
-    };
-}
-
-pub fn _unitScope(U: type) type {
-    const S = if (hosted and @hasDecl(U, "EM__HOST")) U.EM__HOST else if (!hosted and @hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
-    return struct {
-        pub usingnamespace U;
-        pub usingnamespace S;
     };
 }
 
@@ -545,6 +563,25 @@ pub fn toUnit(U: type) Unit {
     return @as(Unit, @field(U, "em__unit"));
 }
 
+pub fn unitScope(U: type, dom: Domain) type {
+    switch (dom) {
+        .HOST => {
+            const S = if (@hasDecl(U, "EM__HOST")) U.EM__HOST else struct {};
+            return struct {
+                pub usingnamespace U;
+                pub usingnamespace S;
+            };
+        },
+        .TARG => {
+            const S = if (@hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
+            return struct {
+                pub usingnamespace U;
+                pub usingnamespace S;
+            };
+        },
+    }
+}
+
 fn unitTypeName(unit: type) []const u8 {
     const tn: []const u8 = @typeName(unit);
     return tn[0 .. tn.len - 3];
@@ -560,10 +597,13 @@ pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
 const Console = @import("Console.em.zig");
 
 pub fn print(comptime fmt: []const u8, args: anytype) void {
-    if (hosted) {
-        std.log.debug(fmt, args);
-    } else {
-        std.fmt.format(Console.writer(), fmt, args) catch fail();
+    switch (DOMAIN) {
+        .HOST => {
+            std.log.debug(fmt, args);
+        },
+        .TARG => {
+            std.fmt.format(Console.writer(), fmt, args) catch fail();
+        },
     }
 }
 
