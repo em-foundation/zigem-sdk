@@ -20,11 +20,11 @@ pub const EM__TARG = struct {
 
     fn doWait() void {
         if (em.hosted) return;
-        em.@"%%[b:]"(0);
-        em.@"%%[b-]"();
+        //em.@"%%[b:]"(0);
+        //em.@"%%[b-]"();
         set_PRIMASK(1);
         asm volatile ("wfi");
-        em.@"%%[b+]"();
+        //em.@"%%[b+]"();
         set_PRIMASK(0);
     }
 

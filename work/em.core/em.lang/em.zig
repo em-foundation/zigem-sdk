@@ -1,9 +1,8 @@
 pub const std = @import("std");
 
-pub const Domain = enum {
-    HOST,
-    TARG,
-};
+const domain_desc = @import("../../.gen/domain.zig");
+pub const Domain = domain_desc.Domain;
+pub const DOMAIN = domain_desc.DOMAIN;
 
 pub const Import = @import("../../.gen/imports.zig");
 
@@ -14,7 +13,6 @@ const type_map = @import("../../.gen/type_map.zig");
 
 pub const assert = std.debug.assert;
 
-pub const DOMAIN: Domain = if (@hasDecl(targ, "_em_targ")) .TARG else .HOST;
 pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -269,7 +267,7 @@ fn _ProxyD(dp: []const u8, I: type) type {
 
         pub fn toString(_: Self) []const u8 {
             var it = std.mem.splitSequence(u8, _del, "__");
-            var res = sprint("em.unitScope(em.Import.@\"{s}\", .TARG)", .{it.first()});
+            var res = sprint("em.unitScope(em.Import.@\"{s}\")", .{it.first()});
             while (it.next()) |seg| {
                 res = sprint("{s}.{s}", .{ res, seg });
             }
@@ -404,7 +402,7 @@ pub const Unit = struct {
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
-        return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)), DOMAIN);
+        return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
     }
 
     pub fn import(_: Self, _: []const u8) type {}
@@ -493,7 +491,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .kind = kind,
         .legacy = opts.legacy,
         .self = This,
-        .scope = unitScope(This, DOMAIN),
+        .scope = unitScope(This),
         .upath = un,
     };
 }
@@ -563,8 +561,8 @@ pub fn toUnit(U: type) Unit {
     return @as(Unit, @field(U, "em__unit"));
 }
 
-pub fn unitScope(U: type, dom: Domain) type {
-    switch (dom) {
+pub fn unitScope(U: type) type {
+    switch (DOMAIN) {
         .HOST => {
             const S = if (@hasDecl(U, "EM__HOST")) U.EM__HOST else struct {};
             return struct {
@@ -594,7 +592,7 @@ pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
     file.close();
 }
 
-const Console = @import("Console.em.zig");
+const Console = unitScope(@import("Console.em.zig"));
 
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     switch (DOMAIN) {
@@ -611,7 +609,7 @@ pub fn @"%%[>]"(v: anytype) void {
     Console.wrN(v);
 }
 
-const Debug = @import("Debug.em.zig");
+const Debug = unitScope(@import("Debug.em.zig"));
 
 pub fn @"%%[a]"() void {
     Debug.pulse('A');

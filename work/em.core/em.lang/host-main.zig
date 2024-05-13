@@ -26,12 +26,13 @@ pub fn exec(top: em.Unit) !void {
     //while (it.next()) |k| em.print("{s}", .{k.*});
     callAll("em__constructH", ulist_top, true);
     callAll("em__generateH", ulist_bot, true);
+    try genDomain();
     try genTarg(ulist_bot, ulist_top);
 }
 
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
-        if (@hasDecl(u.self, fname)) {
+        if (@hasDecl(u.self, "EM__TARG") and @hasDecl(u.self.EM__TARG, fname)) {
             try out.print("    ", .{});
             try genImport(u.upath, out);
             try out.print(".{s}();\n", .{fname});
@@ -53,13 +54,24 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     }
 }
 
+fn genDomain() !void {
+    const file = try std.fs.createFileAbsolute(em._domain_file, .{});
+    const out = file.writer();
+    try out.print(
+        \\pub const Domain = enum {{HOST, TARG}};
+        \\pub const DOMAIN: Domain = .TARG;
+        \\
+    , .{});
+    file.close();
+}
+
 fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     var it = std.mem.splitSequence(u8, path, "__");
     const un = it.first();
     if (std.mem.eql(u8, un, "em")) {
         try out.print("em", .{});
     } else {
-        try out.print("em.unitScope(em.Import.@\"{s}\", .TARG)", .{un});
+        try out.print("em.unitScope(em.Import.@\"{s}\")", .{un});
     }
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});

@@ -66,7 +66,7 @@ pub const EM__HOST = struct {
             \\extern uint32_t __stack_top__;
             \\extern void em__start( void );
             \\
-            \\void DEFAULT_isr( void ) {}
+            \\extern void DEFAULT_isr( void );
             \\
             \\const intvec_elem  __attribute__((section(".intvec"))) __vector_table[] = {
             \\    { .ptr = (void*)&__stack_top__ },

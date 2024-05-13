@@ -64,6 +64,7 @@ fn genEmStub() !void {
         \\pub const gen_root = "{0s}";
         \\pub const out_root = "{1s}";
         \\
+        \\pub const _domain_file = "{0s}/domain.zig";
         \\pub const _targ_file = "{0s}/targ.zig";
         \\
         \\pub const hal = @import("../{2s}/{3s}/hal.zig");
@@ -125,14 +126,22 @@ fn genUnits() !void {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"), em.DOMAIN);\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
                 const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
                 const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
-                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"), em.DOMAIN);\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
         }
     }
+    file.close();
+    //
+    file = try Out.open(Fs.join(&.{ gen_root, "domain.zig" }));
+    file.print(
+        \\pub const Domain = enum {{HOST, TARG}};
+        \\pub const DOMAIN: Domain = .HOST;
+        \\
+    , .{});
     file.close();
     //
     file = try Out.open(Fs.join(&.{ gen_root, "type_map.zig" }));
