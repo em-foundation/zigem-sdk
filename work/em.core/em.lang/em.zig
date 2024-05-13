@@ -64,7 +64,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             return &_list;
         }
 
-        pub fn setLen(self: *Self, l: usize) void {
+        pub fn setLen(self: Self, l: usize) void {
             if (self.len() >= l) return;
             const save = _is_virgin;
             for (0..l - self.len()) |_| self.addElem(std.mem.zeroes(T));

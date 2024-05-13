@@ -5,18 +5,19 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
 
+pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
 pub const EM__HOST = null;
 
-pub var a_membuf = em__unit.array("a_membuf", u8);
+pub const a_membuf = em__unit.array("a_membuf", u8);
 
-pub var a_errpat = em__unit.array("a_errpat", []const u8);
-pub var a_fltpat = em__unit.array("a_fltpat", []const u8);
-pub var a_intpat = em__unit.array("a_intpat", []const u8);
-pub var a_scipat = em__unit.array("a_scipat", []const u8);
+pub const a_errpat = em__unit.array("a_errpat", []const u8);
+pub const a_fltpat = em__unit.array("a_fltpat", []const u8);
+pub const a_intpat = em__unit.array("a_intpat", []const u8);
+pub const a_scipat = em__unit.array("a_scipat", []const u8);
 
 pub const c_errpat_len = em__unit.config("errpat_len", usize);
 pub const c_fltpat_len = em__unit.config("fltpat_len", usize);
@@ -45,6 +46,8 @@ pub fn em__constructH() void {
 
 pub const EM__TARG = null;
 
+const StringBuf = [*]u8;
+
 const State = enum {
     START,
     INVALID,
@@ -70,15 +73,107 @@ const fltpat_len = c_fltpat_len.unwrap();
 const intpat_len = c_intpat_len.unwrap();
 const scipat_len = c_scipat_len.unwrap();
 
-var membuf = a_membuf.unwrap();
+var membuf = if (!em.hosted) a_membuf.unwrap() else [_]u8{0};
 
 pub fn dump() void {
     // TODO
     return;
 }
 
+fn isDigit(ch: u8) bool {
+    return em.std.ascii.isDigit(ch);
+}
+
 pub fn kind() Utils.Kind {
     return .STATE;
+}
+
+fn nextState(pstr: *StringBuf, transcnt: [*]u32) State {
+    var str = pstr.*;
+    var state = State.START;
+    while (str[0] != 0 and state != State.INVALID) : (str += 1) {
+        const ch = str[0];
+        if (ch == ',') {
+            str += 1;
+            break;
+        }
+        switch (state) {
+            .INVALID => {},
+            .START => {
+                if (isDigit(ch)) {
+                    state = .INT;
+                } else if (ch == '+' or ch == '-') {
+                    state = .S1;
+                } else if (ch == '.') {
+                    state = .FLOAT;
+                } else {
+                    state = .INVALID;
+                    transcnt[ord(.INVALID)] += 1;
+                }
+                transcnt[ord(.START)] += 1;
+            },
+            .S1 => {
+                if (isDigit(ch)) {
+                    state = .INT;
+                    transcnt[ord(.S1)] += 1;
+                } else if (ch == '.') {
+                    state = .FLOAT;
+                    transcnt[ord(.S1)] += 1;
+                } else {
+                    state = .INVALID;
+                    transcnt[ord(.S1)] += 1;
+                }
+            },
+            .INT => {
+                if (ch == '.') {
+                    state = .FLOAT;
+                    transcnt[ord(.INT)] += 1;
+                } else if (!isDigit(ch)) {
+                    state = .INVALID;
+                    transcnt[ord(.INT)] += 1;
+                }
+            },
+            .FLOAT => {
+                if (ch == 'E' or ch == 'e') {
+                    state = .S2;
+                    transcnt[ord(.FLOAT)] += 1;
+                } else if (!isDigit(ch)) {
+                    state = .INVALID;
+                    transcnt[ord(.FLOAT)] += 1;
+                }
+            },
+            .S2 => {
+                if (ch == '+' or ch == '-') {
+                    state = .EXPONENT;
+                    transcnt[ord(.S2)] += 1;
+                } else {
+                    state = .INVALID;
+                    transcnt[ord(.S2)] += 1;
+                }
+            },
+            .EXPONENT => {
+                if (isDigit(ch)) {
+                    state = .SCIENTIFIC;
+                    transcnt[ord(.EXPONENT)] += 1;
+                } else {
+                    state = .INVALID;
+                    transcnt[ord(.EXPONENT)] += 1;
+                }
+            },
+            .SCIENTIFIC => {
+                if (!isDigit(ch)) {
+                    state = .INVALID;
+                    transcnt[ord(.SCIENTIFIC)] += 1;
+                }
+            },
+        }
+    }
+    pstr.* = str;
+    return state;
+}
+
+fn ord(state: State) usize {
+    return @intFromEnum(state);
 }
 
 pub fn print() void {
@@ -87,9 +182,41 @@ pub fn print() void {
 }
 
 pub fn run(arg: i16) Utils.sum_t {
-    // TODO
-    _ = arg;
-    return 0;
+    if (em.hosted) return 0;
+    var uarg: usize = @intCast(@as(u16, @bitCast(arg)));
+    if (arg < 0x22) uarg = 0x22;
+    var finalcnt: [NUM_STATES]u32 = undefined;
+    var transcnt: [NUM_STATES]u32 = undefined;
+    for (0..NUM_STATES) |i| {
+        finalcnt[i] = 0;
+        transcnt[i] = 0;
+    }
+    scan(&finalcnt, &transcnt);
+    scramble(Utils.getSeed(1), uarg);
+    scan(&finalcnt, &transcnt);
+    scramble(Utils.getSeed(2), uarg);
+    var crc = Utils.getCrc(Utils.Kind.FINAL);
+    for (0..NUM_STATES) |i| {
+        crc = Crc.add32(finalcnt[i], crc);
+        crc = Crc.add32(transcnt[i], crc);
+    }
+    em.reg(0x2222).* = crc;
+    return crc;
+}
+
+fn scan(finalcnt: [*]u32, transcnt: [*]u32) void {
+    var str: [*]u8 = &membuf;
+    while (str[0] != 0) {
+        const state = nextState(&str, transcnt);
+        finalcnt[ord(state)] += 1;
+    }
+}
+
+fn scramble(seed: Utils.seed_t, step: usize) void {
+    var idx: usize = 0;
+    while (idx < memsize) : (idx += step) {
+        if (membuf[idx] != ',') membuf[idx] ^= @as(u8, @intCast(seed));
+    }
 }
 
 pub fn setup() void {

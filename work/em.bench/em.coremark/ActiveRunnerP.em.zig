@@ -23,6 +23,7 @@ pub fn em__startup() void {
 }
 
 pub fn em__run() void {
+    //em.reg(0x1111).* = ITERATIONS;
     //em.reg(0x1111).* = Utils.getSeed(3);
     //em.@"%%[d+]"();
     var i: u16 = 0;
