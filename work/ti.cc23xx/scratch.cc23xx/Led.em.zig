@@ -6,13 +6,13 @@ pub const em__unit = em.Module(@This(), .{});
 pub const c_active_low = em__unit.Config("active_low", bool);
 pub const x_Pin = em__unit.Proxy("Pin", em.Import.@"em.hal/GpioI");
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__initH() void {
     c_active_low.init(false);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const active_low = c_active_low.unwrap();
 const Pin = x_Pin.unwrap();

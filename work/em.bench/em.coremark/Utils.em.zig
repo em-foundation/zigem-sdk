@@ -13,7 +13,7 @@ pub const sum_t = u16;
 pub var crc_tab = em__unit.array("crc_tab", sum_t);
 pub var seed_tab = em__unit.array("seed_tab", seed_t);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__initH() void {
     crc_tab.setLen(@intFromEnum(Kind.ZZZ_));
@@ -24,7 +24,7 @@ pub fn bindSeedH(idx: u8, val: seed_t) void {
     seed_tab.unwrap()[idx - 1] = val;
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 export const v_seed_tab = if (!em.hosted) seed_tab.unwrap() else [_]seed_t{0};
 

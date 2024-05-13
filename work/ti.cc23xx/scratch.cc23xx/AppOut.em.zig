@@ -5,13 +5,13 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const TxPin = em__unit.Generate("AppLedPin", em.Import.@"scratch.cc23xx/GpioT");
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
     TxPin.c_pin.set(20);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

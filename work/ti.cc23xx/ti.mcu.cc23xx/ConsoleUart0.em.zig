@@ -7,9 +7,9 @@ pub const em__unit = em.Module(@This(), .{
 
 pub const x_TxPin = em__unit.proxy("TxPin", em.Import.@"em.hal/GpioI");
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

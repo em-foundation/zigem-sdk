@@ -7,9 +7,9 @@ pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
 pub const OneShot = em.Import.@"em__distro/BoardC".OneShot;
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 var active_flag = false;
 

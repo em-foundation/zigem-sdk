@@ -6,9 +6,9 @@ pub const em__unit = em.Module(@This(), .{});
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub fn em__run() void {
     AppLed.on();

@@ -25,7 +25,7 @@ pub const Poller = em.Import.@"em.mcu/Poller";
 pub const SysLed = em__unit.Generate("SysLed", em.Import.@"em.utils/LedT");
 pub const SysLedPin = em__unit.Generate("SysLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
     AppLedPin.c_pin.set(15);

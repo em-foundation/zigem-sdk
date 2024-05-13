@@ -5,12 +5,12 @@ pub const em__unit = em.Module(@This(), .{
     .host_only = true,
 });
 
-pub const BoardC = em.Import.@"em__distro/BoardC";
+//pub const BoardC = em.Import.@"em__distro/BoardC";
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 pub const LinkerH = em.Import.@"em.build.misc/LinkerH";
 pub const StartupH = em.Import.@"em.arch.arm/StartupH";
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
     const nvic_intrs = [_][]const u8{

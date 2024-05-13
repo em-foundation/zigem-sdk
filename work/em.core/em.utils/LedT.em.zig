@@ -17,13 +17,13 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const c_active_low = @This().em__unit.config("active_low", bool);
         pub const x_Pin = @This().em__unit.proxy("Pin", em.Import.@"em.hal/GpioI");
 
-        pub const EM__HOST = null;
+        pub const EM__HOST = struct {};
 
         pub fn em__initH() void {
             c_active_low.init(false);
         }
 
-        pub const EM__TARG = null;
+        pub const EM__TARG = struct {};
 
         const active_low = c_active_low.unwrap();
         const Pin = x_Pin.unwrap();

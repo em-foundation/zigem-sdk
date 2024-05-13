@@ -10,9 +10,9 @@ pub const OneShot = x_OneShot.unwrap();
 
 pub const PollFxn = *const fn () bool;
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 var active_flag: bool = false;
 

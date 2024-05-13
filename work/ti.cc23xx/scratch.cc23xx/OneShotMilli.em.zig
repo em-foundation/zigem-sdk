@@ -7,13 +7,13 @@ pub const em__unit = em.Module(@This(), .{
 
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
     IntrVec.useIntrH("LGPT3_COMB");
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

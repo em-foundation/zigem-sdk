@@ -7,9 +7,9 @@ pub const Common = em.Import.@"em.mcu/Common";
 
 pub const Error = error{};
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const Uart = Common.ConsoleUart;
 const Writer = struct {

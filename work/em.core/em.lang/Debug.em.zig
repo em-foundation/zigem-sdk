@@ -11,9 +11,9 @@ pub const x_DbgB = em__unit.proxy("DbgB", GpioI);
 pub const x_DbgC = em__unit.proxy("DbgC", GpioI);
 pub const x_DbgD = em__unit.proxy("DbgD", GpioI);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const DbgA = x_DbgA.unwrap();
 const DbgB = x_DbgB.unwrap();

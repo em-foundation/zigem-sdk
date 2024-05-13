@@ -18,13 +18,13 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const c_pin = @This().em__unit.config("pin", i16);
 
-        pub const EM__HOST = null;
+        pub const EM__HOST = struct {};
 
         pub fn em__initH() void {
             c_pin.init(-1);
         }
 
-        pub const EM__TARG = null;
+        pub const EM__TARG = struct {};
 
         const hal = em.hal;
         const reg = em.reg;

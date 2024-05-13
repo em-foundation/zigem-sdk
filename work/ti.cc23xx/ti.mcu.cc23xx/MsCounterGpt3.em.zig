@@ -5,9 +5,9 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/MsCounterI",
 });
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

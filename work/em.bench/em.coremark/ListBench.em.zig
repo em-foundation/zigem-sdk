@@ -10,9 +10,9 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub fn dump() void {
     // TODO

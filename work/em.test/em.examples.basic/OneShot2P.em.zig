@@ -10,13 +10,13 @@ pub const OneShot = em.Import.@"em__distro/BoardC".OneShot;
 
 pub const c_blinkF = em__unit.config("blinkF", em.Ref(FiberMgr.Fiber));
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__constructH() void {
     c_blinkF.set(FiberMgr.createH(em__unit.func("blinkFB", @as(FiberMgr.FiberBody, blinkFB))));
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const blinkF = if (em.hosted)
     null

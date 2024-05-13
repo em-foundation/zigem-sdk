@@ -3,7 +3,7 @@ pub const EM__SPEC = null;
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 var a_name_tab = em__unit.array("a_name_tab", ?[]const u8);
 var a_used_tab = em__unit.array("a_used_tab", []const u8);
@@ -78,7 +78,7 @@ pub fn em__generateH() void {
     em.writeFile(em.out_root, "intr.c", sbuf.get());
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub fn em__startup() void {
     // ^^SCB->VTOR = (uint32_t)(&__vector_table)^^

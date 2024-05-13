@@ -7,13 +7,13 @@ pub const AppLedPin = em.Import.@"scratch.cc23xx/AppLedPin";
 pub const BusyWait = em.Import.@"scratch.cc23xx/BusyWait";
 pub const Mcu = em.Import.@"scratch.cc23xx/Mcu";
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
     AppLedPin.c_pin.set(15);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub fn em__startup() void {
     Mcu.startup();

@@ -7,9 +7,9 @@ pub const Common = em.Import.@"em.mcu/Common";
 
 pub const x_Led = em__unit.proxy("Led", em.Import.@"em.hal/LedI");
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const blinkRate = 50000;
 const EOT_BYTE = 0x4;

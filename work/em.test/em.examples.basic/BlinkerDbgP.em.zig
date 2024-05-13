@@ -10,7 +10,7 @@ pub const c_dbg_flag = em__unit.config("dbg_flag", bool);
 pub const c_min_cnt = em__unit.config("min_cnt", u16);
 pub const c_max_cnt = em__unit.config("max_cnt", u16);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__initH() void {
     c_dbg_flag.init(true);
@@ -18,7 +18,7 @@ pub fn em__initH() void {
     c_max_cnt.init(1020);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const AppLed = BoardC.AppLed;
 const dbg_flag = c_dbg_flag.unwrap();

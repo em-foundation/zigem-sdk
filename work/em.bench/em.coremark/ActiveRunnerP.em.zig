@@ -8,13 +8,13 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_ITERATIONS = em__unit.config("ITERATIONS", u16);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__initH() void {
     c_ITERATIONS.init(10);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const ITERATIONS = c_ITERATIONS.unwrap();
 

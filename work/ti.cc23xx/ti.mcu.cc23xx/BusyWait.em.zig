@@ -7,13 +7,13 @@ pub const em__unit = em.Module(@This(), .{
 
 pub const c_scalar = em__unit.config("scalar", u8);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__initH() void {
     c_scalar.init(6);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const scalar = c_scalar.unwrap();
 

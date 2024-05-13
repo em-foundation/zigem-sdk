@@ -19,7 +19,7 @@ pub var a_matA = em__unit.array("a_matA", matdat_t);
 pub var a_matB = em__unit.array("a_matB", matdat_t);
 pub var a_matC = em__unit.array("a_matC", matres_t);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__constructH() void {
     var i: usize = 0;
@@ -35,7 +35,7 @@ pub fn em__constructH() void {
     c_dimN.set(d);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const dimN = c_dimN.unwrap();
 

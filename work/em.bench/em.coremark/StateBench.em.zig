@@ -10,7 +10,7 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub const a_membuf = em__unit.array("a_membuf", u8);
 
@@ -44,7 +44,7 @@ pub fn em__constructH() void {
     c_scipat_len.set(a_scipat.getElem(0).*.len);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 const StringBuf = [*]u8;
 

@@ -5,9 +5,9 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/GlobalInterruptsI",
 });
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub fn disable() u32 {
     const key = get_PRIMASK();

@@ -14,7 +14,7 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 pub const c_NUM_ALGS = em__unit.config("NUM_ALGS", u8);
 pub const c_TOTAL_DATA_SIZE = em__unit.config("TOTAL_DATA_SIZE", u16);
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__initH() void {
     c_NUM_ALGS.init(3);
@@ -34,7 +34,7 @@ pub fn em__constructH() void {
     Utils.bindSeedH(3, 0x66);
 }
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub fn dump() void {
     ListBench.dump();

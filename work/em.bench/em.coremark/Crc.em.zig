@@ -5,9 +5,9 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Utils = em.Import.@"em.coremark/Utils";
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
-pub const EM__TARG = null;
+pub const EM__TARG = struct {};
 
 pub const sum_t = Utils.sum_t;
 

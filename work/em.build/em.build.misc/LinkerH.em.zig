@@ -5,7 +5,7 @@ pub const em__unit = em.Module(@This(), .{
     .host_only = true,
 });
 
-pub const EM__HOST = null;
+pub const EM__HOST = struct {};
 
 pub fn em__generateH() void {
     genLinkerCmd();
