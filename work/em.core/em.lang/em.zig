@@ -269,7 +269,7 @@ fn _ProxyD(dp: []const u8, I: type) type {
 
         pub fn toString(_: Self) []const u8 {
             var it = std.mem.splitSequence(u8, _del, "__");
-            var res = sprint("em.Import.@\"{s}\"", .{it.first()});
+            var res = sprint("em.unitScope(em.Import.@\"{s}\", .TARG)", .{it.first()});
             while (it.next()) |seg| {
                 res = sprint("{s}.{s}", .{ res, seg });
             }
@@ -404,7 +404,7 @@ pub const Unit = struct {
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
-        return Template_Unit.em__generateS(self.extendPath(as_name));
+        return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)), DOMAIN);
     }
 
     pub fn import(_: Self, _: []const u8) type {}

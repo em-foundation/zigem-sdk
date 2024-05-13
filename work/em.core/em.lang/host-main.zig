@@ -6,8 +6,8 @@ var used_set = std.StringHashMap(void).init(em.getHeap());
 
 inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_used: bool) void {
     inline for (ulist) |u| {
-        if (@hasDecl(u.self, fname) and (!filter_used or used_set.contains(u.upath))) {
-            _ = @call(.auto, @field(u.self, fname), .{});
+        if (@hasDecl(u.scope, fname) and (!filter_used or used_set.contains(u.upath))) {
+            _ = @call(.auto, @field(u.scope, fname), .{});
         }
     }
 }
@@ -59,7 +59,7 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     if (std.mem.eql(u8, un, "em")) {
         try out.print("em", .{});
     } else {
-        try out.print("em.unitScope(em.Import.@\"{s}\", em.DOMAIN)", .{un});
+        try out.print("em.unitScope(em.Import.@\"{s}\", .TARG)", .{un});
     }
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});

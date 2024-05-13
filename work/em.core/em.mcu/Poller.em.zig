@@ -8,28 +8,31 @@ pub const OneShot = x_OneShot.unwrap();
 
 pub const PollFxn = *const fn () bool;
 
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    //
+};
 
-pub const EM__TARG = struct {};
+pub const EM__TARG = struct {
+    //
+    var active_flag: bool = false;
 
-var active_flag: bool = false;
-
-fn handler(_: OneShot.Handler_CB) void {
-    active_flag = false;
-}
-
-pub fn pause(time_ms: u32) void {
-    if (time_ms == 0) return;
-    active_flag = true;
-    OneShot.enable(time_ms, handler, null);
-    while (active_flag) {
-        Common.Idle.exec();
+    fn handler(_: OneShot.Handler_CB) void {
+        active_flag = false;
     }
-}
 
-pub fn poll(rate_ms: u32, count: usize, fxn: PollFxn) usize {
-    _ = rate_ms;
-    _ = count;
-    _ = fxn;
-    return 0;
-}
+    pub fn pause(time_ms: u32) void {
+        if (time_ms == 0) return;
+        active_flag = true;
+        OneShot.enable(time_ms, handler, null);
+        while (active_flag) {
+            Common.Idle.exec();
+        }
+    }
+
+    pub fn poll(rate_ms: u32, count: usize, fxn: PollFxn) usize {
+        _ = rate_ms;
+        _ = count;
+        _ = fxn;
+        return 0;
+    }
+};
