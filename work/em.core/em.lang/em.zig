@@ -342,6 +342,7 @@ pub const Unit = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
+    scope: type,
     host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
@@ -466,7 +467,16 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .kind = kind,
         .legacy = opts.legacy,
         .self = This,
+        .scope = _unitScope(This),
         .upath = un,
+    };
+}
+
+pub fn _unitScope(U: type) type {
+    const S = if (hosted and @hasDecl(U, "EM__HOST")) U.EM__HOST else if (!hosted and @hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
+    return struct {
+        pub usingnamespace U;
+        pub usingnamespace S;
     };
 }
 

@@ -108,14 +108,6 @@ fn genUnits() !void {
     const pre =
         \\const em = @import("./em.zig");
         \\
-        \\fn expandScope(U: type) type {{
-        \\    const S = if (em.hosted and @hasDecl(U, "EM__HOST")) U.EM__HOST else if (!em.hosted and @hasDecl(U, "EM__TARG")) U.EM__TARG else struct {{}};
-        \\    return struct {{
-        \\        pub usingnamespace U;
-        \\        pub usingnamespace S;
-        \\    }};
-        \\}}
-        \\
         \\
     ;
     file.print(pre, .{});
@@ -133,11 +125,11 @@ fn genUnits() !void {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                file.print("pub const @\"{0s}/{1s}\" = expandScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                file.print("pub const @\"{0s}/{1s}\" = em._unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
                 const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
                 const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
-                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = expandScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em._unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
         }
     }
