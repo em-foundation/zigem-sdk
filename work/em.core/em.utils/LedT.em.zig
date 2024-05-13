@@ -1,12 +1,8 @@
-pub const EM__SPEC = null;
-
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Template(@This(), .{});
 
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
-        pub const EM__SPEC = null;
-
         pub const em__unit = em.Module(@This(), .{
             .generated = true,
             .name = name,
