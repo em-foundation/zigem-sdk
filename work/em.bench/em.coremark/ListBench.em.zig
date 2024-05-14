@@ -8,32 +8,35 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    //
+};
 
-pub const EM__TARG = struct {};
+pub const EM__TARG = struct {
+    //
+    pub fn dump() void {
+        // TODO
+        return;
+    }
 
-pub fn dump() void {
-    // TODO
-    return;
-}
+    pub fn kind() Utils.Kind {
+        return .LIST;
+    }
 
-pub fn kind() Utils.Kind {
-    return .LIST;
-}
+    pub fn print() void {
+        // TODO
+        return;
+    }
 
-pub fn print() void {
-    // TODO
-    return;
-}
+    pub fn run(arg: i16) Utils.sum_t {
+        return Crc.add16(arg, Utils.getSeed(2));
+    }
 
-pub fn run(arg: i16) Utils.sum_t {
-    return Crc.add16(arg, Utils.getSeed(2));
-}
-
-pub fn setup() void {
-    // TODO
-    return;
-}
+    pub fn setup() void {
+        // TODO
+        return;
+    }
+};
 
 //package em.coremark
 //

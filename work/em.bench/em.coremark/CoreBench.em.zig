@@ -12,59 +12,61 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 pub const c_NUM_ALGS = em__unit.config("NUM_ALGS", u8);
 pub const c_TOTAL_DATA_SIZE = em__unit.config("TOTAL_DATA_SIZE", u16);
 
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    //
+    pub fn em__initH() void {
+        c_NUM_ALGS.init(3);
+        c_TOTAL_DATA_SIZE.init(2000);
+    }
 
-pub fn em__initH() void {
-    c_NUM_ALGS.init(3);
-    c_TOTAL_DATA_SIZE.init(2000);
-}
+    pub fn em__configureH() void {
+        const memsize = c_TOTAL_DATA_SIZE.get() / c_NUM_ALGS.get();
+        ListBench.c_memsize.set(memsize);
+        MatrixBench.c_memsize.set(memsize);
+        StateBench.c_memsize.set(memsize);
+    }
 
-pub fn em__configureH() void {
-    const memsize = c_TOTAL_DATA_SIZE.get() / c_NUM_ALGS.get();
-    ListBench.c_memsize.set(memsize);
-    MatrixBench.c_memsize.set(memsize);
-    StateBench.c_memsize.set(memsize);
-}
+    pub fn em__constructH() void {
+        Utils.bindSeedH(1, 0x0);
+        Utils.bindSeedH(2, 0x0);
+        Utils.bindSeedH(3, 0x66);
+    }
+};
 
-pub fn em__constructH() void {
-    Utils.bindSeedH(1, 0x0);
-    Utils.bindSeedH(2, 0x0);
-    Utils.bindSeedH(3, 0x66);
-}
+pub const EM__TARG = struct {
+    //
+    pub fn dump() void {
+        ListBench.dump();
+        MatrixBench.dump();
+        StateBench.dump();
+    }
 
-pub const EM__TARG = struct {};
+    pub fn kind() Utils.Kind {
+        return .FINAL;
+    }
 
-pub fn dump() void {
-    ListBench.dump();
-    MatrixBench.dump();
-    StateBench.dump();
-}
+    pub fn print() void {
+        ListBench.print();
+        MatrixBench.print();
+        StateBench.print();
+    }
 
-pub fn kind() Utils.Kind {
-    return .FINAL;
-}
+    pub fn run(_: i16) Utils.sum_t {
+        return MatrixBench.run(-29);
+        //var crc = ListBench.run(1);
+        //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
+        //crc = ListBench.run(-1);
+        //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
+        //Utils.bindCrc(.LIST, Utils.getCrc(.FINAL));
+        //return Utils.getCrc(.FINAL);
+    }
 
-pub fn print() void {
-    ListBench.print();
-    MatrixBench.print();
-    StateBench.print();
-}
-
-pub fn run(_: i16) Utils.sum_t {
-    return MatrixBench.run(-29);
-    //var crc = ListBench.run(1);
-    //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
-    //crc = ListBench.run(-1);
-    //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
-    //Utils.bindCrc(.LIST, Utils.getCrc(.FINAL));
-    //return Utils.getCrc(.FINAL);
-}
-
-pub fn setup() void {
-    //ListBench.setup();
-    MatrixBench.setup();
-    StateBench.setup();
-}
+    pub fn setup() void {
+        //ListBench.setup();
+        MatrixBench.setup();
+        StateBench.setup();
+    }
+};
 
 //package em.coremark
 //

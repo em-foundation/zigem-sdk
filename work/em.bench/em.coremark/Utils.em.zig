@@ -11,38 +11,43 @@ pub const sum_t = u16;
 pub var crc_tab = em__unit.array("crc_tab", sum_t);
 pub var seed_tab = em__unit.array("seed_tab", seed_t);
 
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    //
+    pub fn em__initH() void {
+        crc_tab.setLen(@intFromEnum(Kind.ZZZ_));
+        seed_tab.setLen(NUM_SEEDS);
+    }
 
-pub fn em__initH() void {
-    crc_tab.setLen(@intFromEnum(Kind.ZZZ_));
-    seed_tab.setLen(NUM_SEEDS);
-}
+    pub fn bindSeedH(idx: u8, val: seed_t) void {
+        seed_tab.unwrap()[idx - 1] = val;
+    }
+};
 
-pub fn bindSeedH(idx: u8, val: seed_t) void {
-    seed_tab.unwrap()[idx - 1] = val;
-}
+pub const EM__TARG = struct {
+    //
+    var v_seed_tab = seed_tab.unwrap();
 
-pub const EM__TARG = struct {};
+    pub fn bindCrc(kind: Kind, crc: sum_t) void {
+        const p = &crc_tab.unwrap()[@intFromEnum(kind)];
+        if (p.* == 0) p.* = crc;
+    }
 
-export const v_seed_tab = if (!em.hosted) seed_tab.unwrap() else [_]seed_t{0};
+    pub fn getCrc(kind: Kind) sum_t {
+        return crc_tab.unwrap()[@intFromEnum(kind)];
+    }
 
-pub fn bindCrc(kind: Kind, crc: sum_t) void {
-    const p = &crc_tab.unwrap()[@intFromEnum(kind)];
-    if (p.* == 0) p.* = crc;
-}
+    pub fn getSeed(idx: u8) seed_t {
+        //var res = v_seed_tab[idx - 1];
+        //const p: *volatile seed_t = &res;
+        //return p.*;
+        const p: *volatile u16 = @constCast(&v_seed_tab[idx - 1]);
+        return p.*;
+    }
 
-pub fn getCrc(kind: Kind) sum_t {
-    return crc_tab.unwrap()[@intFromEnum(kind)];
-}
-
-pub fn getSeed(idx: u8) seed_t {
-    const p: *volatile u16 = @constCast(&v_seed_tab[idx - 1]);
-    return p.*;
-}
-
-pub fn setCrc(kind: Kind, crc: sum_t) void {
-    crc_tab.unwrap()[@intFromEnum(kind)] = crc;
-}
+    pub fn setCrc(kind: Kind, crc: sum_t) void {
+        crc_tab.unwrap()[@intFromEnum(kind)] = crc;
+    }
+};
 
 //package em.coremark
 //

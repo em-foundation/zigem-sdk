@@ -65,6 +65,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn list(_: Self) *std.ArrayList(T) {
+            _is_virgin = false;
             return &_list;
         }
 
@@ -89,6 +90,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn unwrap(_: Self) []T {
+            _is_virgin = false;
             return _list.items;
         }
     };
