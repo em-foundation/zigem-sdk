@@ -509,10 +509,10 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
             return "null";
         },
         .Optional => {
-            if (v == null) {
-                return "null";
+            if (v) |val| {
+                return toStringAux(val);
             } else {
-                return "<<optional>>";
+                return "null";
             }
         },
         .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
