@@ -15,17 +15,20 @@ pub const EM__HOST = struct {
 pub const EM__TARG = struct {
     //
     var active_flag: bool = false;
+    const vptr: *volatile bool = &active_flag;
 
     fn handler(_: OneShot.Handler_CB) void {
-        active_flag = false;
+        vptr.* = false;
     }
 
     pub fn pause(time_ms: u32) void {
         if (time_ms == 0) return;
         active_flag = true;
         OneShot.enable(time_ms, handler, null);
-        while (active_flag) {
+        while (vptr.*) {
+            em.@"%%[d+]"();
             Common.Idle.exec();
+            em.@"%%[d-]"();
         }
     }
 

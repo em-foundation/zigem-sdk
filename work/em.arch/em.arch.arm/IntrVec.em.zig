@@ -2,7 +2,8 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 export fn DEFAULT_isr() void {
-    em.fail();
+    if (em.hosted) return;
+    em__unit.scope.defaultIsr();
 }
 
 pub const EM__HOST = struct {
@@ -87,4 +88,34 @@ pub const EM__TARG = struct {
     pub fn em__startup() void {
         // ^^SCB->VTOR = (uint32_t)(&__vector_table)^^
     }
+
+    pub fn defaultIsr() void {
+        const vnum: u8 = @intCast(get_IPSR());
+        em.@"%%[b:]"(3);
+        em.@"%%[>]"(vnum);
+        em.fail();
+    }
+
+    fn get_IPSR() u32 {
+        const res: u32 = 0;
+        asm volatile (
+            \\mrs %[res], ipsr        
+            :
+            : [res] "r" (res),
+            : "memory"
+        );
+        return res;
+    }
+
+    //    auto vecNum = <uint32>(^^__get_IPSR()^^)
+    //    %%[b:4]
+    //    %%[><uint8>vecNum]
+    //    auto frame = <uint32[]>(^^__get_MSP()^^)
+    //    %%[><uint32>&frame[0]]
+    //    for auto i = 0; i < 8; i++
+    //        %%[b]
+    //        %%[>frame[i]]
+    //    end
+    //    fail
+
 };
