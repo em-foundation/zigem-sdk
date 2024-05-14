@@ -2,6 +2,7 @@ const em = @import("../../.gen/em.zig");
 const std = @import("std");
 
 const type_map = @import("../../.gen/type_map.zig");
+
 var used_set = std.StringHashMap(void).init(em.getHeap());
 
 inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_used: bool) void {
@@ -24,8 +25,8 @@ pub fn exec(top: em.Unit) !void {
     try mkUsedSet(BuildH.em__unit);
     //var it = used_set.keyIterator();
     //while (it.next()) |k| em.print("{s}", .{k.*});
-    callAll("em__constructH", ulist_top, true);
-    callAll("em__generateH", ulist_bot, true);
+    callAll("em__constructH", ulist_top, false);
+    callAll("em__generateH", ulist_top, false);
     try genDomain();
     try genTarg(ulist_bot, ulist_top);
 }
@@ -199,16 +200,13 @@ fn mkUsedSet(comptime unit: em.Unit) !void {
     if (!unit.legacy) {
         try used_set.put(unit.upath, {});
         inline for (@typeInfo(unit.self).Struct.decls) |d| {
-            const ud = @field(unit.self, d.name);
-            if (@TypeOf(ud) == type and @typeInfo(ud) == .Struct) {
-                if (@hasDecl(ud, "em__unit")) {
-                    try mkUsedSet(@as(em.Unit, @field(ud, "em__unit")));
-                } else if (@hasDecl(ud, "_em_proxy")) {
-                    try used_set.put(ud.get(), {});
-                }
-            }
-            if (@TypeOf(ud) == type and @typeInfo(ud) == .Struct and @hasDecl(ud, "em__unit")) {
-                try mkUsedSet(@as(em.Unit, @field(ud, "em__unit")));
+            const decl = @field(unit.self, d.name);
+            const Decl = @TypeOf(decl);
+            const ti_decl = @typeInfo(Decl);
+            if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__unit")) {
+                try mkUsedSet(@as(em.Unit, @field(decl, "em__unit")));
+            } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
+                try used_set.put(decl.get(), {});
             }
         }
     }
