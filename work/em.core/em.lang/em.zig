@@ -38,12 +38,12 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             _list.append(elem) catch fail();
         }
 
-        pub fn alloc(_: Self, init: anytype) Ref(T) {
+        pub fn alloc(self: Self, init: anytype) Ref(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             _is_virgin = false;
             const idx = std.mem.indexOf(u8, dp, "__").?;
-            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l };
+            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, .obj = self.getElem(l) };
         }
 
         pub fn dpath(_: Self) []const u8 {
@@ -298,12 +298,9 @@ pub fn Ref(T: type) type {
                 upath: []const u8,
                 aname: []const u8,
                 idx: usize,
-                pub fn obj(self: Self) *T {
-                    const u = @field(Import, self.upath);
-                    const a = @field(u, self.aname);
-                    return @constCast(&(a.unwrap()[self.idx]));
-                }
+                obj: *allowzero T,
                 pub fn toString(self: Self) []const u8 {
+                    if (self.upath.len == 0) return "null";
                     const fmt =
                         \\blk: {{
                         \\    const u = @field(em.Import, "{s}");
