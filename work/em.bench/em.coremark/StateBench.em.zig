@@ -25,22 +25,23 @@ const fltpat_vals = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400
 const intpat_vals = [_][]const u8{ "5012", "1234", "-874", "+122" };
 const scipat_vals = [_][]const u8{ "5.500e+3", "-.123e-2", "-87e+832", "+0.6e-12" };
 
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    //
+    pub fn em__initH() void {
+        for (errpat_vals) |v| a_errpat.addElem(v);
+        for (fltpat_vals) |v| a_fltpat.addElem(v);
+        for (intpat_vals) |v| a_intpat.addElem(v);
+        for (scipat_vals) |v| a_scipat.addElem(v);
+    }
 
-pub fn em__initH() void {
-    for (errpat_vals) |v| a_errpat.addElem(v);
-    for (fltpat_vals) |v| a_fltpat.addElem(v);
-    for (intpat_vals) |v| a_intpat.addElem(v);
-    for (scipat_vals) |v| a_scipat.addElem(v);
-}
-
-pub fn em__constructH() void {
-    a_membuf.setLen(c_memsize.get());
-    c_errpat_len.set(a_errpat.getElem(0).*.len);
-    c_fltpat_len.set(a_fltpat.getElem(0).*.len);
-    c_intpat_len.set(a_intpat.getElem(0).*.len);
-    c_scipat_len.set(a_scipat.getElem(0).*.len);
-}
+    pub fn em__constructH() void {
+        a_membuf.setLen(c_memsize.get());
+        c_errpat_len.set(a_errpat.getElem(0).*.len);
+        c_fltpat_len.set(a_fltpat.getElem(0).*.len);
+        c_intpat_len.set(a_intpat.getElem(0).*.len);
+        c_scipat_len.set(a_scipat.getElem(0).*.len);
+    }
+};
 
 pub const EM__TARG = struct {
     //
@@ -71,7 +72,7 @@ pub const EM__TARG = struct {
     const intpat_len = c_intpat_len.unwrap();
     const scipat_len = c_scipat_len.unwrap();
 
-    var membuf = if (!em.hosted) a_membuf.unwrap() else [_]u8{0};
+    var membuf = a_membuf.unwrap();
 
     pub fn dump() void {
         // TODO
@@ -180,7 +181,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
-        if (em.hosted) return 0;
         var uarg: usize = @intCast(@as(u16, @bitCast(arg)));
         if (arg < 0x22) uarg = 0x22;
         var finalcnt: [NUM_STATES]u32 = undefined;
@@ -218,7 +218,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup() void {
-        if (em.hosted) return;
         var seed = Utils.getSeed(1);
         var idx = @as(usize, 0);
         var total = @as(usize, 0);
@@ -233,25 +232,25 @@ pub const EM__TARG = struct {
                 membuf[idx] = ',';
                 idx += 1;
                 total += plen + 1;
-                seed += 1;
-                switch (@as(u3, @intCast(seed & 0x7))) {
-                    0, 1, 2 => {
-                        pat = intpat[(seed >> 3) & 0x3];
-                        plen = intpat_len;
-                    },
-                    3, 4 => {
-                        pat = fltpat[(seed >> 3) & 0x3];
-                        plen = fltpat_len;
-                    },
-                    5, 6 => {
-                        pat = scipat[(seed >> 3) & 0x3];
-                        plen = scipat_len;
-                    },
-                    7 => {
-                        pat = errpat[(seed >> 3) & 0x3];
-                        plen = errpat_len;
-                    },
-                }
+            }
+            seed += 1;
+            switch (@as(u3, @intCast(seed & 0x7))) {
+                0, 1, 2 => {
+                    pat = intpat[(seed >> 3) & 0x3];
+                    plen = intpat_len;
+                },
+                3, 4 => {
+                    pat = fltpat[(seed >> 3) & 0x3];
+                    plen = fltpat_len;
+                },
+                5, 6 => {
+                    pat = scipat[(seed >> 3) & 0x3];
+                    plen = scipat_len;
+                },
+                7 => {
+                    pat = errpat[(seed >> 3) & 0x3];
+                    plen = errpat_len;
+                },
             }
         }
     }

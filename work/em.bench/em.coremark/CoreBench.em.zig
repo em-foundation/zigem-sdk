@@ -52,7 +52,9 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(_: i16) Utils.sum_t {
-        return MatrixBench.run(-29);
+        //return MatrixBench.run(0);
+        //return StateBench.run(0);
+        return MatrixBench.run(0) + StateBench.run(0);
         //var crc = ListBench.run(1);
         //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
         //crc = ListBench.run(-1);
