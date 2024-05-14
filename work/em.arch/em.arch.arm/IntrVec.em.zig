@@ -45,14 +45,28 @@ pub const EM__HOST = struct {
         var sbuf = em.StringH{};
         for (a_name_tab.unwrap()) |n| {
             if (n == null) continue;
-            sbuf.add(em.sprint("#define __{s}_isr DEFAULT_isr\n", .{n.?}));
+            sbuf.add(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n.?}));
         }
+        sbuf.add(
+            \\
+            \\extern void DEFAULT_isr( void );
+            \\void _DEFAULT_isr( void ) {
+            \\    DEFAULT_isr();
+            \\}
+            \\
+            \\
+        );
+        //for (a_name_tab.unwrap()) |n| {
+        //    if (n == null) continue;
+        //    sbuf.add(em.sprint("#undef __{s}_isr\n", .{}));
+        //    sbuf.add(em.sprint("void {s}_isr( void ) __attribute__((weak, alias(\"_DEFAULT_isr\")));\n", .{n.?}));
+        //}
         sbuf.add("// used\n");
         for (a_used_tab.unwrap()) |n| {
             sbuf.add(em.sprint(
                 \\#undef __{s}_isr
                 \\#define __{0s}_isr {0s}_isr
-                \\extern void {0s}_isr( void );
+                \\void {0s}_isr( void ) __attribute__((weak, alias("_DEFAULT_isr")));
                 \\
             , .{n}));
         }
