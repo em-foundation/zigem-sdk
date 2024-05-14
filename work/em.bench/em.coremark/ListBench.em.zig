@@ -6,10 +6,44 @@ pub const em__unit = em.Module(@This(), .{
 pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
+pub const Data = struct {
+    val: i16 = 0,
+    idx: i16 = 0,
+};
+
+pub const Elem = struct {
+    next: ?em.Ref(Elem) = null,
+    data: em.Ref(Data),
+};
+
+pub const Comparator = fn (a: *Data, b: *Data) i32;
+
 pub const c_memsize = em__unit.config("memsize", u16);
+
+pub const v_max_elems = em__unit.config("max_elems", u16);
+pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
+
+pub const a_data = em__unit.array("a_data", Data);
+pub const a_elem = em__unit.array("a_elem", Elem);
 
 pub const EM__HOST = struct {
     //
+    pub fn em__constructH() void {
+        const item_size = 16 + @sizeOf(Data);
+        const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
+        v_max_elems.set(max);
+        var head = a_elem.alloc(.{});
+        head.obj.data = a_data.alloc(.{});
+        var p = head;
+        for (0..max) |_| {
+            var q = a_elem.alloc(.{});
+            q.obj.data = a_data.alloc(.{});
+            p.obj.next = q;
+            p = q;
+        }
+        p.obj.data = a_data.alloc(.{});
+        p.obj.next = null;
+    }
 };
 
 pub const EM__TARG = struct {
