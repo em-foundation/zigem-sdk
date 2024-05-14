@@ -3,8 +3,7 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const x_OneShot = em__unit.proxy("BusyWait", em.Import.@"em.hal/OneShotMilliI");
-pub const OneShot = x_OneShot.unwrap();
+pub const x_OneShot = em__unit.proxy("OneShot", em.Import.@"em.hal/OneShotMilliI");
 
 pub const PollFxn = *const fn () bool;
 
@@ -14,6 +13,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
+    const OneShot = x_OneShot.unwrap();
+
     var active_flag: bool = false;
     const vptr: *volatile bool = &active_flag;
 
