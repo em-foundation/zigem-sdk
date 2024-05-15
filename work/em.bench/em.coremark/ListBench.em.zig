@@ -20,8 +20,8 @@ pub const Comparator = fn (a: *Data, b: *Data) i32;
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-pub const v_max_elems = em__unit.config("max_elems", u16);
 pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
+pub const v_max_elems = em__unit.config("max_elems", u16);
 
 pub const a_data = em__unit.array("a_data", Data);
 pub const a_elem = em__unit.array("a_elem", Elem);
@@ -31,7 +31,6 @@ pub const EM__HOST = struct {
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
-        v_max_elems.set(max);
         var head = a_elem.alloc(.{});
         head.obj.data = a_data.alloc(.{});
         var p = head;
@@ -43,11 +42,16 @@ pub const EM__HOST = struct {
         }
         p.obj.data = a_data.alloc(.{});
         p.obj.next = null;
+        v_cur_head.set(head);
+        v_max_elems.set(max);
     }
 };
 
 pub const EM__TARG = struct {
     //
+    const cur_head = v_cur_head.unwrap();
+    const max_elems = v_max_elems.unwrap();
+
     pub fn dump() void {
         // TODO
         return;
@@ -67,8 +71,51 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup() void {
-        // TODO
-        return;
+        const seed = Utils.getSeed(1);
+        var ki: u16 = 1;
+        var kd: u16 = max_elems - 3;
+        var e = cur_head;
+        e.obj.data.idx = 0;
+        e.obj.data.val = 0x8080;
+        e = e.obj.next;
+        while (e.obj.next != null) : (e = e.obj.next) {
+            var pat = (seed ^ kd) & 0x7;
+            const dat = (pat << 3) | (kd & 0x7);
+            e.obj.data.val = @bitCast((dat << 8) | dat);
+            kd -= 1;
+            if (ki < (max_elems / 5)) {
+                e.obj.data.idx = ki;
+                ki += 1;
+            } else {
+                pat = seed ^ ki;
+                ki += 1;
+                e.obj.data.idx = @bitCast(@as(u16, 0x3fff) & (((ki & 0x7) << 8) | pat));
+            }
+        }
+        e.obj.data.idx = 0x7fff;
+        e.obj.data.val = 0xffff;
+
+        //    auto seed = Utils.getSeed(1)
+        //    auto ki = 1
+        //    auto kd = maxElems - 3
+        //    auto e = curHead
+        //    e.data.idx = 0
+        //    e.data.val = 0x8080
+        //    for e = e.next; e.next; e = e.next
+        //        auto pat = <uint16>(seed ^ kd) & 0xf
+        //        auto dat = (pat << 3) | (kd & 0x7)
+        //        e.data.val = <int16>((dat << 8) | dat)
+        //        kd -= 1
+        //        if ki < (maxElems / 5)
+        //            e.data.idx = ki++
+        //        else
+        //            pat = <uint16>(seed ^ ki++)
+        //            e.data.idx = <int16>(0x3fff & (((ki & 0x7) << 8) | pat))
+        //        end
+        //    end
+        //    e.data.idx = 0x7fff
+        //    e.data.val = 0xffff
+        //    curHead = sort(curHead, idxCompare)
     }
 };
 
