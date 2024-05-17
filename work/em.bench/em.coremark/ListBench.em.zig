@@ -102,28 +102,6 @@ pub const EM__TARG = struct {
         }
         getData(e).idx = @bitCast(@as(u16, 0x7fff));
         getData(e).val = @bitCast(@as(u16, 0xffff));
-
-        //    auto seed = Utils.getSeed(1)
-        //    auto ki = 1
-        //    auto kd = maxElems - 3
-        //    auto e = curHead
-        //    e.data.idx = 0
-        //    e.data.val = 0x8080
-        //    for e = e.next; e.next; e = e.next
-        //        auto pat = <uint16>(seed ^ kd) & 0xf
-        //        auto dat = (pat << 3) | (kd & 0x7)
-        //        e.data.val = <int16>((dat << 8) | dat)
-        //        kd -= 1
-        //        if ki < (maxElems / 5)
-        //            e.data.idx = ki++
-        //        else
-        //            pat = <uint16>(seed ^ ki++)
-        //            e.data.idx = <int16>(0x3fff & (((ki & 0x7) << 8) | pat))
-        //        end
-        //    end
-        //    e.data.idx = 0x7fff
-        //    e.data.val = 0xffff
-        //    curHead = sort(curHead, idxCompare)
     }
 };
 
