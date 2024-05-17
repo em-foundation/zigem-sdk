@@ -20,6 +20,11 @@ pub const Fiber = struct {
 
 pub const a_heap = em__unit.array("a_heap", Fiber);
 
+pub const Ref = em.Ref(Fiber);
+pub fn get(ref: Ref) ?*Fiber {
+    return a_heap.get(ref);
+}
+
 pub const EM__HOST = struct {
     //
     pub fn createH(body: em.Func(FiberBody)) em.Ref(Fiber) {
