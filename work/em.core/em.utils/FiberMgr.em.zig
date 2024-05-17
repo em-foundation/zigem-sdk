@@ -22,7 +22,7 @@ pub const a_heap = em__unit.array("a_heap", Fiber);
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(FiberBody)) em.Ref(Fiber) {
+    pub fn createH(body: em.Func(FiberBody)) em.RefOld(Fiber) {
         const fiber = a_heap.alloc(.{ .body = body });
         return fiber;
     }

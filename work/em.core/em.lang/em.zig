@@ -17,6 +17,8 @@ pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
+pub const NIL_REF = ~@as(usize, 0);
+
 pub fn _ArrayD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
@@ -38,16 +40,20 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             _list.append(elem) catch fail();
         }
 
-        pub fn alloc(self: Self, init: anytype) Ref(T) {
+        pub fn alloc(self: Self, init: anytype) RefOld(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             _is_virgin = false;
             const idx = std.mem.indexOf(u8, dp, "__").?;
-            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, .obj = self.getElem(l) };
+            return RefOld(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, .obj = self.getElem(l) };
         }
 
         pub fn dpath(_: Self) []const u8 {
             return _dpath;
+        }
+
+        pub fn get(_: Self, ref: Ref(T)) ?*T {
+            return if (ref.idx == NIL_REF) null else &_list.items[ref.idx];
         }
 
         pub fn getElem(_: Self, idx: usize) *T {
@@ -289,7 +295,14 @@ fn _ProxyV(u: type) type {
 
 pub const ptr_t = ?*anyopaque;
 
-pub fn Ref(T: type) type {
+fn Ref(T: type) type {
+    return struct {
+        const tname = @typeName(T);
+        idx: u16,
+    };
+}
+
+pub fn RefOld(T: type) type {
     switch (DOMAIN) {
         .HOST => {
             return struct {
