@@ -17,7 +17,7 @@ pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub const NIL_REF = ~@as(usize, 0);
+pub const NIL_IDX = ~@as(usize, 0);
 
 pub fn _ArrayD(dp: []const u8, T: type) type {
     return struct {
@@ -52,7 +52,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn get(_: Self, ref: Ref(T)) ?*T {
-            return if (ref.idx == NIL_REF) null else &_list.items[ref.idx];
+            return if (ref.idx == NIL_IDX) null else &_list.items[ref.idx];
         }
 
         pub fn len(_: Self) usize {
@@ -98,15 +98,15 @@ pub fn _ArrayV(T: type, comptime v: anytype) type {
         var _items: [v.len]T = v;
 
         pub fn get(_: Self, ref: Ref(T)) ?*T {
-            return if (ref.idx == NIL_REF) null else &_items[ref.idx];
+            return if (ref.idx == NIL_IDX) null else &_items[ref.idx];
         }
 
         pub fn len(_: Self) usize {
             return _items.len;
         }
 
-        pub fn unwrap(_: Self) @TypeOf(_items) {
-            return _items;
+        pub fn unwrap(_: Self) []T {
+            return _items[0..];
         }
     };
 }
@@ -261,16 +261,28 @@ pub const ptr_t = ?*anyopaque;
 pub fn Ref(T: type) type {
     switch (DOMAIN) {
         .HOST => return struct {
+            const Self = @This();
             pub const _em__builtin = {};
             const tname = @typeName(T);
-            idx: usize = NIL_REF,
-            pub fn toString(self: @This()) []const u8 {
-                return sprint("em.Ref({s}){{ .idx = {d} }}", .{ mkTypeName(T), self.idx });
+            idx: usize = NIL_IDX,
+            pub fn isNil(self: Self) bool {
+                return self.idx == NIL_IDX;
+            }
+            pub fn toString(self: Self) []const u8 {
+                if (self.isNil()) {
+                    return sprint("em.Ref({s}){{}}", .{mkTypeName(T)});
+                } else {
+                    return sprint("em.Ref({s}){{ .idx = {d} }}", .{ mkTypeName(T), self.idx });
+                }
             }
         },
         .TARG => return struct {
+            const Self = @This();
             const tname = @typeName(T);
-            idx: usize,
+            idx: usize = NIL_IDX,
+            pub fn isNil(self: Self) bool {
+                return self.idx == NIL_IDX;
+            }
         },
     }
 }
