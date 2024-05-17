@@ -268,6 +268,9 @@ pub fn Ref(T: type) type {
             pub fn isNil(self: Self) bool {
                 return self.idx == NIL_IDX;
             }
+            pub fn eql(self: Self, ref: Ref(T)) bool {
+                return self.idx == ref.idx;
+            }
             pub fn toString(self: Self) []const u8 {
                 if (self.isNil()) {
                     return sprint("em.Ref({s}){{}}", .{mkTypeName(T)});
@@ -280,6 +283,9 @@ pub fn Ref(T: type) type {
             const Self = @This();
             const tname = @typeName(T);
             idx: usize = NIL_IDX,
+            pub fn eql(self: Self, ref: Ref(T)) bool {
+                return self.idx == ref.idx;
+            }
             pub fn isNil(self: Self) bool {
                 return self.idx == NIL_IDX;
             }
