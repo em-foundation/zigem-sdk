@@ -36,10 +36,10 @@ pub const EM__HOST = struct {
 
     pub fn em__constructH() void {
         a_membuf.setLen(c_memsize.get());
-        c_errpat_len.set(a_errpat.getElem(0).*.len);
-        c_fltpat_len.set(a_fltpat.getElem(0).*.len);
-        c_intpat_len.set(a_intpat.getElem(0).*.len);
-        c_scipat_len.set(a_scipat.getElem(0).*.len);
+        c_errpat_len.set(a_errpat.unwrap()[0].len);
+        c_fltpat_len.set(a_fltpat.unwrap()[0].len);
+        c_intpat_len.set(a_intpat.unwrap()[0].len);
+        c_scipat_len.set(a_scipat.unwrap()[0].len);
     }
 };
 
@@ -203,7 +203,7 @@ pub const EM__TARG = struct {
     }
 
     fn scan(finalcnt: [*]u32, transcnt: [*]u32) void {
-        var str: [*]u8 = &membuf;
+        var str: StringBuf = membuf.ptr;
         while (str[0] != 0) {
             const state = nextState(&str, transcnt);
             finalcnt[ord(state)] += 1;
