@@ -5,7 +5,7 @@ pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const c_blinkF = em__unit.config("blinkF", em.RefOld(FiberMgr.Fiber));
+pub const c_blinkF = em__unit.config("blinkF", em.Ref(FiberMgr.Fiber));
 
 pub const EM__HOST = struct {
     //
@@ -16,13 +16,9 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = if (em.hosted)
-        null
-    else
-        c_blinkF.unwrap().obj;
+    const blinkF = FiberMgr.a_heap.get(c_blinkF.unwrap()).?;
 
     pub fn em__run() void {
-        if (em.hosted) return;
         blinkF.post();
         FiberMgr.run();
     }
@@ -30,7 +26,6 @@ pub const EM__TARG = struct {
     var count: u8 = 5;
 
     pub fn blinkFB(_: FiberMgr.FiberBody_CB) void {
-        if (em.hosted) return;
         em.@"%%[d]"();
         count -= 1;
         if (count == 0) em.halt();

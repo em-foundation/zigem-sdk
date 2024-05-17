@@ -40,12 +40,11 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             _list.append(elem) catch fail();
         }
 
-        pub fn alloc(self: Self, init: anytype) RefOld(T) {
+        pub fn alloc(_: Self, init: anytype) Ref(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             _is_virgin = false;
-            const idx = std.mem.indexOf(u8, dp, "__").?;
-            return RefOld(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, .obj = self.getElem(l) };
+            return Ref(T){ .idx = l };
         }
 
         pub fn dpath(_: Self) []const u8 {
@@ -54,16 +53,6 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
 
         pub fn get(_: Self, ref: Ref(T)) ?*T {
             return if (ref.idx == NIL_REF) null else &_list.items[ref.idx];
-        }
-
-        pub fn getElem(_: Self, idx: usize) *T {
-            return &_list.items[idx];
-        }
-
-        pub fn indexOf(_: Self, elem: *T) usize {
-            const p0 = @intFromPtr(&_list.items[0]);
-            const p1 = @intFromPtr(elem);
-            return (p1 - p0) / @sizeOf(T);
         }
 
         pub fn len(_: Self) usize {
@@ -106,24 +95,18 @@ pub fn _ArrayV(T: type, comptime v: anytype) type {
     return struct {
         const Self = @This();
 
-        const _val: [v.len]T = v;
+        var _items: [v.len]T = v;
 
-        pub fn getElem(_: Self, idx: usize) *const T {
-            return &_val[idx];
-        }
-
-        pub fn indexOf(_: Self, elem: *T) usize {
-            const p0 = @intFromPtr(&_val[0]);
-            const p1 = @intFromPtr(elem);
-            return (p1 - p0) / @sizeOf(T);
+        pub fn get(_: Self, ref: Ref(T)) ?*T {
+            return if (ref.idx == NIL_REF) null else &_items[ref.idx];
         }
 
         pub fn len(_: Self) usize {
-            return _val.len;
+            return _items.len;
         }
 
-        pub fn unwrap(_: Self) @TypeOf(_val) {
-            return _val;
+        pub fn unwrap(_: Self) @TypeOf(_items) {
+            return _items;
         }
     };
 }
@@ -188,15 +171,6 @@ fn _ConfigV(T: type, v: T) type {
     };
 }
 
-//pub fn Func(FT: type) type {
-//    return struct {
-//        _f: FT,
-//        pub fn unwrap(self: @This()) FT {
-//            return self._f;
-//        }
-//    };
-//}
-
 pub fn Func(FT: type) type {
     switch (DOMAIN) {
         .HOST => {
@@ -231,17 +205,6 @@ pub fn Func(FT: type) type {
         },
     }
 }
-
-//fn _FuncV(FT: type, comptime upath: []const u8, comptime fname: []const u8) type {
-//    const u = @field(Import, upath);
-//    const f = @field(u, fname);
-//    return struct {
-//        _f: FT = &f,
-//        pub fn unwrap(self: @This()) FT {
-//            return self._f;
-//        }
-//    };
-//}
 
 fn _ProxyD(dp: []const u8, I: type) type {
     return struct {
@@ -295,41 +258,19 @@ fn _ProxyV(u: type) type {
 
 pub const ptr_t = ?*anyopaque;
 
-fn Ref(T: type) type {
-    return struct {
-        const tname = @typeName(T);
-        idx: u16,
-    };
-}
-
-pub fn RefOld(T: type) type {
+pub fn Ref(T: type) type {
     switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
-                pub const _em__builtin = {};
-                upath: []const u8,
-                aname: []const u8,
-                idx: usize,
-                obj: *allowzero T,
-                pub fn toString(self: Self) []const u8 {
-                    if (self.upath.len == 0) return "null";
-                    const fmt =
-                        \\blk: {{
-                        \\    const u = @field(em.Import, "{s}");
-                        \\    const a = @field(u, "{s}");
-                        \\    break :blk @constCast(&(a.unwrap()[{d}]));
-                        \\}}
-                    ;
-                    const oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
-                    return sprint("em.Ref({s}){{ .obj = {s} }}", .{ mkTypeName(T), oval });
-                }
-            };
+        .HOST => return struct {
+            pub const _em__builtin = {};
+            const tname = @typeName(T);
+            idx: usize = NIL_REF,
+            pub fn toString(self: @This()) []const u8 {
+                return sprint("em.Ref({s}){{ .idx = {d} }}", .{ mkTypeName(T), self.idx });
+            }
         },
-        .TARG => {
-            return struct {
-                obj: *T,
-            };
+        .TARG => return struct {
+            const tname = @typeName(T);
+            idx: usize,
         },
     }
 }

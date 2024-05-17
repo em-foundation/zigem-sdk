@@ -17,21 +17,15 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = if (em.hosted)
-        null
-    else
-        c_blinkF.unwrap().obj;
-
+    const blinkF = FiberMgr.a_heap.get(c_blinkF.unwrap()).?;
     var count: u8 = 5;
 
     pub fn em__run() void {
-        if (em.hosted) return;
         blinkF.post();
         FiberMgr.run();
     }
 
     pub fn blinkFB(_: FiberMgr.FiberBody_CB) void {
-        if (em.hosted) return;
         em.@"%%[d]"();
         count -= 1;
         if (count == 0) em.halt();
