@@ -46,9 +46,9 @@ pub const EM__TARG = struct {
     }
 
     pub fn print() void {
-        em.print("CoreBench.print\n", .{});
-        ListBench.print();
-        MatrixBench.print();
+        em.print("\n*** CoreBench.print\n", .{});
+        //ListBench.print();
+        //MatrixBench.print();
         StateBench.print();
     }
 
@@ -68,8 +68,8 @@ pub const EM__TARG = struct {
 
     pub fn setup() void {
         //ListBench.setup();
-        MatrixBench.setup();
-        //StateBench.setup();
+        //MatrixBench.setup();
+        StateBench.setup();
     }
 };
 

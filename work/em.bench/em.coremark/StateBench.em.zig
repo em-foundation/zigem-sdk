@@ -176,8 +176,23 @@ pub const EM__TARG = struct {
     }
 
     pub fn print() void {
-        // TODO
-        return;
+        var idx: usize = 0;
+        var cnt: usize = 0;
+        em.print("\n\"", .{});
+        while (idx < membuf.len and membuf[idx] != 0) {
+            if ((cnt % @as(usize, 8)) == 0) {
+                em.print("\n    ", .{});
+            }
+            cnt += 1;
+            while (true) {
+                const c = membuf[idx];
+                idx += 1;
+                if (c == ',') break;
+                em.print("{c}", .{c});
+            }
+            em.print(", ", .{});
+        }
+        em.print("\n\", count = {d}\n", .{cnt});
     }
 
     pub fn run(arg: i16) Utils.sum_t {
