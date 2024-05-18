@@ -116,8 +116,20 @@ pub const EM__TARG = struct {
     }
 
     pub fn print() void {
-        // TODO
-        return;
+        prDat("A", matA);
+        prDat("B", matB);
+    }
+
+    fn prDat(lab: []const u8, mat: []i16) void {
+        em.print("\n{s}:\n    ", .{lab});
+        for (0..dimN) |i| {
+            var sep: []const u8 = "";
+            for (0..dimN) |j| {
+                em.print("{s}{d}", .{ sep, mat[i * dimN + j] });
+                sep = ",";
+            }
+            em.print("\n    ", .{});
+        }
     }
 
     pub fn run(arg: i16) Utils.sum_t {

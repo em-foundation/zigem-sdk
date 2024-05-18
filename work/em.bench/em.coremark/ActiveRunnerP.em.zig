@@ -22,9 +22,10 @@ pub const EM__TARG = struct {
     }
 
     pub fn em__run() void {
+        CoreBench.print();
         //em.reg(0x1111).* = ITERATIONS;
-        em.reg(0x1111).* = Utils.getSeed(3);
-        em.reg(0x2222).* = CoreBench.run(0);
+        //em.reg(0x1111).* = Utils.getSeed(3);
+        //em.reg(0x2222).* = CoreBench.run(0);
         //em.@"%%[d+]"();
         //var i: u16 = 0;
         //while (i < ITERATIONS) : (i += 1) {
