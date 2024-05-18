@@ -16,7 +16,7 @@ pub const Elem = struct {
     data: em.Ref(Data),
 };
 
-pub const Comparator = fn (a: *Data, b: *Data) i32;
+pub const Comparator = fn (a: em.Ref(Data), b: em.Ref(Data)) i32;
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
@@ -26,12 +26,16 @@ pub const v_max_elems = em__unit.config("max_elems", u16);
 pub const a_data = em__unit.array("a_data", Data);
 pub const a_elem = em__unit.array("a_elem", Elem);
 
-fn getData(ref: em.Ref(Elem)) *Data {
-    return a_data.get(getElem(ref).?.data).?;
+fn getD(ref: em.Ref(Data)) *Data {
+    return a_data.get(ref).?;
 }
 
-fn getElem(ref: em.Ref(Elem)) ?*Elem {
-    return a_elem.get(ref);
+fn getE(ref: em.Ref(Elem)) *Elem {
+    return a_elem.get(ref).?;
+}
+
+fn getED(ref: em.Ref(Elem)) *Data {
+    return getD((getE(ref).data));
 }
 
 pub const EM__HOST = struct {
@@ -40,16 +44,16 @@ pub const EM__HOST = struct {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
         const head = a_elem.alloc(.{});
-        getElem(head).?.data = a_data.alloc(.{});
+        getE(head).data = a_data.alloc(.{});
         var p = head;
         for (0..max) |_| {
             const q = a_elem.alloc(.{});
-            getElem(q).?.data = a_data.alloc(.{});
-            getElem(p).?.next = q;
+            getE(q).data = a_data.alloc(.{});
+            getE(p).next = q;
             p = q;
         }
-        getElem(p).?.data = a_data.alloc(.{});
-        getElem(p).?.next = em.Ref(Elem){ .idx = em.NIL_IDX };
+        getE(p).data = a_data.alloc(.{});
+        getE(p).next = em.Ref_NIL(Elem);
         v_cur_head.set(head);
         v_max_elems.set(max);
     }
@@ -57,12 +61,27 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const cur_head = v_cur_head.unwrap();
+    var cur_head = v_cur_head.unwrap();
     const max_elems = v_max_elems.unwrap();
 
     pub fn dump() void {
         // TODO
         return;
+    }
+
+    fn find(list: em.Ref(Elem), data: em.Ref(Data)) em.Ref(Elem) {
+        var elem = list;
+        if (getD(data).idx >= 0) {
+            while (!elem.isNil() and getED(elem).idx != getD(data).idx) {
+                elem = getE(elem).next;
+            }
+        } else {
+            const idx: i16 = @bitCast(@as(u16, @bitCast(getED(elem).idx)) & @as(u16, 0xff));
+            while (!elem.isNil() and (idx != getD(data).idx)) {
+                elem = getE(elem).next;
+            }
+        }
+        return elem;
     }
 
     pub fn kind() Utils.Kind {
@@ -74,6 +93,26 @@ pub const EM__TARG = struct {
         return;
     }
 
+    fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
+        const ret = getE(item).next;
+        const tmp = getE(item).data;
+        getE(item).data = getE(ret).next;
+        getE(ret).data = tmp;
+        getE(item).next = getE(getE(item).next).next;
+        getE(ret).next = em.Ref_NIL(Elem);
+    }
+
+    fn reverse(list: em.Ref(Elem)) em.Ref(Elem) {
+        var p = list;
+        var next = em.Ref_NIL(Elem);
+        while (!p.isNil()) {
+            const tmp = getE(p).next;
+            getE(p).next = next;
+            next = p;
+            p = tmp;
+        }
+    }
+
     pub fn run(arg: i16) Utils.sum_t {
         return Crc.add16(arg, Utils.getSeed(2));
     }
@@ -83,25 +122,112 @@ pub const EM__TARG = struct {
         var ki: u16 = 1;
         var kd: u16 = max_elems - 3;
         var e = cur_head;
-        getData(e).idx = 0;
-        getData(e).val = @bitCast(@as(u16, 0x8080));
-        e = getElem(e).?.next;
-        while (!e.isNil()) : (e = getElem(e).?.next) {
+        getED(e).idx = 0;
+        getED(e).val = @bitCast(@as(u16, 0x8080));
+        e = getE(e).next;
+        while (!e.isNil()) : (e = getE(e).next) {
             var pat = (seed ^ kd) & 0x7;
             const dat = (pat << 3) | (kd & 0x7);
-            getData(e).val = @bitCast((dat << 8) | dat);
+            getED(e).val = @bitCast((dat << 8) | dat);
             kd -= 1;
             if (ki < (max_elems / 5)) {
-                getData(e).idx = @bitCast(ki);
+                getED(e).idx = @bitCast(ki);
                 ki += 1;
             } else {
                 pat = seed ^ ki;
                 ki += 1;
-                getData(e).idx = @bitCast(@as(u16, 0x3fff) & (((ki & 0x7) << 8) | pat));
+                getED(e).idx = @bitCast(@as(u16, 0x3fff) & (((ki & 0x7) << 8) | pat));
             }
         }
-        getData(e).idx = @bitCast(@as(u16, 0x7fff));
-        getData(e).val = @bitCast(@as(u16, 0xffff));
+        getED(e).idx = @bitCast(@as(u16, 0x7fff));
+        getED(e).val = @bitCast(@as(u16, 0xffff));
+        // cur_head = sort(cur_head, idxCompare);
+    }
+
+    fn sort(list: em.Ref(Elem), cmp: Comparator) em.Ref(Elem) {
+        var res = list;
+        var insize: usize = 1;
+        var q: em.Ref(Elem) = undefined;
+        var e: em.Ref(Elem) = undefined;
+        while (true) {
+            var p = res;
+            res = em.Ref_NIL(Elem);
+            var tail = em.Ref_NIL(Elem);
+            var nmerges: i32 = 0; // count number of merges we do in this pass
+            while (!p.isNil()) {
+                nmerges += 1; // there exists a merge to be done
+                // step `insize' places along from p
+                q = p;
+                var psize: usize = 0;
+                for (0..insize) |_| {
+                    psize += 1;
+                    q = getE(q).next;
+                    if (q.isNil()) break;
+                }
+                // if q hasn't fallen off end, we have two lists to merge
+                var qsize: usize = 0;
+                while (psize > 0 or (qsize > 0 and !q.isNil())) {
+                    // decide whether next element of merge comes from p or q
+                    if (psize == 0) {
+                        // p is empty; e must come from q
+                        e = q;
+                        q = getE(q).next;
+                        qsize -= 1;
+                    } else if (qsize == 0 or q.isNil()) {
+                        // q is empty; e must come from p.
+                        e = p;
+                        p = getE(p).next;
+                        psize -= 1;
+                    } else if (cmp(getE(p).data, getE(q).data) <= 0) {
+                        // First element of p is lower (or same); e must come from p.
+                        e = p;
+                        p = getE(p).next;
+                        psize -= 1;
+                    } else {
+                        // First element of q is lower; e must come from q.
+                        e = q;
+                        q = getE(q).next;
+                        qsize -= 1;
+                    }
+                    // add the next element to the merged list
+                    if (!tail.isNil()) {
+                        getE(tail).next = e;
+                    } else {
+                        res = e;
+                    }
+                    tail = e;
+                    // now p has stepped `insize' places along, and q has too
+                    p = q;
+                }
+                getE(tail).next = em.Ref_NIL(Elem);
+                // If we have done only one merge, we're finished
+                if (nmerges <= 1) break; // allow for nmerges==0, the empty list case
+                // Otherwise repeat, merging lists twice the size
+                insize *= 2;
+            }
+        }
+        return list;
+    }
+
+    fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
+        const tmp = getE(removed).data;
+        getE(removed).data = getE(modified).data;
+        getE(modified).data = tmp;
+        getE(removed).next = getE(modified).next;
+        getE(modified).next = removed;
+    }
+
+    // Comparator
+
+    fn idxCompare(a: em.Ref(Data), b: em.Ref(Data)) i32 {
+        const avu: u16 = @bitCast(getD(a).val);
+        const bvu: u16 = @bitCast(getD(b).val);
+        const sft: u4 = 8;
+        const mhi: u16 = 0xff00;
+        const mlo: u16 = 0x00ff;
+        getD(a).val = @bitCast((avu & mhi) | (mlo & (avu >> sft)));
+        getD(b).val = @bitCast((bvu & mhi) | (mlo & (bvu >> sft)));
+        return getD(a).idx - getD(b).idx;
     }
 };
 

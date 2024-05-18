@@ -17,8 +17,6 @@ pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub const NIL_IDX = ~@as(usize, 0);
-
 pub fn _ArrayD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
@@ -52,7 +50,7 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
         }
 
         pub fn get(_: Self, ref: Ref(T)) ?*T {
-            return if (ref.idx == NIL_IDX) null else &_list.items[ref.idx];
+            return if (ref.isNil()) null else &_list.items[ref.idx];
         }
 
         pub fn len(_: Self) usize {
@@ -98,7 +96,7 @@ pub fn _ArrayV(T: type, comptime v: anytype) type {
         var _items: [v.len]T = v;
 
         pub fn get(_: Self, ref: Ref(T)) ?*T {
-            return if (ref.idx == NIL_IDX) null else &_items[ref.idx];
+            return if (ref.isNil()) null else &_items[ref.idx];
         }
 
         pub fn len(_: Self) usize {
@@ -262,6 +260,7 @@ pub fn Ref(T: type) type {
     switch (DOMAIN) {
         .HOST => return struct {
             const Self = @This();
+            const NIL_IDX = ~@as(usize, 0);
             pub const _em__builtin = {};
             const tname = @typeName(T);
             idx: usize = NIL_IDX,
@@ -281,6 +280,7 @@ pub fn Ref(T: type) type {
         },
         .TARG => return struct {
             const Self = @This();
+            const NIL_IDX = ~@as(usize, 0);
             const tname = @typeName(T);
             idx: usize = NIL_IDX,
             pub fn eql(self: Self, ref: Ref(T)) bool {
@@ -291,6 +291,10 @@ pub fn Ref(T: type) type {
             }
         },
     }
+}
+
+pub fn Ref_NIL(T: type) Ref(T) {
+    return Ref(T){};
 }
 
 pub const StringH = struct {
