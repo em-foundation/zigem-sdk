@@ -89,9 +89,11 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
     };
 }
 
-pub fn _ArrayV(T: type, comptime v: anytype) type {
+pub fn _ArrayV(dp: []const u8, T: type, comptime v: anytype) type {
     return struct {
         const Self = @This();
+
+        const _dpath = dp;
 
         var _items: [v.len]T = v;
 
@@ -159,9 +161,10 @@ fn _ConfigD(dp: []const u8, T: type) type {
     };
 }
 
-fn _ConfigV(T: type, v: T) type {
+fn _ConfigV(dp: []const u8, T: type, v: T) type {
     return struct {
         const Self = @This();
+        const _dpath = dp;
         const _val: T = v;
         pub fn unwrap(_: Self) T {
             return _val;
@@ -245,9 +248,10 @@ fn _ProxyD(dp: []const u8, I: type) type {
     };
 }
 
-fn _ProxyV(u: type) type {
+fn _ProxyV(dp: []const u8, u: type) type {
     return struct {
         const Self = @This();
+        const _dpath = dp;
         pub fn unwrap(_: Self) type {
             return u;
         }
@@ -337,21 +341,21 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: type = void,
 
-    pub fn array(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))) {
+    pub fn array(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ArrayD(self.extendPath(name), T) else _ArrayV(self.extendPath(name), T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
             return _ArrayD(dname, T){};
         } else {
-            return _ArrayV(T, @field(targ, dname)){};
+            return _ArrayV(dname, T, @field(targ, dname)){};
         }
     }
 
-    pub fn config(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ConfigD(self.extendPath(name), T) else _ConfigV(T, @field(targ, self.extendPath(name))) {
+    pub fn config(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ConfigD(self.extendPath(name), T) else _ConfigV(self.extendPath(name), T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
             return _ConfigD(dname, T){};
         } else {
-            return _ConfigV(T, @field(targ, dname)){};
+            return _ConfigV(dname, T, @field(targ, dname)){};
         }
     }
 
@@ -359,12 +363,12 @@ pub const Unit = struct {
         return Func(FT){ ._upath = self.upath, ._fname = name };
     }
 
-    pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(@field(targ, self.extendPath(name))) {
+    pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(self.extendPath(name), @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
             return _ProxyD(dname, I){};
         } else {
-            return _ProxyV(@field(targ, dname)){};
+            return _ProxyV(dname, @field(targ, dname)){};
         }
     }
 
