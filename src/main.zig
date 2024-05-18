@@ -8,9 +8,19 @@ const Session = @import("./Session.zig");
 var t0: f80 = 0.0;
 
 var params = struct {
+    load: bool = false,
     unit: []const u8 = undefined,
     work: []const u8 = ".",
 }{};
+
+var load_opt = cli.Option{
+    .long_name = "load",
+    .short_alias = 'l',
+    .help = "Load executable image after building",
+    .required = false,
+    .value_name = "LOAD",
+    .value_ref = cli.mkRef(&params.load),
+};
 
 var unit_opt = cli.Option{
     .long_name = "unit",
@@ -33,6 +43,7 @@ var work_opt = cli.Option{
 var build_cmd = cli.Command{
     .name = "build",
     .options = &.{
+        &load_opt,
         &unit_opt,
         &work_opt,
     },
@@ -118,6 +129,11 @@ fn doBuild() !void {
     try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
     const t2: f80 = @floatFromInt(std.time.milliTimestamp());
     try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+    if (!params.load) return;
+    try writer.print("loading...\n", .{});
+    stdout = try execMake("load");
+    // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
+    try writer.print("done.\n", .{});
 }
 
 fn doClean() !void {
