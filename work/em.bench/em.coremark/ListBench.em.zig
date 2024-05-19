@@ -46,13 +46,12 @@ pub const EM__HOST = struct {
         const head = a_elem.alloc(.{});
         getE(head).data = a_data.alloc(.{});
         var p = head;
-        for (0..max) |_| {
+        for (0..max - 1) |_| {
             const q = a_elem.alloc(.{});
             getE(q).data = a_data.alloc(.{});
             getE(p).next = q;
             p = q;
         }
-        getE(p).data = a_data.alloc(.{});
         getE(p).next = em.Ref_NIL(Elem);
         v_cur_head.set(head);
         v_max_elems.set(max);
@@ -88,9 +87,21 @@ pub const EM__TARG = struct {
         return .LIST;
     }
 
+    fn prList(list: em.Ref(Elem), name: []const u8) void {
+        var sz: usize = 0;
+        em.print("{s}\n[", .{name});
+        var p = list;
+        while (!p.isNil()) {
+            const pre: []const u8 = if ((sz % 8) == 0) "\n    " else "";
+            sz += 1;
+            em.print("{s}({x:0>4},{x:0>4})", .{ pre, @as(u16, @bitCast(getED(p).idx)), @as(u16, @bitCast(getED(p).val)) });
+            p = getE(p).next;
+        }
+        em.print("\n], size = {d}\n", .{sz});
+    }
+
     pub fn print() void {
-        // TODO
-        return;
+        prList(cur_head, "current");
     }
 
     fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
@@ -125,8 +136,8 @@ pub const EM__TARG = struct {
         getED(e).idx = 0;
         getED(e).val = @bitCast(@as(u16, 0x8080));
         e = getE(e).next;
-        while (!e.isNil()) : (e = getE(e).next) {
-            var pat = (seed ^ kd) & 0x7;
+        while (!getE(e).next.isNil()) : (e = getE(e).next) {
+            var pat = (seed ^ kd) & 0xf;
             const dat = (pat << 3) | (kd & 0x7);
             getED(e).val = @bitCast((dat << 8) | dat);
             kd -= 1;
@@ -141,7 +152,7 @@ pub const EM__TARG = struct {
         }
         getED(e).idx = @bitCast(@as(u16, 0x7fff));
         getED(e).val = @bitCast(@as(u16, 0xffff));
-        // cur_head = sort(cur_head, idxCompare);
+        cur_head = sort(cur_head, idxCompare);
     }
 
     fn sort(list: em.Ref(Elem), cmp: Comparator) em.Ref(Elem) {
@@ -165,7 +176,8 @@ pub const EM__TARG = struct {
                     if (q.isNil()) break;
                 }
                 // if q hasn't fallen off end, we have two lists to merge
-                var qsize: usize = 0;
+                var qsize: usize = insize;
+                // now we have two lists; merge them
                 while (psize > 0 or (qsize > 0 and !q.isNil())) {
                     // decide whether next element of merge comes from p or q
                     if (psize == 0) {
@@ -196,17 +208,17 @@ pub const EM__TARG = struct {
                         res = e;
                     }
                     tail = e;
-                    // now p has stepped `insize' places along, and q has too
-                    p = q;
                 }
-                getE(tail).next = em.Ref_NIL(Elem);
-                // If we have done only one merge, we're finished
-                if (nmerges <= 1) break; // allow for nmerges==0, the empty list case
-                // Otherwise repeat, merging lists twice the size
-                insize *= 2;
+                // now p has stepped `insize' places along, and q has too
+                p = q;
             }
+            getE(tail).next = em.Ref_NIL(Elem);
+            // If we have done only one merge, we're finished
+            if (nmerges <= 1) break; // allow for nmerges==0, the empty list case
+            // Otherwise repeat, merging lists twice the size
+            insize *= 2;
         }
-        return list;
+        return res;
     }
 
     fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
