@@ -152,7 +152,9 @@ pub const EM__TARG = struct {
         }
         getED(e).idx = @bitCast(@as(u16, 0x7fff));
         getED(e).val = @bitCast(@as(u16, 0xffff));
+        em.@"%%[c+]"();
         cur_head = sort(cur_head, idxCompare);
+        em.@"%%[c-]"();
     }
 
     fn sort(list: em.Ref(Elem), cmp: Comparator) em.Ref(Elem) {

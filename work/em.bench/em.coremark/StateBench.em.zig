@@ -80,7 +80,8 @@ pub const EM__TARG = struct {
     }
 
     fn isDigit(ch: u8) bool {
-        return em.std.ascii.isDigit(ch);
+        return ch >= '0' and ch <= '9';
+        //return em.std.ascii.isDigit(ch);
     }
 
     pub fn kind() Utils.Kind {
@@ -91,6 +92,9 @@ pub const EM__TARG = struct {
         var str = pstr.*;
         var state = State.START;
         while (str[0] != 0 and state != State.INVALID) : (str += 1) {
+            // em.@"%%[a+]"();
+            // em.@"%%[>]"(state);
+            // em.@"%%[a-]"();
             const ch = str[0];
             if (ch == ',') {
                 str += 1;
@@ -160,10 +164,12 @@ pub const EM__TARG = struct {
                     }
                 },
                 .SCIENTIFIC => {
+                    //em.@"%%[a+]"();
                     if (!isDigit(ch)) {
                         state = .INVALID;
-                        transcnt[ord(.SCIENTIFIC)] += 1;
+                        transcnt[ord(.INVALID)] += 1;
                     }
+                    //em.@"%%[a-]"();
                 },
             }
         }
@@ -173,6 +179,13 @@ pub const EM__TARG = struct {
 
     fn ord(state: State) usize {
         return @intFromEnum(state);
+    }
+
+    fn prCnts(lab: []const u8, finalcnt: [*]u32, transcnt: [*]u32) void {
+        em.print("\n{s}\n", .{lab});
+        for (0..NUM_STATES) |i| {
+            em.print("zig: {d} {d}\n", .{ finalcnt[i], transcnt[i] });
+        }
     }
 
     pub fn print() void {
@@ -205,6 +218,7 @@ pub const EM__TARG = struct {
             transcnt[i] = 0;
         }
         scan(&finalcnt, &transcnt);
+        // em.@"%%[c]"();
         scramble(Utils.getSeed(1), uarg);
         scan(&finalcnt, &transcnt);
         scramble(Utils.getSeed(2), uarg);
@@ -213,7 +227,6 @@ pub const EM__TARG = struct {
             crc = Crc.add32(finalcnt[i], crc);
             crc = Crc.add32(transcnt[i], crc);
         }
-        em.reg(0x2222).* = crc;
         return crc;
     }
 
