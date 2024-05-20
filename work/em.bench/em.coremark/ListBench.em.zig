@@ -125,7 +125,61 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
-        return Crc.add16(arg, Utils.getSeed(2));
+        //var list = cur_head;
+        //var finder_idx = arg;
+        //var find_cnt = Utils.getSeed(3);
+        //var data: Data = undefined;
+        //for (0..find_cnt) |i| {
+        //    data.val = @bitCast(i & 0xff);
+        //}
+
+        return arg;
+        //return Crc.add16(arg, Utils.getSeed(2));
+        //    auto list = curHead
+        //    auto finderIdx = <int16>arg
+        //    auto findCnt = Utils.getSeed(3)
+        //    auto found = <uint16>0
+        //    auto missed = <uint16>0
+        //    auto retval = <Crc.sum_t>0
+        //    var data: Data
+        //    data.idx = finderIdx
+        //    for auto i = 0; i < findCnt; i++
+        //        data.val = <int16>(i & 0xff)
+        //        auto elem = find(list, data)
+        //        list = reverse(list)
+        //        if elem == null
+        //            missed += 1
+        //            retval += <uint16>(list.next.data.val >> 8) & 0x1
+        //        else
+        //            found += 1
+        //            if <uint16>elem.data.val & 0x1
+        //                retval += (<uint16>(elem.data.val >> 9)) & 0x1
+        //            end
+        //            if elem.next != null
+        //                auto tmp = elem.next
+        //                elem.next = tmp.next
+        //                tmp.next = list.next
+        //                list.next = tmp
+        //            end
+        //        end
+        //        data.idx += 1 if data.idx >= 0
+        //    end
+        //    retval += found * 4 - missed
+        //    list = sort(list, valCompare) if finderIdx > 0
+        //    auto remover = remove(list.next)
+        //    auto finder = find(list, &data)
+        //    finder = list.next if !finder
+        //    while finder
+        //        retval = Crc.add16(list.data.val, retval)
+        //        finder = finder.next
+        //    end
+        //    unremove(remover, list.next)
+        //    list = sort(list, idxCompare)
+        //    for auto e = list.next; e; e = e.next
+        //        retval = Crc.add16(list.data.val, retval)
+        //    end
+        //    return retval
+
     }
 
     pub fn setup() void {
