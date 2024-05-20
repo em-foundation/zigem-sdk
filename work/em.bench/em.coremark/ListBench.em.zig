@@ -12,30 +12,30 @@ pub const Data = struct {
 };
 
 pub const Elem = struct {
-    next: em.Ref(Elem),
-    data: em.Ref(Data),
+    next: em.Ptr(Elem),
+    data: em.Ptr(Data),
 };
 
-pub const Comparator = fn (a: em.Ref(Data), b: em.Ref(Data)) i32;
+pub const Comparator = fn (a: em.Ptr(Data), b: em.Ptr(Data)) i32;
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
+//pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
 pub const v_max_elems = em__unit.config("max_elems", u16);
 
 pub const a_data = em__unit.array("a_data", Data);
 pub const a_elem = em__unit.array("a_elem", Elem);
 
-fn getD(ref: em.Ref(Data)) *Data {
-    return a_data.get(ref).?;
+fn getD(ref: em.Ptr(Data)) *Data {
+    return ref.get();
 }
 
-fn getE(ref: em.Ref(Elem)) *Elem {
-    return a_elem.get(ref).?;
+fn getE(ref: em.Ptr(Elem)) *Elem {
+    return ref.get();
 }
 
-fn getED(ref: em.Ref(Elem)) *Data {
-    return getD((getE(ref).data));
+fn getED(ref: em.Ptr(Elem)) *Data {
+    return ref.get().data.get();
 }
 
 pub const EM__HOST = struct {
@@ -43,59 +43,77 @@ pub const EM__HOST = struct {
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
-        const head = a_elem.alloc(.{});
-        getE(head).data = a_data.alloc(.{});
-        var p = head;
-        for (0..max - 1) |_| {
-            const q = a_elem.alloc(.{});
-            getE(q).data = a_data.alloc(.{});
-            getE(p).next = q;
-            p = q;
-        }
-        getE(p).next = em.Ref_NIL(Elem);
-        v_cur_head.set(head);
+        //const head = a_elem.alloc(.{});
+        //getE(head).data = a_data.alloc(.{});
+        //var p = head;
+        //for (0..max - 1) |_| {
+        //    const q = a_elem.alloc(.{});
+        //    getE(q).data = a_data.alloc(.{});
+        //    getE(p).next = q;
+        //    p = q;
+        //}
+        //getE(p).next = em.Ref_NIL(Elem);
+        //v_cur_head.set(head);
+        a_data.setLen(max + 1);
+        a_elem.setLen(max + 1);
         v_max_elems.set(max);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    var cur_head = v_cur_head.unwrap();
     const max_elems = v_max_elems.unwrap();
+
+    var data_heap = a_data.unwrap();
+    var elem_heap = a_elem.unwrap();
+
+    var cur_head: em.Ptr(Elem) = undefined;
+
+    fn _init() void {
+        cur_head = em.Ptr(Elem).init(&elem_heap[0]);
+        var p = cur_head;
+        for (0..max_elems - 1) |i| {
+            getE(p).data = em.Ptr(Data).init(&data_heap[i]);
+            getE(p).next = em.Ptr(Elem).init(&elem_heap[i + 1]);
+            p = getE(p).next;
+        }
+        getE(p).next = em.Ptr(Elem).NIL();
+        getE(p).data = em.Ptr(Data).init(&data_heap[max_elems]);
+    }
 
     pub fn dump() void {
         // TODO
         return;
     }
 
-    fn find(list: em.Ref(Elem), data: em.Ref(Data)) em.Ref(Elem) {
-        var elem = list;
-        if (getD(data).idx >= 0) {
-            while (!elem.isNil() and getED(elem).idx != getD(data).idx) {
-                elem = getE(elem).next;
-            }
-        } else {
-            const idx: i16 = @bitCast(@as(u16, @bitCast(getED(elem).idx)) & @as(u16, 0xff));
-            while (!elem.isNil() and (idx != getD(data).idx)) {
-                elem = getE(elem).next;
-            }
-        }
-        return elem;
-    }
+    //fn find(list: em.Ref(Elem), data: em.Ref(Data)) em.Ref(Elem) {
+    //    var elem = list;
+    //    if (getD(data).idx >= 0) {
+    //        while (!elem.isNIL() and getED(elem).idx != getD(data).idx) {
+    //            elem = getE(elem).next;
+    //        }
+    //    } else {
+    //        const idx: i16 = @bitCast(@as(u16, @bitCast(getED(elem).idx)) & @as(u16, 0xff));
+    //        while (!elem.isNIL() and (idx != getD(data).idx)) {
+    //            elem = getE(elem).next;
+    //        }
+    //    }
+    //    return elem;
+    //}
 
     pub fn kind() Utils.Kind {
         return .LIST;
     }
 
-    fn prList(list: em.Ref(Elem), name: []const u8) void {
+    fn prList(list: em.Ptr(Elem), name: []const u8) void {
         var sz: usize = 0;
         em.print("{s}\n[", .{name});
         var p = list;
-        while (!p.isNil()) {
+        while (!p.isNIL()) {
             const pre: []const u8 = if ((sz % 8) == 0) "\n    " else "";
             sz += 1;
             em.print("{s}({x:0>4},{x:0>4})", .{ pre, @as(u16, @bitCast(getED(p).idx)), @as(u16, @bitCast(getED(p).val)) });
-            p = getE(p).next;
+            p = p.get().next;
         }
         em.print("\n], size = {d}\n", .{sz});
     }
@@ -104,25 +122,25 @@ pub const EM__TARG = struct {
         prList(cur_head, "current");
     }
 
-    fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
-        const ret = getE(item).next;
-        const tmp = getE(item).data;
-        getE(item).data = getE(ret).next;
-        getE(ret).data = tmp;
-        getE(item).next = getE(getE(item).next).next;
-        getE(ret).next = em.Ref_NIL(Elem);
-    }
+    //fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
+    //    const ret = getE(item).next;
+    //    const tmp = getE(item).data;
+    //    getE(item).data = getE(ret).next;
+    //    getE(ret).data = tmp;
+    //    getE(item).next = getE(getE(item).next).next;
+    //    getE(ret).next = em.Ref_NIL(Elem);
+    //}
 
-    fn reverse(list: em.Ref(Elem)) em.Ref(Elem) {
-        var p = list;
-        var next = em.Ref_NIL(Elem);
-        while (!p.isNil()) {
-            const tmp = getE(p).next;
-            getE(p).next = next;
-            next = p;
-            p = tmp;
-        }
-    }
+    //fn reverse(list: em.Ref(Elem)) em.Ref(Elem) {
+    //    var p = list;
+    //    var next = em.Ref_NIL(Elem);
+    //    while (!p.isNIL()) {
+    //        const tmp = getE(p).next;
+    //        getE(p).next = next;
+    //        next = p;
+    //        p = tmp;
+    //    }
+    //}
 
     pub fn run(arg: i16) Utils.sum_t {
         //var list = cur_head;
@@ -183,6 +201,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup() void {
+        _init();
         const seed = Utils.getSeed(1);
         var ki: u16 = 1;
         var kd: u16 = max_elems - 3;
@@ -190,7 +209,8 @@ pub const EM__TARG = struct {
         getED(e).idx = 0;
         getED(e).val = @bitCast(@as(u16, 0x8080));
         e = getE(e).next;
-        while (!getE(e).next.isNil()) : (e = getE(e).next) {
+        var cnt: u8 = 0;
+        while (!getE(e).next.isNIL()) : (e = getE(e).next) {
             var pat = (seed ^ kd) & 0xf;
             const dat = (pat << 3) | (kd & 0x7);
             getED(e).val = @bitCast((dat << 8) | dat);
@@ -203,6 +223,7 @@ pub const EM__TARG = struct {
                 ki += 1;
                 getED(e).idx = @bitCast(@as(u16, 0x3fff) & (((ki & 0x7) << 8) | pat));
             }
+            cnt += 1;
         }
         getED(e).idx = @bitCast(@as(u16, 0x7fff));
         getED(e).val = @bitCast(@as(u16, 0xffff));
@@ -211,17 +232,17 @@ pub const EM__TARG = struct {
         em.@"%%[c-]"();
     }
 
-    fn sort(list: em.Ref(Elem), cmp: Comparator) em.Ref(Elem) {
+    fn sort(list: em.Ptr(Elem), cmp: Comparator) em.Ptr(Elem) {
         var res = list;
         var insize: usize = 1;
-        var q: em.Ref(Elem) = undefined;
-        var e: em.Ref(Elem) = undefined;
+        var q: em.Ptr(Elem) = undefined;
+        var e: em.Ptr(Elem) = undefined;
         while (true) {
             var p = res;
-            res = em.Ref_NIL(Elem);
-            var tail = em.Ref_NIL(Elem);
+            res = em.Ptr(Elem).NIL();
+            var tail = em.Ptr(Elem).NIL();
             var nmerges: i32 = 0; // count number of merges we do in this pass
-            while (!p.isNil()) {
+            while (!p.isNIL()) {
                 nmerges += 1; // there exists a merge to be done
                 // step `insize' places along from p
                 q = p;
@@ -229,19 +250,19 @@ pub const EM__TARG = struct {
                 for (0..insize) |_| {
                     psize += 1;
                     q = getE(q).next;
-                    if (q.isNil()) break;
+                    if (q.isNIL()) break;
                 }
                 // if q hasn't fallen off end, we have two lists to merge
                 var qsize: usize = insize;
                 // now we have two lists; merge them
-                while (psize > 0 or (qsize > 0 and !q.isNil())) {
+                while (psize > 0 or (qsize > 0 and !q.isNIL())) {
                     // decide whether next element of merge comes from p or q
                     if (psize == 0) {
                         // p is empty; e must come from q
                         e = q;
                         q = getE(q).next;
                         qsize -= 1;
-                    } else if (qsize == 0 or q.isNil()) {
+                    } else if (qsize == 0 or q.isNIL()) {
                         // q is empty; e must come from p.
                         e = p;
                         p = getE(p).next;
@@ -258,7 +279,7 @@ pub const EM__TARG = struct {
                         qsize -= 1;
                     }
                     // add the next element to the merged list
-                    if (!tail.isNil()) {
+                    if (!tail.isNIL()) {
                         getE(tail).next = e;
                     } else {
                         res = e;
@@ -268,7 +289,7 @@ pub const EM__TARG = struct {
                 // now p has stepped `insize' places along, and q has too
                 p = q;
             }
-            getE(tail).next = em.Ref_NIL(Elem);
+            getE(tail).next = em.Ptr(Elem).NIL();
             // If we have done only one merge, we're finished
             if (nmerges <= 1) break; // allow for nmerges==0, the empty list case
             // Otherwise repeat, merging lists twice the size
@@ -277,17 +298,17 @@ pub const EM__TARG = struct {
         return res;
     }
 
-    fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
-        const tmp = getE(removed).data;
-        getE(removed).data = getE(modified).data;
-        getE(modified).data = tmp;
-        getE(removed).next = getE(modified).next;
-        getE(modified).next = removed;
-    }
+    //fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
+    //    const tmp = getE(removed).data;
+    //    getE(removed).data = getE(modified).data;
+    //    getE(modified).data = tmp;
+    //    getE(removed).next = getE(modified).next;
+    //    getE(modified).next = removed;
+    //}
 
     // Comparator
 
-    fn idxCompare(a: em.Ref(Data), b: em.Ref(Data)) i32 {
+    fn idxCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
         const avu: u16 = @bitCast(getD(a).val);
         const bvu: u16 = @bitCast(getD(b).val);
         const sft: u4 = 8;
