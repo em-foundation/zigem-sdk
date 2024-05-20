@@ -23,22 +23,14 @@ pub const EM__TARG = struct {
 
     pub fn em__run() void {
         em.@"%%[d+]"();
-        _ = CoreBench.run(0);
+        for (0..ITERATIONS) |_| {
+            _ = CoreBench.run(0);
+        }
         em.@"%%[d-]"();
         em.print("z: list crc = {x:0>4}\n", .{Utils.getCrc(.LIST)});
         em.print("z: matrix crc = {x:0>4}\n", .{Utils.getCrc(.MATRIX)});
         em.print("z: state crc = {x:0>4}\n", .{Utils.getCrc(.STATE)});
         em.print("z: final crc = {x:0>4}\n", .{Utils.getCrc(.FINAL)});
-
-        //em.reg(0x1111).* = ITERATIONS;
-        //em.reg(0x1111).* = Utils.getSeed(3);
-        //em.reg(0x2222).* = CoreBench.run(0);
-        //var i: u16 = 0;
-        //while (i < ITERATIONS) : (i += 1) {
-        //    em.reg(0x1111).* = CoreBench.run(0);
-        //}
-        //em.@"%%[d-]"();
-        //em.@"%%[>]"(Utils.getCrc(.FINAL));
     }
 };
 
