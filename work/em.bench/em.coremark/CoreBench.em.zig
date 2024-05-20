@@ -53,10 +53,8 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(_: i16) Utils.sum_t {
-        ListBench.setup();
-        ListBench.print();
-        //_ = ListBench.run(1);
-        //_ = MatrixBench.run(0);
+        _ = ListBench.run(1);
+        //_ = MatrixBench.run(0x11);
         return 0;
         //return MatrixBench.run(0);
         //return StateBench.run(0);
@@ -72,9 +70,9 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup() void {
-        //ListBench.setup();
-        //MatrixBench.setup();
-        //StateBench.setup();
+        ListBench.setup();
+        MatrixBench.setup();
+        StateBench.setup();
     }
 };
 

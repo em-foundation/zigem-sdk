@@ -6,6 +6,9 @@ pub const em__unit = em.Module(@This(), .{
 pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
+const Bench0 = em.Import.@"em.coremark/StateBench";
+const Bench1 = em.Import.@"em.coremark/MatrixBench";
+
 pub const Data = struct {
     val: i16 = 0,
     idx: i16 = 0,
@@ -36,6 +39,10 @@ fn getE(ref: em.Ptr(Elem)) *Elem {
 
 fn getED(ref: em.Ptr(Elem)) *Data {
     return ref.get().data.get();
+}
+
+fn getEN(ref: em.Ptr(Elem)) *Elem {
+    return ref.get().next.get();
 }
 
 pub const EM__HOST = struct {
@@ -86,20 +93,20 @@ pub const EM__TARG = struct {
         return;
     }
 
-    //fn find(list: em.Ref(Elem), data: em.Ref(Data)) em.Ref(Elem) {
-    //    var elem = list;
-    //    if (getD(data).idx >= 0) {
-    //        while (!elem.isNIL() and getED(elem).idx != getD(data).idx) {
-    //            elem = getE(elem).next;
-    //        }
-    //    } else {
-    //        const idx: i16 = @bitCast(@as(u16, @bitCast(getED(elem).idx)) & @as(u16, 0xff));
-    //        while (!elem.isNIL() and (idx != getD(data).idx)) {
-    //            elem = getE(elem).next;
-    //        }
-    //    }
-    //    return elem;
-    //}
+    fn find(list: em.Ptr(Elem), data: em.Ptr(Data)) em.Ptr(Elem) {
+        var elem = list;
+        if (getD(data).idx >= 0) {
+            while (!elem.isNIL() and getED(elem).idx != getD(data).idx) {
+                elem = getE(elem).next;
+            }
+        } else {
+            const idx: i16 = @bitCast(@as(u16, @bitCast(getED(elem).idx)) & @as(u16, 0xff));
+            while (!elem.isNIL() and (idx != getD(data).idx)) {
+                elem = getE(elem).next;
+            }
+        }
+        return elem;
+    }
 
     pub fn kind() Utils.Kind {
         return .LIST;
@@ -122,82 +129,63 @@ pub const EM__TARG = struct {
         prList(cur_head, "current");
     }
 
-    //fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
-    //    const ret = getE(item).next;
-    //    const tmp = getE(item).data;
-    //    getE(item).data = getE(ret).next;
-    //    getE(ret).data = tmp;
-    //    getE(item).next = getE(getE(item).next).next;
-    //    getE(ret).next = em.Ref_NIL(Elem);
-    //}
+    fn remove(item: em.Ptr(Elem)) em.Ptr(Elem) {
+        const ret = getE(item).next;
+        const tmp = getE(item).data;
+        getE(item).data = getE(ret).next;
+        getE(ret).data = tmp;
+        getE(item).next = getE(getE(item).next).next;
+        getE(ret).next = em.Ptr(Elem).NIL();
+        return ret;
+    }
 
-    //fn reverse(list: em.Ref(Elem)) em.Ref(Elem) {
-    //    var p = list;
-    //    var next = em.Ref_NIL(Elem);
-    //    while (!p.isNIL()) {
-    //        const tmp = getE(p).next;
-    //        getE(p).next = next;
-    //        next = p;
-    //        p = tmp;
-    //    }
-    //}
+    fn reverse(list: em.Ptr(Elem)) em.Ptr(Elem) {
+        var p = list;
+        var next = em.Ptr(Elem).NIL();
+        while (!p.isNIL()) {
+            const tmp = getE(p).next;
+            getE(p).next = next;
+            next = p;
+            p = tmp;
+        }
+        return next;
+    }
 
     pub fn run(arg: i16) Utils.sum_t {
-        //var list = cur_head;
-        //var finder_idx = arg;
-        //var find_cnt = Utils.getSeed(3);
-        //var data: Data = undefined;
-        //for (0..find_cnt) |i| {
-        //    data.val = @bitCast(i & 0xff);
-        //}
-
-        return arg;
-        //return Crc.add16(arg, Utils.getSeed(2));
-        //    auto list = curHead
-        //    auto finderIdx = <int16>arg
-        //    auto findCnt = Utils.getSeed(3)
-        //    auto found = <uint16>0
-        //    auto missed = <uint16>0
-        //    auto retval = <Crc.sum_t>0
-        //    var data: Data
-        //    data.idx = finderIdx
-        //    for auto i = 0; i < findCnt; i++
-        //        data.val = <int16>(i & 0xff)
-        //        auto elem = find(list, data)
-        //        list = reverse(list)
-        //        if elem == null
-        //            missed += 1
-        //            retval += <uint16>(list.next.data.val >> 8) & 0x1
-        //        else
-        //            found += 1
-        //            if <uint16>elem.data.val & 0x1
-        //                retval += (<uint16>(elem.data.val >> 9)) & 0x1
-        //            end
-        //            if elem.next != null
-        //                auto tmp = elem.next
-        //                elem.next = tmp.next
-        //                tmp.next = list.next
-        //                list.next = tmp
-        //            end
-        //        end
-        //        data.idx += 1 if data.idx >= 0
-        //    end
-        //    retval += found * 4 - missed
-        //    list = sort(list, valCompare) if finderIdx > 0
-        //    auto remover = remove(list.next)
-        //    auto finder = find(list, &data)
-        //    finder = list.next if !finder
-        //    while finder
-        //        retval = Crc.add16(list.data.val, retval)
-        //        finder = finder.next
-        //    end
-        //    unremove(remover, list.next)
-        //    list = sort(list, idxCompare)
-        //    for auto e = list.next; e; e = e.next
-        //        retval = Crc.add16(list.data.val, retval)
-        //    end
-        //    return retval
-
+        var list = cur_head;
+        const finder_idx = arg;
+        const find_cnt = Utils.getSeed(3);
+        var found: u16 = 0;
+        var missed: u16 = 0;
+        var retval: Crc.sum_t = 0;
+        var data = Data{ .idx = finder_idx };
+        var i: u16 = 0;
+        while (i < find_cnt) : (i += 1) {
+            data.val = @bitCast(i & 0xff);
+            var elem = find(list, em.Ptr(Data).init(&data));
+            list = reverse(list);
+            if (elem.isNIL()) {
+                missed += 1;
+                const v: u16 = @bitCast(getED(getE(list).next).val);
+                retval += (v >> 8) & 0x1;
+            } else {
+                found += 1;
+                const v: u16 = @bitCast(getED(elem).val);
+                if ((v & 0x1) != 0) {
+                    retval += (v >> 9) & 0x1;
+                }
+                if (!getE(elem).next.isNIL()) {
+                    const tmp = getE(elem).next;
+                    getE(elem).next = getE(tmp).next;
+                    getE(tmp).next = getE(list).next;
+                    getE(list).next = tmp;
+                }
+            }
+            if (data.idx >= 0) data.idx += 1;
+        }
+        retval += found * 4 - missed;
+        if (finder_idx > 0) list = sort(list, valCompare);
+        return retval;
     }
 
     pub fn setup() void {
@@ -298,15 +286,15 @@ pub const EM__TARG = struct {
         return res;
     }
 
-    //fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
-    //    const tmp = getE(removed).data;
-    //    getE(removed).data = getE(modified).data;
-    //    getE(modified).data = tmp;
-    //    getE(removed).next = getE(modified).next;
-    //    getE(modified).next = removed;
-    //}
+    fn unremove(removed: em.Ptr(Elem), modified: em.Ptr(Elem)) void {
+        const tmp = getE(removed).data;
+        getE(removed).data = getE(modified).data;
+        getE(modified).data = tmp;
+        getE(removed).next = getE(modified).next;
+        getE(modified).next = removed;
+    }
 
-    // Comparator
+    // IdxComparator
 
     fn idxCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
         const avu: u16 = @bitCast(getD(a).val);
@@ -317,6 +305,42 @@ pub const EM__TARG = struct {
         getD(a).val = @bitCast((avu & mhi) | (mlo & (avu >> sft)));
         getD(b).val = @bitCast((bvu & mhi) | (mlo & (bvu >> sft)));
         return getD(a).idx - getD(b).idx;
+    }
+
+    // ValComparator
+
+    fn valCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+        const val1 = valCmpCalc(&getD(a).val);
+        const val2 = valCmpCalc(&getD(b).val);
+        // em.print("z: vcmp = {d}\n", .{val1 - val2});
+        return @intCast(val1 - val2);
+    }
+
+    fn valCmpCalc(pval: *i16) i16 {
+        const val: u16 = @bitCast(pval.*);
+        const optype: u8 = @as(u8, @intCast(val >> 7)) & 0x1;
+        if (optype != 0) return @bitCast(val & 0x007f);
+        const flag = val & 0x7;
+        var vtype = (val >> 3) & 0xf;
+        vtype |= vtype << 4;
+        var ret: u16 = undefined;
+        switch (flag) {
+            0 => {
+                ret = Bench0.run(@bitCast(vtype));
+                Utils.bindCrc(Bench0.kind(), ret);
+            },
+            1 => {
+                ret = Bench1.run(@bitCast(vtype));
+                Utils.bindCrc(Bench1.kind(), ret);
+            },
+            else => {
+                ret = val;
+            },
+        }
+        Utils.setCrc(.FINAL, Crc.add16(@bitCast(ret), Utils.getCrc(.FINAL)));
+        ret &= 0x007f;
+        pval.* = @bitCast((val & 0xff00) | 0x0080 | ret);
+        return @bitCast(ret);
     }
 };
 

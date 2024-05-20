@@ -41,6 +41,9 @@ pub const EM__TARG = struct {
             .Enum => {
                 wr1(@intFromEnum(v));
             },
+            .Pointer => {
+                wr4(@intFromPtr(v));
+            },
             else => {},
         }
     }

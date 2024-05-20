@@ -80,7 +80,7 @@ pub const EM__TARG = struct {
             for (0..dimN) |j| {
                 matC[i * dimN + j] = 0;
                 for (0..dimN) |k| {
-                    matC[i * dimN + j] += @as(matres_t, matA[i * dimN + k] * @as(matres_t, matB[i * dimN + j]));
+                    matC[i * dimN + j] += @as(matres_t, matA[i * dimN + k] * @as(matres_t, matB[k * dimN + j]));
                 }
             }
         }
@@ -91,7 +91,7 @@ pub const EM__TARG = struct {
             for (0..dimN) |j| {
                 matC[i * dimN + j] = 0;
                 for (0..dimN) |k| {
-                    const tmp = @as(matres_t, matA[i * dimN + k] * @as(matres_t, matB[i * dimN + j]));
+                    const tmp = @as(matres_t, matA[i * dimN + k] * @as(matres_t, matB[k * dimN + j]));
                     matC[i * dimN + j] += bix(tmp, 2, 4) * bix(tmp, 5, 7);
                 }
             }
