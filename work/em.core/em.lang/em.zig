@@ -260,6 +260,29 @@ fn _ProxyV(dp: []const u8, u: type) type {
 
 pub const ptr_t = ?*anyopaque;
 
+pub fn Ptr(T: type) type {
+    return struct {
+        const Self = @This();
+        pub const _em__builtin = {};
+        _ptr0: *allowzero T,
+        pub fn get(self: Self) *T {
+            return @ptrCast(self._ptr0);
+        }
+        pub fn isNIL(self: Self) bool {
+            return @intFromPtr(self._ptr0) == 0;
+        }
+        pub fn init(ptr: *T) Ptr(T) {
+            return Ptr(T){ ._ptr0 = ptr };
+        }
+        pub fn NIL() Ptr(T) {
+            return Ptr(T){ ._ptr0 = @ptrFromInt(0) };
+        }
+        pub fn toString(_: Self) []const u8 {
+            return sprint("em.Ptr({s}){{}}", .{mkTypeName(T)});
+        }
+    };
+}
+
 pub fn Ref(T: type) type {
     switch (DOMAIN) {
         .HOST => return struct {
