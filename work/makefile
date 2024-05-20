@@ -22,6 +22,7 @@ TARG_OPTS=\
 	--name main \
 	-fentry=em__start \
 	-fno-lto \
+	-fsingle-threaded \
 	-fno-strip \
 	-mcpu cortex_m0plus \
 	-target thumb-freestanding-eabi \
