@@ -96,12 +96,13 @@ pub const EM__TARG = struct {
     fn find(list: em.Ptr(Elem), data: em.Ptr(Data)) em.Ptr(Elem) {
         var elem = list;
         if (getD(data).idx >= 0) {
-            while (!elem.isNIL() and getED(elem).idx != getD(data).idx) {
+            while (!elem.isNIL() and (getED(elem).idx != getD(data).idx)) {
                 elem = getE(elem).next;
             }
         } else {
-            const idx: i16 = @bitCast(@as(u16, @bitCast(getED(elem).idx)) & @as(u16, 0xff));
-            while (!elem.isNIL() and (idx != getD(data).idx)) {
+            while (!elem.isNIL()) {
+                const v: i16 = @bitCast(@as(u16, @bitCast(getED(elem).val)) & @as(u16, 0xff));
+                if (v == getD(data).val) break;
                 elem = getE(elem).next;
             }
         }
@@ -132,7 +133,7 @@ pub const EM__TARG = struct {
     fn remove(item: em.Ptr(Elem)) em.Ptr(Elem) {
         const ret = getE(item).next;
         const tmp = getE(item).data;
-        getE(item).data = getE(ret).next;
+        getE(item).data = getE(ret).data;
         getE(ret).data = tmp;
         getE(item).next = getE(getE(item).next).next;
         getE(ret).next = em.Ptr(Elem).NIL();
@@ -158,11 +159,13 @@ pub const EM__TARG = struct {
         var found: u16 = 0;
         var missed: u16 = 0;
         var retval: Crc.sum_t = 0;
-        var data = Data{ .idx = finder_idx };
+        var _data: Data = undefined;
+        const data = em.Ptr(Data).init(&_data);
+        getD(data).idx = finder_idx;
         var i: u16 = 0;
         while (i < find_cnt) : (i += 1) {
-            data.val = @bitCast(i & 0xff);
-            var elem = find(list, em.Ptr(Data).init(&data));
+            getD(data).val = @bitCast(i & 0xff);
+            var elem = find(list, data);
             list = reverse(list);
             if (elem.isNIL()) {
                 missed += 1;
@@ -181,10 +184,23 @@ pub const EM__TARG = struct {
                     getE(list).next = tmp;
                 }
             }
-            if (data.idx >= 0) data.idx += 1;
+            if (getD(data).idx >= 0) getD(data).idx += 1;
         }
         retval += found * 4 - missed;
         if (finder_idx > 0) list = sort(list, valCompare);
+        const remover = remove(getE(list).next);
+        var finder = find(list, data);
+        if (finder.isNIL()) finder = getE(list).next;
+        while (!finder.isNIL()) {
+            retval = Crc.add16(getED(list).val, retval);
+            finder = getE(finder).next;
+        }
+        unremove(remover, getE(list).next);
+        list = sort(list, idxCompare);
+        var e = getE(list).next;
+        while (!e.isNIL()) : (e = getE(e).next) {
+            retval = Crc.add16(getED(list).val, retval);
+        }
         return retval;
     }
 
