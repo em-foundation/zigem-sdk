@@ -12,6 +12,8 @@ pub const EM__HOST = struct {
 
     fn genArmStartup() void {
         const txt =
+            \\#define __EM_BOOT_FLASH__ 1
+            \\
             \\#include <stdbool.h>
             \\#include <stdint.h>
             \\
@@ -56,6 +58,14 @@ pub const EM__HOST = struct {
             \\        for (uint32_t i = 0; i < sz; i++) {
             \\            dst[i] = src[i];
             \\        }
+            \\#if __EM_BOOT_FLASH__ == 1
+            \\        sz = (uint32_t)&__code_size__;
+            \\        src = &__code_load__;
+            \\        dst = &__code_addr__;
+            \\        for (uint32_t i = 0; i < sz; i++) {
+            \\            dst[i] = src[i];
+            \\        }
+            \\#endif
             \\    }
             \\
             \\    main();
@@ -63,7 +73,7 @@ pub const EM__HOST = struct {
             \\}
             \\
             \\#if __EM_BOOT_FLASH__ == 1
-            \\extern "C" const void*  __attribute__((section(".start_vec"))) __em_start_vec[] = {
+            \\extern const void*  __attribute__((section(".start_vec"))) __em_start_vec[] = {
             \\    (void*)&__stack_top__ ,
             \\    (void*)em__start,
             \\};
