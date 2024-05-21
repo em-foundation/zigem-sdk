@@ -99,8 +99,11 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
+    const hal = em.hal;
+    extern var __vector_table: u32;
+
     pub fn em__startup() void {
-        // ^^SCB->VTOR = (uint32_t)(&__vector_table)^^
+        hal.SCB.*.VTOR = @intFromPtr(&__vector_table);
     }
 
     pub fn defaultIsr() void {
