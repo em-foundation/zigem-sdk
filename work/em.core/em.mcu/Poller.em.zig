@@ -18,7 +18,7 @@ pub const EM__TARG = struct {
     var active_flag: bool = false;
     const vptr: *volatile bool = &active_flag;
 
-    fn handler(_: OneShot.Handler_CB) void {
+    fn handler(_: OneShot.Handler) void {
         vptr.* = false;
     }
 

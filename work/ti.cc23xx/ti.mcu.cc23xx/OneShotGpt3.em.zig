@@ -5,6 +5,8 @@ pub const em__unit = em.Module(@This(), .{
 
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 
+pub const Handler = em__unit.inherits.Handler;
+
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
@@ -18,12 +20,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     var cur_arg: em.ptr_t = null;
-    var cur_fxn: ?Handler = null;
-
-    pub const Handler = em.CB(Handler_CB);
-    pub const Handler_CB = struct {
-        arg: em.ptr_t,
-    };
+    var cur_fxn: ?em.CB(Handler) = null;
 
     pub fn disable() void {
         cur_fxn = null;
@@ -31,7 +28,7 @@ pub const EM__TARG = struct {
         reg(hal.LGPT3_BASE + hal.LGPT_O_ICLR).* = hal.LGPT_ICLR_TGT;
     }
 
-    pub fn enable(msecs: u32, handler: Handler, arg: em.ptr_t) void {
+    pub fn enable(msecs: u32, handler: em.CB(Handler), arg: em.ptr_t) void {
         cur_fxn = handler;
         cur_arg = arg;
         hal.NVIC_EnableIRQ(hal.LGPT3_COMB_IRQn);
@@ -44,6 +41,6 @@ pub const EM__TARG = struct {
     export fn LGPT3_COMB_isr() void {
         const fxn = cur_fxn;
         disable();
-        if (fxn != null) fxn.?(Handler_CB{ .arg = cur_arg });
+        if (fxn != null) fxn.?(Handler{ .arg = cur_arg });
     }
 };

@@ -35,7 +35,7 @@ pub const EM__TARG = struct {
         OneShot.enable(100, &handler, null);
     }
 
-    fn handler(_: OneShot.Handler_CB) void {
+    fn handler(_: OneShot.Handler) void {
         em.@"%%[c]"();
         blinkF.post();
     }
