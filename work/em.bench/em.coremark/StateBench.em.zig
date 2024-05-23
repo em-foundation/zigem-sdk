@@ -47,7 +47,7 @@ pub const EM__TARG = struct {
     //
     const StringBuf = [*]u8;
 
-    const State = enum {
+    const State = enum(u8) {
         START,
         INVALID,
         S1,
