@@ -3,15 +3,14 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const FiberBody = em.CB(FiberBody_CB);
-pub const FiberBody_CB = struct {
+pub const FiberBody = struct {
     arg: em.ptr_t,
 };
 
 pub const Fiber = struct {
     const Self = @This();
     link: ?*Fiber = null,
-    body: em.Func(FiberBody),
+    body: em.Func(em.CB(FiberBody)),
     arg: em.ptr_t = null,
     pub fn post(self: *Self) void {
         em__unit.scope.Fiber_post(self);
@@ -27,7 +26,7 @@ pub fn get(ref: Ref) ?*Fiber {
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(FiberBody)) em.Ref(Fiber) {
+    pub fn createH(body: em.Func(em.CB(FiberBody))) em.Ref(Fiber) {
         const fiber = a_heap.alloc(.{ .body = body });
         return fiber;
     }
@@ -61,7 +60,7 @@ pub const EM__TARG = struct {
             const fiber = ready_list.take();
             const body = fiber.body.unwrap();
             Common.GlobalInterrupts.enable();
-            body(FiberBody_CB{ .arg = fiber.arg });
+            body(FiberBody{ .arg = fiber.arg });
             _ = Common.GlobalInterrupts.enable();
         }
     }
