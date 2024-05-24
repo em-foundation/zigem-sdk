@@ -29,12 +29,12 @@ pub const EM__TARG = struct {
 
     pub fn blinkFB(_: FiberMgr.FiberBody) void {
         em.@"%%[c]"();
-        AppLed.wink(100); // 100 ms
         counter += 1;
         if ((counter & 0x1) != 0) {
-            alarm.wakeup(512); // 2s
+            AppLed.wink(100); // 100ms
         } else {
-            alarm.wakeup(192); // 750ms
+            AppLed.wink(5); // 5ms
         }
+        alarm.wakeupAt(384); // 1.5s window
     }
 };
