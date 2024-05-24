@@ -559,11 +559,13 @@ pub fn toUnit(U: type) Unit {
     return @as(Unit, @field(U, "em__unit"));
 }
 
-pub fn unitScope(U: type) type {
+pub fn unitScope(U: type) if (DOMAIN == .HOST) type else type {
+    //return if (DOMAIN == .HOST) unitScope_H(U) else unitScope_T(U);
     switch (DOMAIN) {
         .HOST => {
             const S = if (@hasDecl(U, "EM__HOST")) U.EM__HOST else struct {};
             return struct {
+                const _UID = @typeName(U) ++ "_scope";
                 pub usingnamespace U;
                 pub usingnamespace S;
             };
@@ -571,11 +573,28 @@ pub fn unitScope(U: type) type {
         .TARG => {
             const S = if (@hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
             return struct {
+                const _UID = @typeName(U) ++ "_scope";
                 pub usingnamespace U;
                 pub usingnamespace S;
             };
         },
     }
+}
+
+pub fn unitScope_H(U: type) type {
+    return struct {
+        const _UID = @typeName(U) ++ "_scope";
+        pub usingnamespace U;
+        pub usingnamespace U.EM__HOST;
+    };
+}
+
+pub fn unitScope_T(U: type) type {
+    return struct {
+        const _UID = @typeName(U) ++ "_scope";
+        pub usingnamespace U;
+        pub usingnamespace U.EM__TARG;
+    };
 }
 
 fn unitTypeName(unit: type) []const u8 {
