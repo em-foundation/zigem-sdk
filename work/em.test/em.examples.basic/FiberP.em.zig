@@ -5,7 +5,7 @@ pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const c_blinkF = em__unit.config("blinkF", FiberMgr.Ref);
+pub const c_blinkF = em__unit.config("blinkF", FiberMgr.Obj);
 
 pub const EM__HOST = struct {
     //
@@ -16,7 +16,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = FiberMgr.get(c_blinkF.unwrap()).?;
+    const blinkF = FiberMgr.@"->"(c_blinkF.unwrap()).?;
 
     pub fn em__run() void {
         blinkF.post();
