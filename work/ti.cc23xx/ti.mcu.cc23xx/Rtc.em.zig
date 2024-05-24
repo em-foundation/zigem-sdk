@@ -29,6 +29,11 @@ pub const EM__TARG = struct {
         hal.NVIC_EnableIRQ(hal.CPUIRQ0_IRQn);
     }
 
+    pub fn disable() void {
+        cur_handler = null;
+        reg(hal.RTC_BASE + hal.RTC_O_IMCLR).* = hal.RTC_IMCLR_EV0;
+    }
+
     pub fn enable(thresh: u32, handler: em.CB(Handler)) void {
         cur_handler = handler;
         reg(hal.RTC_BASE + hal.RTC_O_CH0CC8U).* = thresh;

@@ -26,7 +26,7 @@ pub fn @"->"(obj: Obj) ?*Fiber {
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(em.CB(FiberBody))) em.Ref(Fiber) {
+    pub fn createH(body: em.Func(em.CB(FiberBody))) Obj {
         const fiber = a_heap.alloc(.{ .body = body });
         return fiber;
     }

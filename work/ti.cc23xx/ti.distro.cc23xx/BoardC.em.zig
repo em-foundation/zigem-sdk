@@ -1,6 +1,7 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Composite(@This(), .{});
 
+pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
 pub const AppLed = em__unit.Generate("AppLed", em.Import.@"em.utils/LedT");
 pub const AppLedPin = em__unit.Generate("AppLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const AppOutPin = em__unit.Generate("AppOutPin", em.Import.@"ti.mcu.cc23xx/GpioT");
@@ -14,6 +15,7 @@ pub const DbgB = em__unit.Generate("DbgB", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const DbgC = em__unit.Generate("DbgC", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const DbgD = em__unit.Generate("DbgD", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const Debug = em.Import.@"em.lang/Debug";
+pub const EpochTime = em.Import.@"em.utils/EpochTime";
 pub const GlobalInterrupts = em.Import.@"em.arch.arm/GlobalInterrupts";
 pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
 pub const Mcu = em.Import.@"ti.mcu.cc23xx/Mcu";
@@ -22,10 +24,13 @@ pub const OneShot = em.Import.@"ti.mcu.cc23xx/OneShotGpt3";
 pub const Poller = em.Import.@"em.mcu/Poller";
 pub const SysLed = em__unit.Generate("SysLed", em.Import.@"em.utils/LedT");
 pub const SysLedPin = em__unit.Generate("SysLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
+pub const Uptimer = em.Import.@"ti.mcu.cc23xx/UptimerRtc";
+pub const WakeupTimer = em.Import.@"ti.mcu.cc23xx/WakeupRtc";
 
 pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
+    AlarmMgr.x_WakeupTimer.set(WakeupTimer);
     AppLedPin.c_pin.set(15);
     AppLed.x_Pin.set(AppLedPin);
     AppOutPin.c_pin.set(20);
@@ -45,6 +50,7 @@ pub fn em__configureH() void {
     Debug.x_DbgB.set(DbgB);
     Debug.x_DbgC.set(DbgC);
     Debug.x_DbgD.set(DbgD);
+    EpochTime.x_Uptimer.set(Uptimer);
     Poller.x_OneShot.set(OneShot);
     SysLedPin.c_pin.set(14);
     SysLed.x_Pin.set(SysLedPin);

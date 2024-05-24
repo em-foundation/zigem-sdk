@@ -1,93 +1,106 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
+pub const EpochTime = em.Import.@"em.utils/EpochTime";
+pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
+
+pub const x_WakeupTimer = em__unit.proxy("WakeupTimer", em.Import.@"em.hal/WakeupTimerI");
+
+pub const Alarm = struct {
+    const Self = @This();
+    _fiber: FiberMgr.Obj,
+    _thresh: u32 = 0,
+    _ticks: u32 = 0,
+    pub fn active(self: *Self) bool {
+        em__unit.scope.Alarm_active(self);
+    }
+    pub fn cancel(self: *Self) void {
+        em__unit.scope.Alarm_cancel(self);
+    }
+    pub fn wakeup(self: *Self, secs256: u32) void {
+        em__unit.scope.Alarm_wakeup(self, secs256);
+    }
+    pub fn wakeupAt(self: *Self, secs256: u32) void {
+        em__unit.scope.Alarm_wakeupAt(self, secs256);
+    }
+};
+
+pub const a_heap = em__unit.array("a_heap", Alarm);
+
+pub const Obj = em.Ref(Alarm);
+pub fn @"->"(obj: Obj) ?*Alarm {
+    return a_heap.get(obj);
+}
+
 pub const EM__HOST = struct {
     //
+    pub fn createH(fiber: FiberMgr.Obj) Obj {
+        const alarm = a_heap.alloc(.{ ._fiber = fiber });
+        return alarm;
+    }
 };
 
 pub const EM__TARG = struct {
     //
+    const WakeupTimer = x_WakeupTimer.unwrap();
+
+    var alarm_tab = a_heap.unwrap();
+    var cur_alarm: ?*Alarm = null;
+
+    fn update(delta_ticks: u32) void {
+        const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
+        WakeupTimer.disable();
+        var nxt_alarm: ?*Alarm = null;
+        var max_ticks = ~@as(u32, 0); // largest u32
+        for (0..alarm_tab.len) |idx| {
+            var a = &alarm_tab[idx];
+            if (a._ticks == 0) continue; // inactive alarm
+            a._ticks -= delta_ticks;
+            if (a._thresh <= thresh) { // expired alarm
+                FiberMgr.@"->"(a._fiber).?.post();
+            } else if (a._ticks < max_ticks) {
+                nxt_alarm = a;
+                max_ticks = a._ticks;
+            }
+        }
+        if (nxt_alarm == null) return; // no active alarms
+        cur_alarm = nxt_alarm;
+        WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
+    }
+
+    fn wakeupHandler(_: WakeupTimer.Handler) void {
+        update(cur_alarm.?._ticks);
+    }
+
+    pub fn Alarm_cancel(alarm: *Alarm) void {
+        alarm._ticks = 0;
+        update(0);
+    }
+
+    pub fn Alarm_isActive(alarm: *Alarm) bool {
+        return alarm.ticks != 0;
+    }
+
+    fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
+        alarm._thresh = WakeupTimer.ticksToThresh(ticks);
+        alarm._ticks = ticks;
+        update(0);
+    }
+
+    pub fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
+        const ticks = WakeupTimer.secs256ToTicks(secs256);
+        Alarm_setup(alarm, ticks);
+    }
+
+    pub fn Alarm_wakeupAt(alarm: *Alarm, secs256: u32) void {
+        var et_subs: u32 = undefined;
+        const et_secs = EpochTime.getCurrent(&et_subs);
+        const et_ticks = WakeupTimer.timeToTicks(et_secs, et_subs);
+        const ticks = WakeupTimer.secs256ToTicks(secs256);
+        Alarm_setup(alarm, ticks - (et_ticks % ticks));
+    }
 };
 
-//package em.utils
-//
-//from em.hal import WakeupTimerI
-//
-//import EpochTime
-//import FiberMgr
-//
-//module AlarmMgr
-//            #   ^|
-//    proxy WakeupTimer: WakeupTimerI
-//            #   ^|
-//    type Alarm: opaque
-//            #   ^|
-//        host function initH(fiber: FiberMgr.Fiber&)
-//            #   ^|
-//        function active(): bool
-//            #   ^|
-//        function cancel()
-//            #   ^|
-//        function wakeup(secs256: uint32)
-//            #   ^|
-//        function wakeupAt(secs256: uint32)
-//            #   ^|
-//    end
-//
-//    host function createH(fiber: FiberMgr.Fiber&): Alarm&
-//            #   ^|
-//private:
-//
-//    def opaque Alarm
-//        fiber: FiberMgr.Fiber&
-//        thresh: uint32
-//        ticks: uint32
-//        function id(): uint8
-//        function setup(ticks: uint32)
-//    end
-//
-//    function update(deltaTicks: uint32)
-//    function wakeupHandler: WakeupTimer.Handler
-//
-//    var alarmTab: Alarm[..]
-//    var curAlarm: Alarm&
-//
-//end
-//
-//def createH(fiber)
-//    var alarm: Alarm& = alarmTab[alarmTab.length++]
-//    alarm.initH(fiber)
-//    return alarm
-//end
-//
-//def update(deltaTicks)
-//    auto thresh = deltaTicks ? curAlarm.thresh : 0
-//    WakeupTimer.disable()
-//    auto nxtAlarm = <Alarm&>null
-//    var maxTicks: uint32 = ~0       # largest uint32
-//    for a in alarmTab
-//        continue if a.ticks == 0    # inactive alarm
-//        a.ticks -= deltaTicks
-//        if a.thresh <= thresh        # expired alarm
-//            a.fiber.post()
-//        elif a.ticks < maxTicks
-//            nxtAlarm = a
-//            maxTicks = a.ticks
-//        end
-//    end
-//    return if nxtAlarm == null      # no active alarms
-//    curAlarm = nxtAlarm
-//    WakeupTimer.enable(curAlarm.thresh, wakeupHandler)
-//end
-//
-//def wakeupHandler()
-//    update(curAlarm.ticks)
-//end
-//
-//def Alarm.initH(fiber)
-//    this.fiber = fiber
-//    this.ticks = 0
-//end
 //
 //def Alarm.active()
 //    return this.ticks != 0
@@ -114,8 +127,6 @@ pub const EM__TARG = struct {
 //end
 //
 //def Alarm.wakeup(secs256)
-//    auto ticks = WakeupTimer.secs256ToTicks(secs256)
-//    this.setup(ticks)
 //end
 //
 //def Alarm.wakeupAt(secs256)
