@@ -20,9 +20,6 @@ pub const Fiber = struct {
 pub const a_heap = em__unit.array("a_heap", Fiber);
 
 pub const Obj = em.Ref(Fiber);
-pub fn @"->"(obj: Obj) ?*Fiber {
-    return a_heap.get(obj);
-}
 
 pub const EM__HOST = struct {
     //

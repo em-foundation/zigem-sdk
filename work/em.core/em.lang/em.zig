@@ -38,19 +38,38 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             _list.append(elem) catch fail();
         }
 
-        pub fn alloc(_: Self, init: anytype) Ref(T) {
+        pub fn alloc(self: Self, init: anytype) Ref(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             _is_virgin = false;
-            return Ref(T){ .idx = l };
+            const idx = std.mem.indexOf(u8, dp, "__").?;
+            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._obj = self.getElem(l) };
+        }
+
+        pub fn ChildType(_: Self) type {
+            return T;
+        }
+
+        pub fn childTypeName(_: Self) []const u8 {
+            return mkTypeName(T);
         }
 
         pub fn dpath(_: Self) []const u8 {
             return _dpath;
         }
 
-        pub fn get(_: Self, ref: Ref(T)) ?*T {
-            return if (ref.isNil()) null else &_list.items[ref.idx];
+        pub fn getElem(_: Self, idx: usize) *T {
+            return &_list.items[idx];
+        }
+
+        pub fn indexOf(_: Self, elem: *T) usize {
+            const p0 = @intFromPtr(&_list.items[0]);
+            const p1 = @intFromPtr(elem);
+            return (p1 - p0) / @sizeOf(T);
+        }
+
+        pub fn isVirgin(_: Self) bool {
+            return _is_virgin;
         }
 
         pub fn len(_: Self) usize {
@@ -89,24 +108,12 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
     };
 }
 
-pub fn _ArrayV(dp: []const u8, T: type, comptime v: anytype) type {
+pub fn _ArrayV(T: type, v: []T) type {
     return struct {
         const Self = @This();
-
-        const _dpath = dp;
-
-        var _items: [v.len]T = v;
-
-        pub fn get(_: Self, ref: Ref(T)) ?*T {
-            return if (ref.isNil()) null else &_items[ref.idx];
-        }
-
-        pub fn len(_: Self) usize {
-            return _items.len;
-        }
-
+        const _val = v;
         pub fn unwrap(_: Self) []T {
-            return _items[0..];
+            return _val;
         }
     };
 }
@@ -285,43 +292,40 @@ pub fn Ptr(T: type) type {
 
 pub fn Ref(T: type) type {
     switch (DOMAIN) {
-        .HOST => return struct {
-            const Self = @This();
-            const NIL_IDX = ~@as(usize, 0);
-            pub const _em__builtin = {};
-            const tname = @typeName(T);
-            idx: usize = NIL_IDX,
-            pub fn isNil(self: Self) bool {
-                return self.idx == NIL_IDX;
-            }
-            pub fn eql(self: Self, ref: Ref(T)) bool {
-                return self.idx == ref.idx;
-            }
-            pub fn toString(self: Self) []const u8 {
-                if (self.isNil()) {
-                    return sprint("em.Ref({s}){{}}", .{mkTypeName(T)});
-                } else {
-                    return sprint("em.Ref({s}){{ .idx = {d} }}", .{ mkTypeName(T), self.idx });
+        .HOST => {
+            return struct {
+                const Self = @This();
+                pub const _em__builtin = {};
+                upath: []const u8,
+                aname: []const u8,
+                idx: usize,
+                _obj: *allowzero T,
+                pub fn O(self: @This()) *T {
+                    return @ptrCast(self._obj);
                 }
-            }
+                pub fn toString(self: Self) []const u8 {
+                    if (self.upath.len == 0) return "null";
+                    const fmt =
+                        \\blk: {{
+                        \\    const u = @field(em.Import, "{s}");
+                        \\    const a = @field(u, "{s}");
+                        \\    break :blk @constCast(&(a.unwrap()[{d}]));
+                        \\}}
+                    ;
+                    const oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
+                    return sprint("em.Ref({s}){{ ._obj = {s} }}", .{ mkTypeName(T), oval });
+                }
+            };
         },
-        .TARG => return struct {
-            const Self = @This();
-            const NIL_IDX = ~@as(usize, 0);
-            const tname = @typeName(T);
-            idx: usize = NIL_IDX,
-            pub fn eql(self: Self, ref: Ref(T)) bool {
-                return self.idx == ref.idx;
-            }
-            pub fn isNil(self: Self) bool {
-                return self.idx == NIL_IDX;
-            }
+        .TARG => {
+            return struct {
+                _obj: *T,
+                pub fn O(self: @This()) *T {
+                    return self._obj;
+                }
+            };
         },
     }
-}
-
-pub fn Ref_NIL(T: type) Ref(T) {
-    return Ref(T){};
 }
 
 pub const StringH = struct {
@@ -364,12 +368,12 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: type = void,
 
-    pub fn array(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ArrayD(self.extendPath(name), T) else _ArrayV(self.extendPath(name), T, @field(targ, self.extendPath(name))) {
+    pub fn array(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))[0..]) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
             return _ArrayD(dname, T){};
         } else {
-            return _ArrayV(dname, T, @field(targ, dname)){};
+            return _ArrayV(T, @field(targ, dname)[0..]){};
         }
     }
 

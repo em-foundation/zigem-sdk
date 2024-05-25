@@ -28,9 +28,6 @@ pub const Alarm = struct {
 pub const a_heap = em__unit.array("a_heap", Alarm);
 
 pub const Obj = em.Ref(Alarm);
-pub fn @"->"(obj: Obj) ?*Alarm {
-    return a_heap.get(obj);
-}
 
 pub const EM__HOST = struct {
     //

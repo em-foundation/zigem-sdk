@@ -3,6 +3,7 @@ const std = @import("std");
 
 const type_map = @import("../../.gen/type_map.zig");
 
+var init_list = std.ArrayList([]const u8).init(em.getHeap());
 var used_set = std.StringHashMap(void).init(em.getHeap());
 
 inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_used: bool) void {
@@ -50,7 +51,15 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
         if (ti_decl == .Struct and @hasDecl(Decl, "_em__builtin")) {
-            try out.print("pub const @\"{s}\" = {s};\n", .{ decl.dpath(), decl.toString() });
+            var ks: []const u8 = "const";
+            var suf: []const u8 = "";
+            if (@hasDecl(Decl, "_em__array") and !decl.isVirgin()) {
+                try init_list.append(decl.dpath());
+                ks = "var";
+                suf = "__v";
+                try out.print("pub var @\"{s}\": [{d}]{s} = undefined;\n", .{ decl.dpath(), decl.len(), decl.childTypeName() });
+            }
+            try out.print("pub {s} @\"{s}{s}\" = {s};\n", .{ ks, decl.dpath(), suf, decl.toString() });
         }
     }
 }
@@ -64,6 +73,12 @@ fn genDomain() !void {
         \\
     , .{});
     file.close();
+}
+
+fn genInit(out: std.fs.File.Writer) !void {
+    for (init_list.items) |aname| {
+        try out.print("    @memcpy(@\"{0s}\"[0..], @\"{0s}__v\"[0..]);\n", .{aname});
+    }
 }
 
 fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
@@ -137,6 +152,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     try genTermFn("em__fail", ulist_top, out);
     try genTermFn("em__halt", ulist_top, out);
     try out.print("pub fn exec() void {{\n", .{});
+    try genInit(out);
     try genCall("em__reset", ulist_top, .first, out);
     try genCall("em__startup", ulist_bot, .all, out);
     try genCall("em__ready", ulist_top, .first, out);

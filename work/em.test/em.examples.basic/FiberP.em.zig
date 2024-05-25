@@ -16,7 +16,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = FiberMgr.@"->"(c_blinkF.unwrap()).?;
+    const blinkF = c_blinkF.unwrap().O();
 
     pub fn em__run() void {
         blinkF.post();
