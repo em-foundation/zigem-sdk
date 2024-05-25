@@ -15,11 +15,11 @@ pub const Data = struct {
 };
 
 pub const Elem = struct {
-    next: em.Ptr(Elem),
-    data: em.Ptr(Data),
+    next: em.Ref(Elem),
+    data: em.Ref(Data),
 };
 
-pub const Comparator = fn (a: em.Ptr(Data), b: em.Ptr(Data)) i32;
+pub const Comparator = fn (a: em.Ref(Data), b: em.Ref(Data)) i32;
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
@@ -29,20 +29,20 @@ pub const v_max_elems = em__unit.config("max_elems", u16);
 pub const a_data = em__unit.array("a_data", Data);
 pub const a_elem = em__unit.array("a_elem", Elem);
 
-fn getD(ref: em.Ptr(Data)) *Data {
-    return ref.get();
+fn getD(ref: em.Ref(Data)) *Data {
+    return ref.O();
 }
 
-fn getE(ref: em.Ptr(Elem)) *Elem {
-    return ref.get();
+fn getE(ref: em.Ref(Elem)) *Elem {
+    return ref.O();
 }
 
-fn getED(ref: em.Ptr(Elem)) *Data {
-    return ref.get().data.get();
+fn getED(ref: em.Ref(Elem)) *Data {
+    return ref.O().data.O();
 }
 
-fn getEN(ref: em.Ptr(Elem)) *Elem {
-    return ref.get().next.get();
+fn getEN(ref: em.Ref(Elem)) *Elem {
+    return ref.O().next.O();
 }
 
 pub const EM__HOST = struct {
@@ -74,18 +74,18 @@ pub const EM__TARG = struct {
     var data_heap = a_data.unwrap();
     var elem_heap = a_elem.unwrap();
 
-    var cur_head: em.Ptr(Elem) = undefined;
+    var cur_head: em.Ref(Elem) = undefined;
 
     fn _init() void {
-        cur_head = em.Ptr(Elem).init(&elem_heap[0]);
+        cur_head = em.Ref(Elem).init(@constCast(&elem_heap[0]));
         var p = cur_head;
         for (0..max_elems - 1) |i| {
-            getE(p).data = em.Ptr(Data).init(&data_heap[i]);
-            getE(p).next = em.Ptr(Elem).init(&elem_heap[i + 1]);
+            getE(p).data = em.Ref(Data).init(@constCast(&data_heap[i]));
+            getE(p).next = em.Ref(Elem).init(@constCast(&elem_heap[i + 1]));
             p = getE(p).next;
         }
-        getE(p).next = em.Ptr(Elem).NIL();
-        getE(p).data = em.Ptr(Data).init(&data_heap[max_elems]);
+        getE(p).next = em.Ref(Elem).NIL();
+        getE(p).data = em.Ref(Data).init(@constCast(&data_heap[max_elems]));
     }
 
     pub fn dump() void {
@@ -93,7 +93,7 @@ pub const EM__TARG = struct {
         return;
     }
 
-    fn find(list: em.Ptr(Elem), data: em.Ptr(Data)) em.Ptr(Elem) {
+    fn find(list: em.Ref(Elem), data: em.Ref(Data)) em.Ref(Elem) {
         var elem = list;
         if (getD(data).idx >= 0) {
             while (!elem.isNIL() and (getED(elem).idx != getD(data).idx)) {
@@ -113,7 +113,7 @@ pub const EM__TARG = struct {
         return .LIST;
     }
 
-    fn prList(list: em.Ptr(Elem), name: []const u8) void {
+    fn prList(list: em.Ref(Elem), name: []const u8) void {
         var sz: usize = 0;
         em.print("{s}\n[", .{name});
         var p = list;
@@ -130,19 +130,19 @@ pub const EM__TARG = struct {
         prList(cur_head, "current");
     }
 
-    fn remove(item: em.Ptr(Elem)) em.Ptr(Elem) {
+    fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
         const ret = getE(item).next;
         const tmp = getE(item).data;
         getE(item).data = getE(ret).data;
         getE(ret).data = tmp;
         getE(item).next = getE(getE(item).next).next;
-        getE(ret).next = em.Ptr(Elem).NIL();
+        getE(ret).next = em.Ref(Elem).NIL();
         return ret;
     }
 
-    fn reverse(list: em.Ptr(Elem)) em.Ptr(Elem) {
+    fn reverse(list: em.Ref(Elem)) em.Ref(Elem) {
         var p = list;
-        var next = em.Ptr(Elem).NIL();
+        var next = em.Ref(Elem).NIL();
         while (!p.isNIL()) {
             const tmp = getE(p).next;
             getE(p).next = next;
@@ -160,7 +160,7 @@ pub const EM__TARG = struct {
         var missed: u16 = 0;
         var retval: Crc.sum_t = 0;
         var _data: Data = undefined;
-        const data = em.Ptr(Data).init(&_data);
+        const data = em.Ref(Data).init(&_data);
         getD(data).idx = finder_idx;
         var i: u16 = 0;
         while (i < find_cnt) : (i += 1) {
@@ -236,15 +236,15 @@ pub const EM__TARG = struct {
         em.@"%%[c-]"();
     }
 
-    fn sort(list: em.Ptr(Elem), cmp: Comparator) em.Ptr(Elem) {
+    fn sort(list: em.Ref(Elem), cmp: Comparator) em.Ref(Elem) {
         var res = list;
         var insize: usize = 1;
-        var q: em.Ptr(Elem) = undefined;
-        var e: em.Ptr(Elem) = undefined;
+        var q: em.Ref(Elem) = undefined;
+        var e: em.Ref(Elem) = undefined;
         while (true) {
             var p = res;
-            res = em.Ptr(Elem).NIL();
-            var tail = em.Ptr(Elem).NIL();
+            res = em.Ref(Elem).NIL();
+            var tail = em.Ref(Elem).NIL();
             var nmerges: i32 = 0; // count number of merges we do in this pass
             while (!p.isNIL()) {
                 nmerges += 1; // there exists a merge to be done
@@ -293,7 +293,7 @@ pub const EM__TARG = struct {
                 // now p has stepped `insize' places along, and q has too
                 p = q;
             }
-            getE(tail).next = em.Ptr(Elem).NIL();
+            getE(tail).next = em.Ref(Elem).NIL();
             // If we have done only one merge, we're finished
             if (nmerges <= 1) break; // allow for nmerges==0, the empty list case
             // Otherwise repeat, merging lists twice the size
@@ -302,7 +302,7 @@ pub const EM__TARG = struct {
         return res;
     }
 
-    fn unremove(removed: em.Ptr(Elem), modified: em.Ptr(Elem)) void {
+    fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
         const tmp = getE(removed).data;
         getE(removed).data = getE(modified).data;
         getE(modified).data = tmp;
@@ -312,7 +312,7 @@ pub const EM__TARG = struct {
 
     // IdxComparator
 
-    fn idxCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+    fn idxCompare(a: em.Ref(Data), b: em.Ref(Data)) i32 {
         const avu: u16 = @bitCast(getD(a).val);
         const bvu: u16 = @bitCast(getD(b).val);
         const sft: u4 = 8;
@@ -325,7 +325,7 @@ pub const EM__TARG = struct {
 
     // ValComparator
 
-    fn valCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+    fn valCompare(a: em.Ref(Data), b: em.Ref(Data)) i32 {
         const val1 = valCmpCalc(&getD(a).val);
         const val2 = valCmpCalc(&getD(b).val);
         // em.print("z: vcmp = {d}\n", .{val1 - val2});

@@ -108,14 +108,25 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
     };
 }
 
-pub fn _ArrayV(T: type, v: []T) type {
-    return struct {
-        const Self = @This();
-        const _val = v;
-        pub fn unwrap(_: Self) []T {
-            return _val;
-        }
-    };
+pub fn _ArrayV(T: type, v: anytype) type {
+    const ti = @typeInfo(@TypeOf(v));
+    if (ti.Pointer.is_const) {
+        return struct {
+            const Self = @This();
+            const _val = v;
+            pub fn unwrap(_: Self) []const T {
+                return @constCast(_val);
+            }
+        };
+    } else {
+        return struct {
+            const Self = @This();
+            const _val = v;
+            pub fn unwrap(_: Self) []T {
+                return _val;
+            }
+        };
+    }
 }
 
 fn _ConfigD(dp: []const u8, T: type) type {
@@ -319,9 +330,19 @@ pub fn Ref(T: type) type {
         },
         .TARG => {
             return struct {
-                _obj: *T,
-                pub fn O(self: @This()) *T {
-                    return self._obj;
+                const Self = @This();
+                _obj: *allowzero T,
+                pub fn init(p: *T) Ref(T) {
+                    return Ref(T){ ._obj = p };
+                }
+                pub fn isNIL(self: Self) bool {
+                    return @intFromPtr(self._obj) == 0;
+                }
+                pub fn NIL() Ref(T) {
+                    return Ref(T){ ._obj = @ptrFromInt(0) };
+                }
+                pub fn O(self: Self) *T {
+                    return @ptrCast(self._obj);
                 }
             };
         },
