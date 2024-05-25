@@ -18,8 +18,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const alarm = AlarmMgr.@"->"(c_alarm.unwrap()).?;
-    const blinkF = FiberMgr.@"->"(c_blinkF.unwrap()).?;
+    const alarm = c_alarm.unwrap().O();
+    const blinkF = c_blinkF.unwrap().O();
     var counter: u32 = 0;
 
     pub fn em__run() void {
