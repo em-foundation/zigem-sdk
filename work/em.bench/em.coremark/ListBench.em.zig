@@ -23,7 +23,7 @@ pub const Comparator = fn (a: em.Ref(Data), b: em.Ref(Data)) i32;
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-//pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
+pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
 pub const v_max_elems = em__unit.config("max_elems", u16);
 
 pub const a_data = em__unit.array("a_data", Data);
@@ -45,25 +45,40 @@ fn getEN(ref: em.Ref(Elem)) *Elem {
     return ref.O().next.O();
 }
 
+fn prList(list: em.Ref(Elem), name: []const u8) void {
+    var sz: usize = 0;
+    em.print("{s}\n[", .{name});
+    var p = list;
+    while (!p.isNIL()) {
+        const pre: []const u8 = if ((sz % 8) == 0) "\n    " else "";
+        sz += 1;
+        em.print("{s}({x:0>4},{x:0>4})", .{ pre, @as(u16, @bitCast(getED(p).idx)), @as(u16, @bitCast(getED(p).val)) });
+        p = p.O().next;
+    }
+    em.print("\n], size = {d}\n", .{sz});
+}
+
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
-        //const head = a_elem.alloc(.{});
-        //getE(head).data = a_data.alloc(.{});
-        //var p = head;
-        //for (0..max - 1) |_| {
-        //    const q = a_elem.alloc(.{});
-        //    getE(q).data = a_data.alloc(.{});
-        //    getE(p).next = q;
-        //    p = q;
-        //}
-        //getE(p).next = em.Ref_NIL(Elem);
-        //v_cur_head.set(head);
+        const head = a_elem.alloc(.{});
+        getE(head).data = a_data.alloc(.{});
+        var p = head;
+        for (0..max - 1) |_| {
+            //            em.print("{s}__{s}[{d}]", .{ p.upath, p.aname, p.idx });
+            const q = a_elem.alloc(.{});
+            getE(q).data = a_data.alloc(.{});
+            getE(p).next = q;
+            p = q;
+        }
+        getE(p).next.setNIL();
+        v_cur_head.set(head);
         a_data.setLen(max + 1);
         a_elem.setLen(max + 1);
         v_max_elems.set(max);
+        //
     }
 };
 
@@ -74,19 +89,19 @@ pub const EM__TARG = struct {
     var data_heap = a_data.unwrap();
     var elem_heap = a_elem.unwrap();
 
-    var cur_head: em.Ref(Elem) = undefined;
+    var cur_head = v_cur_head.unwrap();
 
-    fn _init() void {
-        cur_head = em.Ref(Elem).init(@constCast(&elem_heap[0]));
-        var p = cur_head;
-        for (0..max_elems - 1) |i| {
-            getE(p).data = em.Ref(Data).init(@constCast(&data_heap[i]));
-            getE(p).next = em.Ref(Elem).init(@constCast(&elem_heap[i + 1]));
-            p = getE(p).next;
-        }
-        getE(p).next = em.Ref(Elem).NIL();
-        getE(p).data = em.Ref(Data).init(@constCast(&data_heap[max_elems]));
-    }
+    //fn _init() void {
+    //    cur_head = em.Ref(Elem).init(@constCast(&elem_heap[0]));
+    //    var p = cur_head;
+    //    for (0..max_elems - 1) |i| {
+    //        getE(p).data = em.Ref(Data).init(@constCast(&data_heap[i]));
+    //        getE(p).next = em.Ref(Elem).init(@constCast(&elem_heap[i + 1]));
+    //        p = getE(p).next;
+    //    }
+    //    getE(p).next = em.Ref(Elem).NIL();
+    //    getE(p).data = em.Ref(Data).init(@constCast(&data_heap[max_elems]));
+    //}
 
     pub fn dump() void {
         // TODO
@@ -111,19 +126,6 @@ pub const EM__TARG = struct {
 
     pub fn kind() Utils.Kind {
         return .LIST;
-    }
-
-    fn prList(list: em.Ref(Elem), name: []const u8) void {
-        var sz: usize = 0;
-        em.print("{s}\n[", .{name});
-        var p = list;
-        while (!p.isNIL()) {
-            const pre: []const u8 = if ((sz % 8) == 0) "\n    " else "";
-            sz += 1;
-            em.print("{s}({x:0>4},{x:0>4})", .{ pre, @as(u16, @bitCast(getED(p).idx)), @as(u16, @bitCast(getED(p).val)) });
-            p = p.get().next;
-        }
-        em.print("\n], size = {d}\n", .{sz});
     }
 
     pub fn print() void {
@@ -153,6 +155,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
+        print();
         var list = cur_head;
         const finder_idx = arg;
         const find_cnt = Utils.getSeed(3);
@@ -205,7 +208,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup() void {
-        _init();
         const seed = Utils.getSeed(1);
         var ki: u16 = 1;
         var kd: u16 = max_elems - 3;

@@ -114,7 +114,7 @@ pub fn _ArrayV(T: type, v: anytype) type {
         return struct {
             const Self = @This();
             const _val = v;
-            pub fn unwrap(_: Self) []const T {
+            pub fn unwrap(_: Self) []T {
                 return @constCast(_val);
             }
         };
@@ -310,20 +310,31 @@ pub fn Ref(T: type) type {
                 upath: []const u8,
                 aname: []const u8,
                 idx: usize,
-                _obj: *allowzero T,
+                _obj: ?*T,
+                pub fn isNIL(self: Self) bool {
+                    return self._obj == null;
+                }
                 pub fn O(self: @This()) *T {
-                    return @ptrCast(self._obj);
+                    return @ptrCast(self._obj.?);
+                }
+                pub fn setNIL(self: *Self) void {
+                    self._obj = null;
                 }
                 pub fn toString(self: Self) []const u8 {
-                    if (self.upath.len == 0) return "null";
-                    const fmt =
-                        \\blk: {{
-                        \\    const u = @field(em.Import, "{s}");
-                        \\    const a = @field(u, "{s}");
-                        \\    break :blk @constCast(&(a.unwrap()[{d}]));
-                        \\}}
-                    ;
-                    const oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
+                    // print("{s}__{s}[{d}]", .{ self.upath, self.aname, self.idx });
+                    var oval: []const u8 = undefined;
+                    if (self.isNIL()) {
+                        oval = "@ptrFromInt(0)";
+                    } else {
+                        const fmt =
+                            \\blk: {{
+                            \\    const u = @field(em.Import, "{s}");
+                            \\    const a = @field(u, "{s}");
+                            \\    break :blk @constCast(&(a.unwrap()[{d}]));
+                            \\}}
+                        ;
+                        oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
+                    }
                     return sprint("em.Ref({s}){{ ._obj = {s} }}", .{ mkTypeName(T), oval });
                 }
             };

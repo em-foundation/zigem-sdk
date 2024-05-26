@@ -9,7 +9,7 @@ pub const c_ITERATIONS = em__unit.config("ITERATIONS", u16);
 pub const EM__HOST = struct {
     //
     pub fn em__initH() void {
-        c_ITERATIONS.init(10);
+        c_ITERATIONS.init(1);
     }
 };
 
