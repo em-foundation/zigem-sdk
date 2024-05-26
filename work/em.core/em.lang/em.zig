@@ -38,12 +38,12 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             _list.append(elem) catch fail();
         }
 
-        pub fn alloc(self: Self, init: anytype) Ref(T) {
+        pub fn alloc(_: Self, init: anytype) Ref(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             _is_virgin = false;
             const idx = std.mem.indexOf(u8, dp, "__").?;
-            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._obj = self.getElem(l) };
+            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._list = &_list };
         }
 
         pub fn ChildType(_: Self) type {
@@ -123,7 +123,7 @@ pub fn _ArrayV(T: type, v: anytype) type {
             const Self = @This();
             const _val = v;
             pub fn unwrap(_: Self) []T {
-                return _val;
+                return @constCast(_val);
             }
         };
     }
@@ -310,15 +310,15 @@ pub fn Ref(T: type) type {
                 upath: []const u8,
                 aname: []const u8,
                 idx: usize,
-                _obj: ?*T,
+                _list: ?*std.ArrayList(T),
                 pub fn isNIL(self: Self) bool {
-                    return self._obj == null;
+                    return self.upath.len == 0;
                 }
-                pub fn O(self: @This()) *T {
-                    return @ptrCast(self._obj.?);
+                pub fn O(self: Self) *T {
+                    return &self._list.?.items[self.idx];
                 }
                 pub fn setNIL(self: *Self) void {
-                    self._obj = null;
+                    self.upath = "";
                 }
                 pub fn toString(self: Self) []const u8 {
                     // print("{s}__{s}[{d}]", .{ self.upath, self.aname, self.idx });

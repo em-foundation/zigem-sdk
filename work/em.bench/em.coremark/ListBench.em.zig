@@ -67,7 +67,6 @@ pub const EM__HOST = struct {
         getE(head).data = a_data.alloc(.{});
         var p = head;
         for (0..max - 1) |_| {
-            //            em.print("{s}__{s}[{d}]", .{ p.upath, p.aname, p.idx });
             const q = a_elem.alloc(.{});
             getE(q).data = a_data.alloc(.{});
             getE(p).next = q;
@@ -75,10 +74,9 @@ pub const EM__HOST = struct {
         }
         getE(p).next.setNIL();
         v_cur_head.set(head);
+        v_max_elems.set(max);
         a_data.setLen(max + 1);
         a_elem.setLen(max + 1);
-        v_max_elems.set(max);
-        //
     }
 };
 
@@ -155,7 +153,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
-        print();
         var list = cur_head;
         const finder_idx = arg;
         const find_cnt = Utils.getSeed(3);

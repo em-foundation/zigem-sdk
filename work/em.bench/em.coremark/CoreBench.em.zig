@@ -53,11 +53,12 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(_: i16) Utils.sum_t {
-        var crc = ListBench.run(1);
-        Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
-        crc = ListBench.run(-1);
-        Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
-        Utils.bindCrc(.LIST, Utils.getCrc(.FINAL));
+        print();
+        //var crc = ListBench.run(1);
+        //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
+        //crc = ListBench.run(-1);
+        //Utils.setCrc(.FINAL, Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL)));
+        //Utils.bindCrc(.LIST, Utils.getCrc(.FINAL));
         return Utils.getCrc(.FINAL);
     }
 
