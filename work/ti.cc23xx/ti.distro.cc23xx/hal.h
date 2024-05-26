@@ -26,3 +26,4 @@ typedef int __copy_table_t;
 #include "inc/hw_rtc.h"
 #include "inc/hw_types.h"
 #include "inc/hw_uart.h"
+#include "inc/hw_vims.h"
