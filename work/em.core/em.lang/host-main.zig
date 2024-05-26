@@ -53,11 +53,13 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
         if (ti_decl == .Struct and @hasDecl(Decl, "_em__builtin")) {
             var ks: []const u8 = "const";
             var suf: []const u8 = "";
-            if (@hasDecl(Decl, "_em__array") and !decl.isVirgin()) {
-                try init_list.append(decl.dpath());
+            if (@hasDecl(Decl, "_em__array")) {
                 ks = "var";
-                suf = "__v";
-                try out.print("pub var @\"{s}\": [{d}]{s} = undefined;\n", .{ decl.dpath(), decl.len(), decl.childTypeName() });
+                if (!decl.isVirgin()) {
+                    try init_list.append(decl.dpath());
+                    suf = "__v";
+                    try out.print("pub var @\"{s}\": [{d}]{s} = undefined;\n", .{ decl.dpath(), decl.len(), decl.childTypeName() });
+                }
             }
             try out.print("pub {s} @\"{s}{s}\" = {s};\n", .{ ks, decl.dpath(), suf, decl.toString() });
         }
