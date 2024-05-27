@@ -4,14 +4,14 @@ pub const em__unit = em.Module(@This(), .{});
 pub const Common = em.Import.@"em.mcu/Common";
 
 pub const FiberBody = struct {
-    arg: em.ptr_t,
+    arg: usize,
 };
 
 pub const Fiber = struct {
     const Self = @This();
     link: ?*Fiber = null,
     body: em.Func(em.CB(FiberBody)),
-    arg: em.ptr_t = null,
+    arg: usize = 0,
     pub fn post(self: *Self) void {
         em__unit.scope.Fiber_post(self);
     }

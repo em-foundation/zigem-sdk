@@ -4,17 +4,15 @@ pub const em__unit = em.Module(@This(), .{});
 pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const Callback = struct {
-    arg: em.ptr_t,
-};
+pub const Callback = struct {};
 
 pub const Ticker = struct {
     const Self = @This();
     _alarm: AlarmMgr.Obj,
     _fiber: FiberMgr.Obj,
     _rate256: u32 = 0,
-    _tick_cb: em.Func(em.CB(Callback)),
-    pub fn start(self: *Self, rate256: u32, tick_cb: em.Func(em.CB(Callback))) void {
+    _tick_cb: ?em.CB(Callback),
+    pub fn start(self: *Self, rate256: u32, tick_cb: em.CB(Callback)) void {
         em__unit.scope.Ticker_start(self, rate256, tick_cb);
     }
     pub fn stop(self: *Self) void {
@@ -25,9 +23,6 @@ pub const Ticker = struct {
 pub const a_heap = em__unit.array("a_heap", Ticker);
 
 pub const Obj = em.Ref(Ticker);
-pub fn @"->"(obj: Obj) ?*Ticker {
-    return a_heap.get(obj);
-}
 
 pub const EM__HOST = struct {
     //
@@ -35,29 +30,28 @@ pub const EM__HOST = struct {
         const fiber = FiberMgr.createH(em__unit.func("alarmFB", em.CB(FiberMgr.FiberBody)));
         const alarm = AlarmMgr.createH(fiber);
         const ticker = a_heap.alloc(.{ ._alarm = alarm, ._fiber = fiber });
-        // fiber.arg = ticker.idx
+        fiber.O().arg = ticker.idx;
         return ticker;
     }
 };
 
 pub const EM__TARG = struct {
     //
-    pub fn alarmFB(_: FiberMgr.FiberBody) void {
-        //    auto ticker = <Ticker&>arg
-        //    return if ticker.tickCb == null
-        //    ticker.tickCb()
-        //    ticker.alarm.wakeupAt(ticker.rate256)
-
+    pub fn alarmFB(a: FiberMgr.FiberBody) void {
+        var ticker = &a_heap.unwrap()[a.arg];
+        if (ticker._tick_cb == null) return;
+        ticker._tick_cb.?(.{});
+        ticker._alarm.O().wakeupAt(ticker._rate256);
     }
 
-    pub fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: em.Func(em.CB(Callback))) void {
+    pub fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: em.CB(Callback)) void {
         ticker._rate256 = rate256;
         ticker._tick_cb = tick_cb;
-        AlarmMgr.@"->"(ticker._alarm).wakeupAt(rate256);
+        ticker._alarm.O().wakeupAt(rate256);
     }
 
     pub fn Ticker_stop(ticker: *Ticker) void {
-        AlarmMgr.@"->"(ticker._alarm).cancel();
+        ticker._alarm.O().cancel();
         ticker._tick_cb._fxn = null;
     }
 };
