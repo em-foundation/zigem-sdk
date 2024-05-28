@@ -33,21 +33,26 @@ pub const EM__TARG = struct {
     //
     var ready_list = struct {
         const Self = @This();
-        const arr = a_heap.unwrap();
-        head: ?*Fiber = null,
-        tail: ?*Fiber = null,
+        const NIL: *Fiber = @ptrFromInt(4);
+        head: *Fiber = NIL,
+        tail: *Fiber = NIL,
         fn empty(self: *Self) bool {
-            return self.head == null;
+            return self.head == NIL;
         }
         fn give(self: *Self, elem: *Fiber) void {
-            if (self.empty()) self.head = elem;
-            self.tail = elem;
+            if (self.empty()) {
+                self.head = elem;
+                self.tail = elem;
+            } else {
+                self.tail.link = elem;
+            }
+            elem.link = NIL;
         }
         fn take(self: *Self) *Fiber {
-            const e = self.head.?;
-            self.head = e.link;
+            const e = self.head;
+            self.head = e.link.?;
             e.link = null;
-            if (self.head == null) self.tail = null;
+            if (self.head == NIL) self.tail = NIL;
             return e;
         }
     }{};
@@ -58,7 +63,7 @@ pub const EM__TARG = struct {
             const body = fiber.body.unwrap();
             Common.GlobalInterrupts.enable();
             body(FiberBody{ .arg = fiber.arg });
-            _ = Common.GlobalInterrupts.enable();
+            _ = Common.GlobalInterrupts.disable();
         }
     }
 
@@ -66,7 +71,7 @@ pub const EM__TARG = struct {
         Common.Idle.wakeup();
         Common.GlobalInterrupts.enable();
         while (true) {
-            _ = Common.GlobalInterrupts.enable();
+            _ = Common.GlobalInterrupts.disable();
             dispatch();
             Common.Idle.exec();
         }
