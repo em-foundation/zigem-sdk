@@ -8,15 +8,15 @@ export fn DEFAULT_isr() void {
 
 pub const EM__HOST = struct {
     //
-    var a_name_tab = em__unit.array("a_name_tab", ?[]const u8);
-    var a_used_tab = em__unit.array("a_used_tab", []const u8);
+    var name_tab = em.Table(?[]const u8){};
+    var used_tab = em.Table([]const u8){};
 
     pub fn addIntrH(name: ?[]const u8) void {
-        a_name_tab.addElem(name);
+        name_tab.add(name);
     }
 
     pub fn useIntrH(name: []const u8) void {
-        a_used_tab.addElem(name);
+        used_tab.add(name);
     }
 
     pub fn em__initH() void {
@@ -43,7 +43,7 @@ pub const EM__HOST = struct {
 
     pub fn em__generateH() void {
         var sbuf = em.StringH{};
-        for (a_name_tab.unwrap()) |n| {
+        for (name_tab.items()) |n| {
             if (n == null) continue;
             sbuf.add(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n.?}));
         }
@@ -62,7 +62,7 @@ pub const EM__HOST = struct {
         //    sbuf.add(em.sprint("void {s}_isr( void ) __attribute__((weak, alias(\"_DEFAULT_isr\")));\n", .{n.?}));
         //}
         sbuf.add("// used\n");
-        for (a_used_tab.unwrap()) |n| {
+        for (used_tab.items()) |n| {
             sbuf.add(em.sprint(
                 \\#undef __{s}_isr
                 \\#define __{0s}_isr {0s}_isr
@@ -88,7 +88,7 @@ pub const EM__HOST = struct {
             \\    { .fxn = em__start },
             \\
         );
-        for (a_name_tab.unwrap()) |n| {
+        for (name_tab.items()) |n| {
             const s = if (n == null) "0" else em.sprint("__{s}_isr", .{n.?});
             sbuf.add(em.sprint("    {s},\n", .{s}));
         }

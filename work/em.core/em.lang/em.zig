@@ -371,6 +371,19 @@ pub const StringH = struct {
     }
 };
 
+pub fn Table(comptime T: type) type {
+    return struct {
+        const Self = @This();
+        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
+        pub fn add(self: *Self, item: T) void {
+            self._list.append(item) catch fail();
+        }
+        pub fn items(self: *Self) []T {
+            return self._list.items;
+        }
+    };
+}
+
 pub const text_t = []const u8;
 
 pub const UnitKind = enum {
