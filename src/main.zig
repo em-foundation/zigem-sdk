@@ -9,6 +9,7 @@ var t0: f80 = 0.0;
 
 var params = struct {
     load: bool = false,
+    meta: bool = false,
     unit: []const u8 = undefined,
     work: []const u8 = ".",
 }{};
@@ -20,6 +21,15 @@ var load_opt = cli.Option{
     .required = false,
     .value_name = "LOAD",
     .value_ref = cli.mkRef(&params.load),
+};
+
+var meta_opt = cli.Option{
+    .long_name = "meta-only",
+    .short_alias = 'm',
+    .help = "Only run the HOST meta-program",
+    .required = false,
+    .value_name = "META",
+    .value_ref = cli.mkRef(&params.meta),
 };
 
 var unit_opt = cli.Option{
@@ -44,6 +54,7 @@ var build_cmd = cli.Command{
     .name = "build",
     .options = &.{
         &load_opt,
+        &meta_opt,
         &unit_opt,
         &work_opt,
     },
@@ -123,6 +134,11 @@ fn doBuild() !void {
     try writer.print("compiling HOST ...\n", .{});
     var stdout = try execMake("host");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
+    if (params.meta) {
+        const t2: f80 = @floatFromInt(std.time.milliTimestamp());
+        try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+        return;
+    }
     try writer.print("compiling TARG ...\n", .{});
     stdout = try execMake("TARG");
     const sz = try dispSizes(stdout);
