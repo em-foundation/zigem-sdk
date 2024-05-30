@@ -44,7 +44,10 @@ pub const EM__TARG = struct {
             .Pointer => {
                 wr4(@intFromPtr(v));
             },
-            else => {},
+            else => {
+                Uart.put(0x8F);
+                Uart.put(@intFromEnum(ti));
+            },
         }
     }
     fn wr1(v: u8) void {
