@@ -61,6 +61,8 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
                     suf = "__v";
                     try out.print("pub var @\"{s}\": [{d}]{s} = undefined;\n", .{ decl.dpath(), decl.len(), decl.childTypeName() });
                 }
+            } else if (@hasDecl(Decl, "_em__obj")) {
+                ks = "var";
             }
             try out.print("pub {s} @\"{s}{s}\" = {s};\n", .{ ks, decl.dpath(), suf, decl.toString() });
         }
