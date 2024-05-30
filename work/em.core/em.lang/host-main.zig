@@ -30,6 +30,7 @@ pub fn exec(top: em.Unit) !void {
     callAll("em__generateH", ulist_top, false);
     try genDomain();
     try genTarg(ulist_bot, ulist_top);
+    std.process.exit(0);
 }
 
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
