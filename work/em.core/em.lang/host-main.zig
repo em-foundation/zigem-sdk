@@ -63,18 +63,25 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
                 }
             } else if (@hasDecl(Decl, "_em__obj")) {
                 ks = "var";
+                const size_txt =
+                    \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
+                    \\
+                    \\
+                ;
+                try out.print(size_txt, .{ decl.dpath(), decl.objTypeName() });
+                //const SIZE = std.fmt.comptimePrint("{d}", .{@sizeOf(em.Import.@".junk/ObjTest".Node)});
                 for (0..decl.objCount()) |i| {
-                    const txt =
+                    const abs_txt =
                         \\comptime {{ 
                         \\    asm (".globl \"{0s}${1d}\"");
-                        \\    asm ("\"{0s}${1d}\" = \".gen.targ.{0s}\" + {1d} * {2d}");
+                        \\    asm ("\"{0s}${1d}\" = \".gen.targ.{0s}\" + {1d} * " ++ @"{0s}__SIZE");
                         \\}}
                         \\extern const @"{0s}${1d}": usize;
-                        \\const @"{0s}__{1d}": *{3s} = @constCast(@ptrCast(&@"{0s}${1d}"));
+                        \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
                         \\
                         \\
                     ;
-                    try out.print(txt, .{ decl.dpath(), i, decl.objSize(), decl.objTypeName() });
+                    try out.print(abs_txt, .{ decl.dpath(), i, decl.objTypeName() });
                 }
             }
             try out.print("pub {s} @\"{s}{s}\" = {s};\n", .{ ks, decl.dpath(), suf, decl.toString() });

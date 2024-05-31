@@ -251,10 +251,6 @@ fn _ObjD(dp: []const u8, T: type) type {
             return _list.items.len;
         }
 
-        pub fn objSize(_: Self) usize {
-            return @sizeOf(T);
-        }
-
         pub fn objTypeName(_: Self) []const u8 {
             return mkTypeName(T);
         }
