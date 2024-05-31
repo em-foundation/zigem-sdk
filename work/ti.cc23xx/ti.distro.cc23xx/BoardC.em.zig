@@ -1,7 +1,7 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Composite(@This(), .{});
 
-pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
+//pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
 pub const AppLed = em__unit.Generate("AppLed", em.Import.@"em.utils/LedT");
 pub const AppLedPin = em__unit.Generate("AppLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const AppOutPin = em__unit.Generate("AppOutPin", em.Import.@"ti.mcu.cc23xx/GpioT");
@@ -30,7 +30,7 @@ pub const WakeupTimer = em.Import.@"ti.mcu.cc23xx/WakeupRtc";
 pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
-    AlarmMgr.x_WakeupTimer.set(WakeupTimer);
+    //AlarmMgr.x_WakeupTimer.set(WakeupTimer);
     AppLedPin.c_pin.set(15);
     AppLed.x_Pin.set(AppLedPin);
     AppOutPin.c_pin.set(20);

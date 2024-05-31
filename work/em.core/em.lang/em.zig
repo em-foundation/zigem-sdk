@@ -236,15 +236,27 @@ fn _ObjD(dp: []const u8, T: type) type {
 
         var _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator());
 
-        pub fn createH(_: Self, init: anytype) ObjRef(T) {
+        pub fn createH(_: Self, init: anytype) Ptr(T) {
             const l = _list.items.len;
             _list.append(std.mem.zeroInit(T, init)) catch fail();
             const idx = std.mem.indexOf(u8, dp, "__").?;
-            return ObjRef(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._list = &_list };
+            return Ptr(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._list = &_list };
         }
 
         pub fn dpath(_: Self) []const u8 {
             return _dpath;
+        }
+
+        pub fn objCount(_: Self) usize {
+            return _list.items.len;
+        }
+
+        pub fn objSize(_: Self) usize {
+            return @sizeOf(T);
+        }
+
+        pub fn objTypeName(_: Self) []const u8 {
+            return mkTypeName(T);
         }
 
         pub fn toString(_: Self) []const u8 {
@@ -268,6 +280,9 @@ fn _ObjV(dp: []const u8, T: type, a: []T) type {
         }
         pub fn count(_: Self) usize {
             return a.len;
+        }
+        pub fn get(_: Self, idx: usize) *T {
+            return &_arr[idx];
         }
         pub fn dpath(_: Self) []const u8 {
             return dp;
@@ -329,26 +344,34 @@ fn _ProxyV(dp: []const u8, u: type) type {
 pub const ptr_t = ?*anyopaque;
 
 pub fn Ptr(T: type) type {
-    return struct {
-        const Self = @This();
-        pub const _em__builtin = {};
-        _ptr0: *allowzero T,
-        pub fn get(self: Self) *T {
-            return @ptrCast(self._ptr0);
-        }
-        pub fn isNIL(self: Self) bool {
-            return @intFromPtr(self._ptr0) == 0;
-        }
-        pub fn init(ptr: *T) Ptr(T) {
-            return Ptr(T){ ._ptr0 = ptr };
-        }
-        pub fn NIL() Ptr(T) {
-            return Ptr(T){ ._ptr0 = @ptrFromInt(0) };
-        }
-        pub fn toString(_: Self) []const u8 {
-            return sprint("em.Ptr({s}){{}}", .{mkTypeName(T)});
-        }
-    };
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
+                pub const _em__builtin = {};
+                upath: []const u8,
+                aname: []const u8,
+                idx: usize,
+                _list: ?*std.ArrayList(T),
+                pub fn isNIL(self: Self) bool {
+                    return self.upath.len == 0;
+                }
+                pub fn O(self: Self) *T {
+                    return &self._list.?.items[self.idx];
+                }
+                pub fn setNIL(self: *Self) void {
+                    self.upath = "";
+                }
+                pub fn toString(self: Self) []const u8 {
+                    print("{s}__{s}[{d}]", .{ self.upath, self.aname, self.idx });
+                    return if (self.isNIL()) "null" else sprint("{s}__{d})", .{ mkTypeName(T), self.idx });
+                }
+            };
+        },
+        .TARG => {
+            return *T;
+        },
+    }
 }
 
 pub fn Ref(T: type) type {
@@ -406,37 +429,6 @@ pub fn Ref(T: type) type {
                     return @ptrCast(self._obj);
                 }
             };
-        },
-    }
-}
-
-pub fn ObjRef(T: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
-                pub const _em__builtin = {};
-                upath: []const u8,
-                aname: []const u8,
-                idx: usize,
-                _list: ?*std.ArrayList(T),
-                pub fn isNIL(self: Self) bool {
-                    return self.upath.len == 0;
-                }
-                pub fn O(self: Self) *T {
-                    return &self._list.?.items[self.idx];
-                }
-                pub fn setNIL(self: *Self) void {
-                    self.upath = "";
-                }
-                pub fn toString(self: Self) []const u8 {
-                    print("{s}__{s}[{d}]", .{ self.upath, self.aname, self.idx });
-                    return if (self.isNIL()) "null" else sprint("{s}__{d})", .{ mkTypeName(T), self.idx });
-                }
-            };
-        },
-        .TARG => {
-            return ?*T;
         },
     }
 }

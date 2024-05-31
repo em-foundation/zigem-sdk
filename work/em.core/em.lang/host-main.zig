@@ -63,6 +63,19 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
                 }
             } else if (@hasDecl(Decl, "_em__obj")) {
                 ks = "var";
+                for (0..decl.objCount()) |i| {
+                    const txt =
+                        \\comptime {{ 
+                        \\    asm (".globl \"{0s}${1d}\"");
+                        \\    asm ("\"{0s}${1d}\" = \".gen.targ.{0s}\" + {1d} * {2d}");
+                        \\}}
+                        \\extern const @"{0s}${1d}": usize;
+                        \\const @"{0s}__{1d}": *{3s} = @constCast(@ptrCast(&@"{0s}${1d}"));
+                        \\
+                        \\
+                    ;
+                    try out.print(txt, .{ decl.dpath(), i, decl.objSize(), decl.objTypeName() });
+                }
             }
             try out.print("pub {s} @\"{s}{s}\" = {s};\n", .{ ks, decl.dpath(), suf, decl.toString() });
         }
