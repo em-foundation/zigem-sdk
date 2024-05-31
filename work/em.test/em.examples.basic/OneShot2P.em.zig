@@ -17,7 +17,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = c_blinkF.unwrap().O();
+    const blinkF = c_blinkF.unwrap();
     var count: u8 = 5;
 
     pub fn em__run() void {
