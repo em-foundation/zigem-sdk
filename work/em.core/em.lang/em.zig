@@ -270,6 +270,7 @@ fn _FactoryD(dp: []const u8, T: type) type {
 fn _FactoryV(dp: []const u8, T: type, a: []T) type {
     return struct {
         const Self = @This();
+        const _dpath = dp;
         var _arr = a;
         pub fn all(_: Self) []T {
             return _arr[0..];
@@ -279,13 +280,6 @@ fn _FactoryV(dp: []const u8, T: type, a: []T) type {
         }
         pub fn get(_: Self, idx: usize) *T {
             return &_arr[idx];
-        }
-        pub fn dpath(_: Self) []const u8 {
-            return dp;
-        }
-        pub fn unwrap(_: Self) []T {
-            const arr = @field(targ, dp);
-            return arr[0..];
         }
     };
 }
