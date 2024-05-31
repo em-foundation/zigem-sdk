@@ -225,7 +225,7 @@ pub fn Func(FT: type) type {
     }
 }
 
-fn _ObjD(dp: []const u8, T: type) type {
+fn _FactoryD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
 
@@ -267,7 +267,7 @@ fn _ObjD(dp: []const u8, T: type) type {
     };
 }
 
-fn _ObjV(dp: []const u8, T: type, a: []T) type {
+fn _FactoryV(dp: []const u8, T: type, a: []T) type {
     return struct {
         const Self = @This();
         var _arr = a;
@@ -499,12 +499,12 @@ pub const Unit = struct {
         }
     }
 
-    pub fn Object(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ObjD(self.extendPath(name), T) else _ObjV(self.extendPath(name), T, @field(targ, self.extendPath(name))[0..]) {
+    pub fn factory(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _FactoryD(self.extendPath(name), T) else _FactoryV(self.extendPath(name), T, @field(targ, self.extendPath(name))[0..]) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
-            return _ObjD(dname, T){};
+            return _FactoryD(dname, T){};
         } else {
-            return _ObjV(dname, T, @field(targ, dname)[0..]){};
+            return _FactoryV(dname, T, @field(targ, dname)[0..]){};
         }
     }
 

@@ -9,7 +9,7 @@ pub const FiberBody = struct {
 
 pub const Fiber = struct {
     const Self = @This();
-    link: ?em.Ptr(Fiber) = null,
+    link: ?Obj = null,
     body: em.Func(em.CB(FiberBody)),
     arg: usize = 0,
     pub fn post(self: *Self) void {
@@ -17,10 +17,16 @@ pub const Fiber = struct {
     }
 };
 
-pub const Obj = em__unit.Object("Fiber", Fiber);
+pub const Obj = em.Ptr(Fiber);
+
+pub const _factory = em__unit.factory("Fiber", Fiber);
 
 pub const EM__HOST = struct {
     //
+    pub fn createH(body: em.Func(em.CB(FiberBody))) Obj {
+        const fiber = _factory.createH(.{ .body = body });
+        return fiber;
+    }
 };
 
 pub const EM__TARG = struct {
