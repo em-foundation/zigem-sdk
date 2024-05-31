@@ -9,7 +9,7 @@ pub const FiberBody = struct {
 
 pub const Fiber = struct {
     const Self = @This();
-    link: ?*Fiber = null,
+    link: ?em.Ptr(Fiber) = null,
     body: em.Func(em.CB(FiberBody)),
     arg: usize = 0,
     pub fn post(self: *Self) void {
@@ -17,16 +17,10 @@ pub const Fiber = struct {
     }
 };
 
-pub const a_heap = em__unit.array("a_heap", Fiber);
-
-pub const Obj = em.Ref(Fiber);
+pub const Obj = em__unit.Object("Fiber", Fiber);
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(em.CB(FiberBody))) Obj {
-        const fiber = a_heap.alloc(.{ .body = body });
-        return fiber;
-    }
 };
 
 pub const EM__TARG = struct {
