@@ -64,6 +64,7 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
             } else if (@hasDecl(Decl, "_em__obj")) {
                 ks = "var";
                 const size_txt =
+                    \\export const @"{0s}__BASE" = &@"{0s}";
                     \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
                     \\
                     \\

@@ -359,7 +359,6 @@ pub fn Ptr(T: type) type {
                     self.upath = "";
                 }
                 pub fn toString(self: Self) []const u8 {
-                    //print("{s}__{s}[{d}]", .{ self.upath, self.aname, self.idx });
                     return if (self.isNIL()) "null" else sprint("@\"{s}__{s}__{d}\"", .{ self.upath, self.aname, self.idx });
                 }
             };
