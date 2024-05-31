@@ -4,7 +4,8 @@ pub const em__unit = em.Module(@This(), .{});
 pub const EpochTime = em.Import.@"em.utils/EpochTime";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const x_WakeupTimer = em__unit.proxy("WakeupTimer", em.Import.@"em.hal/WakeupTimerI");
+pub const _factory = em__unit.factory("Alarm", Alarm);
+pub const Obj = em.Ptr(Alarm);
 
 pub const Alarm = struct {
     const Self = @This();
@@ -25,14 +26,12 @@ pub const Alarm = struct {
     }
 };
 
-pub const a_heap = em__unit.array("a_heap", Alarm);
-
-pub const Obj = em.Ref(Alarm);
+pub const x_WakeupTimer = em__unit.proxy("WakeupTimer", em.Import.@"em.hal/WakeupTimerI");
 
 pub const EM__HOST = struct {
     //
     pub fn createH(fiber: FiberMgr.Obj) Obj {
-        const alarm = a_heap.alloc(.{ ._fiber = fiber });
+        const alarm = _factory.createH(.{ ._fiber = fiber });
         return alarm;
     }
 };
@@ -41,10 +40,10 @@ pub const EM__TARG = struct {
     //
     const WakeupTimer = x_WakeupTimer.unwrap();
 
-    var alarm_tab = a_heap.unwrap();
     var cur_alarm: ?*Alarm = null;
 
     fn update(delta_ticks: u32) void {
+        const alarm_tab = _factory.all();
         const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
         WakeupTimer.disable();
         var nxt_alarm: ?*Alarm = null;
@@ -54,7 +53,7 @@ pub const EM__TARG = struct {
             if (a._ticks == 0) continue; // inactive alarm
             a._ticks -= delta_ticks;
             if (a._thresh <= thresh) { // expired alarm
-                a._fiber.O().post();
+                a._fiber.post();
             } else if (a._ticks < max_ticks) {
                 nxt_alarm = a;
                 max_ticks = a._ticks;

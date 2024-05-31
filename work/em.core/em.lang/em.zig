@@ -283,6 +283,10 @@ fn _FactoryV(dp: []const u8, T: type, a: []T) type {
         pub fn dpath(_: Self) []const u8 {
             return dp;
         }
+        pub fn unwrap(_: Self) []T {
+            const arr = @field(targ, dp);
+            return arr[0..];
+        }
     };
 }
 

@@ -3,6 +3,9 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 
+pub const _factory = em__unit.factory("Fiber", Fiber);
+pub const Obj = em.Ptr(Fiber);
+
 pub const FiberBody = struct {
     arg: usize,
 };
@@ -16,10 +19,6 @@ pub const Fiber = struct {
         em__unit.scope.Fiber_post(self);
     }
 };
-
-pub const Obj = em.Ptr(Fiber);
-
-pub const _factory = em__unit.factory("Fiber", Fiber);
 
 pub const EM__HOST = struct {
     //
