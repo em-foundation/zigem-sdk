@@ -6,6 +6,9 @@ pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
 pub const Callback = struct {};
 
+pub const _factory = em__unit.factory("Ticker", Ticker);
+pub const Obj = em.Ptr(Ticker);
+
 pub const Ticker = struct {
     const Self = @This();
     _alarm: AlarmMgr.Obj,
@@ -20,16 +23,12 @@ pub const Ticker = struct {
     }
 };
 
-pub const a_heap = em__unit.array("a_heap", Ticker);
-
-pub const Obj = em.Ref(Ticker);
-
 pub const EM__HOST = struct {
     //
     pub fn createH() Obj {
         const fiber = FiberMgr.createH(em__unit.func("alarmFB", em.CB(FiberMgr.FiberBody)));
         const alarm = AlarmMgr.createH(fiber);
-        const ticker = a_heap.alloc(.{ ._alarm = alarm, ._fiber = fiber });
+        const ticker = _factory.createH(.{ ._alarm = alarm, ._fiber = fiber });
         fiber.O().arg = ticker.idx;
         return ticker;
     }
@@ -38,20 +37,20 @@ pub const EM__HOST = struct {
 pub const EM__TARG = struct {
     //
     pub fn alarmFB(a: FiberMgr.FiberBody) void {
-        var ticker = &a_heap.unwrap()[a.arg];
+        var ticker = _factory.get(a.arg);
         if (ticker._tick_cb == null) return;
         ticker._tick_cb.?(.{});
-        ticker._alarm.O().wakeupAt(ticker._rate256);
+        ticker._alarm.wakeupAt(ticker._rate256);
     }
 
     pub fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: em.CB(Callback)) void {
         ticker._rate256 = rate256;
         ticker._tick_cb = tick_cb;
-        ticker._alarm.O().wakeupAt(rate256);
+        ticker._alarm.wakeupAt(rate256);
     }
 
     pub fn Ticker_stop(ticker: *Ticker) void {
-        ticker._alarm.O().cancel();
+        ticker._alarm.cancel();
         ticker._tick_cb._fxn = null;
     }
 };

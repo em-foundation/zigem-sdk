@@ -18,8 +18,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const appTicker = c_appTicker.unwrap().O();
-    const sysTicker = c_sysTicker.unwrap().O();
+    const appTicker = c_appTicker.unwrap();
+    const sysTicker = c_sysTicker.unwrap();
 
     pub fn em__run() void {
         appTicker.start(256, &appTickCb);
