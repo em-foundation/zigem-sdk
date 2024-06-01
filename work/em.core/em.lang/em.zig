@@ -38,14 +38,6 @@ pub fn _ArrayD(dp: []const u8, T: type) type {
             _list.append(elem) catch fail();
         }
 
-        pub fn alloc(_: Self, init: anytype) Ref(T) {
-            const l = _list.items.len;
-            _list.append(std.mem.zeroInit(T, init)) catch fail();
-            _is_virgin = false;
-            const idx = std.mem.indexOf(u8, dp, "__").?;
-            return Ref(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._list = &_list };
-        }
-
         pub fn ChildType(_: Self) type {
             return T;
         }
@@ -363,65 +355,6 @@ pub fn Ptr(T: type) type {
         },
         .TARG => {
             return *T;
-        },
-    }
-}
-
-pub fn Ref(T: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
-                pub const _em__builtin = {};
-                upath: []const u8,
-                aname: []const u8,
-                idx: usize,
-                _list: ?*std.ArrayList(T),
-                pub fn isNIL(self: Self) bool {
-                    return self.upath.len == 0;
-                }
-                pub fn O(self: Self) *T {
-                    return &self._list.?.items[self.idx];
-                }
-                pub fn setNIL(self: *Self) void {
-                    self.upath = "";
-                }
-                pub fn toString(self: Self) []const u8 {
-                    // print("{s}__{s}[{d}]", .{ self.upath, self.aname, self.idx });
-                    var oval: []const u8 = undefined;
-                    if (self.isNIL()) {
-                        oval = "@ptrFromInt(0)";
-                    } else {
-                        const fmt =
-                            \\blk: {{
-                            \\    const u = @field(em.Import, "{s}");
-                            \\    const a = @field(u, "{s}");
-                            \\    break :blk @constCast(&(a.unwrap()[{d}]));
-                            \\}}
-                        ;
-                        oval = sprint(fmt, .{ self.upath, self.aname, self.idx });
-                    }
-                    return sprint("em.Ref({s}){{ ._obj = {s} }}", .{ mkTypeName(T), oval });
-                }
-            };
-        },
-        .TARG => {
-            return struct {
-                const Self = @This();
-                _obj: *allowzero T,
-                pub fn init(p: *T) Ref(T) {
-                    return Ref(T){ ._obj = p };
-                }
-                pub fn isNIL(self: Self) bool {
-                    return @intFromPtr(self._obj) == 0;
-                }
-                pub fn NIL() Ref(T) {
-                    return Ref(T){ ._obj = @ptrFromInt(0) };
-                }
-                pub fn O(self: Self) *T {
-                    return @ptrCast(self._obj);
-                }
-            };
         },
     }
 }

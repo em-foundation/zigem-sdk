@@ -122,16 +122,6 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
 
 fn genBuiltin(decl: anytype, out: std.fs.File.Writer) !bool {
     const tn_type = @typeName(decl.Type());
-    if (comptime std.mem.startsWith(u8, tn_type, "em.core.em.lang.em.Ref(")) {
-        try out.print("pub const @\"{s}\": em.Ref(", .{decl.dpath()});
-        const idx = comptime std.mem.indexOf(u8, tn_type, "(").?;
-        const rt = comptime if (idx == null) "<<null>>" else tn_type[idx.? + 1 .. tn_type.len - 1];
-        const tun = comptime mkImportPath(rt, 2);
-        try genImport(tun, out);
-        try out.print(") = ", .{});
-        try out.print("{s};\n", .{em.toStringAux(decl.get())});
-        return true;
-    }
     if (comptime std.mem.startsWith(u8, tn_type, "em.core.em.lang.em.Func(")) {
         try out.print("pub const @\"{s}\": em.Func(", .{decl.dpath()});
         const idx = comptime std.mem.indexOf(u8, tn_type, "(").?;
@@ -203,9 +193,6 @@ fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File
 fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
     if (std.mem.startsWith(u8, path, "em.core.em.lang.em.Func(")) {
         return "em__" ++ path[std.mem.indexOf(u8, path, ".Func(").? + 1 ..];
-    }
-    if (std.mem.startsWith(u8, path, "em.core.em.lang.em.Ref(")) {
-        return "em__" ++ path[std.mem.indexOf(u8, path, ".Ref(").? + 1 ..];
     }
     var idx: ?usize = path.len;
     inline for (1..suf_cnt) |_| {
