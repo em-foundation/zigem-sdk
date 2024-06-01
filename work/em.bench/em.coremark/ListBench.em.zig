@@ -15,61 +15,43 @@ pub const Data = struct {
 };
 
 pub const Elem = struct {
-    next: em.Ref(Elem),
-    data: em.Ref(Data),
+    next: ?em.Ptr(Elem),
+    data: em.Ptr(Data),
 };
 
-pub const Comparator = fn (a: em.Ref(Data), b: em.Ref(Data)) i32;
+pub const Comparator = fn (a: em.Ptr(Data), b: em.Ptr(Data)) i32;
 
 pub const c_memsize = em__unit.config("memsize", u16);
 
-pub const v_cur_head = em__unit.config("cur_head", em.Ref(Elem));
+pub const v_cur_head = em__unit.config("cur_head", em.Ptr(Elem));
 pub const v_max_elems = em__unit.config("max_elems", u16);
 
-pub const a_data = em__unit.array("a_data", Data);
-pub const a_elem = em__unit.array("a_elem", Elem);
-
-fn prList(list: em.Ref(Elem), name: []const u8) void {
-    var sz: usize = 0;
-    em.print("{s}\n[", .{name});
-    var p = list;
-    while (!p.isNIL()) {
-        const pre: []const u8 = if ((sz % 8) == 0) "\n    " else "";
-        sz += 1;
-        em.print("{s}({x:0>4},{x:0>4})", .{ pre, @as(u16, @bitCast(p.O().data.O().idx)), @as(u16, @bitCast(p.O().data.O().val)) });
-        p = p.O().next;
-    }
-    em.print("\n], size = {d}\n", .{sz});
-}
+pub const a_data = em__unit.factory("Data", Data);
+pub const a_elem = em__unit.factory("Elem", Elem);
 
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
-        const head = a_elem.alloc(.{});
-        head.O().data = a_data.alloc(.{});
+        const head = a_elem.createH(.{});
+        head.O().data = a_data.createH(.{});
         var p = head;
         for (0..max - 1) |_| {
-            const q = a_elem.alloc(.{});
-            q.O().data = a_data.alloc(.{});
+            const q = a_elem.createH(.{});
+            q.O().data = a_data.createH(.{});
             p.O().next = q;
             p = q;
         }
-        p.O().next.setNIL();
+        p.O().next = null;
         v_cur_head.set(head);
         v_max_elems.set(max);
-        a_data.setLen(max + 1);
-        a_elem.setLen(max + 1);
     }
 };
 
 pub const EM__TARG = struct {
     //
     const max_elems = v_max_elems.unwrap();
-
-    var data_heap = a_data.unwrap();
-    var elem_heap = a_elem.unwrap();
 
     var cur_head = v_cur_head.unwrap();
 
@@ -78,17 +60,17 @@ pub const EM__TARG = struct {
         return;
     }
 
-    fn find(list: em.Ref(Elem), data: em.Ref(Data)) em.Ref(Elem) {
-        var elem = list;
-        if (data.O().idx >= 0) {
-            while (!elem.isNIL() and (elem.O().data.O().idx != data.O().idx)) {
-                elem = elem.O().next;
+    fn find(list: em.Ptr(Elem), data: em.Ptr(Data)) ?em.Ptr(Elem) {
+        var elem: ?em.Ptr(Elem) = list;
+        if (data.idx >= 0) {
+            while (elem != null and (elem.?.data.idx != data.idx)) {
+                elem = elem.?.next;
             }
         } else {
-            while (!elem.isNIL()) {
-                const v: i16 = @bitCast(@as(u16, @bitCast(elem.O().data.O().val)) & @as(u16, 0xff));
-                if (v == data.O().val) break;
-                elem = elem.O().next;
+            while (elem != null) {
+                const v: i16 = @bitCast(@as(u16, @bitCast(elem.?.data.val)) & @as(u16, 0xff));
+                if (v == data.val) break;
+                elem = elem.?.next;
             }
         }
         return elem;
@@ -98,30 +80,43 @@ pub const EM__TARG = struct {
         return .LIST;
     }
 
+    fn prList(list: em.Ptr(Elem), name: []const u8) void {
+        var elem: ?em.Ptr(Elem) = list;
+        var sz: usize = 0;
+        em.print("{s}\n[", .{name});
+        while (elem != null) {
+            const pre: []const u8 = if ((sz % 8) == 0) "\n    " else "";
+            sz += 1;
+            em.print("{s}({x:0>4},{x:0>4})", .{ pre, @as(u16, @bitCast(elem.?.data.idx)), @as(u16, @bitCast(elem.?.data.val)) });
+            elem = elem.?.next;
+        }
+        em.print("\n], size = {d}\n", .{sz});
+    }
+
     pub fn print() void {
         prList(cur_head, "current");
     }
 
-    fn remove(item: em.Ref(Elem)) em.Ref(Elem) {
-        const ret = item.O().next;
-        const tmp = item.O().data;
-        item.O().data = ret.O().data;
-        ret.O().data = tmp;
-        item.O().next = item.O().next.O().next;
-        ret.O().next = em.Ref(Elem).NIL();
-        return ret;
+    fn remove(item: em.Ptr(Elem)) em.Ptr(Elem) {
+        const ret = item.next;
+        const tmp = item.data;
+        item.data = ret.?.data;
+        ret.?.data = tmp;
+        item.next = item.next.?.next;
+        ret.?.next = null;
+        return ret.?;
     }
 
-    fn reverse(list: em.Ref(Elem)) em.Ref(Elem) {
-        var p = list;
-        var next = em.Ref(Elem).NIL();
-        while (!p.isNIL()) {
-            const tmp = p.O().next;
-            p.O().next = next;
+    fn reverse(list: em.Ptr(Elem)) em.Ptr(Elem) {
+        var p: ?em.Ptr(Elem) = list;
+        var next: ?em.Ptr(Elem) = null;
+        while (p != null) {
+            const tmp = p.?.next;
+            p.?.next = next;
             next = p;
             p = tmp;
         }
-        return next;
+        return next.?;
     }
 
     pub fn run(arg: i16) Utils.sum_t {
@@ -131,47 +126,45 @@ pub const EM__TARG = struct {
         var found: u16 = 0;
         var missed: u16 = 0;
         var retval: Crc.sum_t = 0;
-        var _data: Data = undefined;
-        const data = em.Ref(Data).init(&_data);
-        data.O().idx = finder_idx;
+        var data = Data{ .idx = finder_idx };
         var i: u16 = 0;
         while (i < find_cnt) : (i += 1) {
-            data.O().val = @bitCast(i & 0xff);
-            var elem = find(list, data);
+            data.val = @bitCast(i & 0xff);
+            var elem = find(list, &data);
             list = reverse(list);
-            if (elem.isNIL()) {
+            if (elem == null) {
                 missed += 1;
-                const v: u16 = @bitCast(list.O().next.O().data.O().val);
+                const v: u16 = @bitCast(list.next.?.data.val);
                 retval += (v >> 8) & 0x1;
             } else {
                 found += 1;
-                const v: u16 = @bitCast(elem.O().data.O().val);
+                const v: u16 = @bitCast(elem.?.data.val);
                 if ((v & 0x1) != 0) {
                     retval += (v >> 9) & 0x1;
                 }
-                if (!elem.O().next.isNIL()) {
-                    const tmp = elem.O().next;
-                    elem.O().next = tmp.O().next;
-                    tmp.O().next = list.O().next;
-                    list.O().next = tmp;
+                if (elem.?.next != null) {
+                    const tmp = elem.?.next;
+                    elem.?.next = tmp.?.next;
+                    tmp.?.next = list.next;
+                    list.next = tmp;
                 }
             }
-            if (data.O().idx >= 0) data.O().idx += 1;
+            if (data.idx >= 0) data.idx += 1;
         }
         retval += found * 4 - missed;
         if (finder_idx > 0) list = sort(list, valCompare);
-        const remover = remove(list.O().next);
-        var finder = find(list, data);
-        if (finder.isNIL()) finder = list.O().next;
-        while (!finder.isNIL()) {
-            retval = Crc.add16(list.O().data.O().val, retval);
-            finder = finder.O().next;
+        const remover = remove(list.next.?);
+        var finder = find(list, &data);
+        if (finder == null) finder = list.next;
+        while (finder != null) {
+            retval = Crc.add16(list.data.val, retval);
+            finder = finder.?.next;
         }
-        unremove(remover, list.O().next);
+        unremove(remover, list.next.?);
         list = sort(list, idxCompare);
-        var e = list.O().next;
-        while (!e.isNIL()) : (e = e.O().next) {
-            retval = Crc.add16(list.O().data.O().val, retval);
+        var e = list.next;
+        while (e != null) : (e = e.?.next) {
+            retval = Crc.add16(list.data.val, retval);
         }
         return retval;
     }
@@ -180,82 +173,82 @@ pub const EM__TARG = struct {
         const seed = Utils.getSeed(1);
         var ki: u16 = 1;
         var kd: u16 = max_elems - 3;
-        var e = cur_head;
-        e.O().data.O().idx = 0;
-        e.O().data.O().val = @bitCast(@as(u16, 0x8080));
-        e = e.O().next;
+        var e: ?em.Ptr(Elem) = cur_head;
+        e.?.data.idx = 0;
+        e.?.data.val = @bitCast(@as(u16, 0x8080));
+        e = e.?.next;
         var cnt: u8 = 0;
-        while (!e.O().next.isNIL()) : (e = e.O().next) {
+        while (e.?.next != null) : (e = e.?.next) {
             var pat = (seed ^ kd) & 0xf;
             const dat = (pat << 3) | (kd & 0x7);
-            e.O().data.O().val = @bitCast((dat << 8) | dat);
+            e.?.data.val = @bitCast((dat << 8) | dat);
             kd -= 1;
             if (ki < (max_elems / 5)) {
-                e.O().data.O().idx = @bitCast(ki);
+                e.?.data.idx = @bitCast(ki);
                 ki += 1;
             } else {
                 pat = seed ^ ki;
                 ki += 1;
-                e.O().data.O().idx = @bitCast(@as(u16, 0x3fff) & (((ki & 0x7) << 8) | pat));
+                e.?.data.idx = @bitCast(@as(u16, 0x3fff) & (((ki & 0x7) << 8) | pat));
             }
             cnt += 1;
         }
-        e.O().data.O().idx = @bitCast(@as(u16, 0x7fff));
-        e.O().data.O().val = @bitCast(@as(u16, 0xffff));
+        e.?.data.idx = @bitCast(@as(u16, 0x7fff));
+        e.?.data.val = @bitCast(@as(u16, 0xffff));
         em.@"%%[c+]"();
         cur_head = sort(cur_head, idxCompare);
         em.@"%%[c-]"();
     }
 
-    fn sort(list: em.Ref(Elem), cmp: Comparator) em.Ref(Elem) {
-        var res = list;
+    fn sort(list: em.Ptr(Elem), cmp: Comparator) em.Ptr(Elem) {
+        var res: ?em.Ptr(Elem) = list;
         var insize: usize = 1;
-        var q: em.Ref(Elem) = undefined;
-        var e: em.Ref(Elem) = undefined;
+        var q: ?em.Ptr(Elem) = undefined;
+        var e: em.Ptr(Elem) = undefined;
         while (true) {
             var p = res;
-            res = em.Ref(Elem).NIL();
-            var tail = em.Ref(Elem).NIL();
+            res = null;
+            var tail: ?em.Ptr(Elem) = null;
             var nmerges: i32 = 0; // count number of merges we do in this pass
-            while (!p.isNIL()) {
+            while (p != null) {
                 nmerges += 1; // there exists a merge to be done
                 // step `insize' places along from p
                 q = p;
                 var psize: usize = 0;
                 for (0..insize) |_| {
                     psize += 1;
-                    q = q.O().next;
-                    if (q.isNIL()) break;
+                    q = q.?.next;
+                    if (q == null) break;
                 }
                 // if q hasn't fallen off end, we have two lists to merge
                 var qsize: usize = insize;
                 // now we have two lists; merge them
-                while (psize > 0 or (qsize > 0 and !q.isNIL())) {
+                while (psize > 0 or (qsize > 0 and q != null)) {
                     // decide whether next element of merge comes from p or q
                     if (psize == 0) {
                         // p is empty; e must come from q
-                        e = q;
-                        q = q.O().next;
+                        e = q.?;
+                        q = q.?.next;
                         qsize -= 1;
-                    } else if (qsize == 0 or q.isNIL()) {
+                    } else if (qsize == 0 or q == null) {
                         // q is empty; e must come from p.
-                        e = p;
-                        p = p.O().next;
+                        e = p.?;
+                        p = p.?.next;
                         psize -= 1;
-                    } else if (cmp(p.O().data, q.O().data) <= 0) {
+                    } else if (cmp(p.?.data, q.?.data) <= 0) {
                         // First element of p is lower (or same); e must come from p.
-                        e = p;
-                        p = p.O().next;
+                        e = p.?;
+                        p = p.?.next;
                         psize -= 1;
                     } else {
                         // First element of q is lower; e must come from q.
-                        e = q;
-                        q = q.O().next;
+                        e = q.?;
+                        q = q.?.next;
                         qsize -= 1;
                     }
                     // add the next element to the merged list
-                    if (!tail.isNIL()) {
-                        tail.O().next = e;
+                    if (tail != null) {
+                        tail.?.next = e;
                     } else {
                         res = e;
                     }
@@ -264,41 +257,41 @@ pub const EM__TARG = struct {
                 // now p has stepped `insize' places along, and q has too
                 p = q;
             }
-            tail.O().next = em.Ref(Elem).NIL();
+            tail.?.next = null;
             // If we have done only one merge, we're finished
             if (nmerges <= 1) break; // allow for nmerges==0, the empty list case
             // Otherwise repeat, merging lists twice the size
             insize *= 2;
         }
-        return res;
+        return res.?;
     }
 
-    fn unremove(removed: em.Ref(Elem), modified: em.Ref(Elem)) void {
-        const tmp = removed.O().data;
-        removed.O().data = modified.O().data;
-        modified.O().data = tmp;
-        removed.O().next = modified.O().next;
-        modified.O().next = removed;
+    fn unremove(removed: em.Ptr(Elem), modified: em.Ptr(Elem)) void {
+        const tmp = removed.data;
+        removed.data = modified.data;
+        modified.data = tmp;
+        removed.next = modified.next;
+        modified.next = removed;
     }
 
     // IdxComparator
 
-    fn idxCompare(a: em.Ref(Data), b: em.Ref(Data)) i32 {
-        const avu: u16 = @bitCast(a.O().val);
-        const bvu: u16 = @bitCast(b.O().val);
+    fn idxCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+        const avu: u16 = @bitCast(a.val);
+        const bvu: u16 = @bitCast(b.val);
         const sft: u4 = 8;
         const mhi: u16 = 0xff00;
         const mlo: u16 = 0x00ff;
-        a.O().val = @bitCast((avu & mhi) | (mlo & (avu >> sft)));
-        b.O().val = @bitCast((bvu & mhi) | (mlo & (bvu >> sft)));
-        return a.O().idx - b.O().idx;
+        a.val = @bitCast((avu & mhi) | (mlo & (avu >> sft)));
+        b.val = @bitCast((bvu & mhi) | (mlo & (bvu >> sft)));
+        return a.idx - b.idx;
     }
 
     // ValComparator
 
-    fn valCompare(a: em.Ref(Data), b: em.Ref(Data)) i32 {
-        const val1 = valCmpCalc(&a.O().val);
-        const val2 = valCmpCalc(&b.O().val);
+    fn valCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+        const val1 = valCmpCalc(&a.val);
+        const val2 = valCmpCalc(&b.val);
         // em.print("z: vcmp = {d}\n", .{val1 - val2});
         return @intCast(val1 - val2);
     }
