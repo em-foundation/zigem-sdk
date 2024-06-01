@@ -81,7 +81,6 @@ pub const EM__TARG = struct {
 
     fn isDigit(ch: u8) bool {
         return ch >= '0' and ch <= '9';
-        //return em.std.ascii.isDigit(ch);
     }
 
     pub fn kind() Utils.Kind {
@@ -92,9 +91,6 @@ pub const EM__TARG = struct {
         var str = pstr.*;
         var state = State.START;
         while (str[0] != 0 and state != State.INVALID) : (str += 1) {
-            // em.@"%%[a+]"();
-            // em.@"%%[>]"(state);
-            // em.@"%%[a-]"();
             const ch = str[0];
             if (ch == ',') {
                 str += 1;
@@ -169,7 +165,6 @@ pub const EM__TARG = struct {
                         state = .INVALID;
                         transcnt[ord(.INVALID)] += 1;
                     }
-                    //em.@"%%[a-]"();
                 },
             }
         }
@@ -218,7 +213,6 @@ pub const EM__TARG = struct {
             transcnt[i] = 0;
         }
         scan(&finalcnt, &transcnt);
-        // em.@"%%[c]"();
         scramble(Utils.getSeed(1), uarg);
         scan(&finalcnt, &transcnt);
         scramble(Utils.getSeed(2), uarg);
