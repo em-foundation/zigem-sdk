@@ -24,6 +24,7 @@ typedef int __copy_table_t;
 #include "inc/hw_memmap.h"
 #include "inc/hw_pmctl.h"
 #include "inc/hw_rtc.h"
+#include "inc/hw_systick.h"
 #include "inc/hw_types.h"
 #include "inc/hw_uart.h"
 #include "inc/hw_vims.h"

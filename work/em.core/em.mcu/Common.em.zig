@@ -19,6 +19,9 @@ pub const Mcu = x_Mcu.unwrap();
 pub const x_MsCounter = em__unit.proxy("MsCounter", em.Import.@"em.hal/MsCounterI");
 pub const MsCounter = x_MsCounter.unwrap();
 
+pub const x_UsCounter = em__unit.proxy("UsCounter", em.Import.@"em.hal/UsCounterI");
+pub const UsCounter = x_UsCounter.unwrap();
+
 pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {};

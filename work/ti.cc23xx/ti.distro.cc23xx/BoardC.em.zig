@@ -25,6 +25,7 @@ pub const Poller = em.Import.@"em.mcu/Poller";
 pub const SysLed = em__unit.Generate("SysLed", em.Import.@"em.utils/LedT");
 pub const SysLedPin = em__unit.Generate("SysLedPin", em.Import.@"ti.mcu.cc23xx/GpioT");
 pub const Uptimer = em.Import.@"ti.mcu.cc23xx/UptimerRtc";
+pub const UsCounter = em.Import.@"ti.mcu.cc23xx/UsCounterSystick";
 pub const WakeupTimer = em.Import.@"ti.mcu.cc23xx/WakeupRtc";
 
 pub const EM__HOST = struct {};
@@ -42,6 +43,7 @@ pub fn em__configureH() void {
     Common.x_Idle.set(Idle);
     Common.x_Mcu.set(Mcu);
     Common.x_MsCounter.set(MsCounter);
+    Common.x_UsCounter.set(UsCounter);
     DbgA.c_pin.set(23);
     DbgB.c_pin.set(25);
     DbgC.c_pin.set(1);
