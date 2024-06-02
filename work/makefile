@@ -35,7 +35,9 @@ targ:
 	@rm -f .out/main.out.o
 	@$(OBJCOPY) -O ihex .out/main.out .out/main.out.hex
 	@$(OBJDUMP) -h -d .out/main.out >.out/main.out.dis
-	@$(OBJDUMP) -h -t .out/main.out >.out/main.out.sym
+	@$(OBJDUMP) -t .out/main.out | tail -n +5 | sed -e 's/[FO] /  /' | sed -e 's/df /   /' >.out/main.out.sym
+	@sort -k1 .out/main.out.sym > .out/main.out.syma
+	@sort -k5 .out/main.out.sym > .out/main.out.symn
 	@$(OBJDUMP) -h .out/main.out
 
 load:
