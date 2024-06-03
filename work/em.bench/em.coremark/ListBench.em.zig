@@ -3,6 +3,7 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
 
+pub const Common = em.Import.@"em.mcu/Common";
 pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
@@ -120,6 +121,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
+        // em.@"%%[a-]"();
         var list = cur_head;
         const finder_idx = arg;
         const find_cnt = Utils.getSeed(3);
@@ -166,6 +168,7 @@ pub const EM__TARG = struct {
         while (e != null) : (e = e.?.next) {
             retval = Crc.add16(list.data.val, retval);
         }
+        // em.@"%%[a-]"();
         return retval;
     }
 
