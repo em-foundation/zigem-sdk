@@ -21,6 +21,7 @@ typedef int __copy_table_t;
 #include "inc/hw_ioc.h"
 #include "inc/hw_lgpt.h"
 #include "inc/hw_lgpt3.h"
+#include "inc/hw_lrfddbell.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_pmctl.h"
 #include "inc/hw_rtc.h"
