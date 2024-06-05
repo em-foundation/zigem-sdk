@@ -487,6 +487,8 @@ pub fn Template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
+pub fn cwd() []const u8 {}
+
 pub fn fail() void {
     switch (DOMAIN) {
         .HOST => {
@@ -549,6 +551,11 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .scope = unitScope(This),
         .upath = un,
     };
+}
+
+pub fn normalize(path: []const u8) []const u8 {
+    const res = std.fs.cwd().realpathAlloc(getHeap(), path) catch unreachable;
+    return res;
 }
 
 pub fn reg(adr: u32) *volatile u32 {
