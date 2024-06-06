@@ -371,16 +371,31 @@ pub const StringH = struct {
 };
 
 pub fn Table(comptime T: type) type {
-    return struct {
-        const Self = @This();
-        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
-        pub fn add(self: *Self, item: T) void {
-            self._list.append(item) catch fail();
-        }
-        pub fn items(self: *Self) []T {
-            return self._list.items;
-        }
-    };
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
+                pub const _em__builtin = {};
+                _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
+                pub fn add(self: *Self, item: T) void {
+                    self._list.append(item) catch fail();
+                }
+                pub fn items(self: *Self) []T {
+                    return self._list.items;
+                }
+                pub fn toString(self: Self) []const u8 {
+                    var res: []const u8 = sprint("&[_]{s}{{", .{mkTypeName(T)});
+                    for (self._list.items) |item| {
+                        res = sprint("{s} {s},", .{ res, toStringAux(item) });
+                    }
+                    return sprint("{s} }}", .{res});
+                }
+            };
+        },
+        .TARG => {
+            return []const T;
+        },
+    }
 }
 
 pub const text_t = []const u8;
@@ -607,8 +622,12 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
             return sprint("{s} }}", .{res});
         },
         .Pointer => |ptr_info| {
-            if (ptr_info.size == .Slice and ptr_info.child == u8) {
-                return sprint("\"{s}\"", .{v});
+            if (ptr_info.size == .Slice) {
+                var res: []const u8 = ".{";
+                for (0..v.len) |i| {
+                    res = sprint("{s} {s},", .{ res, toStringAux(v[i]) });
+                }
+                return sprint("{s} }}", .{res});
             } else {
                 return "<<ptr>>";
             }
