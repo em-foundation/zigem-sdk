@@ -597,7 +597,20 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
                 return "null";
             }
         },
-        .Bool, .Int, .ComptimeInt, .Float, .ComptimeFloat => {
+        .Int => {
+            if (ti.Int.signedness == .signed) {
+                return sprint("@as({s}, {d})", .{ tn, v });
+            } else if (ti.Int.bits <= 8) {
+                return sprint("@as({s}, 0x{X:0>2})", .{ tn, v });
+            } else if (ti.Int.bits <= 16) {
+                return sprint("@as({s}, 0x{X:0>4})", .{ tn, v });
+            } else if (ti.Int.bits <= 32) {
+                return sprint("@as({s}, 0x{X:0>8})", .{ tn, v });
+            } else {
+                return sprint("@as({s}, 0x{X:0>16})", .{ tn, v });
+            }
+        },
+        .Bool, .ComptimeInt, .Float, .ComptimeFloat => {
             return sprint("@as({s}, {any})", .{ tn, v });
         },
         .Enum => {
