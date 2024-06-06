@@ -2,6 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const RfPatch = em.Import.@"ti.radio.cc23xx/RfPatch";
+pub const RfRegs = em.Import.@"ti.radio.cc23xx/RfRegs";
 
 pub const EM__HOST = struct {};
 
@@ -37,6 +38,10 @@ pub const EM__TARG = struct {
         loadPatch(hal.LRFD_MCERAM_BASE, RfPatch.LRF_MCE_binary_genfsk[0..]);
         loadPatch(hal.LRFD_PBERAM_BASE, RfPatch.LRF_PBE_binary_generic[0..]);
         loadPatch(hal.LRFD_RFERAM_BASE, RfPatch.LRF_RFE_binary_genfsk[0..]);
+        // setup rfregs
+        RfRegs.setup();
+        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
     }
 };
 

@@ -1,13 +1,13 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
-pub const RegDesc = struct {
+pub const Desc = struct {
     off: u16,
     cnt: u8,
     inc: u8,
 };
 
-pub const c_desc_tab = em__unit.config("desc_tab", em.Table(RegDesc));
+pub const c_desc_tab = em__unit.config("desc_tab", em.Table(Desc));
 pub const c_val_tab = em__unit.config("val_tab", em.Table(u16));
 
 pub const EM__HOST = struct {
@@ -15,13 +15,13 @@ pub const EM__HOST = struct {
     pub fn em__constructH() void {
         const hdr = @embedFile("rcl_settings.h");
         var pre_flag = true;
-        var cur_desc: RegDesc = undefined;
+        var cur_desc: Desc = undefined;
         var cur_hwmod: []const u8 = "";
         var cur_addr: u16 = 0;
         var cur_val: u16 = 0;
         var it = em.std.mem.splitSequence(u8, hdr, "\n");
         _ = it.first();
-        var desc_tab = em.Table(RegDesc){};
+        var desc_tab = em.Table(Desc){};
         var val_tab = em.Table(u16){};
         while (it.next()) |ln| {
             if (pre_flag) {
@@ -41,9 +41,9 @@ pub const EM__HOST = struct {
             if (!em.std.mem.eql(u8, cur_hwmod, hwmod)) {
                 if (cur_hwmod.len != 0) desc_tab.add(cur_desc);
                 cur_hwmod = hwmod;
+                cur_desc.off = addr;
                 cur_desc.cnt = 0;
                 cur_desc.inc = if (em.std.mem.endsWith(u8, hwmod, "_RAM")) 1 else 2;
-                cur_desc.off = addr;
             }
             if (cur_addr != addr) {
                 if (cur_addr != 0) {
@@ -79,7 +79,23 @@ pub const EM__TARG = struct {
     const desc_tab = c_desc_tab.unwrap();
     const val_tab = c_val_tab.unwrap();
 
+    const LRF_BASE_ADDR: u32 = 0x40080000;
+    const PBE_RAM_BASE_ADDR: u32 = 0x40090000;
+
     pub fn em__run() void {
-        em.print("{d} {d}\n", .{ desc_tab.len, val_tab.len });
+        setup();
+    }
+
+    pub fn setup() void {
+        var src: [*]const u16 = val_tab.ptr;
+        for (desc_tab) |desc| {
+            const base = if (desc.inc == 1) PBE_RAM_BASE_ADDR else LRF_BASE_ADDR;
+            var dst: [*]u16 = @ptrFromInt(base + desc.off);
+            for (0..desc.cnt) |_| {
+                dst[0] = src[0];
+                src += 1;
+                dst += desc.inc;
+            }
+        }
     }
 };

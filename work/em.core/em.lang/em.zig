@@ -578,6 +578,11 @@ pub fn reg(adr: u32) *volatile u32 {
     return r;
 }
 
+pub fn reg16(adr: u32) *volatile u16 {
+    const r: *volatile u16 = @ptrFromInt(adr);
+    return r;
+}
+
 pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
 }
