@@ -1,18 +1,28 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
-pub const c_reg_init = em__unit.config("reg_init", em.Table(u16));
+pub const RegDesc = struct {
+    off: u16,
+    cnt: u8,
+    inc: u8,
+};
+
+pub const c_desc_tab = em__unit.config("desc_tab", em.Table(RegDesc));
+pub const c_val_tab = em__unit.config("val_tab", em.Table(u16));
 
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
         const hdr = @embedFile("rcl_settings.h");
         var pre_flag = true;
+        var cur_desc: RegDesc = undefined;
+        var cur_hwmod: []const u8 = "";
         var cur_addr: u16 = 0;
         var cur_val: u16 = 0;
         var it = em.std.mem.splitSequence(u8, hdr, "\n");
         _ = it.first();
-        var tab = em.Table(u16){};
+        var desc_tab = em.Table(RegDesc){};
+        var val_tab = em.Table(u16){};
         while (it.next()) |ln| {
             if (pre_flag) {
                 if (em.std.mem.startsWith(u8, ln, "// ----")) {
@@ -24,13 +34,23 @@ pub const EM__HOST = struct {
             var it2 = em.std.mem.tokenizeScalar(u8, ln, ' ');
             var col: [7][]const u8 = undefined;
             for (0..col.len) |i| col[i] = it2.next().?;
-            const ln_addr = parseHex(col[1][2..]);
-            //const ln_mod = col[2];
+            const addr = parseHex(col[1][2..]);
+            const hwmod = col[2];
             const bits = col[4][1 .. col[4].len - 1];
             const val: u16 = if (em.std.mem.eql(u8, col[6], "<TRIM>")) 0 else parseHex(col[6][2..]);
-            if (cur_addr != ln_addr) {
-                if (cur_addr != 0) tab.add(cur_val);
-                cur_addr = ln_addr;
+            if (!em.std.mem.eql(u8, cur_hwmod, hwmod)) {
+                if (cur_hwmod.len != 0) desc_tab.add(cur_desc);
+                cur_hwmod = hwmod;
+                cur_desc.cnt = 0;
+                cur_desc.inc = if (em.std.mem.endsWith(u8, hwmod, "_RAM")) 1 else 2;
+                cur_desc.off = addr;
+            }
+            if (cur_addr != addr) {
+                if (cur_addr != 0) {
+                    val_tab.add(cur_val);
+                    cur_desc.cnt += 1;
+                }
+                cur_addr = addr;
                 cur_val = 0;
             }
             const idx = em.std.mem.indexOf(u8, bits, ":");
@@ -38,8 +58,11 @@ pub const EM__HOST = struct {
             const lo_bit: u4 = @intCast(if (idx == null) hi_bit else parseDec(bits[idx.? + 1 ..]));
             cur_val |= (val << lo_bit);
         }
-        tab.add(cur_val);
-        c_reg_init.set(tab);
+        val_tab.add(cur_val);
+        cur_desc.cnt += 1;
+        desc_tab.add(cur_desc);
+        c_desc_tab.set(desc_tab);
+        c_val_tab.set(val_tab);
     }
 
     fn parseHex(s: []const u8) u16 {
@@ -53,9 +76,10 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const reg_init = c_reg_init.unwrap();
+    const desc_tab = c_desc_tab.unwrap();
+    const val_tab = c_val_tab.unwrap();
 
     pub fn em__run() void {
-        em.print("{d} {d}\n", .{ reg_init[0], reg_init[reg_init.len - 1] });
+        em.print("{d} {d}\n", .{ desc_tab.len, val_tab.len });
     }
 };
