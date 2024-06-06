@@ -622,12 +622,8 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
             return sprint("{s} }}", .{res});
         },
         .Pointer => |ptr_info| {
-            if (ptr_info.size == .Slice) {
-                var res: []const u8 = ".{";
-                for (0..v.len) |i| {
-                    res = sprint("{s} {s},", .{ res, toStringAux(v[i]) });
-                }
-                return sprint("{s} }}", .{res});
+            if (ptr_info.size == .Slice and ptr_info.child == u8) {
+                return sprint("\"{s}\"", .{v});
             } else {
                 return "<<ptr>>";
             }
