@@ -56,6 +56,6 @@ pub const EM__TARG = struct {
     const reg_init = c_reg_init.unwrap();
 
     pub fn em__run() void {
-        em.print("len = {d}\n", .{reg_init.len});
+        em.print("{d} {d}\n", .{ reg_init[0], reg_init[reg_init.len - 1] });
     }
 };
