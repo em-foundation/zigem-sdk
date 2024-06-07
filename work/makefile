@@ -4,7 +4,7 @@ host:
 	@rm -f .gen/targ.zig
 	@touch .gen/targ.zig
 	@rm -rf .out/*
-	@zig build-exe -femit-bin=.out/host-main.exe .main-host.zig
+	@zig build-exe -I. -femit-bin=.out/host-main.exe .main-host.zig
 	@.out/host-main.exe 
 	@zig fmt .gen/targ.zig 2>&1 >/dev/null
 
@@ -31,7 +31,7 @@ TARG_OPTS=\
 	-femit-bin=.out/main.out \
 
 targ:
-	@zig build-exe $(TARG_OPTS) --script .out/linkcmd.ld .out/startup.c .main-targ.zig
+	@zig build-exe -I. $(TARG_OPTS) --script .out/linkcmd.ld .out/startup.c .main-targ.zig
 	@rm -f .out/main.out.o
 	@$(OBJCOPY) -O ihex .out/main.out .out/main.out.hex
 	@$(OBJDUMP) -h -d .out/main.out >.out/main.out.dis
