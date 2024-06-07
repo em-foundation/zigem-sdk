@@ -17,7 +17,6 @@ typedef int __copy_table_t;
 #include "inc/hw_clkctl.h"
 #include "inc/hw_evtsvt.h"
 #include "inc/hw_evtull.h"
-#include "inc/hw_fcfg.h"
 #include "inc/hw_gpio.h"
 #include "inc/hw_ioc.h"
 #include "inc/hw_lgpt.h"
