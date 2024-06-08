@@ -47,22 +47,21 @@ pub const EM__TARG = struct {
         RfTrim.apply();
         // skip enable REFSYS
         reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
-
-        //    uint32_t opCfgVal =
-        //        (0 << PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
-        //        (2 << PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_START_S) |
-        //        (1 << PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
-        //        (1 << PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_RXREPEATNOK_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
-        //        (1 << PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
-        //        (0 << PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-        //    HWREGH_WRITE_LRF(LRFD_BUFRAM_BASE + PBE_GENERIC_RAM_O_OPCFG) = opCfgVal;
-        //    HWREGH_WRITE_LRF(LRFD_BUFRAM_BASE + PBE_GENERIC_RAM_O_NESB) = (PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
+        const opCfgVal: u32 =
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
+            (2 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATNOK_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = opCfgVal;
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
     }
 
     fn updateSyncWord(syncWord: u32) u32 {
@@ -77,6 +76,7 @@ pub const EM__TARG = struct {
         } else {
             syncWordOut = syncWord;
         }
+        em.print("{x} {x}\n", .{ syncWord, syncWordOut });
         return syncWordOut;
     }
 };
