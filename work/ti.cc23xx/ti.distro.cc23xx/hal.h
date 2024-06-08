@@ -22,10 +22,12 @@ typedef int __copy_table_t;
 #include "inc/hw_lgpt.h"
 #include "inc/hw_lgpt3.h"
 #include "inc/hw_lrfddbell.h"
+#include "inc/hw_lrfdmdm.h"
 #include "inc/hw_lrfdpbe.h"
 #include "inc/hw_lrfdrfe.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_pmctl.h"
+#include "inc/hw_pmud.h"
 #include "inc/hw_rtc.h"
 #include "inc/hw_systick.h"
 #include "inc/hw_types.h"
@@ -33,3 +35,4 @@ typedef int __copy_table_t;
 #include "inc/hw_vims.h"
 
 #include "inc/pbe_common_ram_regs.h"
+#include "inc/rfe_common_ram_regs.h"
