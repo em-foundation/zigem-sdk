@@ -56,6 +56,10 @@ fn getDistroPkg() []const u8 {
     return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
 }
 
+pub fn getOutRoot() []const u8 {
+    return out_root;
+}
+
 fn genEmStub() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
     const fmt =

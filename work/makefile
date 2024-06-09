@@ -38,6 +38,7 @@ targ:
 	@$(OBJDUMP) -t .out/main.out | tail -n +5 | sed -e 's/[FO] /  /' | sed -e 's/df /   /' >.out/main.out.sym
 	@sort -k1 .out/main.out.sym > .out/main.out.syma
 	@sort -k5 .out/main.out.sym > .out/main.out.symn
+	@sha256sum .out/main.out.hex | cut -c -8 >.out/main.out.sha32
 	@$(OBJDUMP) -h .out/main.out
 
 load:

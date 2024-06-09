@@ -2,6 +2,7 @@ const std = @import("std");
 
 const cli = @import("zig-cli");
 
+const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
 const Session = @import("./Session.zig");
 
@@ -98,30 +99,6 @@ const app = &cli.App{
     .version = "0.24.0",
 };
 
-fn dispSizes(lines: []const u8) ![4]usize {
-    var textSz: usize = 0;
-    var constSz: usize = 0;
-    var dataSz: usize = 0;
-    var bssSz: usize = 0;
-    var it = std.mem.splitSequence(u8, lines, "\n");
-    _ = it.first();
-    while (it.next()) |ln| {
-        if (!std.mem.startsWith(u8, ln, " ")) continue;
-        const idx = std.mem.indexOf(u8, ln, ".");
-        if (idx == null) continue;
-        const ln2 = ln[idx.? + 1 ..];
-        var it2 = std.mem.tokenizeScalar(u8, ln2, ' ');
-        const s1 = it2.next().?;
-        const s2 = it2.next().?;
-        const sz = try std.fmt.parseInt(u32, s2, 16);
-        if (std.mem.eql(u8, s1, "text")) textSz += sz;
-        if (std.mem.eql(u8, s1, "const")) constSz += sz;
-        if (std.mem.eql(u8, s1, "data")) dataSz += sz;
-        if (std.mem.eql(u8, s1, "bss")) bssSz += sz;
-    }
-    return .{ textSz, constSz, dataSz, bssSz };
-}
-
 fn doBuild() !void {
     const writer = std.io.getStdOut().writer();
     const path = params.unit;
@@ -141,7 +118,9 @@ fn doBuild() !void {
     }
     try writer.print("compiling TARG ...\n", .{});
     stdout = try execMake("TARG");
-    const sz = try dispSizes(stdout);
+    const sha32 = Fs.readFile(Fs.join(&.{ Session.getOutRoot(), "main.out.sha32" }));
+    try writer.print("    image sha: {s}", .{sha32}); // contains \n
+    const sz = try getSizes(stdout);
     try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
     const t2: f80 = @floatFromInt(std.time.milliTimestamp());
     try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
@@ -176,6 +155,30 @@ fn execMake(goal: []const u8) ![]const u8 {
         std.process.exit(1);
     }
     return proc.stdout;
+}
+
+fn getSizes(lines: []const u8) ![4]usize {
+    var textSz: usize = 0;
+    var constSz: usize = 0;
+    var dataSz: usize = 0;
+    var bssSz: usize = 0;
+    var it = std.mem.splitSequence(u8, lines, "\n");
+    _ = it.first();
+    while (it.next()) |ln| {
+        if (!std.mem.startsWith(u8, ln, " ")) continue;
+        const idx = std.mem.indexOf(u8, ln, ".");
+        if (idx == null) continue;
+        const ln2 = ln[idx.? + 1 ..];
+        var it2 = std.mem.tokenizeScalar(u8, ln2, ' ');
+        const s1 = it2.next().?;
+        const s2 = it2.next().?;
+        const sz = try std.fmt.parseInt(u32, s2, 16);
+        if (std.mem.eql(u8, s1, "text")) textSz += sz;
+        if (std.mem.eql(u8, s1, "const")) constSz += sz;
+        if (std.mem.eql(u8, s1, "data")) dataSz += sz;
+        if (std.mem.eql(u8, s1, "bss")) bssSz += sz;
+    }
+    return .{ textSz, constSz, dataSz, bssSz };
 }
 
 pub fn main() !void {
