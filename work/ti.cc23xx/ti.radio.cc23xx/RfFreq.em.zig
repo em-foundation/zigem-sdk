@@ -8,11 +8,11 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    const P_FACTOR = 9;
-    const P_SHIFT = 4;
-    const Q_MAGN_SHIFT = 6;
-    const FRAC_NUM_BITS = 28;
-    const FRAC_EXTRA_BITS = (32 - FRAC_NUM_BITS);
+    const P_FACTOR: u32 = 9;
+    const P_SHIFT: u32 = 4;
+    const Q_MAGN_SHIFT: u32 = 6;
+    const FRAC_NUM_BITS: u32 = 28;
+    const FRAC_EXTRA_BITS: u32 = (32 - FRAC_NUM_BITS);
 
     const fXtalInv = [_]u32{ 0x00001E52, 0x02CBD3F0 };
 
@@ -139,7 +139,8 @@ pub const EM__TARG = struct {
         }
         demFracP *= P_FACTOR;
         var demFracQ: u32 = ((pllMBase + ((1 << Q_MAGN_SHIFT) - 1)) >> Q_MAGN_SHIFT) * pre;
-        const num0Q: u32 = countLeadingZeros(@intCast(demFracQ >> 16));
+        const num0Q: u32 = countLeadingZeros(em.@"<>"(u16, demFracQ >> 16));
+        // TODO const pllMShift: i32 = em.@"<>"(i32, em.@"<>"(u32, Q_MAGN_SHIFT + FRAC_EXTRA_BITS - num0Q));
         const pllMShift: i32 = @bitCast(Q_MAGN_SHIFT + FRAC_EXTRA_BITS - num0Q);
         var pllMBaseRounded: u32 = undefined;
         if (pllMShift <= 0) {
