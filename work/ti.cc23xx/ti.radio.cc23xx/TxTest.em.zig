@@ -75,7 +75,7 @@ pub const EM__TARG = struct {
             reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0).* = syncWord >> 16;
             syncWordOut |= reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0BR).*;
             const syncWordLen = ((reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMSWQU0).* & hal.LRFDMDM_DEMSWQU0_REFLEN_M) + 1);
-            syncWordOut >>= @as(u5, @intCast(32 - syncWordLen));
+            syncWordOut >>= em.@"<>"(u5, 32 - syncWordLen);
         } else {
             syncWordOut = syncWord;
         }
