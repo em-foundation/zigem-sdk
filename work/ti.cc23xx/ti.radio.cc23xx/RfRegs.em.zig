@@ -54,8 +54,8 @@ pub const EM__HOST = struct {
                 cur_val = 0;
             }
             const idx = em.std.mem.indexOf(u8, bits, ":");
-            const hi_bit: u4 = @intCast(if (idx == null) parseDec(bits) else parseDec(bits[0..idx.?]));
-            const lo_bit: u4 = @intCast(if (idx == null) hi_bit else parseDec(bits[idx.? + 1 ..]));
+            const hi_bit = em.@"<>"(u4, if (idx == null) parseDec(bits) else parseDec(bits[0..idx.?]));
+            const lo_bit = em.@"<>"(u4, if (idx == null) hi_bit else parseDec(bits[idx.? + 1 ..]));
             cur_val |= (val << lo_bit);
         }
         val_tab.add(cur_val);
