@@ -3,6 +3,7 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const RfFreq = em.Import.@"ti.radio.cc23xx/RfFreq";
 pub const RfPatch = em.Import.@"ti.radio.cc23xx/RfPatch";
+pub const RfPower = em.Import.@"ti.radio.cc23xx/RfPower";
 pub const RfRegs = em.Import.@"ti.radio.cc23xx/RfRegs";
 pub const RfTrim = em.Import.@"ti.radio.cc23xx/RfTrim";
 
@@ -65,6 +66,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
         // program frequency
         RfFreq.program(2_440_000_000);
+        RfPower.program(5);
     }
 
     fn updateSyncWord(syncWord: u32) u32 {

@@ -1,6 +1,8 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
+pub const RfTemp = em.Import.@"ti.radio.cc23xx/RfTemp";
+
 const TrimTempLdoRtrim = packed struct {
     rtrimMinOffset: u2,
     rtrimMaxOffset: u2,
@@ -165,24 +167,6 @@ pub const EM__TARG = struct {
         return adjustment;
     }
 
-    fn getTemperature() i16 {
-        var temperature: i32 = @bitCast(reg(hal.PMUD_BASE + hal.PMUD_O_TEMP).*);
-        temperature = (temperature & (hal.PMUD_TEMP_INT_M | hal.PMUD_TEMP_FRAC_M)) >> hal.PMUD_TEMP_FRAC_S;
-        temperature = (temperature << (32 - (hal.PMUD_TEMP_INT_W + hal.PMUD_TEMP_FRAC_W))) >>
-            (32 - (hal.PMUD_TEMP_INT_W + hal.PMUD_TEMP_FRAC_W));
-        // scaleToReal
-        const p1: i32 = 1094172;
-        const p0: i32 = -7043721;
-        temperature = (temperature * p1) + p0;
-        const mask: i32 = (1 << 22);
-        if (temperature > 0) {
-            temperature = @divTrunc(temperature + mask, mask);
-        } else {
-            temperature = @divTrunc(temperature - mask, mask);
-        }
-        return @intCast(temperature);
-    }
-
     fn temperatureCompensateTrim() void {
         var divLdoTempOffset: u32 = 0;
         var tdcLdoTempOffset: u32 = 0;
@@ -190,7 +174,7 @@ pub const EM__TARG = struct {
         var rssiTempOffset: i32 = 0;
         var agcValOffset: i32 = 0;
 
-        const temperature = getTemperature();
+        const temperature = RfTemp.getTemperature();
         const tempLdoRtrim = TRIMS.trim3.lrfdrfeExtTrim1.tempLdoRtrim;
         const tempThreshLow = TEMPERATURE_MIN + @as(i16, @bitCast(@as(u16, tempLdoRtrim.tThrl) * (1 << EXTTRIM1_TEMPERATURE_SCALE_EXP)));
         const tempThreshHigh = TEMPERATURE_MAX - @as(i16, @bitCast(@as(u16, tempLdoRtrim.tThrh) * (1 << EXTTRIM1_TEMPERATURE_SCALE_EXP)));
