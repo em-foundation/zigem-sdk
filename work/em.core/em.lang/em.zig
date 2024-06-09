@@ -719,6 +719,30 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
     }
 }
 
+pub fn @"<>"(T: type, val: anytype) T {
+    const ti = @typeInfo(T);
+    const vi = @typeInfo(@TypeOf(val));
+    switch (vi) {
+        .Bool => {
+            return @as(T, @intFromBool(val));
+        },
+        .ComptimeInt => {
+            return @as(T, val);
+        },
+        .Int => {
+            if (ti.Int.signedness == vi.Int.signedness) {
+                return @as(T, @intCast(val));
+            } else {
+                const VT: std.builtin.Type = .{ .Int = .{ .bits = vi.Int.bits, .signedness = ti.Int.signedness } };
+                return @as(T, @intCast(@as(@Type(VT), @bitCast(val))));
+            }
+        },
+        else => {
+            return val;
+        },
+    }
+}
+
 pub fn @"%%[>]"(v: anytype) void {
     Console.wrN(v);
 }
