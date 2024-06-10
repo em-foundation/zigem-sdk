@@ -39,4 +39,5 @@ typedef int __copy_table_t;
 
 #include "inc/pbe_common_ram_regs.h"
 #include "inc/pbe_generic_ram_regs.h"
+#include "inc/pbe_generic_regdef_regs.h"
 #include "inc/rfe_common_ram_regs.h"

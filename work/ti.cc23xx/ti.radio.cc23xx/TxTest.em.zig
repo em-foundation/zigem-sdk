@@ -76,6 +76,8 @@ pub const EM__TARG = struct {
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x81; // done | error
         // wait for top FSM
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+        // exec cmd
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
     }
 
     fn loadPatch(dst: u32, src: []const u32) void {
