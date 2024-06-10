@@ -2,6 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const RfCtrl = em.Import.@"ti.radio.cc23xx/RfCtrl";
+pub const RfFifo = em.Import.@"ti.radio.cc23xx/RfFifo";
 pub const RfFreq = em.Import.@"ti.radio.cc23xx/RfFreq";
 pub const RfPatch = em.Import.@"ti.radio.cc23xx/RfPatch";
 pub const RfPower = em.Import.@"ti.radio.cc23xx/RfPower";
@@ -15,15 +16,14 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
+    var data = [_]u32{ 0x0203000F, 0x000A0001, 0x04030201, 0x08070605, 0x00000009 };
+
     pub fn em__run() void {
-        setup();
+        doTx();
     }
 
-    fn loadPatch(dst: u32, src: []const u32) void {
-        @memcpy(@as([*]u32, @ptrFromInt(dst)), src);
-    }
-
-    fn setup() void {
+    fn doTx() void {
+        reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
         // configure radio intrs 0,1,2
         // skip temperature config
         // enable all clocks
@@ -68,7 +68,26 @@ pub const EM__TARG = struct {
         // program frequency
         RfFreq.program(2_440_000_000);
         RfPower.program(5);
+        //asm volatile ("bkpt");
         RfCtrl.enable();
+        _ = RfFifo.prepare();
+        RfFifo.write(&data);
+        // enable interrupts
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x81; // done | error
+        // wait for top FSM
+        while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+    }
+
+    fn loadPatch(dst: u32, src: []const u32) void {
+        @memcpy(@as([*]u32, @ptrFromInt(dst)), src);
+    }
+
+    fn prepareFifo() u32 {
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
+        var fcfg0 = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
+        fcfg0 &= ~em.@"<>"(u32, hal.LRFDPBE_FCFG0_TXADEAL_M);
+        fcfg0 |= hal.LRFDPBE_FCFG0_TXACOM_M;
+        return reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWRITABLE).*;
     }
 
     fn updateSyncWord(syncWord: u32) u32 {
@@ -83,7 +102,6 @@ pub const EM__TARG = struct {
         } else {
             syncWordOut = syncWord;
         }
-        em.print("{x} {x}\n", .{ syncWord, syncWordOut });
         return syncWordOut;
     }
 };
