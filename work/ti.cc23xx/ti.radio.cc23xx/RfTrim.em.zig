@@ -231,7 +231,7 @@ pub const EM__TARG = struct {
             const sval = (RFE_SPARE1_AGC_VALUE_BM >> RFE_SPARE1_AGC_VALUE);
             if (agcVal > sval) agcVal = sval;
             spare1Val = (spare1Val & ~RFE_SPARE1_AGC_VALUE_BM) | @as(u32, @bitCast(agcVal << RFE_SPARE1_AGC_VALUE));
-            em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_SPARE1).* = @intCast(spare1Val);
         }
+        em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_SPARE1).* = @intCast(spare1Val);
     }
 };
