@@ -3,14 +3,14 @@ pub const em__unit = em.Module(@This(), .{});
 
 pub const RfTemp = em.Import.@"ti.radio.cc23xx/RfTemp";
 
-const TableEntry = struct {
-    power: struct {
+const TableEntry = packed struct {
+    power: packed struct {
         fraction: u1,
         dBm: i7,
     },
     tempCoeff: u8,
-    value: union {
-        bits: struct {
+    value: packed union {
+        bits: packed struct {
             reserved: u5,
             ib: u6,
             gain: u3,
@@ -59,6 +59,7 @@ pub const EM__TARG = struct {
         if (tempCoeff != 0) {
             var ib: i32 = value.bits.ib;
             const temperature = RfTemp.getTemperature();
+            // em.print("coeff = {d}, ib = {d}, temp = {d}\n", .{ tempCoeff, ib, temperature });
             const IB_MIN: i32 = 1;
             const IB_MAX = em.@"<>"(i32, hal.LRFDRFE_PA0_IB_MAX >> hal.LRFDRFE_PA0_IB_S);
             ib += @divTrunc((temperature - RfTemp.TXPOWER_REFERENCE_TEMPERATURE) * em.@"<>"(i16, tempCoeff), RfTemp.TXPOWER_TEMPERATURE_SCALING);
