@@ -12,17 +12,14 @@ pub const c_val_tab = em__unit.config("val_tab", em.Table(u16));
 
 pub const EM__HOST = struct {
     //
+    var desc_tab = em.Table(Desc){};
+    var val_tab = em.Table(u16){};
+
     pub fn em__constructH() void {
-        const hdr = @embedFile("rcl_settings.h");
+        const hdr = @embedFile("ti_radio_config.h");
         var pre_flag = true;
-        var cur_desc: Desc = undefined;
-        var cur_hwmod: []const u8 = "";
-        var cur_addr: u16 = 0;
-        var cur_val: u16 = 0;
         var it = em.std.mem.splitSequence(u8, hdr, "\n");
         _ = it.first();
-        var desc_tab = em.Table(Desc){};
-        var val_tab = em.Table(u16){};
         while (it.next()) |ln| {
             if (pre_flag) {
                 if (em.std.mem.startsWith(u8, ln, "// ----")) {
@@ -38,18 +35,36 @@ pub const EM__HOST = struct {
             const hwmod = col[2];
             const bits = col[4][1 .. col[4].len - 1];
             const val: u16 = if (em.std.mem.eql(u8, col[6], "<TRIM>")) 0 else parseHex(col[6][2..]);
+            Encoder.add(addr, hwmod, bits, val);
+        }
+        Encoder.finalize();
+        c_desc_tab.set(desc_tab);
+        c_val_tab.set(val_tab);
+    }
+
+    const Encoder = struct {
+        var cur_desc: Desc = undefined;
+        var cur_hwmod: []const u8 = "";
+        var cur_addr: u16 = 0;
+        var cur_val: u16 = 0;
+        var cur_serial: u16 = 0;
+        var prev_addr: u16 = 0;
+        pub fn add(addr: u16, hwmod: []const u8, bits: []const u8, val: u16) void {
             if (!em.std.mem.eql(u8, cur_hwmod, hwmod)) {
-                if (cur_hwmod.len != 0) desc_tab.add(cur_desc);
+                if (cur_hwmod.len != 0) {
+                    flush();
+                    desc_tab.add(cur_desc);
+                }
                 cur_hwmod = hwmod;
                 cur_desc.off = addr;
                 cur_desc.cnt = 0;
                 cur_desc.inc = if (em.std.mem.endsWith(u8, hwmod, "_RAM")) 1 else 2;
+                cur_addr = addr;
+                prev_addr = addr;
             }
             if (cur_addr != addr) {
-                if (cur_addr != 0) {
-                    val_tab.add(cur_val);
-                    cur_desc.cnt += 1;
-                }
+                if (cur_addr != 0) flush();
+                prev_addr = cur_addr;
                 cur_addr = addr;
                 cur_val = 0;
             }
@@ -58,12 +73,26 @@ pub const EM__HOST = struct {
             const lo_bit = em.@"<>"(u4, if (idx == null) hi_bit else parseDec(bits[idx.? + 1 ..]));
             cur_val |= (val << lo_bit);
         }
-        val_tab.add(cur_val);
-        cur_desc.cnt += 1;
-        desc_tab.add(cur_desc);
-        c_desc_tab.set(desc_tab);
-        c_val_tab.set(val_tab);
-    }
+        pub fn finalize() void {
+            flush();
+            desc_tab.add(cur_desc);
+        }
+
+        fn flush() void {
+            const diff = (cur_addr - prev_addr) >> em.@"<>"(u4, cur_desc.inc);
+            if (diff > 1) {
+                for (1..diff) |_| {
+                    cur_serial += 1;
+                    val_tab.add(0);
+                    cur_desc.cnt += 1;
+                }
+            }
+            em.print("[{d}] @{X:0>4} = {X:0>4} ({d})", .{ cur_serial, cur_addr, cur_val, diff });
+            cur_serial += 1;
+            val_tab.add(cur_val);
+            cur_desc.cnt += 1;
+        }
+    };
 
     fn parseHex(s: []const u8) u16 {
         return em.std.fmt.parseInt(u16, s, 16) catch unreachable;

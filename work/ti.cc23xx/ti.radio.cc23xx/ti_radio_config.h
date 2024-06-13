@@ -28,12 +28,8 @@
 // ****************************************************************
 
 // RCL commands
-extern RCL_CmdGenericTx rclPacketTxCmdGenericTx;
-extern RCL_CmdGenericRx rclPacketRxCmdGenericRx;
+extern RCL_CmdGenericTxTest rclPacketTxCmdGenericTxTest;
 
-// Register field definitions:
-#define RCL_REGISTER_FIELD_PBE_GENERIC_RAM_LENCFG_LENPOS          0x00
-#define RCL_REGISTER_FIELD_PBE_GENERIC_RAM_LENCFG_NUMLENBITS      0x08
 
 // LRF data structures
 extern const LRF_SwConfig LRF_swConfig;

@@ -55,15 +55,16 @@ pub const EM__TARG = struct {
     pub fn program(level: i8) void {
         const entry = findEntry(level);
         const tempCoeff = entry.tempCoeff;
+        var value = entry.value;
         if (tempCoeff != 0) {
-            var ib: i32 = entry.value.bits.ib;
+            var ib: i32 = value.bits.ib;
             const temperature = RfTemp.getTemperature();
             const IB_MIN: i32 = 1;
             const IB_MAX = em.@"<>"(i32, hal.LRFDRFE_PA0_IB_MAX >> hal.LRFDRFE_PA0_IB_S);
             ib += @divTrunc((temperature - RfTemp.TXPOWER_REFERENCE_TEMPERATURE) * em.@"<>"(i16, tempCoeff), RfTemp.TXPOWER_TEMPERATURE_SCALING);
             if (ib < IB_MIN) ib = IB_MIN else if (ib > IB_MAX) ib = IB_MAX;
-            // TODO txPowerEntry.value.ib = ib;
+            value.bits.ib = em.@"<>"(u6, ib);
         }
-        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_SPARE5).* = entry.value.raw;
+        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_SPARE5).* = value.raw;
     }
 };

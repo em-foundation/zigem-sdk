@@ -5,6 +5,18 @@ pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
     //
+    const hal = em.hal;
+
+    pub fn loadAll() void {
+        loadPatch(hal.LRFD_MCERAM_BASE, LRF_MCE_binary_genfsk[0..]);
+        loadPatch(hal.LRFD_PBERAM_BASE, LRF_PBE_binary_generic[0..]);
+        loadPatch(hal.LRFD_RFERAM_BASE, LRF_RFE_binary_genfsk[0..]);
+    }
+
+    fn loadPatch(dst: u32, src: []const u32) void {
+        @memcpy(@as([*]u32, @ptrFromInt(dst)), src);
+    }
+
     pub const LRF_MCE_binary_genfsk = [_]u32{
         0x7226604F, 0x7379722A, 0x72047279, 0x67687205, 0xB025C030, 0xFFC09000, 0xB0049020, 0x73077306,
         0x7000A004, 0x7312720E, 0x7313720F, 0x73147210, 0xA4D5A3AE, 0x03FF7000, 0x300517F7, 0x8080FF00,

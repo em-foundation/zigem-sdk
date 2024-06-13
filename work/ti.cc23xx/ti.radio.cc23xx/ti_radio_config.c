@@ -31,16 +31,16 @@
 // Whitening: Disabled
 // Packet Length Config: Variable, 8-bit length field
 
-// Command: Packet TX -CMD_GENERIC_TX - Generic transmit command
-RCL_CmdGenericTx rclPacketTxCmdGenericTx = 
+// Command: CMD_GENERIC_TX_TEST - Generic transmitter test command
+RCL_CmdGenericTxTest rclPacketTxCmdGenericTxTest = 
 {
-    .common.cmdId = RCL_CMDID_GENERIC_TX,
+    .common.cmdId = RCL_CMDID_GENERIC_TX_TEST,
     .common.phyFeatures = 0x0000,
     .common.scheduling = RCL_Schedule_Now,
     .common.status = RCL_CommandStatus_Idle,
     .common.conflictPolicy = RCL_ConflictPolicy_AlwaysInterrupt,
     .common.allowDelay = 0x00,
-    .common.runtime.handler = RCL_Handler_Generic_Tx,
+    .common.runtime.handler = RCL_Handler_Generic_TxTest,
     .common.runtime.client = (RCL_Client*) 0,
     .common.runtime.lrfCallbackMask.value = 0x00000000,
     .common.runtime.rclCallbackMask.value = 0x00000000,
@@ -50,43 +50,11 @@ RCL_CmdGenericTx rclPacketTxCmdGenericTx =
     .common.timing.relGracefulStopTime = 0,
     .common.timing.relHardStopTime = 0x00000000,
     .rfFrequency = 0x916F7200,
-    .txBuffers.head = (List_Elem*) 0,
-    .txBuffers.tail = (List_Elem*) 0,
-    .syncWord = 0x930B51DE,
     .txPower.fraction = 0x0,
     .txPower.dBm = 5,
-    .config.fsOff = 0x1
-};
-
-// Command: Packet RX -CMD_GENERIC_RX - Generic receive command
-RCL_CmdGenericRx rclPacketRxCmdGenericRx = 
-{
-    .common.cmdId = RCL_CMDID_GENERIC_RX,
-    .common.phyFeatures = 0x0000,
-    .common.scheduling = RCL_Schedule_Now,
-    .common.status = RCL_CommandStatus_Idle,
-    .common.conflictPolicy = RCL_ConflictPolicy_AlwaysInterrupt,
-    .common.allowDelay = 0x00,
-    .common.runtime.handler = RCL_Handler_Generic_Rx,
-    .common.runtime.client = (RCL_Client*) 0,
-    .common.runtime.lrfCallbackMask.value = 0x00000000,
-    .common.runtime.rclCallbackMask.value = 0x00000000,
-    .common.runtime.callback = (RCL_Callback) 0,
-    .common.timing.absStartTime = 0x00000000,
-    .common.timing.relMinTime = 0x00000000,
-    .common.timing.relGracefulStopTime = 0,
-    .common.timing.relHardStopTime = 0x00000000,
-    .rfFrequency = 0x916F7200,
-    .rxBuffers.head = (List_Elem*) 0,
-    .rxBuffers.tail = (List_Elem*) 0,
-    .stats = (RCL_StatsGeneric*) 0,
-    .syncWordA = 0x930B51DE,
-    .syncWordB = 0x12345678,
-    .maxPktLen = 0x00FF,
-    .config.repeated = 0x1,
-    .config.disableSyncA = 0x0,
-    .config.disableSyncB = 0x1,
-    .config.discardRxPackets = 0x0,
+    .config.txWord = 0x0000,
+    .config.whitenMode = 0x0,
+    .config.sendCw = 0x1,
     .config.fsOff = 0x1
 };
 
