@@ -121,6 +121,6 @@ pub const EM__HOST = struct {
     ;
 
     pub fn em__generateH() void {
-        em.writeFile(em.out_root, "linkcmd.ld", sram_txt);
+        em.writeFile(em.out_root, "linkcmd.ld", flash_txt);
     }
 };

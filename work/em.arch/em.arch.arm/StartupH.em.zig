@@ -12,7 +12,7 @@ pub const EM__HOST = struct {
 
     fn genArmStartup() void {
         const txt =
-            \\#define __EM_BOOT_FLASH__ 1
+            \\#define __EM_BOOT_FLASH__ 0
             \\
             \\#include <stdbool.h>
             \\#include <stdint.h>
