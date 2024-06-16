@@ -2,7 +2,8 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
-pub const BusyWait = em.Import.@"em__distro/BoardC".BusyWait;
+pub const Common = em.Import.@"em.mcu/Common";
+pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 pub const RfCtrl = em.Import.@"ti.radio.cc23xx/RfCtrl";
 pub const RfFifo = em.Import.@"ti.radio.cc23xx/RfFifo";
 pub const RfFreq = em.Import.@"ti.radio.cc23xx/RfFreq";
@@ -68,16 +69,16 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PATTERN).* = 0;
         // sendCw
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_MODCTRL).* |= hal.LRFDMDM_MODCTRL_TONEINSERT_M;
-        asm volatile ("bkpt");
         RfCtrl.enable();
+        _ = RfFifo.prepare();
         // enable interrupts
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x8001; // done | error
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x20008001; // systim0 | error done
         // wait for top FSM
+        asm volatile ("bkpt");
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         // exec cmd
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
         AppLed.on();
-        BusyWait.wait(20_000_000);
-        AppLed.off();
+        FiberMgr.run();
     }
 };

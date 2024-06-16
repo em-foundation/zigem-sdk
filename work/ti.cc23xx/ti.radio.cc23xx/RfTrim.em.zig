@@ -219,7 +219,8 @@ pub const EM__TARG = struct {
         const minRtrim: u32 = em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_RTRIMMIN).*;
         if (rtrim < minRtrim) rtrim = minRtrim;
         em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_DCO).* |= @intCast(rtrim << hal.LRFDRFE_DCO_TAILRESTRIM_S);
-        var rssiOffset: i32 = TRIMS.trim4.rssiOffset;
+        var rssiOffset: i32 = em.@"<>"(i32, TRIMS.trim4.rssiOffset);
+        if (TRIMS.revision == 4 and rssiOffset <= -4) rssiOffset += 5;
         rssiOffset += rssiTempOffset;
         rssiOffset += em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_PHYRSSIOFFSET).*;
         em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSIOFFSET).* = @intCast(rssiOffset);

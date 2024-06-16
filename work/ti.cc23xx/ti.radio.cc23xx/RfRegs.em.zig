@@ -87,7 +87,7 @@ pub const EM__HOST = struct {
                     cur_desc.cnt += 1;
                 }
             }
-            em.print("[{d}] @{X:0>4} = {X:0>4} ({d})", .{ cur_serial, cur_addr, cur_val, diff });
+            // em.print("[{d}] @{X:0>4} = {X:0>4} ({d})", .{ cur_serial, cur_addr, cur_val, diff });
             cur_serial += 1;
             val_tab.add(cur_val);
             cur_desc.cnt += 1;
