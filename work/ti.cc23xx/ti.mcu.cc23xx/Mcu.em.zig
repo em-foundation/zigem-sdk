@@ -50,7 +50,7 @@ pub const EM__TARG = struct {
         reg(hal.CKMD_BASE + hal.CKMD_O_LFINCOVR).* = 0x001E8480 | hal.CKMD_LFINCOVR_OVERRIDE_M;
         reg(hal.CKMD_BASE + hal.CKMD_O_LFCLKSEL).* = hal.CKMD_LFCLKSEL_MAIN_LFXT;
         reg(hal.CKMD_BASE + hal.CKMD_O_LFXTCTL).* = hal.CKMD_LFXTCTL_EN;
-        reg(hal.CKMD_BASE + hal.CKMD_O_IMSET).* = hal.CKMD_IMASK_LFCLKGOOD;
+        reg(hal.CKMD_BASE + hal.CKMD_O_IMSET).* = hal.CKMD_IMSET_HFXTFAULT | hal.CKMD_IMSET_TRACKREFLOSS | hal.CKMD_IMASK_LFCLKGOOD;
         // LFOSC
         //reg(hal.CKMD_BASE + hal.CKMD_O_TRIM1).* |= hal.CKMD_TRIM1_NABIAS_LFOSC;
         //reg(hal.CKMD_BASE + hal.CKMD_O_LFCLKSEL).* = hal.CKMD_LFCLKSEL_MAIN_LFOSC;
