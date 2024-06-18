@@ -1,6 +1,9 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
+pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
+pub const Common = em.Import.@"em.mcu/Common";
+pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 pub const RfCtrl = em.Import.@"ti.radio.cc23xx/RfCtrl";
 pub const RfFifo = em.Import.@"ti.radio.cc23xx/RfFifo";
 pub const RfFreq = em.Import.@"ti.radio.cc23xx/RfFreq";
@@ -23,30 +26,11 @@ pub const EM__TARG = struct {
     }
 
     fn doTx() void {
-        reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
-        // configure radio intrs 0,1,2
-        // skip temperature config
-        // enable all clocks
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_CLKCTL).* =
-            hal.LRFDDBELL_CLKCTL_BUFRAM_M |
-            hal.LRFDDBELL_CLKCTL_DSBRAM_M |
-            hal.LRFDDBELL_CLKCTL_RFERAM_M |
-            hal.LRFDDBELL_CLKCTL_MCERAM_M |
-            hal.LRFDDBELL_CLKCTL_PBERAM_M |
-            hal.LRFDDBELL_CLKCTL_RFE_M |
-            hal.LRFDDBELL_CLKCTL_MDM_M |
-            hal.LRFDDBELL_CLKCTL_PBE_M;
-        // enable high-perf clock buffer
-        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_HPBUFEN;
-        // load patches
         RfPatch.loadAll();
-        // setup rfregs
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
-        // apply trim
         RfTrim.apply();
-        // skip enable REFSYS
         reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
         const opCfgVal: u32 =
             (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
@@ -66,16 +50,18 @@ pub const EM__TARG = struct {
         // program frequency
         RfFreq.program(2_440_000_000);
         RfPower.program(5);
-        //asm volatile ("bkpt");
         RfCtrl.enable();
         _ = RfFifo.prepare();
         RfFifo.write(&data);
         // enable interrupts
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x81; // done | error
         // wait for top FSM
+        asm volatile ("bkpt");
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         // exec cmd
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
+        Common.GlobalInterrupts.enable();
+        Common.Idle.exec();
     }
 
     fn prepareFifo() u32 {

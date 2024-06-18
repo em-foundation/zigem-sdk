@@ -20,26 +20,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     pub fn em__run() void {
-        reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
-        reg(hal.PMUD_BASE + hal.PMUD_O_CTL).* = hal.PMUD_CTL_CALC_EN | hal.PMUD_CTL_MEAS_EN | hal.PMUD_CTL_HYST_EN_DIS;
-
-        // configure radio intrs 0,1,2
-        // skip temperature config
-        // enable all clocks
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_CLKCTL).* =
-            hal.LRFDDBELL_CLKCTL_BUFRAM_M |
-            hal.LRFDDBELL_CLKCTL_DSBRAM_M |
-            hal.LRFDDBELL_CLKCTL_RFERAM_M |
-            hal.LRFDDBELL_CLKCTL_MCERAM_M |
-            hal.LRFDDBELL_CLKCTL_PBERAM_M |
-            hal.LRFDDBELL_CLKCTL_RFE_M |
-            hal.LRFDDBELL_CLKCTL_MDM_M |
-            hal.LRFDDBELL_CLKCTL_PBE_M;
-        // enable high-perf clock buffer
-        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_HPBUFEN;
-        // load patches
         RfPatch.loadAll();
-        // setup rfregs
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
@@ -62,23 +43,23 @@ pub const EM__TARG = struct {
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = opCfgVal;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
-        // program frequency
-        RfFreq.program(2_440_000_000);
         RfPower.program(5);
         // txWord
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PATTERN).* = 0;
         // sendCw
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_MODCTRL).* |= hal.LRFDMDM_MODCTRL_TONEINSERT_M;
         RfCtrl.enable();
-        _ = RfFifo.prepare();
+        RfFreq.program(2_440_000_000);
+        // _ = RfFifo.prepare();
         // enable interrupts
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x20008001; // systim0 | error done
         // wait for top FSM
-        asm volatile ("bkpt");
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         // exec cmd
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
         AppLed.on();
+        Common.BusyWait.wait(1_000_000);
+        AppLed.off();
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
         FiberMgr.run();
     }
 };
