@@ -13,7 +13,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     pub fn em__run() void {
-        RadioDriver.setup();
-        RadioDriver.startTx();
+        RadioDriver.setup(.CW);
+        RadioDriver.startCw();
     }
 };

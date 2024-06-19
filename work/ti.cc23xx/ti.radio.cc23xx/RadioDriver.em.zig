@@ -1,7 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
 
-pub const RfCtrl = em.Import.@"ti.radio.cc23xx/RfCtrl";
 pub const RfFifo = em.Import.@"ti.radio.cc23xx/RfFifo";
 pub const RfFreq = em.Import.@"ti.radio.cc23xx/RfFreq";
 pub const RfPatch = em.Import.@"ti.radio.cc23xx/RfPatch";
@@ -10,6 +9,8 @@ pub const RfRegs = em.Import.@"ti.radio.cc23xx/RfRegs";
 pub const RfTrim = em.Import.@"ti.radio.cc23xx/RfTrim";
 
 pub const Handler = struct {};
+
+pub const Mode = enum { IDLE, TX, CW };
 
 pub const EM__HOST = struct {};
 
@@ -35,44 +36,103 @@ pub const EM__TARG = struct {
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_HPBUFEN;
     }
 
-    pub fn setup() void {
+    fn enable() void {
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* = 0;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_INIT).* = hal.LRFDPBE_INIT_MDMF_M | hal.LRFDPBE_INIT_TOPSM_M;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_ENABLE).* = hal.LRFDPBE_ENABLE_MDMF_M | hal.LRFDPBE_ENABLE_TOPSM_M;
+        reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_INIT).* = hal.LRFDMDM_INIT_TXRXFIFO_M | hal.LRFDMDM_INIT_TOPSM_M;
+        reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_ENABLE).* = hal.LRFDMDM_ENABLE_TXRXFIFO_M | hal.LRFDMDM_ENABLE_TOPSM_M;
+        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_INIT).* = hal.LRFDRFE_INIT_TOPSM_M;
+        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_ENABLE).* = hal.LRFDRFE_ENABLE_TOPSM_M;
+    }
+
+    fn prepareFifo() u32 {
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
+        var fcfg0 = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
+        fcfg0 &= ~em.@"<>"(u32, hal.LRFDPBE_FCFG0_TXADEAL_M);
+        fcfg0 |= hal.LRFDPBE_FCFG0_TXACOM_M;
+        return reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWRITABLE).*;
+    }
+
+    pub fn setup(mode: Mode) void {
         RfPatch.loadAll();
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
         RfTrim.apply();
-        // reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x930B_51DE;
-        const opCfgVal: u32 =
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
-            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
-            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = opCfgVal;
+        var cfg_val: u32 = 0;
+        switch (mode) {
+            .CW => {
+                cfg_val =
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+            },
+            .TX => {
+                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x930B_51DE; // TODO use updateSyncWord()
+                cfg_val =
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
+                    (2 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+            },
+            .IDLE => {},
+        }
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
+        enable();
+        RfFreq.program(2_440_000_000);
         RfPower.program(5);
     }
 
-    pub fn startTx() void {
-        // txWord
+    pub fn startCw() void {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PATTERN).* = 0;
-        // sendCw
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_MODCTRL).* |= hal.LRFDMDM_MODCTRL_TONEINSERT_M;
-        RfCtrl.enable();
-        RfFreq.program(2_440_000_000);
-        // _ = RfFifo.prepare();
-        // enable interrupts
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x20008001; // systim0 | error done
-        // wait for top FSM
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         const time = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = time + 1000;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
+    }
+
+    pub fn startTx(word_buf: []const u32) void {
+        _ = RfFifo.prepare();
+        RfFifo.write(word_buf);
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
+        while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+        const time = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
+        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = time + 1000;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
+        while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
+    }
+
+    fn updateSyncWord(syncWord: u32) u32 {
+        var syncWordOut: u32 = undefined;
+        if ((em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PKTCFG).* & hal.PBE_GENERIC_RAM_PKTCFG_HDRORDER_M) != 0) {
+            reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0).* = syncWord & 0x0000FFFF;
+            syncWordOut = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0BR).* << 16;
+            reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0).* = syncWord >> 16;
+            syncWordOut |= reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0BR).*;
+            const syncWordLen = ((reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMSWQU0).* & hal.LRFDMDM_DEMSWQU0_REFLEN_M) + 1);
+            syncWordOut >>= em.@"<>"(u5, 32 - syncWordLen);
+        } else {
+            syncWordOut = syncWord;
+        }
+        return syncWordOut;
     }
 };
