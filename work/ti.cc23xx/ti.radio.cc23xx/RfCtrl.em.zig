@@ -10,6 +10,7 @@ pub const EM__TARG = struct {
 
     pub fn em__startup() void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
+        while ((reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKCFG0).* & hal.CLKCTL_CLKCFG0_LRFD_M) != hal.CLKCTL_CLKCFG0_LRFD_CLK_EN) {}
         reg(hal.PMUD_BASE + hal.PMUD_O_CTL).* = hal.PMUD_CTL_CALC_EN | hal.PMUD_CTL_MEAS_EN | hal.PMUD_CTL_HYST_EN_DIS;
         while ((reg(hal.PMUD_BASE + hal.PMUD_O_TEMPUPD).* & hal.PMUD_TEMPUPD_STA_M) != hal.PMUD_TEMPUPD_STA_M) {}
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_CLKCTL).* =

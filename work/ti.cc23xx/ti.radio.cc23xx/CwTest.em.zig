@@ -29,6 +29,7 @@ pub const EM__TARG = struct {
         // skip enable REFSYS
         // no sync word
         // reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x930B_51DE;
+
         const opCfgVal: u32 =
             (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
             (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
@@ -55,11 +56,11 @@ pub const EM__TARG = struct {
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x20008001; // systim0 | error done
         // wait for top FSM
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
-        // exec cmd
         AppLed.on();
-        Common.BusyWait.wait(1_000_000);
+        Common.BusyWait.wait(100_000);
         AppLed.off();
+        const time = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
+        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = time + 1000;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
-        FiberMgr.run();
     }
 };

@@ -33,6 +33,7 @@ typedef int __copy_table_t;
 #include "inc/hw_pmud.h"
 #include "inc/hw_rtc.h"
 #include "inc/hw_systick.h"
+#include "inc/hw_systim.h"
 #include "inc/hw_types.h"
 #include "inc/hw_uart.h"
 #include "inc/hw_vims.h"
