@@ -26,7 +26,6 @@ pub const EM__TARG = struct {
         const fifoStart = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG1).* & hal.LRFDPBE_FCFG1_TXSTRT_M) >> hal.LRFDPBE_FCFG1_TXSTRT_S) << 2;
         const writePointer = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWP).* & ~em.@"<>"(u32, 0x0003);
         var fifoWritePtr: [*]volatile u32 = @ptrFromInt(TXF_UNWRAPPED_BASE_ADDR + fifoStart + writePointer);
-        em.print("fs = {x}, wp = {x}, fwp = {x}\n", .{ fifoStart, writePointer, @intFromPtr(fifoWritePtr) });
         for (data) |d| {
             fifoWritePtr[0] = d;
             fifoWritePtr += 1;
@@ -34,7 +33,6 @@ pub const EM__TARG = struct {
         var index = writePointer + (data.len * 4);
         const fifosz = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG2).* & hal.LRFDPBE_FCFG2_TXSIZE_M) >> hal.LRFDPBE_FCFG2_TXSIZE_S) << 2;
         if (index >= fifosz) index -= fifosz;
-        em.print("idx = {d}\n", .{index});
         writeFifoPtr(index, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWP));
     }
 
@@ -45,7 +43,7 @@ pub const EM__TARG = struct {
         _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
         _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
         reg(regAddr).* = value;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = em.@"<>"(u16, ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FSTAT) & 0x0FFF) >> 2);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = em.@"<>"(u16, ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2);
         Common.GlobalInterrupts.restore(key);
     }
 };
