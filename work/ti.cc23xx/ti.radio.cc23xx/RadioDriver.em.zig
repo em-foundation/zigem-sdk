@@ -77,7 +77,7 @@ pub const EM__TARG = struct {
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
             },
             .TX => {
-                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x930B_51DE; // TODO use updateSyncWord()
+                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
                 cfg_val =
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
@@ -113,7 +113,8 @@ pub const EM__TARG = struct {
     pub fn startTx(word_buf: []const u32) void {
         _ = RfFifo.prepare();
         RfFifo.write(word_buf);
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
+        // asm volatile ("bkpt");
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // systim | done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         const time = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = time + 1000;

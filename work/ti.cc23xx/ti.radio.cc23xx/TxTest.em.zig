@@ -12,7 +12,7 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    var data = [_]u32{ 0x0203000F, 0x000A0001, 0x04030201, 0x08070605, 0x00000009 };
+    var data = [_]u32{ 0x0203000F, 0x000A0001, 0x04030201, 0x08070605, 0x00000A09 };
 
     pub fn em__run() void {
         RadioDriver.setup(.TX);
