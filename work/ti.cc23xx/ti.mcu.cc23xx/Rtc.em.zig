@@ -23,8 +23,7 @@ pub const EM__TARG = struct {
     var cur_handler: ?em.CB(Handler) = null;
 
     pub fn em__startup() void {
-        // set in Mcu.startup();
-        // reg(hal.CKMD_BASE + hal.CKMD_O_LFINCOVR).* = 0x80000000 + (1 << RES_BITS);
+        reg(hal.CKMD_BASE + hal.CKMD_O_LFINCOVR).* = 0x80000000 + (1 << RES_BITS);
         reg(hal.RTC_BASE + hal.RTC_O_CTL).* = hal.RTC_CTL_RST;
         reg(hal.EVTSVT_BASE + hal.EVTSVT_O_CPUIRQ0SEL).* = hal.EVTSVT_CPUIRQ0SEL_PUBID_AON_RTC_COMB;
         hal.NVIC_EnableIRQ(hal.CPUIRQ0_IRQn);
