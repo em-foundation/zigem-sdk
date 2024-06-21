@@ -3,8 +3,11 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/IdleI",
 });
 
+pub const Hapi = em.Import.@"ti.mcu.cc23xx/Hapi";
+
 pub const EM__HOST = struct {
     //
+    pub fn setWaitOnly(_: bool) void {} // TODO why????
 };
 
 pub const EM__TARG = struct {
@@ -12,11 +15,44 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
+    var wait_only: bool = false;
+
     pub fn em__startup() void {
         em.@"%%[b+]"();
-        const tmp = reg(hal.PMCTL_BASE + hal.PMCTL_O_VDDRCTL).* & hal.PMCTL_VDDRCTL_SELECT; // LDO
-        reg(hal.PMCTL_BASE + hal.PMCTL_O_VDDRCTL).* = tmp | hal.PMCTL_VDDRCTL_SELECT_DCDC;
+        // const tmp = reg(hal.PMCTL_BASE + hal.PMCTL_O_VDDRCTL).* & hal.PMCTL_VDDRCTL_SELECT; // LDO
+        // reg(hal.PMCTL_BASE + hal.PMCTL_O_VDDRCTL).* = tmp | hal.PMCTL_VDDRCTL_SELECT_DCDC;
+        // reg(hal.EVTULL_BASE + hal.EVTULL_O_WKUPMASK).* = hal.EVTULL_WKUPMASK_AON_RTC_COMB | hal.EVTULL_WKUPMASK_AON_IOC_COMB;
+        reg(hal.PMCTL_BASE + hal.PMCTL_O_VDDRCTL).* = hal.PMCTL_VDDRCTL_SELECT; // LDO
         reg(hal.EVTULL_BASE + hal.EVTULL_O_WKUPMASK).* = hal.EVTULL_WKUPMASK_AON_RTC_COMB | hal.EVTULL_WKUPMASK_AON_IOC_COMB;
+    }
+
+    fn doSleep() void {
+        em.@"%%[b:]"(1);
+        em.@"%%[b-]"();
+        reg(hal.CKMD_BASE + hal.CKMD_O_LDOCTL).* = 0x0;
+        set_PRIMASK(1);
+        Hapi.enterStandby(0);
+        asm volatile ("wfi");
+        em.@"%%[b+]"();
+        set_PRIMASK(0);
+
+        //    for cb in sleepEnterCbTab
+        //        cb()
+        //    end
+        //    %%[b:2]
+        //    %%[b-]
+        //    Debug.sleepEnter()
+        //    ^^HWREG(CKMD_BASE + CKMD_O_LDOCTL)^^ = 0x0
+        //    ^^__set_PRIMASK(1)^^
+        //    ^^HapiEnterStandby(NULL)^^
+        //    Debug.sleepLeave()
+        //    %%[b+]
+        //    for cb in sleepLeaveCbTab
+        //        cb()
+        //    end
+        //    ^^__set_PRIMASK(0)^^
+        //
+
     }
 
     fn doWait() void {
@@ -29,7 +65,15 @@ pub const EM__TARG = struct {
     }
 
     pub fn exec() void {
-        doWait();
+        if (wait_only) {
+            doWait();
+        } else {
+            doSleep();
+        }
+    }
+
+    pub fn setWaitOnly(flag: bool) void {
+        wait_only = flag;
     }
 
     fn set_PRIMASK(m: u32) void {

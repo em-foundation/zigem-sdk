@@ -3,6 +3,7 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/OneShotMilliI",
 });
 
+pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 
 pub const Handler = em__unit.inherits.Handler;
@@ -16,6 +17,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
+
     const hal = em.hal;
     const reg = em.reg;
 
@@ -24,6 +26,7 @@ pub const EM__TARG = struct {
 
     pub fn disable() void {
         cur_fxn = null;
+        Idle.setWaitOnly(false);
         hal.NVIC_DisableIRQ(hal.LGPT3_COMB_IRQn);
         reg(hal.LGPT3_BASE + hal.LGPT_O_ICLR).* = hal.LGPT_ICLR_TGT;
     }
@@ -31,6 +34,7 @@ pub const EM__TARG = struct {
     pub fn enable(msecs: u32, handler: em.CB(Handler), arg: em.ptr_t) void {
         cur_fxn = handler;
         cur_arg = arg;
+        Idle.setWaitOnly(true);
         hal.NVIC_EnableIRQ(hal.LGPT3_COMB_IRQn);
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LGPT3;
         reg(hal.LGPT3_BASE + hal.LGPT_O_IMSET).* = hal.LGPT_IMSET_TGT;
