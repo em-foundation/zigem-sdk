@@ -10,12 +10,20 @@ pub fn functionSelect(select: u8) void {
     return;
 }
 
+pub fn makeInput() void {
+    return;
+}
+
 pub fn makeOutput() void {
     return;
 }
 
 pub fn pinId() i16 {
     return -1;
+}
+
+pub fn reset() void {
+    return;
 }
 
 pub fn set() void {

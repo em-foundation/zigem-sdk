@@ -3,6 +3,7 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/IdleI",
 });
 
+pub const Debug = em.Import.@"em.lang/Debug";
 pub const Hapi = em.Import.@"ti.mcu.cc23xx/Hapi";
 
 pub const EM__HOST = struct {
@@ -29,30 +30,13 @@ pub const EM__TARG = struct {
     fn doSleep() void {
         em.@"%%[b:]"(1);
         em.@"%%[b-]"();
+        Debug.reset();
         reg(hal.CKMD_BASE + hal.CKMD_O_LDOCTL).* = 0x0;
         set_PRIMASK(1);
         Hapi.enterStandby(0);
-        asm volatile ("wfi");
+        Debug.startup();
         em.@"%%[b+]"();
         set_PRIMASK(0);
-
-        //    for cb in sleepEnterCbTab
-        //        cb()
-        //    end
-        //    %%[b:2]
-        //    %%[b-]
-        //    Debug.sleepEnter()
-        //    ^^HWREG(CKMD_BASE + CKMD_O_LDOCTL)^^ = 0x0
-        //    ^^__set_PRIMASK(1)^^
-        //    ^^HapiEnterStandby(NULL)^^
-        //    Debug.sleepLeave()
-        //    %%[b+]
-        //    for cb in sleepLeaveCbTab
-        //        cb()
-        //    end
-        //    ^^__set_PRIMASK(0)^^
-        //
-
     }
 
     fn doWait() void {

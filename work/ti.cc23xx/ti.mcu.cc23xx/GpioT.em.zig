@@ -43,6 +43,12 @@ pub fn em__generateS(comptime name: []const u8) type {
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* = select;
             }
 
+            pub fn makeInput() void {
+                if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
+                const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
+                if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* |= hal.IOC_IOC0_INPEN;
+            }
+
             pub fn makeOutput() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOESET31_0).* = mask;
                 const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
@@ -51,6 +57,12 @@ pub fn em__generateS(comptime name: []const u8) type {
 
             pub fn pinId() i16 {
                 return c_pin.get();
+            }
+
+            pub fn reset() void {
+                if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
+                const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
+                if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* |= hal.IOC_IOC0_IOMODE_M | hal.IOC_IOC0_PULLCTL_M;
             }
 
             pub fn set() void {

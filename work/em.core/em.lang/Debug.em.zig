@@ -56,6 +56,18 @@ pub const EM__TARG = struct {
         delay();
     }
 
+    pub fn reset() void {
+        resetDbg('A');
+        resetDbg('B');
+        resetDbg('C');
+        resetDbg('D');
+    }
+
+    fn resetDbg(comptime id: u8) void {
+        const Dbg = getDbg(id);
+        Dbg.reset();
+    }
+
     pub fn startup() void {
         startDbg('A');
         startDbg('B');
