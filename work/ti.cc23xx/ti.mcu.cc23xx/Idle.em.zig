@@ -6,8 +6,26 @@ pub const em__unit = em.Module(@This(), .{
 pub const Debug = em.Import.@"em.lang/Debug";
 pub const Hapi = em.Import.@"ti.mcu.cc23xx/Hapi";
 
+pub const SleepEvent = struct {};
+pub const Callback = em.Func(em.CB(SleepEvent));
+pub const CallbackTab = em.Table(Callback);
+
+pub const c_sleepEnterCbTab = em__unit.config("sleepEnterCbTab", CallbackTab);
+pub const c_sleepLeaveCbTab = em__unit.config("sleepLeaveCbTab", CallbackTab);
+
 pub const EM__HOST = struct {
     //
+    const sleepEnterCbTab = c_sleepEnterCbTab.unwrap();
+    const sleepLeaveCbTab = c_sleepLeaveCbTab.unwrap();
+
+    pub fn addSleepEnterCbH(cb: Callback) void {
+        sleepEnterCbTab.add(cb);
+    }
+
+    pub fn addSleepLeaveCbH(cb: Callback) void {
+        sleepLeaveCbTab.add(cb);
+    }
+
     pub fn setWaitOnly(_: bool) void {} // TODO why????
 };
 
@@ -15,6 +33,9 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
     const reg = em.reg;
+
+    const sleepEnterCbTab = c_sleepEnterCbTab.unwrap();
+    const sleepLeaveCbTab = c_sleepLeaveCbTab.unwrap();
 
     var wait_only: bool = false;
 
@@ -28,6 +49,7 @@ pub const EM__TARG = struct {
     }
 
     fn doSleep() void {
+        for (sleepEnterCbTab) |cb| cb();
         em.@"%%[b:]"(1);
         em.@"%%[b-]"();
         Debug.reset();
@@ -36,6 +58,7 @@ pub const EM__TARG = struct {
         Hapi.enterStandby(0);
         Debug.startup();
         em.@"%%[b+]"();
+        for (sleepLeaveCbTab) |cb| cb();
         set_PRIMASK(0);
     }
 
