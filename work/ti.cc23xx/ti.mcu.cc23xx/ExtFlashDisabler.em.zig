@@ -35,8 +35,14 @@ pub const EM__TARG = struct {
         // shutdown command
         CS.clear();
         for (0..8) |i| {
+            CLK.clear();
             const bi = em.@"<>"(u3, i);
-            if ((((SD_CMD >> (7 - bi))) & 0x01) == 0) PICO.clear() else PICO.set();
+            const bv = (SD_CMD >> (7 - bi)) & 0x01;
+            if (bv == 0) {
+                PICO.clear();
+            } else {
+                PICO.set();
+            }
             CLK.set();
             BusyWait.wait(1);
         }
