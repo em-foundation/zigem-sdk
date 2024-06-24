@@ -204,6 +204,9 @@ pub fn Func(FT: type) type {
                     const tn_par = comptime tn[idx1 + 1 .. idx2];
                     return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
                 }
+                pub fn typeName() []const u8 {
+                    return sprint("em.Func({s})", .{mkTypeName(FT)});
+                }
             };
         },
         .TARG => {
@@ -483,7 +486,19 @@ pub const Unit = struct {
 };
 
 pub fn CB(ParamsType: type) type {
-    return *const fn (params: ParamsType) void;
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                pub const _em__builtin = {};
+                pub fn typeName() []const u8 {
+                    return sprint("em.CB({s})", .{mkTypeName(ParamsType)});
+                }
+            };
+        },
+        .TARG => {
+            return *const fn (params: ParamsType) void;
+        },
+    }
 }
 
 pub fn Composite(This: type, opts: UnitOpts) Unit {
@@ -540,7 +555,11 @@ fn mkTypeName(T: type) []const u8 {
             return mkTypeImport(tn);
         },
         .Struct => {
-            return mkTypeImport(tn);
+            if (@hasDecl(T, "_em__builtin") and @hasDecl(T, "typeName")) {
+                return @call(.auto, @field(T, "typeName"), .{});
+            } else {
+                return mkTypeImport(tn);
+            }
         },
         else => {
             return tn;

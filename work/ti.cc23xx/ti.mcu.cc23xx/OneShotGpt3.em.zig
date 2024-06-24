@@ -43,6 +43,7 @@ pub const EM__TARG = struct {
     }
 
     export fn LGPT3_COMB_isr() void {
+        if (em.hosted) return;
         const fxn = cur_fxn;
         disable();
         if (fxn != null) fxn.?(Handler{ .arg = cur_arg });
