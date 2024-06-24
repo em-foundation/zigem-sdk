@@ -11,8 +11,8 @@ pub const SleepEvent = struct {};
 pub const Callback = em.Func(em.CB(SleepEvent));
 pub const CallbackTab = em.Table(Callback);
 
-//pub const c_sleep_enter_cb_tab = em__unit.config("sleep_enter_cb_tab", CallbackTab);
-//pub const c_sleep_leave_cb_tab = em__unit.config("sleep_leave_cb_tab", CallbackTab);
+pub const c_sleep_enter_cb_tab = em__unit.config("sleep_enter_cb_tab", CallbackTab);
+pub const c_sleep_leave_cb_tab = em__unit.config("sleep_leave_cb_tab", CallbackTab);
 
 pub const EM__HOST = struct {
     //
@@ -20,8 +20,8 @@ pub const EM__HOST = struct {
     var sleep_leave_cb_tab = CallbackTab{};
 
     pub fn em__constructH() void {
-        //c_sleep_enter_cb_tab.set(sleep_enter_cb_tab);
-        //c_sleep_leave_cb_tab.set(sleep_leave_cb_tab);
+        c_sleep_enter_cb_tab.set(sleep_enter_cb_tab);
+        c_sleep_leave_cb_tab.set(sleep_leave_cb_tab);
     }
 
     pub fn addSleepEnterCbH(cb: Callback) void {
@@ -40,8 +40,8 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    //    const sleep_enter_cb_tab = c_sleep_enter_cb_tab.unwrap();
-    //    const sleep_leave_cb_tab = c_sleep_leave_cb_tab.unwrap();
+    const sleep_enter_cb_tab = c_sleep_enter_cb_tab.unwrap();
+    const sleep_leave_cb_tab = c_sleep_leave_cb_tab.unwrap();
 
     var wait_only: bool = false;
 
@@ -55,7 +55,7 @@ pub const EM__TARG = struct {
     }
 
     fn doSleep() void {
-        //        for (sleep_enter_cb_tab) |cb| cb();
+        for (sleep_enter_cb_tab) |cb| cb();
         Uart.sleepEnter();
         em.@"%%[b:]"(1);
         em.@"%%[b-]"();
@@ -66,7 +66,7 @@ pub const EM__TARG = struct {
         Debug.startup();
         em.@"%%[b+]"();
         Uart.sleepLeave();
-        //        for (sleep_leave_cb_tab) |cb| cb();
+        for (sleep_leave_cb_tab) |cb| cb();
         set_PRIMASK(0);
     }
 
