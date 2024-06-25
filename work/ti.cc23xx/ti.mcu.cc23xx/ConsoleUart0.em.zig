@@ -3,10 +3,16 @@ pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/ConsoleUartI",
 });
 
+pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
+
 pub const x_TxPin = em__unit.proxy("TxPin", em.Import.@"em.hal/GpioI");
 
 pub const EM__HOST = struct {
     //
+    pub fn em__configureH() void {
+        Idle.addSleepEnterCbH(em__unit.func("sleepEnter", Idle.Callback));
+        Idle.addSleepLeaveCbH(em__unit.func("sleepLeave", Idle.Callback));
+    }
 };
 
 pub const EM__TARG = struct {
@@ -16,7 +22,7 @@ pub const EM__TARG = struct {
     const TxPin = x_TxPin.unwrap();
 
     pub fn em__startup() void {
-        sleepLeave();
+        sleepLeave(Idle.SleepEvent{});
     }
 
     pub fn flush() void {
@@ -28,12 +34,12 @@ pub const EM__TARG = struct {
         flush();
     }
 
-    pub fn sleepEnter() void {
+    pub fn sleepEnter(_: Idle.SleepEvent) void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENCLR0).* = hal.CLKCTL_CLKENCLR0_UART0;
         TxPin.reset();
     }
 
-    pub fn sleepLeave() void {
+    pub fn sleepLeave(_: Idle.SleepEvent) void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_UART0;
         TxPin.makeOutput();
         TxPin.set();

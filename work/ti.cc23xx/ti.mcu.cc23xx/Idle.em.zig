@@ -5,14 +5,14 @@ pub const em__unit = em.Module(@This(), .{
 
 pub const Debug = em.Import.@"em.lang/Debug";
 pub const Hapi = em.Import.@"ti.mcu.cc23xx/Hapi";
-pub const Uart = em.Import.@"ti.mcu.cc23xx/ConsoleUart0";
 
 pub const SleepEvent = struct {};
-pub const Callback = em.Func(em.CB(SleepEvent));
-pub const CallbackTab = em.Table(Callback);
+pub const Callback = em.CB(SleepEvent);
+pub const CallbackFxn = em.Func(Callback);
+pub const CallbackTab = em.Table(CallbackFxn);
 
-pub const c_sleep_enter_cb_tab = em__unit.config("sleep_enter_cb_tab", CallbackTab);
-pub const c_sleep_leave_cb_tab = em__unit.config("sleep_leave_cb_tab", CallbackTab);
+pub const c_sleep_enter_fxn_tab = em__unit.config("sleep_enter_cb_tab", CallbackTab);
+pub const c_sleep_leave_fxn_tab = em__unit.config("sleep_leave_cb_tab", CallbackTab);
 
 pub const EM__HOST = struct {
     //
@@ -20,15 +20,15 @@ pub const EM__HOST = struct {
     var sleep_leave_cb_tab = CallbackTab{};
 
     pub fn em__constructH() void {
-        c_sleep_enter_cb_tab.set(sleep_enter_cb_tab);
-        c_sleep_leave_cb_tab.set(sleep_leave_cb_tab);
+        c_sleep_enter_fxn_tab.set(sleep_enter_cb_tab);
+        c_sleep_leave_fxn_tab.set(sleep_leave_cb_tab);
     }
 
-    pub fn addSleepEnterCbH(cb: Callback) void {
+    pub fn addSleepEnterCbH(cb: CallbackFxn) void {
         sleep_enter_cb_tab.add(cb);
     }
 
-    pub fn addSleepLeaveCbH(cb: Callback) void {
+    pub fn addSleepLeaveCbH(cb: CallbackFxn) void {
         sleep_leave_cb_tab.add(cb);
     }
 
@@ -40,8 +40,8 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    const sleep_enter_cb_tab = c_sleep_enter_cb_tab.unwrap();
-    const sleep_leave_cb_tab = c_sleep_leave_cb_tab.unwrap();
+    const sleep_enter_fxn_tab = c_sleep_enter_fxn_tab.unwrap();
+    const sleep_leave_fxn_tab = c_sleep_leave_fxn_tab.unwrap();
 
     var wait_only: bool = false;
 
@@ -55,8 +55,10 @@ pub const EM__TARG = struct {
     }
 
     fn doSleep() void {
-        for (sleep_enter_cb_tab) |cb| cb();
-        Uart.sleepEnter();
+        for (sleep_enter_fxn_tab) |fxn| {
+            const cb = fxn.unwrap();
+            cb(SleepEvent{});
+        }
         em.@"%%[b:]"(1);
         em.@"%%[b-]"();
         Debug.reset();
@@ -65,8 +67,10 @@ pub const EM__TARG = struct {
         Hapi.enterStandby(0);
         Debug.startup();
         em.@"%%[b+]"();
-        Uart.sleepLeave();
-        for (sleep_leave_cb_tab) |cb| cb();
+        for (sleep_leave_fxn_tab) |fxn| {
+            const cb = fxn.unwrap();
+            cb(SleepEvent{});
+        }
         set_PRIMASK(0);
     }
 

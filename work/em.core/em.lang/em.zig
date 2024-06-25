@@ -393,6 +393,9 @@ pub fn Table(comptime T: type) type {
                     }
                     return sprint("{s} }}", .{res});
                 }
+                pub fn typeName() []const u8 {
+                    return sprint("em.Table({s})", .{mkTypeName(T)});
+                }
             };
         },
         .TARG => {
