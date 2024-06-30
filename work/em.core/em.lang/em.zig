@@ -424,6 +424,7 @@ pub const UnitOpts = struct {
 pub const Unit = struct {
     const Self = @This();
 
+    _CT: type = void,
     kind: UnitKind,
     upath: []const u8,
     self: type,
@@ -449,6 +450,10 @@ pub const Unit = struct {
         } else {
             return _ConfigV(dname, T, @field(targ, dname)){};
         }
+    }
+
+    pub fn config2(self: Self) self._CT {
+        return std.mem.zeroInit(self._CT, .{});
     }
 
     pub fn factory(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _FactoryD(self.extendPath(name), T) else _FactoryV(self.extendPath(name), T, @field(targ, self.extendPath(name))[0..]) {
@@ -805,4 +810,73 @@ pub fn @"%%[d-]"() void {
 }
 pub fn @"%%[d:]"(k: u8) void {
     Debug.mark('D', k);
+}
+
+// -------- EM__CONFIG -------- //
+
+pub fn Module2(This: type, opts: UnitOpts) Unit {
+    const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
+    const CT = if (@hasDecl(This, "EM__CONFIG")) @field(This, "EM__CONFIG") else void;
+    return Unit{
+        ._CT = CT,
+        .generated = opts.generated,
+        .host_only = opts.host_only,
+        .inherits = opts.inherits,
+        .kind = .module,
+        .legacy = opts.legacy,
+        .self = This,
+        .scope = unitScope(This),
+        .upath = un,
+    };
+}
+
+pub fn params(PT: type) *PT {
+    return @constCast(&std.mem.zeroInit(PT, .{}));
+}
+
+pub fn Config(T: type) type {
+    return if (DOMAIN == .HOST) Config_H(T) else Config_T(T);
+}
+
+pub fn Config_H(T: type) type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+        pub const _em__config = {};
+
+        _val: T,
+
+        pub fn get(self: *Self) T {
+            return self._val;
+        }
+
+        pub fn init(v: T) Config(T) {
+            return Config(T){ ._val = v };
+        }
+
+        pub fn set(self: *Self, v: T) void {
+            self._val = v;
+        }
+
+        pub fn toString(self: Self) []const u8 {
+            return toStringAux(self._val);
+        }
+
+        pub fn Type(_: Self) type {
+            return T;
+        }
+    };
+}
+
+pub fn Config_T(T: type) type {
+    return struct {
+        const Self = @This();
+
+        _val: T,
+
+        pub fn unwrap(self: Self) T {
+            return self._val;
+        }
+    };
 }

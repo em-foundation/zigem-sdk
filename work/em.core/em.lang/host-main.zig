@@ -48,6 +48,10 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
+        if (std.mem.eql(u8, d.name, "em__params")) {
+            try out.print("pub const @\"{0s}__params\" = em.Import.@\"{0s}\".EM__PARAMS{{}};\n", .{unit.upath});
+            break;
+        }
         if (std.mem.eql(u8, d.name, "EM__TARG")) break;
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
@@ -172,9 +176,8 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     try genCall("em__reset", ulist_top, .first, out);
     try genCall("em__startup", ulist_bot, .all, out);
     try genCall("em__ready", ulist_top, .first, out);
-    for (0..3) |_| {
-        try out.print("    asm volatile (\"nop\");\n", .{});
-    }
+    try out.print("    asm volatile (\".global __em__run\");\n", .{});
+    try out.print("    asm volatile (\"__em__run:\");\n", .{});
     try out.print("    ", .{});
     try genImport(ulist_top[0].upath, out);
     try out.print(".em__run();\n", .{});
