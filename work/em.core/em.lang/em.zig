@@ -469,6 +469,13 @@ pub const Unit = struct {
         return Func(FT){ ._upath = self.upath, ._fname = name };
     }
 
+    pub fn params(self: Self, PT: type) *PT {
+        switch (DOMAIN) {
+            .HOST => return @constCast(&std.mem.zeroInit(PT, .{})),
+            .TARG => return @constCast(&@field(targ, self.extendPath("params"))),
+        }
+    }
+
     pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(self.extendPath(name), @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
@@ -669,6 +676,8 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
         .Pointer => |ptr_info| {
             if (ptr_info.size == .Slice and ptr_info.child == u8) {
                 return sprint("\"{s}\"", .{v});
+            } else if (ptr_info.size == .One) {
+                return toStringAux(v.*);
             } else {
                 return "<<ptr>>";
             }
@@ -816,9 +825,7 @@ pub fn @"%%[d:]"(k: u8) void {
 
 pub fn Module2(This: type, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
-    const CT = if (@hasDecl(This, "EM__CONFIG")) @field(This, "EM__CONFIG") else void;
     return Unit{
-        ._CT = CT,
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = opts.inherits,
@@ -828,10 +835,6 @@ pub fn Module2(This: type, opts: UnitOpts) Unit {
         .scope = unitScope(This),
         .upath = un,
     };
-}
-
-pub fn params(PT: type) *PT {
-    return @constCast(&std.mem.zeroInit(PT, .{}));
 }
 
 pub fn Config(T: type) type {
@@ -859,8 +862,8 @@ pub fn Config_H(T: type) type {
             self._val = v;
         }
 
-        pub fn toString(self: Self) []const u8 {
-            return toStringAux(self._val);
+        pub fn toString(self: *const Self) []const u8 {
+            return sprint("em.Config_T({s}){{ ._val = {s} }}", .{ mkTypeName(T), toStringAux(self._val) });
         }
 
         pub fn Type(_: Self) type {
@@ -875,7 +878,7 @@ pub fn Config_T(T: type) type {
 
         _val: T,
 
-        pub fn unwrap(self: Self) T {
+        pub fn unwrap(self: *const Self) T {
             return self._val;
         }
     };

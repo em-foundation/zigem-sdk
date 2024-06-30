@@ -33,6 +33,21 @@ pub fn exec(top: em.Unit) !void {
     std.process.exit(0);
 }
 
+fn genBuiltin(decl: anytype, out: std.fs.File.Writer) !bool {
+    const tn_type = @typeName(decl.Type());
+    if (comptime std.mem.startsWith(u8, tn_type, "em.core.em.lang.em.Func(")) {
+        try out.print("pub const @\"{s}\": em.Func(", .{decl.dpath()});
+        const idx = comptime std.mem.indexOf(u8, tn_type, "(").?;
+        const rt = comptime tn_type[idx + 1 .. tn_type.len - 1];
+        const tun = comptime mkImportPath(rt, 2);
+        try genImport(tun, out);
+        try out.print(") = ", .{});
+        try out.print("{s};\n", .{em.toStringAux(decl.get())});
+        return true;
+    }
+    return false;
+}
+
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
         if (@hasDecl(u.self, "EM__TARG") and @hasDecl(u.self.EM__TARG, fname)) {
@@ -48,10 +63,6 @@ fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
-        if (std.mem.eql(u8, d.name, "em__params")) {
-            try out.print("pub const @\"{0s}__params\" = em.Import.@\"{0s}\".EM__PARAMS{{}};\n", .{unit.upath});
-            break;
-        }
         if (std.mem.eql(u8, d.name, "EM__TARG")) break;
         const Decl = @TypeOf(decl);
         const ti_decl = @typeInfo(Decl);
@@ -124,19 +135,16 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genBuiltin(decl: anytype, out: std.fs.File.Writer) !bool {
-    const tn_type = @typeName(decl.Type());
-    if (comptime std.mem.startsWith(u8, tn_type, "em.core.em.lang.em.Func(")) {
-        try out.print("pub const @\"{s}\": em.Func(", .{decl.dpath()});
-        const idx = comptime std.mem.indexOf(u8, tn_type, "(").?;
-        const rt = comptime tn_type[idx + 1 .. tn_type.len - 1];
-        const tun = comptime mkImportPath(rt, 2);
-        try genImport(tun, out);
-        try out.print(") = ", .{});
-        try out.print("{s};\n", .{em.toStringAux(decl.get())});
-        return true;
+fn genParams(unit: em.Unit, out: std.fs.File.Writer) !void {
+    if (!@hasDecl(unit.self, "em__params")) return;
+    try out.print("pub const @\"{0s}__params\" = em.Import.@\"{0s}\".EM__PARAMS{{\n", .{unit.upath});
+    const params = @field(unit.self, "em__params");
+    const ti = @typeInfo(@typeInfo(@TypeOf(params)).Pointer.child);
+    inline for (ti.Struct.fields) |fld| {
+        const pval = &@field(params, fld.name);
+        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(pval) });
     }
-    return false;
+    try out.print("}};\n", .{});
 }
 
 fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
@@ -154,6 +162,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     inline for (ulist_bot) |u| {
         if (u.kind == .module and !u.host_only and !u.legacy) {
             try out.print("// {s}\n", .{u.upath});
+            try genParams(u, out);
             try genDecls(u, out);
             try out.print("\n", .{});
         }
