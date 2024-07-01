@@ -452,8 +452,11 @@ pub const Unit = struct {
         }
     }
 
-    pub fn config2(self: Self) self._CT {
-        return std.mem.zeroInit(self._CT, .{});
+    pub fn config2(self: Self, PT: type) *PT {
+        switch (DOMAIN) {
+            .HOST => return @constCast(&std.mem.zeroInit(PT, .{})),
+            .TARG => return @constCast(&@field(targ, self.extendPath("config"))),
+        }
     }
 
     pub fn factory(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _FactoryD(self.extendPath(name), T) else _FactoryV(self.extendPath(name), T, @field(targ, self.extendPath(name))[0..]) {
@@ -467,13 +470,6 @@ pub const Unit = struct {
 
     pub fn func(self: Self, name: []const u8, FT: type) Func(FT) {
         return Func(FT){ ._upath = self.upath, ._fname = name };
-    }
-
-    pub fn params(self: Self, PT: type) *PT {
-        switch (DOMAIN) {
-            .HOST => return @constCast(&std.mem.zeroInit(PT, .{})),
-            .TARG => return @constCast(&@field(targ, self.extendPath("params"))),
-        }
     }
 
     pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(self.extendPath(name), @field(targ, self.extendPath(name))) {
@@ -837,11 +833,11 @@ pub fn Module2(This: type, opts: UnitOpts) Unit {
     };
 }
 
-pub fn Config(T: type) type {
-    return if (DOMAIN == .HOST) Config_H(T) else Config_T(T);
+pub fn Param(T: type) type {
+    return if (DOMAIN == .HOST) Param_H(T) else Param_T(T);
 }
 
-pub fn Config_H(T: type) type {
+pub fn Param_H(T: type) type {
     return struct {
         const Self = @This();
 
@@ -854,8 +850,8 @@ pub fn Config_H(T: type) type {
             return self._val;
         }
 
-        pub fn init(v: T) Config(T) {
-            return Config(T){ ._val = v };
+        pub fn init(v: T) Param(T) {
+            return Param(T){ ._val = v };
         }
 
         pub fn set(self: *Self, v: T) void {
@@ -863,7 +859,7 @@ pub fn Config_H(T: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("em.Config_T({s}){{ ._val = {s} }}", .{ mkTypeName(T), toStringAux(self._val) });
+            return sprint("em.Param_T({s}){{ ._val = {s} }}", .{ mkTypeName(T), toStringAux(self._val) });
         }
 
         pub fn Type(_: Self) type {
@@ -872,7 +868,7 @@ pub fn Config_H(T: type) type {
     };
 }
 
-pub fn Config_T(T: type) type {
+pub fn Param_T(T: type) type {
     return struct {
         const Self = @This();
 

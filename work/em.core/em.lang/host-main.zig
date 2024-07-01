@@ -59,6 +59,18 @@ fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all,
     }
 }
 
+fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
+    if (!@hasDecl(unit.self, "em__C")) return;
+    try out.print("pub const @\"{0s}__config\" = em.Import.@\"{0s}\".EM__CONFIG{{\n", .{unit.upath});
+    const params = @field(unit.self, "em__C");
+    const ti = @typeInfo(@typeInfo(@TypeOf(params)).Pointer.child);
+    inline for (ti.Struct.fields) |fld| {
+        const pval = &@field(params, fld.name);
+        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(pval) });
+    }
+    try out.print("}};\n", .{});
+}
+
 fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
@@ -135,18 +147,6 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genParams(unit: em.Unit, out: std.fs.File.Writer) !void {
-    if (!@hasDecl(unit.self, "em__params")) return;
-    try out.print("pub const @\"{0s}__params\" = em.Import.@\"{0s}\".EM__PARAMS{{\n", .{unit.upath});
-    const params = @field(unit.self, "em__params");
-    const ti = @typeInfo(@typeInfo(@TypeOf(params)).Pointer.child);
-    inline for (ti.Struct.fields) |fld| {
-        const pval = &@field(params, fld.name);
-        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(pval) });
-    }
-    try out.print("}};\n", .{});
-}
-
 fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
@@ -162,7 +162,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     inline for (ulist_bot) |u| {
         if (u.kind == .module and !u.host_only and !u.legacy) {
             try out.print("// {s}\n", .{u.upath});
-            try genParams(u, out);
+            try genConfig(u, out);
             try genDecls(u, out);
             try out.print("\n", .{});
         }
