@@ -689,6 +689,7 @@ pub fn toUnit(U: type) Unit {
 }
 
 pub fn unitScope(U: type) type {
+    // TODO eliminate
     return if (DOMAIN == .HOST) unitScope_H(U) else unitScope_T(U);
 }
 
@@ -854,6 +855,10 @@ pub fn Param_H(T: type) type {
             return Param(T){ ._val = v };
         }
 
+        pub fn ref(self: *Self) *Param_H(T) {
+            return self;
+        }
+
         pub fn set(self: *Self, v: T) void {
             self._val = v;
         }
@@ -864,6 +869,10 @@ pub fn Param_H(T: type) type {
 
         pub fn Type(_: Self) type {
             return T;
+        }
+
+        pub fn unwrap(self: *const Self) T {
+            return self._val;
         }
     };
 }
