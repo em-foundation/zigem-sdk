@@ -62,11 +62,11 @@ fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all,
 fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
     if (!@hasDecl(unit.self, "em__C")) return;
     try out.print("pub const @\"{0s}__config\" = em.Import.@\"{0s}\".EM__CONFIG{{\n", .{unit.upath});
-    const params = @field(unit.self, "em__C");
-    const ti = @typeInfo(@typeInfo(@TypeOf(params)).Pointer.child);
+    const C = @field(unit.self, "em__C");
+    const ti = @typeInfo(@typeInfo(@TypeOf(C)).Pointer.child);
     inline for (ti.Struct.fields) |fld| {
-        const pval = &@field(params, fld.name);
-        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(pval) });
+        const cfld = &@field(C, fld.name);
+        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(cfld) });
     }
     try out.print("}};\n", .{});
 }
