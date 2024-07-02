@@ -452,7 +452,7 @@ pub const Unit = struct {
         }
     }
 
-    pub fn config2(self: Self, PT: type) *PT {
+    pub fn Config(self: Self, PT: type) *PT {
         switch (DOMAIN) {
             .HOST => return @constCast(&std.mem.zeroInit(PT, .{})),
             .TARG => return @constCast(&@field(targ, self.extendPath("config"))),
