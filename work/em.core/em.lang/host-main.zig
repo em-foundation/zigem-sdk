@@ -8,8 +8,10 @@ var used_set = std.StringHashMap(void).init(em.getHeap());
 
 inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_used: bool) void {
     inline for (ulist) |u| {
-        if (@hasDecl(u.scope, fname) and (!filter_used or used_set.contains(u.upath))) {
-            _ = @call(.auto, @field(u.scope, fname), .{});
+        if (!filter_used or used_set.contains(u.upath)) {
+            //const Scope = if (@hasDecl(u.self, "EM__CONFIG")) u.self.EM__CONFIG else u.scope;
+            const Scope = u.scope;
+            if (@hasDecl(Scope, fname)) _ = @call(.auto, @field(Scope, fname), .{});
         }
     }
 }

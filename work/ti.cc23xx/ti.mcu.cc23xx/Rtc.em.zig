@@ -1,19 +1,20 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 
-const Handler = struct {};
+pub const EM__CONFIG = struct {};
 
 pub const EM__HOST = struct {
-    //
     pub fn em__constructH() void {
         IntrVec.useIntrH("CPUIRQ0");
     }
 };
 
 pub const EM__TARG = struct {
-    //
+    const Handler = struct {};
+
     const hal = em.hal;
     const reg = em.reg;
 
