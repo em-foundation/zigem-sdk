@@ -1,28 +1,32 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
 pub const BoardC = em.Import.@"em__distro/BoardC";
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const c_dbg_flag = em__unit.config("dbg_flag", bool);
-pub const c_min_cnt = em__unit.config("min_cnt", u16);
-pub const c_max_cnt = em__unit.config("max_cnt", u16);
+pub const EM__CONFIG = struct {
+    dbg_flag: em.Param(bool),
+    min_cnt: em.Param(u16),
+    max_cnt: em.Param(u16),
+};
 
 pub const EM__HOST = struct {
     //
     pub fn em__initH() void {
-        c_dbg_flag.init(true);
-        c_min_cnt.init(1000);
-        c_max_cnt.init(1020);
+        em__C.dbg_flag.set(true);
+        em__C.min_cnt.set(1000);
+        em__C.max_cnt.set(1020);
     }
 };
 
 pub const EM__TARG = struct {
     //
     const AppLed = BoardC.AppLed;
-    const dbg_flag = c_dbg_flag.unwrap();
-    const min_cnt = c_min_cnt.unwrap();
-    const max_cnt = c_max_cnt.unwrap();
+
+    const dbg_flag = em__C.dbg_flag.unwrap();
+    const min_cnt = em__C.min_cnt.unwrap();
+    const max_cnt = em__C.max_cnt.unwrap();
 
     pub fn em__run() void {
         AppLed.on();
