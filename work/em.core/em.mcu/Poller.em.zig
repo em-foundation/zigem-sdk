@@ -1,19 +1,22 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const x_OneShot = em__unit.proxy("OneShot", em.Import.@"em.hal/OneShotMilliI");
+pub const EM__CONFIG = struct {
+    OneShot: em.Proxy(em.Import.@"em.hal/OneShotMilliI"),
+};
+
+pub const x_OneShot = em__C.OneShot.ref();
 
 pub const PollFxn = *const fn () bool;
 
-pub const EM__HOST = struct {
-    //
-};
+pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
     //
-    const OneShot = x_OneShot.unwrap();
+    const OneShot = em.unitScope(x_OneShot.unwrap().self);
 
     var active_flag: bool = false;
     const vptr: *volatile bool = &active_flag;

@@ -900,7 +900,7 @@ pub fn Proxy_H(I: type) type {
         pub const _em__builtin = {};
         pub const _em__config = {};
 
-        _prx: []const u8,
+        _prx: []const u8 = I.em__unit.upath,
 
         pub fn get(self: *Self) I {
             return self._prx;
@@ -915,15 +915,7 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("em.Import.@\"{s}\"", .{self._prx});
-        }
-
-        pub fn Type(_: Self) type {
-            return I;
-        }
-
-        pub fn unwrap(self: *const Self) I {
-            return self._prx;
+            return sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._unit = em.Import.@\"{s}\".em__unit }}", .{ I.em__unit.upath, self._prx });
         }
     };
 }
@@ -932,10 +924,14 @@ pub fn Proxy_T(I: type) type {
     return struct {
         const Self = @This();
 
-        _prx: []const u8,
+        _unit: *Unit,
 
-        pub fn unwrap(self: *const Self) I {
-            return @field(Import, self._prx);
+        pub fn ref(self: *Self) *Proxy_T(I) {
+            return self;
+        }
+
+        pub fn unwrap(comptime self: *const Self) *Unit {
+            return self._unit;
         }
     };
 }
