@@ -851,12 +851,12 @@ pub fn Param_H(T: type) type {
             return self._val;
         }
 
-        pub fn init(v: T) Param(T) {
-            return Param(T){ ._val = v };
-        }
-
         pub fn ref(self: *Self) *Param_H(T) {
             return self;
+        }
+
+        pub fn init(v: T) Param(T) {
+            return Param(T){ ._val = v };
         }
 
         pub fn set(self: *Self, v: T) void {
@@ -882,6 +882,10 @@ pub fn Param_T(T: type) type {
         const Self = @This();
 
         _val: T,
+
+        pub fn ref(self: *Self) *Param_T(T) {
+            return self;
+        }
 
         pub fn unwrap(self: *const Self) T {
             return self._val;

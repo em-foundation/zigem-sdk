@@ -2,13 +2,18 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/BusyWaitI",
 });
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
-pub const c_scalar = em__unit.config("scalar", u8);
+pub const EM__CONFIG = struct {
+    scalar: em.Param(u8),
+};
+
+pub const c_scalar = em__C.scalar.ref();
 
 pub const EM__HOST = struct {
     //
     pub fn em__initH() void {
-        c_scalar.init(6);
+        c_scalar.set(6);
     }
 };
 
