@@ -6,7 +6,7 @@ const type_map = @import("../../.gen/type_map.zig");
 var init_list = std.ArrayList([]const u8).init(em.getHeap());
 var used_set = std.StringHashMap(void).init(em.getHeap());
 
-inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_used: bool) void {
+inline fn callAll(comptime fname: []const u8, ulist: []const *em.Unit, filter_used: bool) void {
     inline for (ulist) |u| {
         if (!filter_used or used_set.contains(u.upath)) {
             //const Scope = if (@hasDecl(u.self, "EM__CONFIG")) u.self.EM__CONFIG else u.scope;
@@ -16,7 +16,7 @@ inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_use
     }
 }
 
-pub fn exec(top: em.Unit) !void {
+pub fn exec(top: *em.Unit) !void {
     const BuildH = em.Import.@"em__distro/BuildH";
     @setEvalBranchQuota(100_000);
     const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__unit, &.{}));
@@ -50,7 +50,7 @@ fn genBuiltin(decl: anytype, out: std.fs.File.Writer) !bool {
     return false;
 }
 
-fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
+fn genCall(comptime fname: []const u8, ulist: []const *em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
         if (@hasDecl(u.self, "EM__TARG") and @hasDecl(u.self.EM__TARG, fname)) {
             try out.print("    ", .{});
@@ -61,7 +61,7 @@ fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all,
     }
 }
 
-fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
+fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
     if (!@hasDecl(unit.self, "em__C")) return;
     try out.print("pub const @\"{0s}__config\" = em.Import.@\"{0s}\".EM__CONFIG{{\n", .{unit.upath});
     const C = @field(unit.self, "em__C");
@@ -73,7 +73,7 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
     try out.print("}};\n", .{});
 }
 
-fn genDecls(unit: em.Unit, out: std.fs.File.Writer) !void {
+fn genDecls(unit: *em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(unit.self);
     inline for (ti.Struct.decls) |d| {
         const decl = @field(unit.self, d.name);
@@ -149,7 +149,7 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     }
 }
 
-fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
+fn genTarg(ulist_bot: []const *em.Unit, ulist_top: []const *em.Unit) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
     const fmt =
@@ -197,7 +197,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     file.close();
 }
 
-fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File.Writer) !void {
+fn genTermFn(comptime name: []const u8, ulist: []const *em.Unit, out: std.fs.File.Writer) !void {
     try out.print("pub fn {s}() void {{\n", .{name});
     try genCall(name, ulist, .first, out);
     try out.print("    em__done();\n", .{});
@@ -221,7 +221,7 @@ fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
     return un ++ "__" ++ path[idx.? + 1 ..];
 }
 
-fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const em.Unit {
+fn mkUnitList(comptime unit: *em.Unit, comptime ulist: []const *em.Unit) []const *em.Unit {
     comptime var res = ulist;
     inline for (ulist) |u| {
         if (std.mem.eql(u8, u.upath, unit.upath)) return res;
@@ -231,14 +231,14 @@ fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const e
         inline for (@typeInfo(unit.self).Struct.decls) |d| {
             const iu = @field(unit.self, d.name);
             if (@TypeOf(iu) == type and @typeInfo(iu) == .Struct and @hasDecl(iu, "em__unit")) {
-                res = mkUnitList(@as(em.Unit, @field(iu, "em__unit")), res);
+                res = mkUnitList(@as(*em.Unit, @field(iu, "em__unit")), res);
             }
         }
     }
     return res ++ .{unit};
 }
 
-fn mkUsedSet(comptime unit: em.Unit) !void {
+fn mkUsedSet(comptime unit: *em.Unit) !void {
     if (unit.kind == .composite or unit.kind == .template) return;
     if (!unit.legacy) {
         try used_set.put(unit.upath, {});
@@ -247,7 +247,7 @@ fn mkUsedSet(comptime unit: em.Unit) !void {
             const Decl = @TypeOf(decl);
             const ti_decl = @typeInfo(Decl);
             if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__unit")) {
-                try mkUsedSet(@as(em.Unit, @field(decl, "em__unit")));
+                try mkUsedSet(@as(*em.Unit, @field(decl, "em__unit")));
             } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
                 try used_set.put(decl.get(), {});
             }
@@ -268,15 +268,15 @@ fn printDecls(unit: em.Unit) !void {
     }
 }
 
-fn revUnitList(comptime ulist: []const em.Unit) []const em.Unit {
-    comptime var res: []const em.Unit = &.{};
+fn revUnitList(comptime ulist: []const *em.Unit) []const *em.Unit {
+    comptime var res: []const *em.Unit = &.{};
     inline for (ulist) |u| {
         res = .{u} ++ res;
     }
     return res;
 }
 
-fn validate(comptime ulist: []const em.Unit) !void {
+fn validate(comptime ulist: []const *em.Unit) !void {
     inline for (ulist) |u| {
         if (!u.generated) {
             const un = @as([]const u8, @field(type_map, @typeName(u.self)));

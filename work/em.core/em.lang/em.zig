@@ -512,19 +512,19 @@ pub fn CB(ParamsType: type) type {
     }
 }
 
-pub fn Composite(This: type, opts: UnitOpts) Unit {
+pub fn Composite(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .composite, opts);
 }
 
-pub fn Interface(This: type, opts: UnitOpts) Unit {
+pub fn Interface(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .interface, opts);
 }
 
-pub fn Module(This: type, opts: UnitOpts) Unit {
+pub fn Module(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .module, opts);
 }
 
-pub fn Template(This: type, opts: UnitOpts) Unit {
+pub fn Template(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .template, opts);
 }
 
@@ -584,9 +584,9 @@ fn mkTypeImport(comptime tn: []const u8) []const u8 {
     return "em.Import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
 }
 
-fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
+fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) *Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
-    return Unit{
+    return @constCast(&Unit{
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = opts.inherits,
@@ -595,7 +595,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .self = This,
         .scope = unitScope(This),
         .upath = un,
-    };
+    });
 }
 
 pub fn normalize(path: []const u8) []const u8 {
@@ -684,8 +684,8 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
     }
 }
 
-pub fn toUnit(U: type) Unit {
-    return @as(Unit, @field(U, "em__unit"));
+pub fn toUnit(U: type) *Unit {
+    return @as(*Unit, @field(U, "em__unit"));
 }
 
 pub fn unitScope(U: type) type {
@@ -885,6 +885,57 @@ pub fn Param_T(T: type) type {
 
         pub fn unwrap(self: *const Self) T {
             return self._val;
+        }
+    };
+}
+
+pub fn Proxy(I: type) type {
+    return if (DOMAIN == .HOST) Proxy_H(I) else Proxy_T(I);
+}
+
+pub fn Proxy_H(I: type) type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+        pub const _em__config = {};
+
+        _prx: []const u8,
+
+        pub fn get(self: *Self) I {
+            return self._prx;
+        }
+
+        pub fn ref(self: *Self) *Proxy_H(I) {
+            return self;
+        }
+
+        pub fn set(self: *Self, x: anytype) void {
+            self._prx = x.em__unit.upath;
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
+            return sprint("em.Import.@\"{s}\"", .{self._prx});
+        }
+
+        pub fn Type(_: Self) type {
+            return I;
+        }
+
+        pub fn unwrap(self: *const Self) I {
+            return self._prx;
+        }
+    };
+}
+
+pub fn Proxy_T(I: type) type {
+    return struct {
+        const Self = @This();
+
+        _prx: []const u8,
+
+        pub fn unwrap(self: *const Self) I {
+            return @field(Import, self._prx);
         }
     };
 }
