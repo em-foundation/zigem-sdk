@@ -8,15 +8,16 @@ pub const EM__CONFIG = struct {
     OneShot: em.Proxy(em.Import.@"em.hal/OneShotMilliI"),
 };
 
-pub const x_OneShot = em__C.OneShot.ref();
-
-pub const PollFxn = *const fn () bool;
-
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    //
+    pub const x_OneShot = em__C.OneShot.ref();
+};
 
 pub const EM__TARG = struct {
     //
-    const OneShot = x_OneShot.unwrap();
+    pub const PollFxn = *const fn () bool;
+
+    const OneShot = em__C.OneShot.unwrap();
 
     var active_flag: bool = false;
     const vptr: *volatile bool = &active_flag;
