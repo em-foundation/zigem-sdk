@@ -915,7 +915,7 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._unit = em.Import.@\"{s}\".em__unit }}", .{ I.em__unit.upath, self._prx });
+            return sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = \"{s}\" }}", .{ I.em__unit.upath, self._prx });
         }
     };
 }
@@ -924,14 +924,14 @@ pub fn Proxy_T(I: type) type {
     return struct {
         const Self = @This();
 
-        _unit: *Unit,
+        _prx: []const u8,
 
         pub fn ref(self: *Self) *Proxy_T(I) {
             return self;
         }
 
-        pub fn unwrap(comptime self: *const Self) *Unit {
-            return self._unit;
+        pub fn unwrap(comptime self: *const Self) @TypeOf(@field(Import, self._prx)) {
+            return @field(Import, self._prx);
         }
     };
 }

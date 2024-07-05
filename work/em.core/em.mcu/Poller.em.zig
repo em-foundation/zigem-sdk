@@ -16,7 +16,7 @@ pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
     //
-    const OneShot = em.unitScope(x_OneShot.unwrap().self);
+    const OneShot = x_OneShot.unwrap();
 
     var active_flag: bool = false;
     const vptr: *volatile bool = &active_flag;
