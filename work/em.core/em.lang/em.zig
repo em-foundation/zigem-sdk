@@ -354,6 +354,10 @@ pub fn Ptr(T: type) type {
                 pub fn toString(self: Self) []const u8 {
                     return if (self.isNIL()) "null" else sprint("@\"{s}__{s}__{d}\"", .{ self.upath, self.aname, self.idx });
                 }
+
+                pub fn typeName() []const u8 {
+                    return sprint("*{s}", .{mkTypeName(T)});
+                }
             };
         },
         .TARG => {
@@ -393,7 +397,7 @@ pub fn Table(comptime T: type) type {
                     }
                     return sprint("{s} }}", .{res});
                 }
-                pub fn typeName() []const u8 {
+                pub fn typeName(_: Self) []const u8 {
                     return sprint("em.Table({s})", .{mkTypeName(T)});
                 }
             };
