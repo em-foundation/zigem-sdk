@@ -10,17 +10,15 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 pub const EM__CONFIG = struct {
     dimN: em.Param(usize),
     memsize: em.Param(u16),
+    matA: em.Array(matdat_t),
+    matB: em.Array(matdat_t),
+    matC: em.Array(matres_t),
 };
 
-pub const c_dimN = em__C.dimN.ref();
 pub const c_memsize = em__C.memsize.ref();
 
 pub const matdat_t = i16;
 pub const matres_t = i32;
-
-pub var a_matA = em__unit.array("a_matA", matdat_t);
-pub var a_matB = em__unit.array("a_matB", matdat_t);
-pub var a_matC = em__unit.array("a_matC", matres_t);
 
 pub const EM__HOST = struct {
     //
@@ -32,10 +30,10 @@ pub const EM__HOST = struct {
             j = i * i * 2 * 4;
         }
         const d = i - 1;
-        a_matA.setLen(d * d);
-        a_matB.setLen(d * d);
-        a_matC.setLen(d * d);
-        c_dimN.set(d);
+        em__C.dimN.set(d);
+        em__C.matA.setLen(d * d);
+        em__C.matB.setLen(d * d);
+        em__C.matC.setLen(d * d);
     }
 };
 
@@ -43,9 +41,9 @@ pub const EM__TARG = struct {
     //
     const dimN = em__C.dimN.unwrap();
 
-    var matA = a_matA.unwrap();
-    var matB = a_matB.unwrap();
-    var matC = a_matC.unwrap();
+    var matA = em__C.matA.unwrap();
+    var matB = em__C.matB.unwrap();
+    var matC = em__C.matC.unwrap();
 
     fn addVal(val: matdat_t) void {
         for (0..dimN) |i| {
