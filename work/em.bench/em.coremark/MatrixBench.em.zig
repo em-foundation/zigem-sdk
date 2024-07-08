@@ -2,16 +2,21 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
 pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
-pub const c_memsize = em__unit.config("memsize", u16);
+pub const EM__CONFIG = struct {
+    dimN: em.Param(usize),
+    memsize: em.Param(u16),
+};
+
+pub const c_dimN = em__C.dimN.ref();
+pub const c_memsize = em__C.memsize.ref();
 
 pub const matdat_t = i16;
 pub const matres_t = i32;
-
-pub const c_dimN = em__unit.config("dimN", usize);
 
 pub var a_matA = em__unit.array("a_matA", matdat_t);
 pub var a_matB = em__unit.array("a_matB", matdat_t);
@@ -22,7 +27,7 @@ pub const EM__HOST = struct {
     pub fn em__constructH() void {
         var i: usize = 0;
         var j: usize = 0;
-        while (j < c_memsize.get()) {
+        while (j < em__C.memsize.get()) {
             i += 1;
             j = i * i * 2 * 4;
         }
@@ -36,7 +41,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const dimN = c_dimN.unwrap();
+    const dimN = em__C.dimN.unwrap();
 
     var matA = a_matA.unwrap();
     var matB = a_matB.unwrap();
