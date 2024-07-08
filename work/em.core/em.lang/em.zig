@@ -848,33 +848,42 @@ pub fn Array_H(T: type) type {
 
         pub const _em__builtin = {};
 
+        _is_virgin: bool = true,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
         pub fn addElem(self: *Self, elem: T) void {
+            self._is_virgin = false;
             self._list.append(elem) catch fail();
         }
 
         pub fn elems(self: *Self) []T {
+            self._is_virgin = false;
             return self._list.items;
         }
 
         pub fn setLen(self: *Self, len: usize) void {
+            const sav = self._is_virgin;
             const l = self._list.items.len;
             if (len > l) {
                 for (l..len) |_| {
                     self.addElem(std.mem.zeroes(T));
                 }
             }
+            self._is_virgin = sav;
         }
 
         pub fn toString(self: Self) []const u8 {
             const tn = mkTypeName(T);
             var sb = StringH{};
-            sb.add(sprint("[_]{s}{{", .{tn}));
-            for (self._list.items) |e| {
-                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+            if (self._is_virgin) {
+                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
+            } else {
+                sb.add(sprint("[_]{s}{{", .{tn}));
+                for (self._list.items) |e| {
+                    sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+                }
+                sb.add("}");
             }
-            sb.add("}");
             return sprint("em.Array_T({s}){{ ._a = @constCast(&{s})}}", .{ tn, sb.get() });
         }
     };
