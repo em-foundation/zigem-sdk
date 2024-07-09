@@ -10,7 +10,7 @@ pub const seed_t = u16;
 pub const sum_t = u16;
 
 pub const EM__CONFIG = struct {
-    seed_tab: em.Array(seed_t),
+    seed_tab: em.Array(seed_t, .RO),
 };
 
 pub const EM__HOST = struct {

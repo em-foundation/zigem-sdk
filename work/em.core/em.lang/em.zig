@@ -824,6 +824,8 @@ pub fn @"%%[d:]"(k: u8) void {
 
 // -------- EM__CONFIG -------- //
 
+pub const TargAccess = enum { RO, RW };
+
 pub fn Module2(This: type, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
@@ -838,11 +840,11 @@ pub fn Module2(This: type, opts: UnitOpts) Unit {
     };
 }
 
-pub fn Array(T: type) type {
-    return if (DOMAIN == .HOST) Array_H(T) else Array_T(T);
+pub fn Array(T: type, comptime acc: TargAccess) type {
+    return if (DOMAIN == .HOST) Array_H(T, acc) else Array_T(T, acc);
 }
 
-pub fn Array_H(T: type) type {
+pub fn Array_H(T: type, comptime acc: TargAccess) type {
     return struct {
         const Self = @This();
 
@@ -884,16 +886,17 @@ pub fn Array_H(T: type) type {
                 }
                 sb.add("}");
             }
-            return sprint("em.Array_T({s}){{ ._a = @constCast(&{s})}}", .{ tn, sb.get() });
+            return sprint("em.Array_T({s}, .{s}){{ ._a = @constCast(&{s})}}", .{ tn, @tagName(acc), sb.get() });
         }
     };
 }
 
-pub fn Array_T(T: type) type {
+pub fn Array_T(T: type, comptime acc: TargAccess) type {
+    const A = if (acc == .RO) []const T else []T;
     return struct {
         const Self = @This();
-        _a: []T,
-        pub fn unwrap(self: Self) []T {
+        _a: A,
+        pub fn unwrap(self: Self) A {
             return self._a;
         }
     };

@@ -10,9 +10,9 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 pub const EM__CONFIG = struct {
     dimN: em.Param(usize),
     memsize: em.Param(u16),
-    matA: em.Array(matdat_t),
-    matB: em.Array(matdat_t),
-    matC: em.Array(matres_t),
+    matA: em.Array(matdat_t, .RW),
+    matB: em.Array(matdat_t, .RW),
+    matC: em.Array(matres_t, .RW),
 };
 
 pub const c_memsize = em__C.memsize.ref();
