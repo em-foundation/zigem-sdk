@@ -34,6 +34,8 @@ pub const EM__HOST = struct {
         em__C.matA.setLen(d * d);
         em__C.matB.setLen(d * d);
         em__C.matC.setLen(d * d);
+        em__C.matA.elems()[0] = 10; // TODO: make matA unique
+        em__C.matB.elems()[0] = 20; // TODO  make matB unique
     }
 };
 
@@ -167,13 +169,20 @@ pub const EM__TARG = struct {
                 sd = @intCast(@rem(@as(i32, @intCast((order * sd))), 65536));
                 var val: matdat_t = sd + order;
                 val = clip(val, false);
+                //em.print("b0 = {d}, ", .{val});
                 matB[i * dimN + j] = val;
+                //em.print("matB = {d}, ", .{matB[0]});
                 val += order;
                 val = clip(val, true);
+                //em.print("a0 = {d}, ", .{val});
                 matA[i * dimN + j] = val;
+                //em.print("matB = {d}\n", .{matB[0]});
                 order += 1;
+                //em.print("&matA = {any}, &matB = {any}\n", .{ matA.ptr, matB.ptr });
             }
         }
+        print();
+        em.halt();
     }
 
     fn sumDat(clipval: matdat_t) matdat_t {
