@@ -880,8 +880,8 @@ pub fn Array_H(T: type, comptime acc: TargAccess) type {
             return sprint("em.Array_T({s}, .{s}){{ ._a = @constCast(&@\"{s}\")}}", .{ tn, @tagName(acc), self._dname });
         }
 
-        pub fn toStringDecls(self: *Self, dname: []const u8) []const u8 {
-            self._dname = dname;
+        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+            self._dname = upath ++ ".em__C." ++ cname;
             const tn = mkTypeName(T);
             var sb = StringH{};
             if (self._is_virgin) {
@@ -893,7 +893,7 @@ pub fn Array_H(T: type, comptime acc: TargAccess) type {
                 }
                 sb.add("}");
             }
-            return sprint("pub var @\"{s}\" = {s};\n", .{ dname, sb.get() });
+            return sprint("pub var @\"{s}\" = {s};\n", .{ self._dname, sb.get() });
         }
     };
 }
@@ -919,20 +919,21 @@ pub fn Factory_H(T: type) type {
 
         pub const _em__builtin = {};
 
+        _dname: []const u8,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
-        pub fn createH(self: *Self, init: anytype) *Obj_H(T) {
+        pub fn createH(self: *Self, init: anytype) Obj_H(T) {
             const l = self._list.items.len;
             self._list.append(std.mem.zeroInit(T, init)) catch fail();
-            return @constCast(&Obj_H(T){ ._idx = l, ._list = &self._list });
+            return Obj_H(T){ ._fty = self, ._idx = l };
         }
 
         pub fn objCount(self: *Self) usize {
             return self._list.items.len;
         }
 
-        pub fn objGet(self: *Self, idx: usize) usize {
-            return self._list.items[idx];
+        pub fn objGet(self: *Self, idx: usize) *T {
+            return @constCast(&self._list.items[idx]);
         }
 
         pub fn objTypeName(_: Self) []const u8 {
@@ -953,14 +954,40 @@ pub fn Factory_H(T: type) type {
             sb.add("}");
             return sprint("em.Factory_T({s}){{ ._a = @constCast(&{s})}}", .{ tn, sb.get() });
         }
+
+        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+            self._dname = upath ++ "_em__C_" ++ cname;
+            var sb = StringH{};
+            const tn = mkTypeName(T);
+            const size_txt =
+                \\export const @"{0s}__BASE" = &em.Import.@"{1s}".em__C.{2s};
+                \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({3s})}});
+                \\
+                \\
+            ;
+            sb.add(sprint(size_txt, .{ self._dname, upath, cname, tn }));
+            for (0..self.objCount()) |i| {
+                const abs_txt =
+                    \\comptime {{
+                    \\    asm (".globl \"{0s}${1d}\"");
+                    \\    asm ("\"{0s}${1d}\" = \"{0s}__BASE\" + {1d} * " ++ @"{0s}__SIZE");
+                    \\}}
+                    \\extern const @"{0s}${1d}": usize;
+                    \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
+                    \\
+                    \\
+                ;
+                sb.add(sprint(abs_txt, .{ self._dname, i, tn }));
+            }
+            return sb.get();
+        }
     };
 }
 
 pub fn Factory_T(T: type) type {
     return struct {
-        const Self = @This();
         _a: []T,
-        pub fn objAll(self: Self) []T {
+        pub fn objAll(self: @This()) []T {
             return self._a;
         }
     };
@@ -972,10 +999,17 @@ pub fn Obj(T: type) type {
 
 pub fn Obj_H(T: type) type {
     return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+
+        _fty: ?*Factory_H(T),
         _idx: usize,
-        _list: *std.ArrayList(T),
-        pub fn O(self: @This()) *T {
-            return @constCast(&self._list.items[self._idx]);
+        pub fn O(self: *const Self) *T {
+            return self._fty.?.objGet(self._idx);
+        }
+        pub fn toString(self: *const Self) []const u8 {
+            return sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
         }
     };
 }

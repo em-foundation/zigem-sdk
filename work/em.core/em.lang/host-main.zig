@@ -68,7 +68,7 @@ fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
         if (@hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
-            try out.print("{s}", .{cfld.toStringDecls(unit.upath ++ "__config." ++ fld.name)});
+            try out.print("{s}", .{cfld.toStringDecls(unit.upath, fld.name)});
         }
     }
     try out.print("pub const @\"{0s}__config\" = em.Import.@\"{0s}\".EM__CONFIG{{\n", .{unit.upath});
