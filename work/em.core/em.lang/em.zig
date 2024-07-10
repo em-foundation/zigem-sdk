@@ -919,31 +919,31 @@ pub fn Factory_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        pub const Obj = struct {
-            _idx: usize,
-            _list: *std.ArrayList(T),
-            pub fn ptr(self: @This()) *T {
-                return @constCast(&self._list.items[self._idx]);
-            }
-        };
-
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
-        pub fn createH(comptime self: *Self, init: anytype) Obj {
+        pub fn createH(self: *Self, init: anytype) *Obj_H(T) {
             const l = self._list.items.len;
             self._list.append(std.mem.zeroInit(T, init)) catch fail();
-            return Obj{ ._idx = l, ._list = &self._list };
+            return @constCast(&Obj_H(T){ ._idx = l, ._list = &self._list });
         }
 
-        pub fn objCount(self: Self) usize {
+        pub fn objCount(self: *Self) usize {
             return self._list.items.len;
+        }
+
+        pub fn objGet(self: *Self, idx: usize) usize {
+            return self._list.items[idx];
         }
 
         pub fn objTypeName(_: Self) []const u8 {
             return mkTypeName(T);
         }
 
-        pub fn toString(self: Self) []const u8 {
+        pub fn ref(self: *Self) *Factory_H(T) {
+            return @constCast(self);
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
             const tn = mkTypeName(T);
             var sb = StringH{};
             sb.add(sprint("[_]{s}{{", .{tn}));
@@ -960,16 +960,28 @@ pub fn Factory_T(T: type) type {
     return struct {
         const Self = @This();
         _a: []T,
-        pub fn all(self: Self) []T {
+        pub fn objAll(self: Self) []T {
             return self._a;
         }
-        pub fn count(self: Self) usize {
-            return self._a.len;
-        }
-        pub fn get(self: Self, idx: usize) *T {
-            return @constCast(&self._arr[idx]);
+    };
+}
+
+pub fn Obj(T: type) type {
+    return if (DOMAIN == .HOST) Obj_H(T) else Obj_T(T);
+}
+
+pub fn Obj_H(T: type) type {
+    return struct {
+        _idx: usize,
+        _list: *std.ArrayList(T),
+        pub fn O(self: @This()) *T {
+            return @constCast(&self._list.items[self._idx]);
         }
     };
+}
+
+pub fn Obj_T(T: type) type {
+    return *T;
 }
 
 pub fn Param(T: type) type {
