@@ -850,6 +850,7 @@ pub fn Array_H(T: type, comptime acc: TargAccess) type {
 
         pub const _em__builtin = {};
 
+        _dname: []const u8,
         _is_virgin: bool = true,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
@@ -874,7 +875,13 @@ pub fn Array_H(T: type, comptime acc: TargAccess) type {
             self._is_virgin = sav;
         }
 
-        pub fn toString(self: Self) []const u8 {
+        pub fn toString(self: *const Self) []const u8 {
+            const tn = mkTypeName(T);
+            return sprint("em.Array_T({s}, .{s}){{ ._a = @constCast(&@\"{s}\")}}", .{ tn, @tagName(acc), self._dname });
+        }
+
+        pub fn toStringDecls(self: *Self, dname: []const u8) []const u8 {
+            self._dname = dname;
             const tn = mkTypeName(T);
             var sb = StringH{};
             if (self._is_virgin) {
@@ -886,7 +893,7 @@ pub fn Array_H(T: type, comptime acc: TargAccess) type {
                 }
                 sb.add("}");
             }
-            return sprint("em.Array_T({s}, .{s}){{ ._a = @constCast(&{s})}}", .{ tn, @tagName(acc), sb.get() });
+            return sprint("pub var @\"{s}\" = {s};\n", .{ dname, sb.get() });
         }
     };
 }
