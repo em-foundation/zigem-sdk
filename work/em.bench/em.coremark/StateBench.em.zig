@@ -2,46 +2,18 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
 pub const Crc = em.Import.@"em.coremark/Crc";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
-pub const c_memsize = em__unit.config("memsize", u16);
-
-pub const a_membuf = em__unit.array("a_membuf", u8);
-
-pub const a_errpat = em__unit.array("a_errpat", []const u8);
-pub const a_fltpat = em__unit.array("a_fltpat", []const u8);
-pub const a_intpat = em__unit.array("a_intpat", []const u8);
-pub const a_scipat = em__unit.array("a_scipat", []const u8);
-
-pub const c_errpat_len = em__unit.config("errpat_len", usize);
-pub const c_fltpat_len = em__unit.config("fltpat_len", usize);
-pub const c_intpat_len = em__unit.config("intpat_len", usize);
-pub const c_scipat_len = em__unit.config("scipat_len", usize);
-
-const errpat_vals = [_][]const u8{ "T0.3e-1F", "-T.T++Tq", "1T3.4e4z", "34.0e-T^" };
-const fltpat_vals = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400" };
-const intpat_vals = [_][]const u8{ "5012", "1234", "-874", "+122" };
-const scipat_vals = [_][]const u8{ "5.500e+3", "-.123e-2", "-87e+832", "+0.6e-12" };
-
-pub const EM__HOST = struct {
-    //
-    pub fn em__initH() void {
-        for (errpat_vals) |v| a_errpat.addElem(v);
-        for (fltpat_vals) |v| a_fltpat.addElem(v);
-        for (intpat_vals) |v| a_intpat.addElem(v);
-        for (scipat_vals) |v| a_scipat.addElem(v);
-    }
-
-    pub fn em__constructH() void {
-        a_membuf.setLen(c_memsize.get());
-        c_errpat_len.set(a_errpat.unwrap()[0].len);
-        c_fltpat_len.set(a_fltpat.unwrap()[0].len);
-        c_intpat_len.set(a_intpat.unwrap()[0].len);
-        c_scipat_len.set(a_scipat.unwrap()[0].len);
-    }
+pub const EM__CONFIG = struct {
+    memsize: em.Param(u16),
 };
+
+pub const c_memsize = em__C.memsize.ref();
+
+pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
     //
@@ -62,17 +34,12 @@ pub const EM__TARG = struct {
 
     const memsize = c_memsize.unwrap();
 
-    const errpat = a_errpat.unwrap();
-    const fltpat = a_fltpat.unwrap();
-    const intpat = a_intpat.unwrap();
-    const scipat = a_scipat.unwrap();
+    const errpat = [_][]const u8{ "T0.3e-1F", "-T.T++Tq", "1T3.4e4z", "34.0e-T^" };
+    const fltpat = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400" };
+    const intpat = [_][]const u8{ "5012", "1234", "-874", "+122" };
+    const scipat = [_][]const u8{ "5.500e+3", "-.123e-2", "-87e+832", "+0.6e-12" };
 
-    const errpat_len = c_errpat_len.unwrap();
-    const fltpat_len = c_fltpat_len.unwrap();
-    const intpat_len = c_intpat_len.unwrap();
-    const scipat_len = c_scipat_len.unwrap();
-
-    var membuf = a_membuf.unwrap();
+    var membuf = em.std.mem.zeroes([memsize]u8);
 
     pub fn dump() void {
         // TODO
@@ -225,7 +192,7 @@ pub const EM__TARG = struct {
     }
 
     fn scan(finalcnt: [*]u32, transcnt: [*]u32) void {
-        var str: StringBuf = membuf.ptr;
+        var str: StringBuf = &membuf;
         while (str[0] != 0) {
             const state = nextState(&str, transcnt);
             finalcnt[ord(state)] += 1;
@@ -259,21 +226,18 @@ pub const EM__TARG = struct {
             switch (@as(u3, @intCast(seed & 0x7))) {
                 0, 1, 2 => {
                     pat = intpat[(seed >> 3) & 0x3];
-                    plen = intpat_len;
                 },
                 3, 4 => {
                     pat = fltpat[(seed >> 3) & 0x3];
-                    plen = fltpat_len;
                 },
                 5, 6 => {
                     pat = scipat[(seed >> 3) & 0x3];
-                    plen = scipat_len;
                 },
                 7 => {
                     pat = errpat[(seed >> 3) & 0x3];
-                    plen = errpat_len;
                 },
             }
+            plen = pat.len;
         }
     }
 };
