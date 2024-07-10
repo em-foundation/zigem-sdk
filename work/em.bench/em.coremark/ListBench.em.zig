@@ -2,6 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
+pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
 
 pub const Common = em.Import.@"em.mcu/Common";
 pub const Crc = em.Import.@"em.coremark/Crc";
@@ -9,6 +10,12 @@ pub const Utils = em.Import.@"em.coremark/Utils";
 
 const Bench0 = em.Import.@"em.coremark/StateBench";
 const Bench1 = em.Import.@"em.coremark/MatrixBench";
+
+pub const EM__CONFIG = struct {
+    memsize: em.Param(u16),
+};
+
+pub const c_memsize = em__C.memsize.ref();
 
 pub const Data = struct {
     val: i16 = 0,
@@ -21,8 +28,6 @@ pub const Elem = struct {
 };
 
 pub const Comparator = fn (a: em.Ptr(Data), b: em.Ptr(Data)) i32;
-
-pub const c_memsize = em__unit.config("memsize", u16);
 
 pub const v_cur_head = em__unit.config("cur_head", em.Ptr(Elem));
 pub const v_max_elems = em__unit.config("max_elems", u16);
