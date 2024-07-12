@@ -959,18 +959,23 @@ pub fn Factory_H(T: type) type {
             self._dname = upath ++ "_em__C_" ++ cname;
             var sb = StringH{};
             const tn = mkTypeName(T);
+            sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self._dname, tn }));
+            for (self._list.items) |e| {
+                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+            }
+            sb.add("};\n");
             const size_txt =
-                \\export const @"{0s}__BASE" = &em.Import.@"{1s}".em__C.{2s};
-                \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({3s})}});
+                \\export const @"{0s}__BASE" = &@"{0s}__OBJARR";
+                \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
                 \\
                 \\
             ;
-            sb.add(sprint(size_txt, .{ self._dname, upath, cname, tn }));
+            sb.add(sprint(size_txt, .{ self._dname, tn }));
             for (0..self.objCount()) |i| {
                 const abs_txt =
                     \\comptime {{
                     \\    asm (".globl \"{0s}${1d}\"");
-                    \\    asm ("\"{0s}${1d}\" = \"{0s}__BASE\" + {1d} * " ++ @"{0s}__SIZE");
+                    \\    asm ("\"{0s}${1d}\" = \".gen.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
                     \\}}
                     \\extern const @"{0s}${1d}": usize;
                     \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
@@ -985,11 +990,11 @@ pub fn Factory_H(T: type) type {
 }
 
 pub fn Factory_T(T: type) type {
-    return struct {
-        _a: []T,
-        pub fn objAll(self: @This()) []T {
-            return self._a;
-        }
+    return extern struct {
+        _a: [*]T,
+        //pub fn objAll(self: @This()) []T {
+        //    return self._a;
+        //}
     };
 }
 
@@ -1010,6 +1015,9 @@ pub fn Obj_H(T: type) type {
         }
         pub fn toString(self: *const Self) []const u8 {
             return sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
+        }
+        pub fn typeName() []const u8 {
+            return sprint("*{s}", .{mkTypeName(T)});
         }
     };
 }
