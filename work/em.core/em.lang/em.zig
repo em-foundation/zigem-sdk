@@ -893,7 +893,8 @@ pub fn Array_H(T: type, comptime acc: TargAccess) type {
                 }
                 sb.add("}");
             }
-            return sprint("pub var @\"{s}\" = {s};\n", .{ self._dname, sb.get() });
+            const ks = if (acc == .RO) "const" else "var";
+            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
         }
     };
 }
