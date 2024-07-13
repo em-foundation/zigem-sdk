@@ -904,6 +904,9 @@ pub fn Array_T(T: type, comptime acc: TargAccess) type {
     return struct {
         const Self = @This();
         _a: A,
+        pub fn len(self: Self) usize {
+            return self._a.len;
+        }
         pub fn unwrap(self: Self) A {
             return self._a;
         }

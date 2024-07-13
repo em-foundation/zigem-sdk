@@ -27,7 +27,11 @@ pub const EM__HOST = struct {
 pub const EM__TARG = struct {
     //
     var crc_tab = em.std.mem.zeroes([@intFromEnum(Kind.ZZZ_)]sum_t);
-    const seed_tab = em__C.seed_tab.unwrap();
+    var seed_tab: [em__C.seed_tab.len()]seed_t = undefined;
+
+    pub fn em__startup() void {
+        @memcpy(&seed_tab, em__C.seed_tab.unwrap());
+    }
 
     pub fn bindCrc(kind: Kind, crc: sum_t) void {
         const p = &crc_tab[@intFromEnum(kind)];
