@@ -171,6 +171,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
+        em.@"%%[c+]"();
         var uarg: usize = @intCast(@as(u16, @bitCast(arg)));
         if (arg < 0x22) uarg = 0x22;
         var finalcnt: [NUM_STATES]u32 = undefined;
@@ -188,6 +189,7 @@ pub const EM__TARG = struct {
             crc = Crc.add32(finalcnt[i], crc);
             crc = Crc.add32(transcnt[i], crc);
         }
+        em.@"%%[c-]"();
         return crc;
     }
 
