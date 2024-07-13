@@ -126,8 +126,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn run(arg: i16) Utils.sum_t {
-        em.@"%%[a+]"();
-        if (arg < 0) em.@"%%[c+]"();
+        // em.@"%%[a+]"();
         var list = cur_head;
         const finder_idx = arg;
         const find_cnt = Utils.getSeed(3);
@@ -160,7 +159,6 @@ pub const EM__TARG = struct {
             if (data.idx >= 0) data.idx += 1;
         }
         retval += found * 4 - missed;
-        if (arg < 0) em.@"%%[c-]"();
         if (finder_idx > 0) list = sort(list, valCompare);
         const remover = remove(list.next.?);
         var finder = find(list, &data);
@@ -175,7 +173,7 @@ pub const EM__TARG = struct {
         while (e != null) : (e = e.?.next) {
             retval = Crc.add16(list.data.val, retval);
         }
-        em.@"%%[a-]"();
+        // em.@"%%[a-]"();
         return retval;
     }
 
