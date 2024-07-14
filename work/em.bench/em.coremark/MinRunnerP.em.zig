@@ -5,19 +5,12 @@ pub const Common = em.Import.@"em.mcu/Common";
 pub const CoreBench = em.Import.@"em.coremark/CoreBench";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
-pub const c_ITERATIONS = em__unit.config("ITERATIONS", u16);
+pub const ITERATIONS: u16 = 10;
 
-pub const EM__HOST = struct {
-    //
-    pub fn em__initH() void {
-        c_ITERATIONS.init(10);
-    }
-};
+pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
     //
-    const ITERATIONS = c_ITERATIONS.unwrap();
-
     pub fn em__startup() void {
         CoreBench.setup();
     }

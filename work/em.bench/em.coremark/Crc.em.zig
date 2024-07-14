@@ -4,9 +4,7 @@ pub const em__unit = em.Module(@This(), .{});
 pub const Utils = em.Import.@"em.coremark/Utils";
 pub const sum_t = Utils.sum_t;
 
-pub const EM__HOST = struct {
-    //
-};
+pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
     //

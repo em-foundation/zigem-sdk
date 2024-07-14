@@ -9,18 +9,13 @@ pub const MatrixBench = em.Import.@"em.coremark/MatrixBench";
 pub const StateBench = em.Import.@"em.coremark/StateBench";
 pub const Utils = em.Import.@"em.coremark/Utils";
 
-pub const c_NUM_ALGS = em__unit.config("NUM_ALGS", u8);
-pub const c_TOTAL_DATA_SIZE = em__unit.config("TOTAL_DATA_SIZE", u16);
+pub const NUM_ALGS: u8 = 3;
+pub const TOTAL_DATA_SIZE: u16 = 2000;
 
 pub const EM__HOST = struct {
     //
-    pub fn em__initH() void {
-        c_NUM_ALGS.init(3);
-        c_TOTAL_DATA_SIZE.init(2000);
-    }
-
     pub fn em__configureH() void {
-        const memsize = c_TOTAL_DATA_SIZE.get() / c_NUM_ALGS.get();
+        const memsize = TOTAL_DATA_SIZE / NUM_ALGS;
         ListBench.c_memsize.set(memsize);
         MatrixBench.c_memsize.set(memsize);
         StateBench.c_memsize.set(memsize);
