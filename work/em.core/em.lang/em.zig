@@ -1018,7 +1018,7 @@ pub fn Obj_H(T: type) type {
             return self._fty.?.objGet(self._idx);
         }
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
+            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
         }
         pub fn typeName() []const u8 {
             return sprint("*{s}", .{mkTypeName(T)});
