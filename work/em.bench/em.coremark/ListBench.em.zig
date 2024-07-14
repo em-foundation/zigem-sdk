@@ -12,7 +12,11 @@ const Bench0 = em.Import.@"em.coremark/StateBench";
 const Bench1 = em.Import.@"em.coremark/MatrixBench";
 
 pub const EM__CONFIG = struct {
+    cur_head: em.Obj(Elem),
+    max_elems: em.Param(u16),
     memsize: em.Param(u16),
+    DataOF: em.Factory(Data),
+    ElemOF: em.Factory(Elem),
 };
 
 pub const c_memsize = em__C.memsize.ref();
@@ -23,51 +27,45 @@ pub const Data = struct {
 };
 
 pub const Elem = struct {
-    next: ?em.Ptr(Elem),
-    data: em.Ptr(Data),
+    next: ?em.Obj(Elem),
+    data: em.Obj(Data),
 };
 
-pub const Comparator = fn (a: em.Ptr(Data), b: em.Ptr(Data)) i32;
-
-pub const v_cur_head = em__unit.config("cur_head", em.Ptr(Elem));
-pub const v_max_elems = em__unit.config("max_elems", u16);
-
-pub const a_data = em__unit.factory("Data", Data);
-pub const a_elem = em__unit.factory("Elem", Elem);
+pub const Comparator = fn (a: em.Obj(Data), b: em.Obj(Data)) i32;
 
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);
-        const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(c_memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
-        const head = a_elem.createH(.{});
-        head.O().data = a_data.createH(.{});
+        const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;
+        const head = em__C.ElemOF.createH(.{});
+        head.O().data = em__C.DataOF.createH(.{});
         var p = head;
         for (0..max - 1) |_| {
-            const q = a_elem.createH(.{});
-            q.O().data = a_data.createH(.{});
+            const q = em__C.ElemOF.createH(.{});
+            q.O().data = em__C.DataOF.createH(.{});
             p.O().next = q;
             p = q;
         }
         p.O().next = null;
-        v_cur_head.set(head);
-        v_max_elems.set(max);
+        em__C.cur_head = head;
+        em__C.max_elems.set(max);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const max_elems = v_max_elems.unwrap();
+    const max_elems = em__C.max_elems.unwrap();
 
-    var cur_head = v_cur_head.unwrap();
+    var cur_head = em__C.cur_head;
 
     pub fn dump() void {
         // TODO
         return;
     }
 
-    fn find(list: em.Ptr(Elem), data: em.Ptr(Data)) ?em.Ptr(Elem) {
-        var elem: ?em.Ptr(Elem) = list;
+    fn find(list: em.Obj(Elem), data: em.Obj(Data)) ?em.Obj(Elem) {
+        var elem: ?em.Obj(Elem) = list;
         if (data.idx >= 0) {
             while (elem != null and (elem.?.data.idx != data.idx)) {
                 elem = elem.?.next;
@@ -86,8 +84,8 @@ pub const EM__TARG = struct {
         return .LIST;
     }
 
-    fn prList(list: em.Ptr(Elem), name: []const u8) void {
-        var elem: ?em.Ptr(Elem) = list;
+    fn prList(list: em.Obj(Elem), name: []const u8) void {
+        var elem: ?em.Obj(Elem) = list;
         var sz: usize = 0;
         em.print("{s}\n[", .{name});
         while (elem != null) {
@@ -103,7 +101,7 @@ pub const EM__TARG = struct {
         prList(cur_head, "current");
     }
 
-    fn remove(item: em.Ptr(Elem)) em.Ptr(Elem) {
+    fn remove(item: em.Obj(Elem)) em.Obj(Elem) {
         const ret = item.next;
         const tmp = item.data;
         item.data = ret.?.data;
@@ -113,9 +111,9 @@ pub const EM__TARG = struct {
         return ret.?;
     }
 
-    fn reverse(list: em.Ptr(Elem)) em.Ptr(Elem) {
-        var p: ?em.Ptr(Elem) = list;
-        var next: ?em.Ptr(Elem) = null;
+    fn reverse(list: em.Obj(Elem)) em.Obj(Elem) {
+        var p: ?em.Obj(Elem) = list;
+        var next: ?em.Obj(Elem) = null;
         while (p != null) {
             const tmp = p.?.next;
             p.?.next = next;
@@ -181,7 +179,7 @@ pub const EM__TARG = struct {
         const seed = Utils.getSeed(1);
         var ki: u16 = 1;
         var kd: u16 = max_elems - 3;
-        var e: ?em.Ptr(Elem) = cur_head;
+        var e: ?em.Obj(Elem) = cur_head;
         e.?.data.idx = 0;
         e.?.data.val = @bitCast(@as(u16, 0x8080));
         e = e.?.next;
@@ -208,15 +206,15 @@ pub const EM__TARG = struct {
         em.@"%%[c-]"();
     }
 
-    fn sort(list: em.Ptr(Elem), cmp: Comparator) em.Ptr(Elem) {
-        var res: ?em.Ptr(Elem) = list;
+    fn sort(list: em.Obj(Elem), cmp: Comparator) em.Obj(Elem) {
+        var res: ?em.Obj(Elem) = list;
         var insize: usize = 1;
-        var q: ?em.Ptr(Elem) = undefined;
-        var e: em.Ptr(Elem) = undefined;
+        var q: ?em.Obj(Elem) = undefined;
+        var e: em.Obj(Elem) = undefined;
         while (true) {
             var p = res;
             res = null;
-            var tail: ?em.Ptr(Elem) = null;
+            var tail: ?em.Obj(Elem) = null;
             var nmerges: i32 = 0; // count number of merges we do in this pass
             while (p != null) {
                 nmerges += 1; // there exists a merge to be done
@@ -274,7 +272,7 @@ pub const EM__TARG = struct {
         return res.?;
     }
 
-    fn unremove(removed: em.Ptr(Elem), modified: em.Ptr(Elem)) void {
+    fn unremove(removed: em.Obj(Elem), modified: em.Obj(Elem)) void {
         const tmp = removed.data;
         removed.data = modified.data;
         modified.data = tmp;
@@ -284,7 +282,7 @@ pub const EM__TARG = struct {
 
     // IdxComparator
 
-    fn idxCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+    fn idxCompare(a: em.Obj(Data), b: em.Obj(Data)) i32 {
         const avu: u16 = @bitCast(a.val);
         const bvu: u16 = @bitCast(b.val);
         const sft: u4 = 8;
@@ -297,7 +295,7 @@ pub const EM__TARG = struct {
 
     // ValComparator
 
-    fn valCompare(a: em.Ptr(Data), b: em.Ptr(Data)) i32 {
+    fn valCompare(a: em.Obj(Data), b: em.Obj(Data)) i32 {
         const val1 = valCmpCalc(&a.val);
         const val2 = valCmpCalc(&b.val);
         // em.print("z: vcmp = {d}\n", .{val1 - val2});
