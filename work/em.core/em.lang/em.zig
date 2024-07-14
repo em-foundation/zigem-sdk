@@ -456,11 +456,44 @@ pub const Unit = struct {
         }
     }
 
-    pub fn Config(self: Self, PT: type) *PT {
+    pub fn Config(self: Self, comptime CT: type) *CT {
         switch (DOMAIN) {
-            .HOST => return @constCast(&std.mem.zeroInit(PT, .{})),
-            .TARG => return @constCast(&@field(targ, self.extendPath("config"))),
+            .HOST => {
+                const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};
+                return @constCast(&std.mem.zeroInit(CT, init));
+            },
+            .TARG => {
+                return @constCast(&@field(targ, self.extendPath("config")));
+            },
         }
+
+        //switch (DOMAIN) {
+        //    .HOST => {
+        //        const flds = @typeInfo(CT).Struct.fields;
+        //        comptime var new_flds: [flds.len + 1]std.builtin.Type.StructField = undefined;
+        //        for (flds, 0..) |fld, i| {
+        //            new_flds[i] = fld;
+        //        }
+        //        new_flds[flds.len] = .{
+        //            .name = "em__upath",
+        //            .type = []const u8,
+        //            .default_value = null,
+        //            .is_comptime = false,
+        //            .alignment = 0,
+        //        };
+        //        const CT2 = @Type(.{ .Struct = .{
+        //            .layout = .auto,
+        //            .fields = new_flds[0..],
+        //            .decls = &.{},
+        //            .is_tuple = false,
+        //            .backing_integer = null,
+        //        } });
+        //        return @constCast(&std.mem.zeroInit(CT2, .{ .em__upath = self.upath }));
+        //    },
+        //    .TARG => {
+        //        return @constCast(&@field(targ, self.extendPath("config")));
+        //    },
+        //}
     }
 
     pub fn factory(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _FactoryD(self.extendPath(name), T) else _FactoryV(self.extendPath(name), T, @field(targ, self.extendPath(name))[0..]) {
@@ -825,20 +858,6 @@ pub fn @"%%[d:]"(k: u8) void {
 // -------- EM__CONFIG -------- //
 
 pub const TargAccess = enum { RO, RW };
-
-pub fn Module2(This: type, opts: UnitOpts) Unit {
-    const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
-    return Unit{
-        .generated = opts.generated,
-        .host_only = opts.host_only,
-        .inherits = opts.inherits,
-        .kind = .module,
-        .legacy = opts.legacy,
-        .self = This,
-        .scope = unitScope(This),
-        .upath = un,
-    };
-}
 
 pub fn Array(T: type, comptime acc: TargAccess) type {
     return if (DOMAIN == .HOST) Array_H(T, acc) else Array_T(T, acc);

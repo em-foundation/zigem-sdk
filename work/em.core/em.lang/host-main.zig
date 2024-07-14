@@ -64,10 +64,11 @@ fn genCall(comptime fname: []const u8, ulist: []const *em.Unit, mode: enum { all
 fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
     if (!@hasDecl(unit.self, "em__C")) return;
     const C = @field(unit.self, "em__C");
+    // em.print("{s}: U = {s}, C = {x}", .{ unit.upath, @typeName(unit.self), @intFromPtr(C) });
     const ti = @typeInfo(@typeInfo(@TypeOf(C)).Pointer.child);
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
-        if (@hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
+        if (@typeInfo(@TypeOf(cfld)) == .Struct and @hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
             try out.print("{s}", .{cfld.toStringDecls(unit.upath, fld.name)});
         }
     }

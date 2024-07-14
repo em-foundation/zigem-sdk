@@ -1,6 +1,11 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Template(@This(), .{});
 
+pub const EM__CONFIG = struct {
+    em__upath: []const u8,
+    pin: em.Param(i16),
+};
+
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
         pub const em__unit = em.Module(
@@ -11,13 +16,14 @@ pub fn em__generateS(comptime name: []const u8) type {
                 .name = name,
             },
         );
+        pub const em__C: *EM__CONFIG = @This().em__unit.Config(EM__CONFIG);
 
-        pub const c_pin = @This().em__unit.config("pin", i16);
+        pub const c_pin = em__C.pin.ref();
 
         pub const EM__HOST = struct {
             //
             pub fn em__initH() void {
-                c_pin.init(-1);
+                c_pin.set(-1);
             }
         };
 
@@ -26,7 +32,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             const hal = em.hal;
             const reg = em.reg;
 
-            const pin = c_pin.unwrap();
+            const pin = em__C.pin.unwrap();
             const is_def = (pin >= 0);
             const mask = init: {
                 const p5 = @as(u5, @bitCast(@as(i5, @truncate(pin))));
