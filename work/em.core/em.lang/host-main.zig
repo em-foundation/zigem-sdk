@@ -71,7 +71,8 @@ fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
             try out.print("{s}", .{cfld.toStringDecls(unit.upath, fld.name)});
         }
     }
-    try out.print("pub const @\"{0s}__config\" = em.Import.@\"{0s}\".EM__CONFIG{{\n", .{unit.upath});
+    const cfgpath = if (!unit.generated) unit.upath else mkConfigPath(@typeName(@TypeOf(C)));
+    try out.print("pub const @\"{s}__config\" = em.Import.@\"{s}\".EM__CONFIG{{\n", .{ unit.upath, cfgpath });
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
         try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(cfld) });
@@ -208,6 +209,12 @@ fn genTermFn(comptime name: []const u8, ulist: []const *em.Unit, out: std.fs.Fil
     try genCall(name, ulist, .first, out);
     try out.print("    em__done();\n", .{});
     try out.print("}}\n", .{});
+}
+
+fn mkConfigPath(comptime tn: []const u8) []const u8 {
+    const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
+    const tun = comptime tn[1..idx]; // skip leading '*'
+    return @as([]const u8, @field(type_map, tun));
 }
 
 fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
