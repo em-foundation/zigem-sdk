@@ -57,7 +57,7 @@ pub fn em__configureH() void {
     Debug.DbgB.set(DbgB);
     Debug.DbgC.set(DbgC);
     Debug.DbgD.set(DbgD);
-    EpochTime.x_Uptimer.set(Uptimer);
+    EpochTime.Uptimer.set(Uptimer);
     ExtFlashDisabler.CLK.set(FlashCLK);
     ExtFlashDisabler.CS.set(FlashCS);
     ExtFlashDisabler.PICO.set(FlashPICO);
