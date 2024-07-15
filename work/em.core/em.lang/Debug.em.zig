@@ -1,24 +1,30 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 const Common = em.Import.@"em.mcu/Common";
 const GpioI = em.Import.@"em.hal/GpioI";
 
-pub const x_DbgA = em__unit.proxy("DbgA", GpioI);
-pub const x_DbgB = em__unit.proxy("DbgB", GpioI);
-pub const x_DbgC = em__unit.proxy("DbgC", GpioI);
-pub const x_DbgD = em__unit.proxy("DbgD", GpioI);
+pub const EM__CONFIG = struct {
+    DbgA: em.Proxy(GpioI),
+    DbgB: em.Proxy(GpioI),
+    DbgC: em.Proxy(GpioI),
+    DbgD: em.Proxy(GpioI),
+};
 
 pub const EM__HOST = struct {
-    //
+    pub const DbgA = em__C.DbgA.ref();
+    pub const DbgB = em__C.DbgB.ref();
+    pub const DbgC = em__C.DbgC.ref();
+    pub const DbgD = em__C.DbgD.ref();
 };
 
 pub const EM__TARG = struct {
     //
-    const DbgA = x_DbgA.unwrap();
-    const DbgB = x_DbgB.unwrap();
-    const DbgC = x_DbgC.unwrap();
-    const DbgD = x_DbgD.unwrap();
+    const DbgA = em__C.DbgA.unwrap();
+    const DbgB = em__C.DbgB.unwrap();
+    const DbgC = em__C.DbgC.unwrap();
+    const DbgD = em__C.DbgD.unwrap();
 
     fn delay() void {
         Common.BusyWait.wait(1);
