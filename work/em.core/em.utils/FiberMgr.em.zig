@@ -1,10 +1,14 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const _factory = em__unit.factory("Fiber", Fiber);
-pub const Obj = em.Ptr(Fiber);
+pub const EM__CONFIG = struct {
+    FiberOF: em.Factory(Fiber),
+};
+
+pub const Obj = em.Obj(Fiber);
 
 pub const FiberBody = struct {
     arg: usize,
@@ -12,7 +16,7 @@ pub const FiberBody = struct {
 
 pub const Fiber = struct {
     const Self = @This();
-    link: ?Obj = null,
+    link: ?em.Obj(Fiber),
     body: em.Func(em.CB(FiberBody)),
     arg: usize = 0,
     pub fn post(self: *Self) void {
@@ -22,8 +26,8 @@ pub const Fiber = struct {
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(em.CB(FiberBody))) Obj {
-        const fiber = _factory.createH(.{ .body = body });
+    pub fn createH(body: em.Func(em.CB(FiberBody))) em.Obj(Fiber) {
+        const fiber = em__C.FiberOF.createH(.{ .body = body });
         return fiber;
     }
 };
