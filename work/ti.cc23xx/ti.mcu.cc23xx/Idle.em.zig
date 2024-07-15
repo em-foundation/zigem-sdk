@@ -23,18 +23,15 @@ pub const EM__HOST = struct {
     var sleep_leave_cb_tab = CallbackTab{};
 
     pub fn em__constructH() void {
-        em.print("construct", .{});
         em__C.sleep_enter_fxn_tab.set(sleep_enter_cb_tab);
         em__C.sleep_leave_fxn_tab.set(sleep_leave_cb_tab);
     }
 
     pub fn addSleepEnterCbH(cb: CallbackFxn) void {
-        em.print("enter", .{});
         sleep_enter_cb_tab.add(cb);
     }
 
     pub fn addSleepLeaveCbH(cb: CallbackFxn) void {
-        em.print("leave", .{});
         sleep_leave_cb_tab.add(cb);
     }
 

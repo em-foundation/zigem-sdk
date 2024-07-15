@@ -8,18 +8,18 @@ pub const EM__CONFIG = struct {
     scalar: em.Param(u8),
 };
 
-pub const c_scalar = em__C.scalar.ref();
-
 pub const EM__HOST = struct {
     //
+    pub const scalar = em__C.scalar.ref();
+
     pub fn em__initH() void {
-        c_scalar.set(6);
+        scalar.set(6);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const scalar = c_scalar.unwrap();
+    const scalar = em__C.scalar.unwrap();
 
     pub fn wait(usecs: u32) void {
         if (usecs == 0) return;
