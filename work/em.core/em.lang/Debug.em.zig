@@ -2,8 +2,8 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-const Common = em.Import.@"em.mcu/Common";
-const GpioI = em.Import.@"em.hal/GpioI";
+const Common = em.import.@"em.mcu/Common";
+const GpioI = em.import.@"em.hal/GpioI";
 
 pub const EM__CONFIG = struct {
     DbgA: em.Proxy(GpioI),

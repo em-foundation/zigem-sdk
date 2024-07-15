@@ -3,7 +3,7 @@ pub const em__U = em.Template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Pin: em.Proxy(em.Import.@"em.hal/GpioI"),
+    Pin: em.Proxy(em.import.@"em.hal/GpioI"),
     active_low: em.Param(bool),
 };
 
@@ -16,7 +16,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         });
         pub const em__C = @This().em__U.Config(EM__CONFIG);
 
-        pub const Poller = em.Import.@"em.mcu/Poller";
+        pub const Poller = em.import.@"em.mcu/Poller";
 
         pub const EM__HOST = struct {
             //

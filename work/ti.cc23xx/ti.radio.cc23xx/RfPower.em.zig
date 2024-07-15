@@ -1,7 +1,7 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 
-pub const RfTemp = em.Import.@"ti.radio.cc23xx/RfTemp";
+pub const RfTemp = em.import.@"ti.radio.cc23xx/RfTemp";
 
 const TableEntry = packed struct {
     power: packed struct {

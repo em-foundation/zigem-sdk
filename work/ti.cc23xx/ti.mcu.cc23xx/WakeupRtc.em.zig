@@ -1,9 +1,9 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/WakeupTimerI",
+    .inherits = em.import.@"em.hal/WakeupTimerI",
 });
 
-pub const Rtc = em.Import.@"ti.mcu.cc23xx/Rtc";
+pub const Rtc = em.import.@"ti.mcu.cc23xx/Rtc";
 
 pub const Handler = em__U.inherits.Handler;
 

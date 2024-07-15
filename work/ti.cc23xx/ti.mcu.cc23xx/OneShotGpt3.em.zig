@@ -1,10 +1,10 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/OneShotMilliI",
+    .inherits = em.import.@"em.hal/OneShotMilliI",
 });
 
-pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
-pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
+pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
 pub const Handler = em__U.inherits.Handler;
 

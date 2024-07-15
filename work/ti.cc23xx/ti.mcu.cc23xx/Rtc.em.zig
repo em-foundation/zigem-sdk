@@ -2,7 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
 pub const EM__CONFIG = struct {};
 

@@ -1,7 +1,7 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 
-pub const Common = em.Import.@"em.mcu/Common";
+pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {};
 

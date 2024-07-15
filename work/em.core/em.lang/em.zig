@@ -4,7 +4,7 @@ const domain_desc = @import("../../.gen/domain.zig");
 pub const Domain = domain_desc.Domain;
 pub const DOMAIN = domain_desc.DOMAIN;
 
-pub const Import = @import("../../.gen/imports.zig");
+pub const import = @import("../../.gen/imports.zig");
 
 pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
 

@@ -1,11 +1,11 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/IdleI",
+    .inherits = em.import.@"em.hal/IdleI",
 });
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const Debug = em.Import.@"em.lang/Debug";
-pub const Hapi = em.Import.@"ti.mcu.cc23xx/Hapi";
+pub const Debug = em.import.@"em.lang/Debug";
+pub const Hapi = em.import.@"ti.mcu.cc23xx/Hapi";
 
 pub const EM__CONFIG = struct {
     sleep_enter_fxn_tab: em.Param(CallbackTab),

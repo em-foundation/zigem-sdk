@@ -2,11 +2,11 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
-pub const Common = em.Import.@"em.mcu/Common";
-pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
-pub const TickerMgr = em.Import.@"em.utils/TickerMgr";
-pub const RadioDriver = em.Import.@"ti.radio.cc23xx/RadioDriver";
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const Common = em.import.@"em.mcu/Common";
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const TickerMgr = em.import.@"em.utils/TickerMgr";
+pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__CONFIG = struct {
     txTicker: em.Param(TickerMgr.Obj),

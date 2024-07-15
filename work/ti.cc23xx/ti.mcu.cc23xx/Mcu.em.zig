@@ -1,10 +1,10 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/McuI",
+    .inherits = em.import.@"em.hal/McuI",
 });
 
-pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
-pub const Debug = em.Import.@"em.lang/Debug";
+pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
+pub const Debug = em.import.@"em.lang/Debug";
 
 pub const EM__HOST = struct {
     //

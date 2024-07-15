@@ -1,13 +1,13 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/ConsoleUartI",
+    .inherits = em.import.@"em.hal/ConsoleUartI",
 });
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
+pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 
 pub const EM__CONFIG = struct {
-    TxPin: em.Proxy(em.Import.@"em.hal/GpioI"),
+    TxPin: em.Proxy(em.import.@"em.hal/GpioI"),
 };
 
 pub const EM__HOST = struct {

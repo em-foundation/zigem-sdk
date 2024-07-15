@@ -2,13 +2,13 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
+pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 
 pub const EM__CONFIG = struct {
-    CS: em.Proxy(em.Import.@"em.hal/GpioI"),
-    CLK: em.Proxy(em.Import.@"em.hal/GpioI"),
-    PICO: em.Proxy(em.Import.@"em.hal/GpioI"),
-    POCI: em.Proxy(em.Import.@"em.hal/GpioI"),
+    CS: em.Proxy(em.import.@"em.hal/GpioI"),
+    CLK: em.Proxy(em.import.@"em.hal/GpioI"),
+    PICO: em.Proxy(em.import.@"em.hal/GpioI"),
+    POCI: em.Proxy(em.import.@"em.hal/GpioI"),
 };
 
 pub const EM__HOST = struct {

@@ -2,10 +2,10 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const Common = em.Import.@"em.mcu/Common";
+pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__CONFIG = struct {
-    OneShot: em.Proxy(em.Import.@"em.hal/OneShotMilliI"),
+    OneShot: em.Proxy(em.import.@"em.hal/OneShotMilliI"),
 };
 
 pub const EM__HOST = struct {

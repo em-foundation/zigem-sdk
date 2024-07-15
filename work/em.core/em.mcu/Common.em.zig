@@ -3,13 +3,13 @@ pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    BusyWait: em.Proxy(em.Import.@"em.hal/BusyWaitI"),
-    ConsoleUart: em.Proxy(em.Import.@"em.hal/ConsoleUartI"),
-    GlobalInterrupts: em.Proxy(em.Import.@"em.hal/GlobalInterruptsI"),
-    Idle: em.Proxy(em.Import.@"em.hal/IdleI"),
-    Mcu: em.Proxy(em.Import.@"em.hal/McuI"),
-    MsCounter: em.Proxy(em.Import.@"em.hal/MsCounterI"),
-    UsCounter: em.Proxy(em.Import.@"em.hal/UsCounterI"),
+    BusyWait: em.Proxy(em.import.@"em.hal/BusyWaitI"),
+    ConsoleUart: em.Proxy(em.import.@"em.hal/ConsoleUartI"),
+    GlobalInterrupts: em.Proxy(em.import.@"em.hal/GlobalInterruptsI"),
+    Idle: em.Proxy(em.import.@"em.hal/IdleI"),
+    Mcu: em.Proxy(em.import.@"em.hal/McuI"),
+    MsCounter: em.Proxy(em.import.@"em.hal/MsCounterI"),
+    UsCounter: em.Proxy(em.import.@"em.hal/UsCounterI"),
 };
 
 pub const EM__HOST = struct {

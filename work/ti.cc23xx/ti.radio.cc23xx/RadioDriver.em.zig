@@ -2,13 +2,13 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
-pub const RfFifo = em.Import.@"ti.radio.cc23xx/RfFifo";
-pub const RfFreq = em.Import.@"ti.radio.cc23xx/RfFreq";
-pub const RfPatch = em.Import.@"ti.radio.cc23xx/RfPatch";
-pub const RfPower = em.Import.@"ti.radio.cc23xx/RfPower";
-pub const RfRegs = em.Import.@"ti.radio.cc23xx/RfRegs";
-pub const RfTrim = em.Import.@"ti.radio.cc23xx/RfTrim";
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const RfFifo = em.import.@"ti.radio.cc23xx/RfFifo";
+pub const RfFreq = em.import.@"ti.radio.cc23xx/RfFreq";
+pub const RfPatch = em.import.@"ti.radio.cc23xx/RfPatch";
+pub const RfPower = em.import.@"ti.radio.cc23xx/RfPower";
+pub const RfRegs = em.import.@"ti.radio.cc23xx/RfRegs";
+pub const RfTrim = em.import.@"ti.radio.cc23xx/RfTrim";
 
 pub const EM__CONFIG = struct {
     handler: em.Param(em.Func(em.CB(Handler))),

@@ -2,9 +2,9 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
-pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
-pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
+pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const EM__CONFIG = struct {
     alarm: em.Param(AlarmMgr.Obj),

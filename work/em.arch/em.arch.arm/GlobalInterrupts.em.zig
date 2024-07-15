@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/GlobalInterruptsI",
+    .inherits = em.import.@"em.hal/GlobalInterruptsI",
 });
 
 pub const EM__HOST = struct {

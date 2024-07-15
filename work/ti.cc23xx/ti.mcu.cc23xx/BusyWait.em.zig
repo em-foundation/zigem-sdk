@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.hal/BusyWaitI",
+    .inherits = em.import.@"em.hal/BusyWaitI",
 });
 pub const em__C = em__U.Config(EM__CONFIG);
 

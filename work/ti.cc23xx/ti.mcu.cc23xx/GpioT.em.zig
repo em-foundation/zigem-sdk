@@ -11,7 +11,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const em__U = em.Module(
             @This(),
             .{
-                .inherits = em.Import.@"em.hal/GpioI",
+                .inherits = em.import.@"em.hal/GpioI",
                 .generated = true,
                 .name = name,
             },
