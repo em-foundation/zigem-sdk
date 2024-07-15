@@ -18,13 +18,13 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const Poller = em.Import.@"em.mcu/Poller";
 
-        pub const c_active_low = em__C.active_low.ref();
-        pub const x_Pin = em__C.Pin.ref();
-
         pub const EM__HOST = struct {
             //
+            pub const active_low = em__C.active_low.ref();
+            pub const Pin = em__C.Pin.ref();
+
             pub fn em__initH() void {
-                c_active_low.set(false);
+                active_low.set(false);
             }
         };
 

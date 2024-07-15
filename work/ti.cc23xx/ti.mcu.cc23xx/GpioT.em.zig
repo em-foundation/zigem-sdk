@@ -18,19 +18,17 @@ pub fn em__generateS(comptime name: []const u8) type {
         );
         pub const em__C: *EM__CONFIG = @This().em__unit.Config(EM__CONFIG);
 
-        pub const c_pin = em__C.pin.ref();
-
         pub const EM__HOST = struct {
             //
+            pub const pin = em__C.pin.ref();
+
             pub fn em__initH() void {
-                c_pin.set(-1);
+                pin.set(-1);
             }
         };
 
         pub const EM__TARG = struct {
             //
-            const hal = em.hal;
-            const reg = em.reg;
 
             const pin = em__C.pin.unwrap();
             const is_def = (pin >= 0);
@@ -39,6 +37,9 @@ pub fn em__generateS(comptime name: []const u8) type {
                 const m: u32 = @as(u32, 1) << p5;
                 break :init m;
             };
+
+            const hal = em.hal;
+            const reg = em.reg;
 
             pub fn clear() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTCLR31_0).* = mask;
@@ -62,7 +63,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             }
 
             pub fn pinId() i16 {
-                return c_pin.get();
+                return pin;
             }
 
             pub fn reset() void {

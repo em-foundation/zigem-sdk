@@ -10,7 +10,7 @@ pub const EM__CONFIG = struct {
 
 pub const EM__HOST = struct {
     //
-    pub const x_OneShot = em__C.OneShot.ref();
+    pub const OneShot = em__C.OneShot.ref();
 };
 
 pub const EM__TARG = struct {
