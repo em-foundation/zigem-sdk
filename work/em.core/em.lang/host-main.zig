@@ -171,7 +171,7 @@ fn genTarg(ulist_bot: []const *em.Unit, ulist_top: []const *em.Unit) !void {
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
         if (u.kind == .module and !u.host_only and !u.legacy) {
-            try out.print("// {s}\n", .{u.upath});
+            try out.print("// {0s} {1s} {0s}\n", .{ "=" ** 8, u.upath });
             try genConfig(u, out);
             try genDecls(u, out);
             try out.print("\n", .{});

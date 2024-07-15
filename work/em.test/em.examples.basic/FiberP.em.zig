@@ -7,20 +7,20 @@ pub const Common = em.Import.@"em.mcu/Common";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
 pub const EM__CONFIG = struct {
-    blinkF: em.Obj(FiberMgr.Fiber),
+    blinkF: em.Param(FiberMgr.Obj),
 };
 
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
         const blinkF = FiberMgr.createH(em__unit.func("blinkFB", em.CB(FiberMgr.FiberBody)));
-        em__C.blinkF = blinkF;
+        em__C.blinkF.set(blinkF);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const blinkF = em__C.blinkF;
+    const blinkF = em__C.blinkF.unwrap();
 
     pub fn em__run() void {
         blinkF.post();

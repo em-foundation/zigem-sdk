@@ -36,7 +36,7 @@ pub const WakeupTimer = em.Import.@"ti.mcu.cc23xx/WakeupRtc";
 pub const EM__HOST = struct {};
 
 pub fn em__configureH() void {
-    AlarmMgr.x_WakeupTimer.set(WakeupTimer);
+    AlarmMgr.WakeupTimer.set(WakeupTimer);
     AppLedPin.pin.set(15);
     AppLed.Pin.set(AppLedPin);
     AppOutPin.pin.set(20);

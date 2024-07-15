@@ -1,25 +1,30 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const c_alarm = em__unit.config("alarm", AlarmMgr.Obj);
-pub const c_blinkF = em__unit.config("blinkF", FiberMgr.Obj);
+pub const EM__CONFIG = struct {
+    alarm: em.Param(AlarmMgr.Obj),
+    blinkF: em.Param(FiberMgr.Obj),
+};
 
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        c_blinkF.set(FiberMgr.createH(em__unit.func("blinkFB", em.CB(FiberMgr.FiberBody))));
-        c_alarm.set(AlarmMgr.createH(c_blinkF.get()));
+        const blinkF = FiberMgr.createH(em__unit.func("blinkFB", em.CB(FiberMgr.FiberBody)));
+        const alarm = AlarmMgr.createH(blinkF);
+        em__C.alarm.set(alarm);
+        em__C.blinkF.set(blinkF);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const alarm = c_alarm.unwrap();
-    const blinkF = c_blinkF.unwrap();
+    const alarm = em__C.alarm.unwrap();
+    const blinkF = em__C.blinkF.unwrap();
     var counter: u32 = 0;
 
     pub fn em__run() void {

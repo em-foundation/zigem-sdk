@@ -951,11 +951,11 @@ pub fn Factory_H(T: type) type {
             return Obj_H(T){ ._fty = self, ._idx = l };
         }
 
-        pub fn objCount(self: *Self) usize {
+        pub fn objCount(self: *const Self) usize {
             return self._list.items.len;
         }
 
-        pub fn objGet(self: *Self, idx: usize) *T {
+        pub fn objGet(self: *const Self, idx: usize) *T {
             return @constCast(&self._list.items[idx]);
         }
 
@@ -969,13 +969,7 @@ pub fn Factory_H(T: type) type {
 
         pub fn toString(self: *const Self) []const u8 {
             const tn = mkTypeName(T);
-            var sb = StringH{};
-            sb.add(sprint("[_]{s}{{", .{tn}));
-            for (self._list.items) |e| {
-                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
-            }
-            sb.add("}");
-            return sprint("em.Factory_T({s}){{ ._a = @constCast(&{s})}}", .{ tn, sb.get() });
+            return sprint("em.Factory_T({s}){{ ._arr = @constCast(&@\"{s}__OBJARR\"), ._len = {d}}}", .{ tn, self._dname, self.objCount() });
         }
 
         pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
@@ -1014,10 +1008,11 @@ pub fn Factory_H(T: type) type {
 
 pub fn Factory_T(T: type) type {
     return extern struct {
-        _a: [*]T,
-        //pub fn objAll(self: @This()) []T {
-        //    return self._a;
-        //}
+        _arr: [*]T,
+        _len: usize,
+        pub fn objAll(self: @This()) []T {
+            return self._arr[0..self._len];
+        }
     };
 }
 

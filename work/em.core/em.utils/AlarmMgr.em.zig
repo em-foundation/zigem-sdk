@@ -1,11 +1,16 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const EpochTime = em.Import.@"em.utils/EpochTime";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
-pub const _factory = em__unit.factory("Alarm", Alarm);
-pub const Obj = em.Ptr(Alarm);
+pub const EM__CONFIG = struct {
+    AlarmOF: em.Factory(Alarm),
+    WakeupTimer: em.Proxy(em.Import.@"em.hal/WakeupTimerI"),
+};
+
+pub const Obj = em.Obj(Alarm);
 
 pub const Alarm = struct {
     const Self = @This();
@@ -26,24 +31,24 @@ pub const Alarm = struct {
     }
 };
 
-pub const x_WakeupTimer = em__unit.proxy("WakeupTimer", em.Import.@"em.hal/WakeupTimerI");
-
 pub const EM__HOST = struct {
     //
+    pub const WakeupTimer = em__C.WakeupTimer.ref();
+
     pub fn createH(fiber: FiberMgr.Obj) Obj {
-        const alarm = _factory.createH(.{ ._fiber = fiber });
+        const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
         return alarm;
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const WakeupTimer = x_WakeupTimer.unwrap();
+    const WakeupTimer = em__C.WakeupTimer.unwrap();
 
     var cur_alarm: ?*Alarm = null;
 
     fn update(delta_ticks: u32) void {
-        const alarm_tab = _factory.all();
+        const alarm_tab = em__C.AlarmOF.objAll();
         const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
         WakeupTimer.disable();
         var nxt_alarm: ?*Alarm = null;
