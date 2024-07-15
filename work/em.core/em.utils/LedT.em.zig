@@ -2,6 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Template(@This(), .{});
 
 pub const EM__CONFIG = struct {
+    em__upath: []const u8,
     Pin: em.Proxy(em.Import.@"em.hal/GpioI"),
     active_low: em.Param(bool),
 };
