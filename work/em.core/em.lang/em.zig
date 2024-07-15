@@ -17,110 +17,6 @@ pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub fn _ArrayD(dp: []const u8, T: type) type {
-    return struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-        pub const _em__array = {};
-
-        var _is_virgin: bool = true;
-        var _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator());
-
-        const _dpath = dp;
-
-        pub fn Type(_: Self) type {
-            return T;
-        }
-
-        pub fn addElem(_: Self, elem: T) void {
-            _is_virgin = false;
-            _list.append(elem) catch fail();
-        }
-
-        pub fn ChildType(_: Self) type {
-            return T;
-        }
-
-        pub fn childTypeName(_: Self) []const u8 {
-            return mkTypeName(T);
-        }
-
-        pub fn dpath(_: Self) []const u8 {
-            return _dpath;
-        }
-
-        pub fn getElem(_: Self, idx: usize) *T {
-            return &_list.items[idx];
-        }
-
-        pub fn indexOf(_: Self, elem: *T) usize {
-            const p0 = @intFromPtr(&_list.items[0]);
-            const p1 = @intFromPtr(elem);
-            return (p1 - p0) / @sizeOf(T);
-        }
-
-        pub fn isVirgin(_: Self) bool {
-            return _is_virgin;
-        }
-
-        pub fn len(_: Self) usize {
-            return _list.items.len;
-        }
-
-        pub fn list(_: Self) *std.ArrayList(T) {
-            _is_virgin = false;
-            return &_list;
-        }
-
-        pub fn setLen(self: Self, l: usize) void {
-            if (self.len() >= l) return;
-            const save = _is_virgin;
-            for (0..l - self.len()) |_| self.addElem(std.mem.zeroes(T));
-            _is_virgin = save;
-        }
-
-        pub fn toString(self: Self) []const u8 {
-            const tn = mkTypeName(T);
-            if (_is_virgin) {
-                return sprint("std.mem.zeroes([{d}]{s})", .{ self.len(), tn });
-            }
-            var sb = StringH{};
-            sb.add(sprint("[_]{s}{{", .{tn}));
-            for (_list.items) |e| {
-                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
-            }
-            return sprint("{s}}}", .{sb.get()});
-        }
-
-        pub fn unwrap(_: Self) []T {
-            _is_virgin = false;
-            return _list.items;
-        }
-    };
-}
-
-pub fn _ArrayV(T: type, v: anytype) type {
-    const ti = @typeInfo(@TypeOf(v));
-    if (ti.Pointer.is_const) {
-        return struct {
-            const Self = @This();
-            const _val = v;
-            pub fn unwrap(_: Self) []T {
-                return @constCast(_val);
-            }
-        };
-    } else {
-        return struct {
-            const Self = @This();
-            const _val = v;
-            pub fn unwrap(_: Self) []T {
-                return @constCast(_val);
-            }
-        };
-    }
-}
-
 fn _ConfigD(dp: []const u8, T: type) type {
     return struct {
         const Self = @This();
@@ -279,57 +175,6 @@ fn _FactoryV(dp: []const u8, T: type, a: []T) type {
     };
 }
 
-fn _ProxyD(dp: []const u8, I: type) type {
-    return struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-        pub const _em__proxy = {};
-
-        const _dpath = dp;
-        var _del: []const u8 = toUnit(I).upath;
-
-        pub fn get(_: Self) @TypeOf(_del) {
-            return _del;
-        }
-
-        pub fn dpath(_: Self) []const u8 {
-            return _dpath;
-        }
-
-        pub fn print(_: Self) void {
-            std.log.debug("{s} = {s}", .{ _dpath, _del });
-        }
-
-        pub fn set(_: Self, u: type) void {
-            _del = toUnit(u).upath;
-        }
-
-        pub fn toString(_: Self) []const u8 {
-            var it = std.mem.splitSequence(u8, _del, "__");
-            var res = sprint("em.unitScope(em.Import.@\"{s}\")", .{it.first()});
-            while (it.next()) |seg| {
-                res = sprint("{s}.{s}", .{ res, seg });
-            }
-            return res;
-        }
-
-        pub fn unwrap(_: Self) type {
-            return I;
-        }
-    };
-}
-
-fn _ProxyV(dp: []const u8, u: type) type {
-    return struct {
-        const Self = @This();
-        const _dpath = dp;
-        pub fn unwrap(_: Self) type {
-            return u;
-        }
-    };
-}
-
 pub const ptr_t = ?*anyopaque;
 
 pub fn Ptr(T: type) type {
@@ -438,15 +283,6 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: type = void,
 
-    pub fn array(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ArrayD(self.extendPath(name), T) else _ArrayV(T, @field(targ, self.extendPath(name))[0..]) {
-        const dname = self.extendPath(name);
-        if (DOMAIN == .HOST) {
-            return _ArrayD(dname, T){};
-        } else {
-            return _ArrayV(T, @field(targ, dname)[0..]){};
-        }
-    }
-
     pub fn config(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ConfigD(self.extendPath(name), T) else _ConfigV(self.extendPath(name), T, @field(targ, self.extendPath(name))) {
         const dname = self.extendPath(name);
         if (DOMAIN == .HOST) {
@@ -507,15 +343,6 @@ pub const Unit = struct {
 
     pub fn func(self: Self, name: []const u8, FT: type) Func(FT) {
         return Func(FT){ ._upath = self.upath, ._fname = name };
-    }
-
-    pub fn proxy(self: Self, name: []const u8, I: type) if (DOMAIN == .HOST) _ProxyD(self.extendPath(name), I) else _ProxyV(self.extendPath(name), @field(targ, self.extendPath(name))) {
-        const dname = self.extendPath(name);
-        if (DOMAIN == .HOST) {
-            return _ProxyD(dname, I){};
-        } else {
-            return _ProxyV(dname, @field(targ, dname)){};
-        }
     }
 
     fn extendPath(self: Self, comptime name: []const u8) []const u8 {
