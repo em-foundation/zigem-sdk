@@ -538,6 +538,9 @@ pub fn CB(ParamsType: type) type {
         .HOST => {
             return struct {
                 pub const _em__builtin = {};
+                pub fn toString(_: @This()) []const u8 { // TODO -- why???
+                    return "<< CB >>";
+                }
                 pub fn typeName() []const u8 {
                     return sprint("em.CB({s})", .{mkTypeName(ParamsType)});
                 }
@@ -1008,10 +1011,17 @@ pub fn Factory_H(T: type) type {
 
 pub fn Factory_T(T: type) type {
     return extern struct {
+        const Self = @This();
         _arr: [*]T,
         _len: usize,
-        pub fn objAll(self: @This()) []T {
+        pub fn objAll(self: Self) []T {
             return self._arr[0..self._len];
+        }
+        pub fn objCount(self: Self) usize {
+            return self._len;
+        }
+        pub fn objGet(self: Self, idx: usize) *T {
+            return @constCast(&self._arr[idx]);
         }
     };
 }
@@ -1028,6 +1038,9 @@ pub fn Obj_H(T: type) type {
 
         _fty: ?*Factory_H(T),
         _idx: usize,
+        pub fn getIdx(self: *const Self) usize {
+            return self._idx;
+        }
         pub fn O(self: *const Self) *T {
             return self._fty.?.objGet(self._idx);
         }

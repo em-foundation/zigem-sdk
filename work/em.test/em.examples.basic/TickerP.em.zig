@@ -1,25 +1,28 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.Import.@"em.utils/TickerMgr";
 pub const SysLed = em.Import.@"em__distro/BoardC".SysLed;
 
-pub const c_appTicker = em__unit.config("appTicker", TickerMgr.Obj);
-pub const c_sysTicker = em__unit.config("sysTicker", TickerMgr.Obj);
+pub const EM__CONFIG = struct {
+    appTicker: em.Param(TickerMgr.Obj),
+    sysTicker: em.Param(TickerMgr.Obj),
+};
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {
-        c_appTicker.set(TickerMgr.createH());
-        c_sysTicker.set(TickerMgr.createH());
+        em__C.appTicker.set(TickerMgr.createH());
+        em__C.sysTicker.set(TickerMgr.createH());
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const appTicker = c_appTicker.unwrap();
-    const sysTicker = c_sysTicker.unwrap();
+    const appTicker = em__C.appTicker.unwrap();
+    const sysTicker = em__C.sysTicker.unwrap();
 
     pub fn em__run() void {
         appTicker.start(256, &appTickCb);

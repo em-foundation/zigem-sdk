@@ -1,13 +1,17 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 
+pub const EM__CONFIG = struct {
+    TickerOF: em.Factory(Ticker),
+};
+
 pub const Callback = struct {};
 
-pub const _factory = em__unit.factory("Ticker", Ticker);
-pub const Obj = em.Ptr(Ticker);
+pub const Obj = em.Obj(Ticker);
 
 pub const Ticker = struct {
     const Self = @This();
@@ -28,8 +32,8 @@ pub const EM__HOST = struct {
     pub fn createH() Obj {
         const fiber = FiberMgr.createH(em__unit.func("alarmFB", em.CB(FiberMgr.FiberBody)));
         const alarm = AlarmMgr.createH(fiber);
-        const ticker = _factory.createH(.{ ._alarm = alarm, ._fiber = fiber });
-        fiber.O().arg = ticker.idx;
+        const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
+        fiber.O().arg = ticker.getIdx();
         return ticker;
     }
 };
@@ -37,7 +41,7 @@ pub const EM__HOST = struct {
 pub const EM__TARG = struct {
     //
     pub fn alarmFB(a: FiberMgr.FiberBody) void {
-        var ticker = _factory.get(a.arg);
+        var ticker = em__C.TickerOF.objGet(a.arg);
         if (ticker._tick_cb == null) return;
         ticker._tick_cb.?(.{});
         ticker._alarm.wakeupAt(ticker._rate256);
