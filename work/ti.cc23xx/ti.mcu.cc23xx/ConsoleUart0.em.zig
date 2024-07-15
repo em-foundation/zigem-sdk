@@ -2,13 +2,18 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/ConsoleUartI",
 });
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const Idle = em.Import.@"ti.mcu.cc23xx/Idle";
 
-pub const x_TxPin = em__unit.proxy("TxPin", em.Import.@"em.hal/GpioI");
+pub const EM__CONFIG = struct {
+    TxPin: em.Proxy(em.Import.@"em.hal/GpioI"),
+};
 
 pub const EM__HOST = struct {
     //
+    pub const TxPin = em__C.TxPin.ref();
+
     pub fn em__configureH() void {
         Idle.addSleepEnterCbH(em__unit.func("sleepEnter", Idle.Callback));
         Idle.addSleepLeaveCbH(em__unit.func("sleepLeave", Idle.Callback));
@@ -19,7 +24,7 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
     const reg = em.reg;
-    const TxPin = x_TxPin.unwrap();
+    const TxPin = em__C.TxPin.unwrap();
 
     pub fn em__startup() void {
         sleepLeave(Idle.SleepEvent{});
