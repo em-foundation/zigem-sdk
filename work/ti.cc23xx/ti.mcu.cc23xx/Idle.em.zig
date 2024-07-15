@@ -2,17 +2,20 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/IdleI",
 });
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const Debug = em.Import.@"em.lang/Debug";
 pub const Hapi = em.Import.@"ti.mcu.cc23xx/Hapi";
+
+pub const EM__CONFIG = struct {
+    sleep_enter_fxn_tab: em.Param(CallbackTab),
+    sleep_leave_fxn_tab: em.Param(CallbackTab),
+};
 
 pub const SleepEvent = struct {};
 pub const Callback = em.CB(SleepEvent);
 pub const CallbackFxn = em.Func(Callback);
 pub const CallbackTab = em.Table(CallbackFxn);
-
-pub const c_sleep_enter_fxn_tab = em__U.config("sleep_enter_cb_tab", CallbackTab);
-pub const c_sleep_leave_fxn_tab = em__U.config("sleep_leave_cb_tab", CallbackTab);
 
 pub const EM__HOST = struct {
     //
@@ -20,15 +23,18 @@ pub const EM__HOST = struct {
     var sleep_leave_cb_tab = CallbackTab{};
 
     pub fn em__constructH() void {
-        c_sleep_enter_fxn_tab.set(sleep_enter_cb_tab);
-        c_sleep_leave_fxn_tab.set(sleep_leave_cb_tab);
+        em.print("construct", .{});
+        em__C.sleep_enter_fxn_tab.set(sleep_enter_cb_tab);
+        em__C.sleep_leave_fxn_tab.set(sleep_leave_cb_tab);
     }
 
     pub fn addSleepEnterCbH(cb: CallbackFxn) void {
+        em.print("enter", .{});
         sleep_enter_cb_tab.add(cb);
     }
 
     pub fn addSleepLeaveCbH(cb: CallbackFxn) void {
+        em.print("leave", .{});
         sleep_leave_cb_tab.add(cb);
     }
 
@@ -40,8 +46,8 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    const sleep_enter_fxn_tab = c_sleep_enter_fxn_tab.unwrap();
-    const sleep_leave_fxn_tab = c_sleep_leave_fxn_tab.unwrap();
+    const sleep_enter_fxn_tab = em__C.sleep_enter_fxn_tab.unwrap();
+    const sleep_leave_fxn_tab = em__C.sleep_leave_fxn_tab.unwrap();
 
     var wait_only: bool = false;
 

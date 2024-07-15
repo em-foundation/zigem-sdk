@@ -149,7 +149,7 @@ pub fn Table(comptime T: type) type {
                     }
                     return sprint("{s} }}", .{res});
                 }
-                pub fn typeName(_: Self) []const u8 {
+                pub fn typeName() []const u8 {
                     return sprint("em.Table({s})", .{mkTypeName(T)});
                 }
             };
@@ -250,8 +250,6 @@ pub const Unit = struct {
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
     }
-
-    pub fn import(_: Self, _: []const u8) type {}
 
     pub fn path(self: Self) []const u8 {
         return @field(type_map, @typeName(self.self));

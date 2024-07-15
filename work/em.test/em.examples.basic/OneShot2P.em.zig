@@ -1,23 +1,26 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 pub const OneShot = em.Import.@"em__distro/BoardC".OneShot;
 
-pub const c_blinkF = em__U.config("blinkF", FiberMgr.Obj);
+pub const EM__CONFIG = struct {
+    blinkF: em.Param(FiberMgr.Obj),
+};
 
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        c_blinkF.set(FiberMgr.createH(em__U.func("blinkFB", em.CB(FiberMgr.FiberBody))));
+        em__C.blinkF.set(FiberMgr.createH(em__U.func("blinkFB", em.CB(FiberMgr.FiberBody))));
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const blinkF = c_blinkF.unwrap();
+    const blinkF = em__C.blinkF.unwrap();
     var count: u8 = 5;
 
     pub fn em__run() void {
