@@ -1134,7 +1134,14 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = \"{s}\" }}", .{ I.em__unit.upath, self._prx });
+            //var it = std.mem.splitSequence(u8, _del, "__");
+            //var res = sprint("em.unitScope(em.Import.@\"{s}\")", .{it.first()});
+            //while (it.next()) |seg| {
+            //    res = sprint("{s}.{s}", .{ res, seg });
+            //}
+            //return res;
+
+            return sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = @field(em.Import, \"{s}\").em__unit }}", .{ I.em__unit.upath, self._prx });
         }
     };
 }
@@ -1143,14 +1150,14 @@ pub fn Proxy_T(I: type) type {
     return struct {
         const Self = @This();
 
-        _prx: []const u8,
+        _prx: *Unit,
 
         pub fn ref(self: *Self) *Proxy_T(I) {
             return self;
         }
 
-        pub fn unwrap(comptime self: *const Self) @TypeOf(@field(Import, self._prx)) {
-            return @field(Import, self._prx);
+        pub fn unwrap(comptime self: *const Self) @TypeOf(unitScope_T(self._prx.self)) {
+            return unitScope_T(self._prx.self);
         }
     };
 }
