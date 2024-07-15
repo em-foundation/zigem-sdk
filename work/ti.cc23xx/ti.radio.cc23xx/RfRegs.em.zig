@@ -1,5 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const Desc = struct {
     off: u16,
@@ -7,8 +8,10 @@ pub const Desc = struct {
     inc: u8,
 };
 
-pub const c_desc_tab = em__U.config("desc_tab", em.Table(Desc));
-pub const c_val_tab = em__U.config("val_tab", em.Table(u16));
+pub const EM__CONFIG = struct {
+    desc_tab: em.Param(em.Table(Desc)),
+    val_tab: em.Param(em.Table(u16)),
+};
 
 pub const EM__HOST = struct {
     //
@@ -38,8 +41,8 @@ pub const EM__HOST = struct {
             Encoder.add(addr, hwmod, bits, val);
         }
         Encoder.finalize();
-        c_desc_tab.set(desc_tab);
-        c_val_tab.set(val_tab);
+        em__C.desc_tab.set(desc_tab);
+        em__C.val_tab.set(val_tab);
     }
 
     const Encoder = struct {
@@ -105,8 +108,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const desc_tab = c_desc_tab.unwrap();
-    const val_tab = c_val_tab.unwrap();
+    const desc_tab = em__C.desc_tab.unwrap();
+    const val_tab = em__C.val_tab.unwrap();
 
     const LRF_BASE_ADDR: u32 = 0x40080000;
     const PBE_RAM_BASE_ADDR: u32 = 0x40090000;

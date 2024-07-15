@@ -1,5 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
 pub const RfFifo = em.Import.@"ti.radio.cc23xx/RfFifo";
@@ -9,11 +10,13 @@ pub const RfPower = em.Import.@"ti.radio.cc23xx/RfPower";
 pub const RfRegs = em.Import.@"ti.radio.cc23xx/RfRegs";
 pub const RfTrim = em.Import.@"ti.radio.cc23xx/RfTrim";
 
+pub const EM__CONFIG = struct {
+    handler: em.Param(em.Func(em.CB(Handler))),
+};
+
 pub const Handler = struct {};
 
 pub const Mode = enum { IDLE, TX, CW };
-
-pub const c_handler = em__U.config("handler", em.Func(em.CB(Handler)));
 
 pub const EM__HOST = struct {
     //
@@ -22,7 +25,7 @@ pub const EM__HOST = struct {
     }
 
     pub fn bindHandlerH(h: em.Func(em.CB(Handler))) void {
-        c_handler.set(h);
+        em__C.handler.set(h);
     }
 };
 
