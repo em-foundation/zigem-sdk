@@ -68,7 +68,7 @@ fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
     const ti = @typeInfo(@typeInfo(@TypeOf(C)).Pointer.child);
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
-        if (@typeInfo(@TypeOf(cfld)) == .Struct and @hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
+        if (@typeInfo(@TypeOf(cfld.*)) == .Struct and @hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
             try out.print("{s}", .{cfld.toStringDecls(unit.upath, fld.name)});
         }
     }
