@@ -14,7 +14,6 @@ pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
         const blinkF = FiberMgr.createH(em__unit.func("blinkFB", em.CB(FiberMgr.FiberBody)));
-        em.print("{any}", .{blinkF});
         em__C.blinkF = blinkF;
     }
 };
