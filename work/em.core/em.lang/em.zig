@@ -116,100 +116,7 @@ pub fn Func(FT: type) type {
     }
 }
 
-fn _FactoryD(dp: []const u8, T: type) type {
-    return struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-        pub const _em__obj = {};
-
-        pub const _dpath = dp;
-
-        var _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator());
-
-        pub fn createH(_: Self, init: anytype) Ptr(T) {
-            const l = _list.items.len;
-            _list.append(std.mem.zeroInit(T, init)) catch fail();
-            const idx = std.mem.indexOf(u8, dp, "__").?;
-            return Ptr(T){ .upath = dp[0..idx], .aname = dp[idx + 2 ..], .idx = l, ._list = &_list };
-        }
-
-        pub fn dpath(_: Self) []const u8 {
-            return _dpath;
-        }
-
-        pub fn objCount(_: Self) usize {
-            return _list.items.len;
-        }
-
-        pub fn objTypeName(_: Self) []const u8 {
-            return mkTypeName(T);
-        }
-
-        pub fn toString(_: Self) []const u8 {
-            const tn = mkTypeName(T);
-            var sb = StringH{};
-            sb.add(sprint("[_]{s}{{", .{tn}));
-            for (_list.items) |e| {
-                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
-            }
-            return sprint("{s}}}", .{sb.get()});
-        }
-    };
-}
-
-fn _FactoryV(dp: []const u8, T: type, a: []T) type {
-    return struct {
-        const Self = @This();
-        const _dpath = dp;
-        var _arr = a;
-        pub fn all(_: Self) []T {
-            return _arr[0..];
-        }
-        pub fn count(_: Self) usize {
-            return a.len;
-        }
-        pub fn get(_: Self, idx: usize) *T {
-            return &_arr[idx];
-        }
-    };
-}
-
 pub const ptr_t = ?*anyopaque;
-
-pub fn Ptr(T: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
-                pub const _em__builtin = {};
-                upath: []const u8,
-                aname: []const u8,
-                idx: usize,
-                _list: ?*std.ArrayList(T),
-                pub fn isNIL(self: Self) bool {
-                    return self.upath.len == 0;
-                }
-                pub fn O(self: Self) *T {
-                    return &self._list.?.items[self.idx];
-                }
-                pub fn setNIL(self: *Self) void {
-                    self.upath = "";
-                }
-                pub fn toString(self: Self) []const u8 {
-                    return if (self.isNIL()) "null" else sprint("@\"{s}__{s}__{d}\"", .{ self.upath, self.aname, self.idx });
-                }
-
-                pub fn typeName() []const u8 {
-                    return sprint("*{s}", .{mkTypeName(T)});
-                }
-            };
-        },
-        .TARG => {
-            return *T;
-        },
-    }
-}
 
 pub const StringH = struct {
     const Self = @This();
@@ -330,15 +237,6 @@ pub const Unit = struct {
         //        return @constCast(&@field(targ, self.extendPath("config")));
         //    },
         //}
-    }
-
-    pub fn factory(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _FactoryD(self.extendPath(name), T) else _FactoryV(self.extendPath(name), T, @field(targ, self.extendPath(name))[0..]) {
-        const dname = self.extendPath(name);
-        if (DOMAIN == .HOST) {
-            return _FactoryD(dname, T){};
-        } else {
-            return _FactoryV(dname, T, @field(targ, dname)[0..]){};
-        }
     }
 
     pub fn func(self: Self, name: []const u8, FT: type) Func(FT) {
