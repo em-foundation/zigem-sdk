@@ -14,7 +14,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             .generated = true,
             .name = name,
         });
-        pub const em__C: *EM__CONFIG = @This().em__unit.Config(EM__CONFIG);
+        pub const em__C = @This().em__unit.Config(EM__CONFIG);
 
         pub const Poller = em.Import.@"em.mcu/Poller";
 

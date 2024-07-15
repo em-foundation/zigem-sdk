@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
-pub const em__C: *EM__CONFIG = em__unit.Config(EM__CONFIG);
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
     BusyWait: em.Proxy(em.Import.@"em.hal/BusyWaitI"),
