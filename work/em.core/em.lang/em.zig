@@ -1134,14 +1134,14 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            //var it = std.mem.splitSequence(u8, _del, "__");
-            //var res = sprint("em.unitScope(em.Import.@\"{s}\")", .{it.first()});
-            //while (it.next()) |seg| {
-            //    res = sprint("{s}.{s}", .{ res, seg });
-            //}
-            //return res;
-
-            return sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = @field(em.Import, \"{s}\").em__unit }}", .{ I.em__unit.upath, self._prx });
+            var it = std.mem.splitSequence(u8, self._prx, "__");
+            var sb = StringH{};
+            sb.add(sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = em.Import.@\"{s}\"", .{ I.em__unit.upath, it.first() }));
+            while (it.next()) |seg| {
+                sb.add(sprint(".{s}", .{seg}));
+            }
+            sb.add(".em__unit }");
+            return sb.get();
         }
     };
 }
