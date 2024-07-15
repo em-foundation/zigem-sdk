@@ -17,67 +17,6 @@ pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-fn _ConfigD(dp: []const u8, T: type) type {
-    return struct {
-        const Self = @This();
-
-        const S = struct {
-            v: T,
-        };
-
-        const s = std.mem.zeroInit(S, .{});
-
-        pub const _em__builtin = {};
-        pub const _em__config = {};
-
-        const _dpath = dp;
-        var _val: T = s.v;
-
-        pub fn get(_: Self) T {
-            return _val;
-        }
-
-        pub fn init(_: Self, v: T) void {
-            _val = v;
-        }
-
-        pub fn dpath(_: Self) []const u8 {
-            return _dpath;
-        }
-
-        pub fn print(_: Self) void {
-            std.log.debug("{s} = {any}", .{ _dpath, _val });
-        }
-
-        pub fn set(_: Self, v: T) void {
-            _val = v;
-        }
-
-        pub fn toString(_: Self) []const u8 {
-            return toStringAux(_val);
-        }
-
-        pub fn Type(_: Self) type {
-            return T;
-        }
-
-        pub fn unwrap(_: Self) T {
-            return s.v;
-        }
-    };
-}
-
-fn _ConfigV(dp: []const u8, T: type, v: T) type {
-    return struct {
-        const Self = @This();
-        const _dpath = dp;
-        const _val: T = v;
-        pub fn unwrap(_: Self) T {
-            return _val;
-        }
-    };
-}
-
 pub fn Func(FT: type) type {
     switch (DOMAIN) {
         .HOST => {
@@ -189,15 +128,6 @@ pub const Unit = struct {
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,
-
-    pub fn config(self: Self, name: []const u8, T: type) if (DOMAIN == .HOST) _ConfigD(self.extendPath(name), T) else _ConfigV(self.extendPath(name), T, @field(targ, self.extendPath(name))) {
-        const dname = self.extendPath(name);
-        if (DOMAIN == .HOST) {
-            return _ConfigD(dname, T){};
-        } else {
-            return _ConfigV(dname, T, @field(targ, dname)){};
-        }
-    }
 
     pub fn Config(self: Self, comptime CT: type) *CT {
         switch (DOMAIN) {
