@@ -58,10 +58,10 @@ pub fn em__configureH() void {
     Debug.x_DbgC.set(DbgC);
     Debug.x_DbgD.set(DbgD);
     EpochTime.x_Uptimer.set(Uptimer);
-    ExtFlashDisabler.x_CLK.set(FlashCLK);
-    ExtFlashDisabler.x_CS.set(FlashCS);
-    ExtFlashDisabler.x_PICO.set(FlashPICO);
-    ExtFlashDisabler.x_POCI.set(FlashPOCI);
+    ExtFlashDisabler.CLK.set(FlashCLK);
+    ExtFlashDisabler.CS.set(FlashCS);
+    ExtFlashDisabler.PICO.set(FlashPICO);
+    ExtFlashDisabler.POCI.set(FlashPOCI);
     FlashCLK.pin.set(18);
     FlashCS.pin.set(6);
     FlashPICO.pin.set(13);

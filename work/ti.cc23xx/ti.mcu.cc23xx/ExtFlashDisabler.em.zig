@@ -1,21 +1,29 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
 
-pub const x_CS = em__unit.proxy("CS", em.Import.@"em.hal/GpioI");
-pub const x_CLK = em__unit.proxy("CLK", em.Import.@"em.hal/GpioI");
-pub const x_PICO = em__unit.proxy("PICO", em.Import.@"em.hal/GpioI");
-pub const x_POCI = em__unit.proxy("POCI", em.Import.@"em.hal/GpioI");
+pub const EM__CONFIG = struct {
+    CS: em.Proxy(em.Import.@"em.hal/GpioI"),
+    CLK: em.Proxy(em.Import.@"em.hal/GpioI"),
+    PICO: em.Proxy(em.Import.@"em.hal/GpioI"),
+    POCI: em.Proxy(em.Import.@"em.hal/GpioI"),
+};
 
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    pub const CS = em__C.CS.ref();
+    pub const CLK = em__C.CLK.ref();
+    pub const PICO = em__C.PICO.ref();
+    pub const POCI = em__C.POCI.ref();
+};
 
 pub const EM__TARG = struct {
     //
-    const CS = x_CS.unwrap();
-    const CLK = x_CLK.unwrap();
-    const PICO = x_PICO.unwrap();
-    const POCI = x_POCI.unwrap();
+    const CS = em__C.CS.unwrap();
+    const CLK = em__C.CLK.unwrap();
+    const PICO = em__C.PICO.unwrap();
+    const POCI = em__C.POCI.unwrap();
 
     const SD_CMD: u8 = 0xb9;
 
