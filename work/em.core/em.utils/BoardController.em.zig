@@ -1,19 +1,22 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__unit = em.Module(@This(), .{});
+pub const em__C = em__unit.Config(EM__CONFIG);
 
 pub const Common = em.Import.@"em.mcu/Common";
 
-pub const x_Led = em__unit.proxy("Led", em.Import.@"em.hal/LedI");
+pub const EM__CONFIG = struct {
+    Led: em.Proxy(em.Import.@"em.hal/LedI"),
+};
 
 pub const EM__HOST = struct {
-    //
+    pub const Led = em__C.Led.ref();
 };
 
 pub const EM__TARG = struct {
     //
     const blinkRate = 50000;
     const EOT_BYTE = 0x4;
-    const Led = x_Led.unwrap();
+    const Led = em__C.Led.unwrap();
     const SOT_BYTE = 0x3;
     const SOT_COUNT = 13;
 
