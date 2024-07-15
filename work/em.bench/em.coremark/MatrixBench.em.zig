@@ -15,13 +15,13 @@ pub const EM__CONFIG = struct {
     matC: em.Array(matres_t, .RW),
 };
 
-pub const c_memsize = em__C.memsize.ref();
-
 pub const matdat_t = i16;
 pub const matres_t = i32;
 
 pub const EM__HOST = struct {
     //
+    pub const memsize = em__C.memsize.ref();
+
     pub fn em__constructH() void {
         var i: usize = 0;
         var j: usize = 0;

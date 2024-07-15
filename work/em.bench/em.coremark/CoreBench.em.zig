@@ -16,9 +16,9 @@ pub const EM__HOST = struct {
     //
     pub fn em__configureH() void {
         const memsize = TOTAL_DATA_SIZE / NUM_ALGS;
-        ListBench.c_memsize.set(memsize);
-        MatrixBench.c_memsize.set(memsize);
-        StateBench.c_memsize.set(memsize);
+        ListBench.memsize.set(memsize);
+        MatrixBench.memsize.set(memsize);
+        StateBench.memsize.set(memsize);
     }
 
     pub fn em__constructH() void {

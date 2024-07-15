@@ -19,8 +19,6 @@ pub const EM__CONFIG = struct {
     ElemOF: em.Factory(Elem),
 };
 
-pub const c_memsize = em__C.memsize.ref();
-
 pub const Data = struct {
     val: i16 = 0,
     idx: i16 = 0,
@@ -35,6 +33,8 @@ pub const Comparator = fn (a: em.Obj(Data), b: em.Obj(Data)) i32;
 
 pub const EM__HOST = struct {
     //
+    pub const memsize = em__C.memsize.ref();
+
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.get())) / @as(f32, @floatFromInt(item_size))))) - 3;

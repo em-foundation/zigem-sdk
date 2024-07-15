@@ -11,9 +11,9 @@ pub const EM__CONFIG = struct {
     memsize: em.Param(u16),
 };
 
-pub const c_memsize = em__C.memsize.ref();
-
-pub const EM__HOST = struct {};
+pub const EM__HOST = struct {
+    pub const memsize = em__C.memsize.ref();
+};
 
 pub const EM__TARG = struct {
     //
@@ -32,7 +32,7 @@ pub const EM__TARG = struct {
 
     const NUM_STATES = @typeInfo(State).Enum.fields.len;
 
-    const memsize = c_memsize.unwrap();
+    const memsize = em__C.memsize.unwrap();
 
     const errpat = [_][]const u8{ "T0.3e-1F", "-T.T++Tq", "1T3.4e4z", "34.0e-T^" };
     const fltpat = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400" };
