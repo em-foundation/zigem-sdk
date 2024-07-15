@@ -1,9 +1,9 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__U = em.Module(@This(), .{});
 
 export fn DEFAULT_isr() void {
     if (em.hosted) return;
-    em__unit.scope.defaultIsr();
+    em__U.scope.defaultIsr();
 }
 
 pub const EM__HOST = struct {

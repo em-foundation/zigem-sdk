@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__U = em.Module(@This(), .{});
 
 pub const TXPOWER_REFERENCE_TEMPERATURE: i16 = 25;
 pub const TXPOWER_TEMPERATURE_SCALING: i16 = 0x100;

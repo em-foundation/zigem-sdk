@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__U = em.Module(@This(), .{});
 
 const ROM_T = extern struct {
     enterStandby: ?*const fn ([*c]const u32) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]const u32) callconv(.C) void),

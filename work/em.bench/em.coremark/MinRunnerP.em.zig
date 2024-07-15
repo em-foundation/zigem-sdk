@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__U = em.Module(@This(), .{});
 
 pub const Common = em.Import.@"em.mcu/Common";
 pub const CoreBench = em.Import.@"em.coremark/CoreBench";

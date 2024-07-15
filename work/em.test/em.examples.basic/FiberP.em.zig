@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
-pub const em__C = em__unit.Config(EM__CONFIG);
+pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
@@ -13,7 +13,7 @@ pub const EM__CONFIG = struct {
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        const blinkF = FiberMgr.createH(em__unit.func("blinkFB", em.CB(FiberMgr.FiberBody)));
+        const blinkF = FiberMgr.createH(em__U.func("blinkFB", em.CB(FiberMgr.FiberBody)));
         em__C.blinkF.set(blinkF);
     }
 };

@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{
+pub const em__U = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/IdleI",
 });
 
@@ -11,8 +11,8 @@ pub const Callback = em.CB(SleepEvent);
 pub const CallbackFxn = em.Func(Callback);
 pub const CallbackTab = em.Table(CallbackFxn);
 
-pub const c_sleep_enter_fxn_tab = em__unit.config("sleep_enter_cb_tab", CallbackTab);
-pub const c_sleep_leave_fxn_tab = em__unit.config("sleep_leave_cb_tab", CallbackTab);
+pub const c_sleep_enter_fxn_tab = em__U.config("sleep_enter_cb_tab", CallbackTab);
+pub const c_sleep_leave_fxn_tab = em__U.config("sleep_leave_cb_tab", CallbackTab);
 
 pub const EM__HOST = struct {
     //

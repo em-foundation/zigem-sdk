@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
-pub const em__C = em__unit.Config(EM__CONFIG);
+pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const EpochTime = em.Import.@"em.utils/EpochTime";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
@@ -18,16 +18,16 @@ pub const Alarm = struct {
     _thresh: u32 = 0,
     _ticks: u32 = 0,
     pub fn active(self: *Self) bool {
-        em__unit.scope.Alarm_active(self);
+        em__U.scope.Alarm_active(self);
     }
     pub fn cancel(self: *Self) void {
-        em__unit.scope.Alarm_cancel(self);
+        em__U.scope.Alarm_cancel(self);
     }
     pub fn wakeup(self: *Self, secs256: u32) void {
-        em__unit.scope.Alarm_wakeup(self, secs256);
+        em__U.scope.Alarm_wakeup(self, secs256);
     }
     pub fn wakeupAt(self: *Self, secs256: u32) void {
-        em__unit.scope.Alarm_wakeupAt(self, secs256);
+        em__U.scope.Alarm_wakeupAt(self, secs256);
     }
 };
 

@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
-pub const em__C = em__unit.Config(EM__CONFIG);
+pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const BusyWait = em.Import.@"ti.mcu.cc23xx/BusyWait";
 

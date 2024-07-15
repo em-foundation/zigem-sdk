@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Template(@This(), .{});
+pub const em__U = em.Template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
@@ -10,11 +10,11 @@ pub const EM__CONFIG = struct {
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
         //
-        pub const em__unit = em.Module(@This(), .{
+        pub const em__U = em.Module(@This(), .{
             .generated = true,
             .name = name,
         });
-        pub const em__C = @This().em__unit.Config(EM__CONFIG);
+        pub const em__C = @This().em__U.Config(EM__CONFIG);
 
         pub const Poller = em.Import.@"em.mcu/Poller";
 

@@ -1,8 +1,8 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{
+pub const em__U = em.Module(@This(), .{
     .inherits = em.Import.@"em.coremark/BenchAlgI",
 });
-pub const em__C = em__unit.Config(EM__CONFIG);
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const Common = em.Import.@"em.mcu/Common";
 pub const Crc = em.Import.@"em.coremark/Crc";

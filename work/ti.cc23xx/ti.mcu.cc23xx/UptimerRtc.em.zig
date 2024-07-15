@@ -1,11 +1,11 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{
+pub const em__U = em.Module(@This(), .{
     .inherits = em.Import.@"em.hal/UptimerI",
 });
 
 pub const Rtc = em.Import.@"ti.mcu.cc23xx/Rtc";
 
-pub const Time = em__unit.inherits.Time;
+pub const Time = em__U.inherits.Time;
 
 pub const EM__HOST = struct {
     //

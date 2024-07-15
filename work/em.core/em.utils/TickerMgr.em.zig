@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
-pub const em__C = em__unit.Config(EM__CONFIG);
+pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const AlarmMgr = em.Import.@"em.utils/AlarmMgr";
 pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
@@ -20,17 +20,17 @@ pub const Ticker = struct {
     _rate256: u32 = 0,
     _tick_cb: ?em.CB(Callback),
     pub fn start(self: *Self, rate256: u32, tick_cb: em.CB(Callback)) void {
-        em__unit.scope.Ticker_start(self, rate256, tick_cb);
+        em__U.scope.Ticker_start(self, rate256, tick_cb);
     }
     pub fn stop(self: *Self) void {
-        em__unit.scope.Ticker_stop(self);
+        em__U.scope.Ticker_stop(self);
     }
 };
 
 pub const EM__HOST = struct {
     //
     pub fn createH() Obj {
-        const fiber = FiberMgr.createH(em__unit.func("alarmFB", em.CB(FiberMgr.FiberBody)));
+        const fiber = FiberMgr.createH(em__U.func("alarmFB", em.CB(FiberMgr.FiberBody)));
         const alarm = AlarmMgr.createH(fiber);
         const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
         fiber.O().arg = ticker.getIdx();

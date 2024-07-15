@@ -725,7 +725,7 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
 }
 
 pub fn toUnit(U: type) *Unit {
-    return @as(*Unit, @field(U, "em__unit"));
+    return @as(*Unit, @field(U, "em__U"));
 }
 
 pub fn unitScope(U: type) type {
@@ -1127,7 +1127,7 @@ pub fn Proxy_H(I: type) type {
         pub const _em__builtin = {};
         pub const _em__config = {};
 
-        _prx: []const u8 = I.em__unit.upath,
+        _prx: []const u8 = I.em__U.upath,
 
         pub fn get(self: *Self) I {
             return self._prx;
@@ -1138,17 +1138,17 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn set(self: *Self, x: anytype) void {
-            self._prx = x.em__unit.upath;
+            self._prx = x.em__U.upath;
         }
 
         pub fn toString(self: *const Self) []const u8 {
             var it = std.mem.splitSequence(u8, self._prx, "__");
             var sb = StringH{};
-            sb.add(sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = em.Import.@\"{s}\"", .{ I.em__unit.upath, it.first() }));
+            sb.add(sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = em.Import.@\"{s}\"", .{ I.em__U.upath, it.first() }));
             while (it.next()) |seg| {
                 sb.add(sprint(".{s}", .{seg}));
             }
-            sb.add(".em__unit }");
+            sb.add(".em__U }");
             return sb.get();
         }
     };

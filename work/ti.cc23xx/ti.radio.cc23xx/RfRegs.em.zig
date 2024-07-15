@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__U = em.Module(@This(), .{});
 
 pub const Desc = struct {
     off: u16,
@@ -7,8 +7,8 @@ pub const Desc = struct {
     inc: u8,
 };
 
-pub const c_desc_tab = em__unit.config("desc_tab", em.Table(Desc));
-pub const c_val_tab = em__unit.config("val_tab", em.Table(u16));
+pub const c_desc_tab = em__U.config("desc_tab", em.Table(Desc));
+pub const c_val_tab = em__U.config("val_tab", em.Table(u16));
 
 pub const EM__HOST = struct {
     //

@@ -19,13 +19,13 @@ inline fn callAll(comptime fname: []const u8, ulist: []const *em.Unit, filter_us
 pub fn exec(top: *em.Unit) !void {
     const BuildH = em.Import.@"em__distro/BuildH";
     @setEvalBranchQuota(100_000);
-    const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__unit, &.{}));
+    const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
     try validate(ulist_bot);
     callAll("em__initH", ulist_bot, false);
     callAll("em__configureH", ulist_top, false);
     try mkUsedSet(top);
-    try mkUsedSet(BuildH.em__unit);
+    try mkUsedSet(BuildH.em__U);
     //var it = used_set.keyIterator();
     //while (it.next()) |k| em.print("{s}", .{k.*});
     callAll("em__constructH", ulist_top, false);
@@ -244,8 +244,8 @@ fn mkUnitList(comptime unit: *em.Unit, comptime ulist: []const *em.Unit) []const
     if (!unit.legacy) {
         inline for (@typeInfo(unit.self).Struct.decls) |d| {
             const iu = @field(unit.self, d.name);
-            if (@TypeOf(iu) == type and @typeInfo(iu) == .Struct and @hasDecl(iu, "em__unit")) {
-                res = mkUnitList(@as(*em.Unit, @field(iu, "em__unit")), res);
+            if (@TypeOf(iu) == type and @typeInfo(iu) == .Struct and @hasDecl(iu, "em__U")) {
+                res = mkUnitList(@as(*em.Unit, @field(iu, "em__U")), res);
             }
         }
     }
@@ -260,8 +260,8 @@ fn mkUsedSet(comptime unit: *em.Unit) !void {
             const decl = @field(unit.self, d.name);
             const Decl = @TypeOf(decl);
             const ti_decl = @typeInfo(Decl);
-            if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__unit")) {
-                try mkUsedSet(@as(*em.Unit, @field(decl, "em__unit")));
+            if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__U")) {
+                try mkUsedSet(@as(*em.Unit, @field(decl, "em__U")));
             } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
                 try used_set.put(decl.get(), {});
             }

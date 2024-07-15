@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
-pub const em__C = em__unit.Config(EM__CONFIG);
+pub const em__U = em.Module(@This(), .{});
+pub const em__C = em__U.Config(EM__CONFIG);
 
 pub const Common = em.Import.@"em.mcu/Common";
 
@@ -20,7 +20,7 @@ pub const Fiber = struct {
     body: em.Func(em.CB(FiberBody)),
     arg: usize = 0,
     pub fn post(self: *Self) void {
-        em__unit.scope.Fiber_post(self);
+        em__U.scope.Fiber_post(self);
     }
 };
 

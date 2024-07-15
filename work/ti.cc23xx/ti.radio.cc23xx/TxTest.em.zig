@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__unit = em.Module(@This(), .{});
+pub const em__U = em.Module(@This(), .{});
 
 pub const AppLed = em.Import.@"em__distro/BoardC".AppLed;
 pub const Common = em.Import.@"em.mcu/Common";
@@ -7,7 +7,7 @@ pub const FiberMgr = em.Import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.Import.@"em.utils/TickerMgr";
 pub const RadioDriver = em.Import.@"ti.radio.cc23xx/RadioDriver";
 
-pub const c_txTicker = em__unit.config("txTicker", TickerMgr.Obj);
+pub const c_txTicker = em__U.config("txTicker", TickerMgr.Obj);
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {
