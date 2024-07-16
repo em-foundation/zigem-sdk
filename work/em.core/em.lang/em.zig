@@ -205,19 +205,19 @@ pub fn CB(ParamsType: type) type {
     }
 }
 
-pub fn Composite(This: type, opts: UnitOpts) *Unit {
+pub fn composite(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .composite, opts);
 }
 
-pub fn Interface(This: type, opts: UnitOpts) *Unit {
+pub fn interface(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .interface, opts);
 }
 
-pub fn Module(This: type, opts: UnitOpts) *Unit {
+pub fn module(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .module, opts);
 }
 
-pub fn Template(This: type, opts: UnitOpts) *Unit {
+pub fn template(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .template, opts);
 }
 

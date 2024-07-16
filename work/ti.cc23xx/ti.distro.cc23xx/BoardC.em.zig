@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__U = em.Composite(@This(), .{});
+pub const em__U = em.composite(@This(), .{});
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppLed = em__U.Generate("AppLed", em.import.@"em.utils/LedT");

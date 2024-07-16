@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__U = em.Template(@This(), .{});
+pub const em__U = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
@@ -10,7 +10,7 @@ pub const EM__CONFIG = struct {
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
         //
-        pub const em__U = em.Module(@This(), .{
+        pub const em__U = em.module(@This(), .{
             .generated = true,
             .name = name,
         });

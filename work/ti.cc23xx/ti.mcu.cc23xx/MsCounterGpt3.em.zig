@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__U = em.Module(@This(), .{
+pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/MsCounterI",
 });
 

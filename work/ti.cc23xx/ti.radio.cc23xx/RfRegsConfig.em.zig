@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__U = em.Module(@This(), .{});
+pub const em__U = em.module(@This(), .{});
 
 const ConfigWord = packed union {
     region: packed struct {

@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__U = em.Interface(@This(), .{});
+pub const em__U = em.interface(@This(), .{});
 
 pub const Time = struct {
     secs: u32 = 0,

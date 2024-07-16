@@ -1,5 +1,5 @@
 pub const em = @import("../../.gen/em.zig");
-pub const em__U = em.Module(@This(), .{});
+pub const em__U = em.module(@This(), .{});
 
 pub const Utils = em.import.@"em.coremark/Utils";
 pub const sum_t = Utils.sum_t;
