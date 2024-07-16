@@ -129,7 +129,7 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: type = void,
 
-    pub fn Config(self: Self, comptime CT: type) *CT {
+    pub fn config(self: Self, comptime CT: type) *CT {
         switch (DOMAIN) {
             .HOST => {
                 const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};

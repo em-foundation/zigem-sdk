@@ -2,7 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
     .inherits = em.import.@"em.coremark/BenchAlgI",
 });
-pub const em__C = em__U.Config(EM__CONFIG);
+pub const em__C = em__U.config(EM__CONFIG);
 
 pub const Common = em.import.@"em.mcu/Common";
 pub const Crc = em.import.@"em.coremark/Crc";

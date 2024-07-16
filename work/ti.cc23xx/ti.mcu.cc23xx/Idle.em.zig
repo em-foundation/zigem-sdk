@@ -2,7 +2,7 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
     .inherits = em.import.@"em.hal/IdleI",
 });
-pub const em__C = em__U.Config(EM__CONFIG);
+pub const em__C = em__U.config(EM__CONFIG);
 
 pub const Debug = em.import.@"em.lang/Debug";
 pub const Hapi = em.import.@"ti.mcu.cc23xx/Hapi";

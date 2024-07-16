@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
-pub const em__C = em__U.Config(EM__CONFIG);
+pub const em__C = em__U.config(EM__CONFIG);
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;

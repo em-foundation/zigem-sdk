@@ -1,6 +1,6 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
-pub const em__C = em__U.Config(EM__CONFIG);
+pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EpochTime = em.import.@"em.utils/EpochTime";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";

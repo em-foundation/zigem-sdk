@@ -16,7 +16,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 .name = name,
             },
         );
-        pub const em__C = @This().em__U.Config(EM__CONFIG);
+        pub const em__C = @This().em__U.config(EM__CONFIG);
 
         pub const EM__HOST = struct {
             //
