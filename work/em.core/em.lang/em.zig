@@ -17,44 +17,6 @@ pub const hosted = (DOMAIN == .HOST);
 
 var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 
-pub fn Func(FT: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                pub const _em__builtin = {};
-                _upath: []const u8,
-                _fname: []const u8,
-                pub fn toString(self: @This()) []const u8 {
-                    const fmt =
-                        \\blk: {{
-                        \\    const u = @field(em.import, "{s}");
-                        \\    const f = @field(u, "{s}");
-                        \\    break :blk f;
-                        \\}}
-                    ;
-                    const fval = sprint(fmt, .{ self._upath, self._fname });
-                    const tn = comptime @typeName(FT);
-                    const idx1 = comptime std.mem.indexOf(u8, tn, "(").?;
-                    const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
-                    const tn_par = comptime tn[idx1 + 1 .. idx2];
-                    return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
-                }
-                pub fn typeName() []const u8 {
-                    return sprint("em.Func({s})", .{mkTypeName(FT)});
-                }
-            };
-        },
-        .TARG => {
-            return struct {
-                _fxn: ?FT,
-                pub fn unwrap(self: @This()) FT {
-                    return self._fxn.?;
-                }
-            };
-        },
-    }
-}
-
 pub const ptr_t = ?*anyopaque;
 
 pub const StringH = struct {
@@ -185,25 +147,6 @@ pub const Unit = struct {
         return @field(type_map, @typeName(self.self));
     }
 };
-
-pub fn CB(ParamsType: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                pub const _em__builtin = {};
-                pub fn toString(_: @This()) []const u8 { // TODO -- why???
-                    return "<< CB >>";
-                }
-                pub fn typeName() []const u8 {
-                    return sprint("em.CB({s})", .{mkTypeName(ParamsType)});
-                }
-            };
-        },
-        .TARG => {
-            return *const fn (params: ParamsType) void;
-        },
-    }
-}
 
 pub fn composite(This: type, opts: UnitOpts) *Unit {
     return mkUnit(This, .composite, opts);
@@ -429,89 +372,7 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
     }
 }
 
-pub fn @"<>"(T: type, val: anytype) T {
-    const ti = @typeInfo(T);
-    const vi = @typeInfo(@TypeOf(val));
-    switch (vi) {
-        .Bool => {
-            return @as(T, @intFromBool(val));
-        },
-        .ComptimeInt => {
-            return @as(T, val);
-        },
-        .Int => {
-            if (ti.Int.signedness == vi.Int.signedness) {
-                return @as(T, @intCast(val));
-            } else {
-                const VT: std.builtin.Type = .{ .Int = .{ .bits = vi.Int.bits, .signedness = ti.Int.signedness } };
-                return @as(T, @intCast(@as(@Type(VT), @bitCast(val))));
-            }
-        },
-        else => {
-            return val;
-        },
-    }
-}
-
-pub fn @"%%[>]"(v: anytype) void {
-    Console.wrN(v);
-}
-
-const Debug = unitScope(@import("Debug.em.zig"));
-
-pub fn @"%%[a]"() void {
-    Debug.pulse('A');
-}
-pub fn @"%%[a+]"() void {
-    Debug.plus('A');
-}
-pub fn @"%%[a-]"() void {
-    Debug.minus('A');
-}
-pub fn @"%%[a:]"(k: u8) void {
-    Debug.mark('A', k);
-}
-
-pub fn @"%%[b]"() void {
-    Debug.pulse('B');
-}
-pub fn @"%%[b+]"() void {
-    Debug.plus('B');
-}
-pub fn @"%%[b-]"() void {
-    Debug.minus('B');
-}
-pub fn @"%%[b:]"(k: u8) void {
-    Debug.mark('B', k);
-}
-
-pub fn @"%%[c]"() void {
-    Debug.pulse('C');
-}
-pub fn @"%%[c+]"() void {
-    Debug.plus('C');
-}
-pub fn @"%%[c-]"() void {
-    Debug.minus('C');
-}
-pub fn @"%%[c:]"(k: u8) void {
-    Debug.mark('C', k);
-}
-
-pub fn @"%%[d]"() void {
-    Debug.pulse('D');
-}
-pub fn @"%%[d+]"() void {
-    Debug.plus('D');
-}
-pub fn @"%%[d-]"() void {
-    Debug.minus('D');
-}
-pub fn @"%%[d:]"(k: u8) void {
-    Debug.mark('D', k);
-}
-
-// -------- EM__CONFIG -------- //
+// -------- config field types -------- //
 
 pub const TargAccess = enum { RO, RW };
 
@@ -586,6 +447,25 @@ pub fn Array_T(T: type, comptime acc: TargAccess) type {
             return self._a;
         }
     };
+}
+
+pub fn CB(ParamsType: type) type {
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                pub const _em__builtin = {};
+                pub fn toString(_: @This()) []const u8 { // TODO -- why???
+                    return "<< CB >>";
+                }
+                pub fn typeName() []const u8 {
+                    return sprint("em.CB({s})", .{mkTypeName(ParamsType)});
+                }
+            };
+        },
+        .TARG => {
+            return *const fn (params: ParamsType) void;
+        },
+    }
 }
 
 pub fn Factory(T: type) type {
@@ -677,6 +557,44 @@ pub fn Factory_T(T: type) type {
             return @constCast(&self._arr[idx]);
         }
     };
+}
+
+pub fn Func(FT: type) type {
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                pub const _em__builtin = {};
+                _upath: []const u8,
+                _fname: []const u8,
+                pub fn toString(self: @This()) []const u8 {
+                    const fmt =
+                        \\blk: {{
+                        \\    const u = @field(em.import, "{s}");
+                        \\    const f = @field(u, "{s}");
+                        \\    break :blk f;
+                        \\}}
+                    ;
+                    const fval = sprint(fmt, .{ self._upath, self._fname });
+                    const tn = comptime @typeName(FT);
+                    const idx1 = comptime std.mem.indexOf(u8, tn, "(").?;
+                    const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
+                    const tn_par = comptime tn[idx1 + 1 .. idx2];
+                    return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
+                }
+                pub fn typeName() []const u8 {
+                    return sprint("em.Func({s})", .{mkTypeName(FT)});
+                }
+            };
+        },
+        .TARG => {
+            return struct {
+                _fxn: ?FT,
+                pub fn unwrap(self: @This()) FT {
+                    return self._fxn.?;
+                }
+            };
+        },
+    }
 }
 
 pub fn Obj(T: type) type {
@@ -821,4 +739,88 @@ pub fn Proxy_T(I: type) type {
             return unitScope_T(self._prx.self);
         }
     };
+}
+
+// -------- debug operators -------- //
+
+pub fn @"<>"(T: type, val: anytype) T {
+    const ti = @typeInfo(T);
+    const vi = @typeInfo(@TypeOf(val));
+    switch (vi) {
+        .Bool => {
+            return @as(T, @intFromBool(val));
+        },
+        .ComptimeInt => {
+            return @as(T, val);
+        },
+        .Int => {
+            if (ti.Int.signedness == vi.Int.signedness) {
+                return @as(T, @intCast(val));
+            } else {
+                const VT: std.builtin.Type = .{ .Int = .{ .bits = vi.Int.bits, .signedness = ti.Int.signedness } };
+                return @as(T, @intCast(@as(@Type(VT), @bitCast(val))));
+            }
+        },
+        else => {
+            return val;
+        },
+    }
+}
+
+pub fn @"%%[>]"(v: anytype) void {
+    Console.wrN(v);
+}
+
+const Debug = unitScope(@import("Debug.em.zig"));
+
+pub fn @"%%[a]"() void {
+    Debug.pulse('A');
+}
+pub fn @"%%[a+]"() void {
+    Debug.plus('A');
+}
+pub fn @"%%[a-]"() void {
+    Debug.minus('A');
+}
+pub fn @"%%[a:]"(k: u8) void {
+    Debug.mark('A', k);
+}
+
+pub fn @"%%[b]"() void {
+    Debug.pulse('B');
+}
+pub fn @"%%[b+]"() void {
+    Debug.plus('B');
+}
+pub fn @"%%[b-]"() void {
+    Debug.minus('B');
+}
+pub fn @"%%[b:]"(k: u8) void {
+    Debug.mark('B', k);
+}
+
+pub fn @"%%[c]"() void {
+    Debug.pulse('C');
+}
+pub fn @"%%[c+]"() void {
+    Debug.plus('C');
+}
+pub fn @"%%[c-]"() void {
+    Debug.minus('C');
+}
+pub fn @"%%[c:]"(k: u8) void {
+    Debug.mark('C', k);
+}
+
+pub fn @"%%[d]"() void {
+    Debug.pulse('D');
+}
+pub fn @"%%[d+]"() void {
+    Debug.plus('D');
+}
+pub fn @"%%[d-]"() void {
+    Debug.minus('D');
+}
+pub fn @"%%[d:]"(k: u8) void {
+    Debug.mark('D', k);
 }
