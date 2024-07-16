@@ -4,12 +4,12 @@ pub const em__U = em.module(@This(), .{
 });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const Crc = em.import.@"em.coremark/Crc";
-pub const Utils = em.import.@"em.coremark/Utils";
-
 pub const EM__CONFIG = struct {
     memsize: em.Param(u16),
 };
+
+pub const Crc = em.import.@"em.coremark/Crc";
+pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const EM__HOST = struct {
     pub const memsize = em__C.memsize.ref();

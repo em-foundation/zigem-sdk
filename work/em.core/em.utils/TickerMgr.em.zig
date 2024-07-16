@@ -2,12 +2,12 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
-pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-
 pub const EM__CONFIG = struct {
     TickerOF: em.Factory(Ticker),
 };
+
+pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const Callback = struct {};
 

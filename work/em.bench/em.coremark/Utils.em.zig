@@ -2,16 +2,16 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
+pub const EM__CONFIG = struct {
+    seed_tab: em.Array(seed_t, .RO),
+};
+
 pub const NUM_SEEDS: usize = 5;
 
 pub const Kind = enum { FINAL, LIST, MATRIX, STATE, ZZZ_ };
 
 pub const seed_t = u16;
 pub const sum_t = u16;
-
-pub const EM__CONFIG = struct {
-    seed_tab: em.Array(seed_t, .RO),
-};
 
 pub const EM__HOST = struct {
     //

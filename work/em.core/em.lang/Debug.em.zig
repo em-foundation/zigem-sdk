@@ -2,15 +2,15 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-const Common = em.import.@"em.mcu/Common";
-const GpioI = em.import.@"em.hal/GpioI";
-
 pub const EM__CONFIG = struct {
     DbgA: em.Proxy(GpioI),
     DbgB: em.Proxy(GpioI),
     DbgC: em.Proxy(GpioI),
     DbgD: em.Proxy(GpioI),
 };
+
+const Common = em.import.@"em.mcu/Common";
+const GpioI = em.import.@"em.hal/GpioI";
 
 pub const EM__HOST = struct {
     pub const DbgA = em__C.DbgA.ref();

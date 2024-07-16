@@ -4,9 +4,6 @@ pub const em__U = em.module(@This(), .{
 });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const Crc = em.import.@"em.coremark/Crc";
-pub const Utils = em.import.@"em.coremark/Utils";
-
 pub const EM__CONFIG = struct {
     dimN: em.Param(usize),
     memsize: em.Param(u16),
@@ -14,6 +11,9 @@ pub const EM__CONFIG = struct {
     matB: em.Array(matdat_t, .RW),
     matC: em.Array(matres_t, .RW),
 };
+
+pub const Crc = em.import.@"em.coremark/Crc";
+pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const matdat_t = i16;
 pub const matres_t = i32;

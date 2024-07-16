@@ -4,11 +4,11 @@ pub const em__U = em.module(@This(), .{
 });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
-
 pub const EM__CONFIG = struct {
     TxPin: em.Proxy(em.import.@"em.hal/GpioI"),
 };
+
+pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 
 pub const EM__HOST = struct {
     //

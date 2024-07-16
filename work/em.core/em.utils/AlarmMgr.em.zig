@@ -2,13 +2,13 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const EpochTime = em.import.@"em.utils/EpochTime";
-pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-
 pub const EM__CONFIG = struct {
     AlarmOF: em.Factory(Alarm),
     WakeupTimer: em.Proxy(em.import.@"em.hal/WakeupTimerI"),
 };
+
+pub const EpochTime = em.import.@"em.utils/EpochTime";
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const Obj = em.Obj(Alarm);
 

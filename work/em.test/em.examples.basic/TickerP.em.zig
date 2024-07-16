@@ -2,15 +2,15 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-pub const TickerMgr = em.import.@"em.utils/TickerMgr";
-pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
-
 pub const EM__CONFIG = struct {
     appTicker: em.Param(TickerMgr.Obj),
     sysTicker: em.Param(TickerMgr.Obj),
 };
+
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const TickerMgr = em.import.@"em.utils/TickerMgr";
+pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {

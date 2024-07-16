@@ -2,11 +2,11 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const Common = em.import.@"em.mcu/Common";
-
 pub const EM__CONFIG = struct {
     Led: em.Proxy(em.import.@"em.hal/LedI"),
 };
+
+pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {
     pub const Led = em__C.Led.ref();

@@ -2,15 +2,15 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
+pub const EM__CONFIG = struct {
+    txTicker: em.Param(TickerMgr.Obj),
+};
+
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
-
-pub const EM__CONFIG = struct {
-    txTicker: em.Param(TickerMgr.Obj),
-};
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {

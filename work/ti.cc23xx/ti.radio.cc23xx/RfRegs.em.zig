@@ -2,15 +2,15 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
+pub const EM__CONFIG = struct {
+    desc_tab: em.Param(em.Table(Desc)),
+    val_tab: em.Param(em.Table(u16)),
+};
+
 pub const Desc = struct {
     off: u16,
     cnt: u8,
     inc: u8,
-};
-
-pub const EM__CONFIG = struct {
-    desc_tab: em.Param(em.Table(Desc)),
-    val_tab: em.Param(em.Table(u16)),
 };
 
 pub const EM__HOST = struct {

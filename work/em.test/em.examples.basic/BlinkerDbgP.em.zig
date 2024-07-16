@@ -2,14 +2,14 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const BoardC = em.import.@"em__distro/BoardC";
-pub const Common = em.import.@"em.mcu/Common";
-
 pub const EM__CONFIG = struct {
     dbg_flag: em.Param(bool),
     min_cnt: em.Param(u16),
     max_cnt: em.Param(u16),
 };
+
+pub const BoardC = em.import.@"em__distro/BoardC";
+pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {
     //

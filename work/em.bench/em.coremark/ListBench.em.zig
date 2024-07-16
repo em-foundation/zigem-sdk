@@ -4,13 +4,6 @@ pub const em__U = em.module(@This(), .{
 });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const Common = em.import.@"em.mcu/Common";
-pub const Crc = em.import.@"em.coremark/Crc";
-pub const Utils = em.import.@"em.coremark/Utils";
-
-const Bench0 = em.import.@"em.coremark/StateBench";
-const Bench1 = em.import.@"em.coremark/MatrixBench";
-
 pub const EM__CONFIG = struct {
     cur_head: em.Obj(Elem),
     max_elems: em.Param(u16),
@@ -18,6 +11,13 @@ pub const EM__CONFIG = struct {
     DataOF: em.Factory(Data),
     ElemOF: em.Factory(Elem),
 };
+
+pub const Common = em.import.@"em.mcu/Common";
+pub const Crc = em.import.@"em.coremark/Crc";
+pub const Utils = em.import.@"em.coremark/Utils";
+
+const Bench0 = em.import.@"em.coremark/StateBench";
+const Bench1 = em.import.@"em.coremark/MatrixBench";
 
 pub const Data = struct {
     val: i16 = 0,

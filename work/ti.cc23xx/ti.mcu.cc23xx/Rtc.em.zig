@@ -2,9 +2,9 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
-
 pub const EM__CONFIG = struct {};
+
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {
