@@ -1,13 +1,13 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.coremark/BenchAlgI",
+    .inherits = em.import.@"em.coremark/BenchAlgI",
 });
 
-pub const Crc = em.Import.@"em.coremark/Crc";
-pub const ListBench = em.Import.@"em.coremark/ListBench";
-pub const MatrixBench = em.Import.@"em.coremark/MatrixBench";
-pub const StateBench = em.Import.@"em.coremark/StateBench";
-pub const Utils = em.Import.@"em.coremark/Utils";
+pub const Crc = em.import.@"em.coremark/Crc";
+pub const ListBench = em.import.@"em.coremark/ListBench";
+pub const MatrixBench = em.import.@"em.coremark/MatrixBench";
+pub const StateBench = em.import.@"em.coremark/StateBench";
+pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const NUM_ALGS: u8 = 3;
 pub const TOTAL_DATA_SIZE: u16 = 2000;

@@ -17,7 +17,7 @@ inline fn callAll(comptime fname: []const u8, ulist: []const *em.Unit, filter_us
 }
 
 pub fn exec(top: *em.Unit) !void {
-    const BuildH = em.Import.@"em__distro/BuildH";
+    const BuildH = em.import.@"em__distro/BuildH";
     @setEvalBranchQuota(100_000);
     const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
@@ -73,7 +73,7 @@ fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
         }
     }
     const cfgpath = if (!unit.generated) unit.upath else mkConfigPath(@typeName(@TypeOf(C)));
-    try out.print("pub const @\"{s}__config\" = em.Import.@\"{s}\".EM__CONFIG{{\n", .{ unit.upath, cfgpath });
+    try out.print("pub const @\"{s}__config\" = em.import.@\"{s}\".EM__CONFIG{{\n", .{ unit.upath, cfgpath });
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
         try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(cfld) });
@@ -107,7 +107,7 @@ fn genDecls(unit: *em.Unit, out: std.fs.File.Writer) !void {
                     \\
                 ;
                 try out.print(size_txt, .{ decl.dpath(), decl.objTypeName() });
-                //const SIZE = std.fmt.comptimePrint("{d}", .{@sizeOf(em.Import.@".junk/ObjTest".Node)});
+                //const SIZE = std.fmt.comptimePrint("{d}", .{@sizeOf(em.import.@".junk/ObjTest".Node)});
                 for (0..decl.objCount()) |i| {
                     const abs_txt =
                         \\comptime {{ 
@@ -150,7 +150,7 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     if (std.mem.eql(u8, un, "em")) {
         try out.print("em", .{});
     } else {
-        try out.print("em.unitScope(em.Import.@\"{s}\")", .{un});
+        try out.print("em.unitScope(em.import.@\"{s}\")", .{un});
     }
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});
@@ -173,7 +173,7 @@ fn genTarg(ulist_bot: []const *em.Unit, ulist_top: []const *em.Unit) !void {
         if (u.kind == .module and !u.host_only and !u.legacy) {
             try out.print("// {0s} {1s} {0s}\n", .{ "=" ** 8, u.upath });
             try genConfig(u, out);
-            try genDecls(u, out);
+            // try genDecls(u, out);
             try out.print("\n", .{});
         }
     }

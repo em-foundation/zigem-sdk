@@ -1,11 +1,11 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.coremark/BenchAlgI",
+    .inherits = em.import.@"em.coremark/BenchAlgI",
 });
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const Crc = em.Import.@"em.coremark/Crc";
-pub const Utils = em.Import.@"em.coremark/Utils";
+pub const Crc = em.import.@"em.coremark/Crc";
+pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const EM__CONFIG = struct {
     dimN: em.Param(usize),

@@ -1,15 +1,15 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{
-    .inherits = em.Import.@"em.coremark/BenchAlgI",
+    .inherits = em.import.@"em.coremark/BenchAlgI",
 });
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const Common = em.Import.@"em.mcu/Common";
-pub const Crc = em.Import.@"em.coremark/Crc";
-pub const Utils = em.Import.@"em.coremark/Utils";
+pub const Common = em.import.@"em.mcu/Common";
+pub const Crc = em.import.@"em.coremark/Crc";
+pub const Utils = em.import.@"em.coremark/Utils";
 
-const Bench0 = em.Import.@"em.coremark/StateBench";
-const Bench1 = em.Import.@"em.coremark/MatrixBench";
+const Bench0 = em.import.@"em.coremark/StateBench";
+const Bench1 = em.import.@"em.coremark/MatrixBench";
 
 pub const EM__CONFIG = struct {
     cur_head: em.Obj(Elem),

@@ -1,8 +1,8 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 
-pub const CoreBench = em.Import.@"em.coremark/CoreBench";
-pub const Utils = em.Import.@"em.coremark/Utils";
+pub const CoreBench = em.import.@"em.coremark/CoreBench";
+pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const ITERATIONS: u16 = 10;
 

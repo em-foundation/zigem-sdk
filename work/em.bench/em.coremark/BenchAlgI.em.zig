@@ -1,7 +1,7 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Interface(@This(), .{});
 
-pub const Utils = em.Import.@"em.coremark/Utils";
+pub const Utils = em.import.@"em.coremark/Utils";
 
 pub fn dump() void {
     // TODO

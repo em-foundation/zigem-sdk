@@ -2,8 +2,8 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 pub const em__C = em__U.Config(EM__CONFIG);
 
-pub const BoardC = em.Import.@"em__distro/BoardC";
-pub const Common = em.Import.@"em.mcu/Common";
+pub const BoardC = em.import.@"em__distro/BoardC";
+pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__CONFIG = struct {
     dbg_flag: em.Param(bool),

@@ -3,10 +3,10 @@ pub const em__U = em.Module(@This(), .{
     .host_only = true,
 });
 
-pub const BoardC = em.Import.@"em__distro/BoardC";
-pub const IntrVec = em.Import.@"em.arch.arm/IntrVec";
-pub const LinkerH = em.Import.@"em.build.misc/LinkerH";
-pub const StartupH = em.Import.@"em.arch.arm/StartupH";
+pub const BoardC = em.import.@"em__distro/BoardC";
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const LinkerH = em.import.@"em.build.misc/LinkerH";
+pub const StartupH = em.import.@"em.arch.arm/StartupH";
 
 pub const EM__HOST = struct {};
 

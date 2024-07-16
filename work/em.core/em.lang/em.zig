@@ -27,7 +27,7 @@ pub fn Func(FT: type) type {
                 pub fn toString(self: @This()) []const u8 {
                     const fmt =
                         \\blk: {{
-                        \\    const u = @field(em.Import, "{s}");
+                        \\    const u = @field(em.import, "{s}");
                         \\    const f = @field(u, "{s}");
                         \\    break :blk f;
                         \\}}
@@ -274,7 +274,7 @@ fn mkTypeName(T: type) []const u8 {
 fn mkTypeImport(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
     const tun = comptime tn[0..idx];
-    return "em.Import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
+    return "em.import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
 }
 
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) *Unit {
@@ -797,7 +797,7 @@ pub fn Proxy_H(I: type) type {
         pub fn toString(self: *const Self) []const u8 {
             var it = std.mem.splitSequence(u8, self._prx, "__");
             var sb = StringH{};
-            sb.add(sprint("em.Proxy_T(em.Import.@\"{s}\"){{ ._prx = em.Import.@\"{s}\"", .{ I.em__U.upath, it.first() }));
+            sb.add(sprint("em.Proxy_T(em.import.@\"{s}\"){{ ._prx = em.import.@\"{s}\"", .{ I.em__U.upath, it.first() }));
             while (it.next()) |seg| {
                 sb.add(sprint(".{s}", .{seg}));
             }

@@ -1,7 +1,7 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.Module(@This(), .{});
 
-pub const Utils = em.Import.@"em.coremark/Utils";
+pub const Utils = em.import.@"em.coremark/Utils";
 pub const sum_t = Utils.sum_t;
 
 pub const EM__HOST = struct {};
