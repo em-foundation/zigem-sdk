@@ -3,13 +3,11 @@ const std = @import("std");
 
 const type_map = @import("../../.gen/type_map.zig");
 
-var init_list = std.ArrayList([]const u8).init(em.getHeap());
 var used_set = std.StringHashMap(void).init(em.getHeap());
 
 inline fn callAll(comptime fname: []const u8, ulist: []const *em.Unit, filter_used: bool) void {
     inline for (ulist) |u| {
         if (!filter_used or used_set.contains(u.upath)) {
-            //const Scope = if (@hasDecl(u.self, "EM__CONFIG")) u.self.EM__CONFIG else u.scope;
             const Scope = u.scope;
             if (@hasDecl(Scope, fname)) _ = @call(.auto, @field(Scope, fname), .{});
         }
@@ -26,28 +24,11 @@ pub fn exec(top: *em.Unit) !void {
     callAll("em__configureH", ulist_top, false);
     try mkUsedSet(top);
     try mkUsedSet(BuildH.em__U);
-    //var it = used_set.keyIterator();
-    //while (it.next()) |k| em.print("{s}", .{k.*});
     callAll("em__constructH", ulist_top, false);
     callAll("em__generateH", ulist_top, false);
     try genDomain();
     try genTarg(ulist_bot, ulist_top);
     std.process.exit(0);
-}
-
-fn genBuiltin(decl: anytype, out: std.fs.File.Writer) !bool {
-    const tn_type = @typeName(decl.Type());
-    if (comptime std.mem.startsWith(u8, tn_type, "em.core.em.lang.em.Func(")) {
-        try out.print("pub const @\"{s}\": em.Func(", .{decl.dpath()});
-        const idx = comptime std.mem.indexOf(u8, tn_type, "(").?;
-        const rt = comptime tn_type[idx + 1 .. tn_type.len - 1];
-        const tun = comptime mkImportPath(rt, 2);
-        try genImport(tun, out);
-        try out.print(") = ", .{});
-        try out.print("{s};\n", .{em.toStringAux(decl.get())});
-        return true;
-    }
-    return false;
 }
 
 fn genCall(comptime fname: []const u8, ulist: []const *em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
@@ -64,7 +45,6 @@ fn genCall(comptime fname: []const u8, ulist: []const *em.Unit, mode: enum { all
 fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
     if (!@hasDecl(unit.self, "em__C")) return;
     const C = @field(unit.self, "em__C");
-    // em.print("{s}: U = {s}, C = {x}", .{ unit.upath, @typeName(unit.self), @intFromPtr(C) });
     const ti = @typeInfo(@typeInfo(@TypeOf(C)).Pointer.child);
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
@@ -81,52 +61,6 @@ fn genConfig(unit: *em.Unit, out: std.fs.File.Writer) !void {
     try out.print("}};\n", .{});
 }
 
-fn genDecls(unit: *em.Unit, out: std.fs.File.Writer) !void {
-    const ti = @typeInfo(unit.self);
-    inline for (ti.Struct.decls) |d| {
-        const decl = @field(unit.self, d.name);
-        if (std.mem.eql(u8, d.name, "EM__TARG")) break;
-        const Decl = @TypeOf(decl);
-        const ti_decl = @typeInfo(Decl);
-        if (ti_decl == .Struct and @hasDecl(Decl, "_em__builtin")) {
-            var ks: []const u8 = "const";
-            var suf: []const u8 = "";
-            if (@hasDecl(Decl, "_em__array")) {
-                ks = "var";
-                if (!decl.isVirgin()) {
-                    try init_list.append(decl.dpath());
-                    suf = "__v";
-                    try out.print("pub var @\"{s}\": [{d}]{s} = undefined;\n", .{ decl.dpath(), decl.len(), decl.childTypeName() });
-                }
-            } else if (@hasDecl(Decl, "_em__obj")) {
-                ks = "var";
-                const size_txt =
-                    \\export const @"{0s}__BASE" = &@"{0s}";
-                    \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
-                    \\
-                    \\
-                ;
-                try out.print(size_txt, .{ decl.dpath(), decl.objTypeName() });
-                //const SIZE = std.fmt.comptimePrint("{d}", .{@sizeOf(em.import.@".junk/ObjTest".Node)});
-                for (0..decl.objCount()) |i| {
-                    const abs_txt =
-                        \\comptime {{ 
-                        \\    asm (".globl \"{0s}${1d}\"");
-                        \\    asm ("\"{0s}${1d}\" = \".gen.targ.{0s}\" + {1d} * " ++ @"{0s}__SIZE");
-                        \\}}
-                        \\extern const @"{0s}${1d}": usize;
-                        \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
-                        \\
-                        \\
-                    ;
-                    try out.print(abs_txt, .{ decl.dpath(), i, decl.objTypeName() });
-                }
-            }
-            try out.print("pub {s} @\"{s}{s}\" = {s};\n", .{ ks, decl.dpath(), suf, decl.toString() });
-        }
-    }
-}
-
 fn genDomain() !void {
     const file = try std.fs.createFileAbsolute(em._domain_file, .{});
     const out = file.writer();
@@ -136,12 +70,6 @@ fn genDomain() !void {
         \\
     , .{});
     file.close();
-}
-
-fn genInit(out: std.fs.File.Writer) !void {
-    for (init_list.items) |aname| {
-        try out.print("    @memcpy(@\"{0s}\"[0..], @\"{0s}__v\"[0..]);\n", .{aname});
-    }
 }
 
 fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
@@ -173,7 +101,6 @@ fn genTarg(ulist_bot: []const *em.Unit, ulist_top: []const *em.Unit) !void {
         if (u.kind == .module and !u.host_only and !u.legacy) {
             try out.print("// {0s} {1s} {0s}\n", .{ "=" ** 8, u.upath });
             try genConfig(u, out);
-            // try genDecls(u, out);
             try out.print("\n", .{});
         }
     }
@@ -191,7 +118,6 @@ fn genTarg(ulist_bot: []const *em.Unit, ulist_top: []const *em.Unit) !void {
     try genTermFn("em__fail", ulist_top, out);
     try genTermFn("em__halt", ulist_top, out);
     try out.print("pub fn exec() void {{\n", .{});
-    try genInit(out);
     try genCall("em__reset", ulist_top, .first, out);
     try genCall("em__startup", ulist_bot, .all, out);
     try genCall("em__ready", ulist_top, .first, out);
@@ -216,23 +142,6 @@ fn mkConfigPath(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
     const tun = comptime tn[1..idx]; // skip leading '*'
     return @as([]const u8, @field(type_map, tun));
-}
-
-fn mkImportPath(comptime path: []const u8, comptime suf_cnt: usize) []const u8 {
-    if (std.mem.startsWith(u8, path, "em.core.em.lang.em.Func(")) {
-        return "em__" ++ path[std.mem.indexOf(u8, path, ".Func(").? + 1 ..];
-    }
-    var idx: ?usize = path.len;
-    inline for (1..suf_cnt) |_| {
-        idx = std.mem.lastIndexOf(u8, path[0..idx.?], ".");
-    }
-    if (idx == null) return "<<importPath>>";
-    const ut = path[0..idx.?];
-    if (std.mem.eql(u8, ut, "em.core.em.lang.em")) {
-        return "em__" ++ path[idx.? + 1 ..];
-    }
-    const un = @as([]const u8, @field(type_map, ut));
-    return un ++ "__" ++ path[idx.? + 1 ..];
 }
 
 fn mkUnitList(comptime unit: *em.Unit, comptime ulist: []const *em.Unit) []const *em.Unit {
@@ -265,19 +174,6 @@ fn mkUsedSet(comptime unit: *em.Unit) !void {
             } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
                 try used_set.put(decl.get(), {});
             }
-        }
-    }
-}
-
-fn printDecls(unit: em.Unit) !void {
-    const ti = @typeInfo(unit.self);
-    inline for (ti.Struct.decls) |d| {
-        const decl = @field(unit.self, d.name);
-        const Decl = @TypeOf(decl);
-        const ti_decl = @typeInfo(Decl);
-        if (ti_decl == .Struct and @hasDecl(Decl, "_em__config")) {
-            const tn = @typeName(Decl);
-            em.print("{s}: {s} = {any}", .{ d.name, tn, decl.get() });
         }
     }
 }
