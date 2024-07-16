@@ -449,25 +449,6 @@ pub fn Array_T(T: type, comptime acc: TargAccess) type {
     };
 }
 
-pub fn CB(ParamsType: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                pub const _em__builtin = {};
-                pub fn toString(_: @This()) []const u8 { // TODO -- why???
-                    return "<< CB >>";
-                }
-                pub fn typeName() []const u8 {
-                    return sprint("em.CB({s})", .{mkTypeName(ParamsType)});
-                }
-            };
-        },
-        .TARG => {
-            return *const fn (params: ParamsType) void;
-        },
-    }
-}
-
 pub fn Factory(T: type) type {
     return if (DOMAIN == .HOST) Factory_H(T) else Factory_T(T);
 }
@@ -567,6 +548,9 @@ pub fn Func(FT: type) type {
                 _upath: []const u8,
                 _fname: []const u8,
                 pub fn toString(self: @This()) []const u8 {
+                    if (self._fname.len == 0) {
+                        return "null";
+                    }
                     const fmt =
                         \\blk: {{
                         \\    const u = @field(em.import, "{s}");
@@ -575,11 +559,7 @@ pub fn Func(FT: type) type {
                         \\}}
                     ;
                     const fval = sprint(fmt, .{ self._upath, self._fname });
-                    const tn = comptime @typeName(FT);
-                    const idx1 = comptime std.mem.indexOf(u8, tn, "(").?;
-                    const idx2 = comptime std.mem.indexOf(u8, tn, ")").?;
-                    const tn_par = comptime tn[idx1 + 1 .. idx2];
-                    return sprint("em.Func(*const fn({s}) void){{ ._fxn = {s} }}", .{ mkTypeImport(tn_par), fval });
+                    return sprint("{s}", .{fval});
                 }
                 pub fn typeName() []const u8 {
                     return sprint("em.Func({s})", .{mkTypeName(FT)});
@@ -587,12 +567,7 @@ pub fn Func(FT: type) type {
             };
         },
         .TARG => {
-            return struct {
-                _fxn: ?FT,
-                pub fn unwrap(self: @This()) FT {
-                    return self._fxn.?;
-                }
-            };
+            return ?*const fn (params: FT) void;
         },
     }
 }

@@ -17,7 +17,7 @@ pub const FiberBody = struct {
 pub const Fiber = struct {
     const Self = @This();
     link: ?em.Obj(Fiber),
-    body: em.Func(em.CB(FiberBody)),
+    body: em.Func(FiberBody),
     arg: usize = 0,
     pub fn post(self: *Self) void {
         em__U.scope.Fiber_post(self);
@@ -26,7 +26,7 @@ pub const Fiber = struct {
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(em.CB(FiberBody))) em.Obj(Fiber) {
+    pub fn createH(body: em.Func(FiberBody)) em.Obj(Fiber) {
         const fiber = em__C.FiberOF.createH(.{ .body = body });
         return fiber;
     }
@@ -63,9 +63,9 @@ pub const EM__TARG = struct {
     pub fn dispatch() void {
         while (!ready_list.empty()) {
             const fiber = ready_list.take();
-            const body = fiber.body.unwrap();
+            const body = fiber.body;
             Common.GlobalInterrupts.enable();
-            body(FiberBody{ .arg = fiber.arg });
+            body.?(FiberBody{ .arg = fiber.arg });
             _ = Common.GlobalInterrupts.disable();
         }
     }

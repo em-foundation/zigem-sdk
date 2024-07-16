@@ -18,8 +18,8 @@ pub const Ticker = struct {
     _alarm: AlarmMgr.Obj,
     _fiber: FiberMgr.Obj,
     _rate256: u32 = 0,
-    _tick_cb: ?em.CB(Callback),
-    pub fn start(self: *Self, rate256: u32, tick_cb: em.CB(Callback)) void {
+    _tick_cb: em.Func(Callback),
+    pub fn start(self: *Self, rate256: u32, tick_cb: em.Func(Callback)) void {
         em__U.scope.Ticker_start(self, rate256, tick_cb);
     }
     pub fn stop(self: *Self) void {
@@ -30,7 +30,7 @@ pub const Ticker = struct {
 pub const EM__HOST = struct {
     //
     pub fn createH() Obj {
-        const fiber = FiberMgr.createH(em__U.func("alarmFB", em.CB(FiberMgr.FiberBody)));
+        const fiber = FiberMgr.createH(em__U.func("alarmFB", FiberMgr.FiberBody));
         const alarm = AlarmMgr.createH(fiber);
         const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
         fiber.O().arg = ticker.getIdx();
@@ -47,7 +47,7 @@ pub const EM__TARG = struct {
         ticker._alarm.wakeupAt(ticker._rate256);
     }
 
-    pub fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: em.CB(Callback)) void {
+    pub fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: em.Func(Callback)) void {
         ticker._rate256 = rate256;
         ticker._tick_cb = tick_cb;
         ticker._alarm.wakeupAt(rate256);

@@ -9,7 +9,7 @@ pub fn disable() void {
     return;
 }
 
-pub fn enable(msecs: u32, handler: em.CB(Handler), arg: em.ptr_t) void {
+pub fn enable(msecs: u32, handler: em.Func(Handler), arg: em.ptr_t) void {
     _ = msecs;
     _ = handler;
     _ = arg;

@@ -15,8 +15,8 @@ pub const EM__HOST = struct {
     pub const TxPin = em__C.TxPin.ref();
 
     pub fn em__configureH() void {
-        Idle.addSleepEnterCbH(em__U.func("sleepEnter", Idle.Callback));
-        Idle.addSleepLeaveCbH(em__U.func("sleepLeave", Idle.Callback));
+        Idle.addSleepEnterCbH(em__U.func("sleepEnter", Idle.SleepEvent));
+        Idle.addSleepLeaveCbH(em__U.func("sleepLeave", Idle.SleepEvent));
     }
 };
 

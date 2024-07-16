@@ -13,7 +13,7 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        const blinkF = FiberMgr.createH(em__U.func("blinkFB", em.CB(FiberMgr.FiberBody)));
+        const blinkF = FiberMgr.createH(em__U.func("blinkFB", FiberMgr.FiberBody));
         em__C.blinkF.set(blinkF);
     }
 };

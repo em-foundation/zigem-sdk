@@ -13,8 +13,7 @@ pub const Debug = em.import.@"em.lang/Debug";
 pub const Hapi = em.import.@"ti.mcu.cc23xx/Hapi";
 
 pub const SleepEvent = struct {};
-pub const Callback = em.CB(SleepEvent);
-pub const CallbackFxn = em.Func(Callback);
+pub const CallbackFxn = em.Func(SleepEvent);
 pub const CallbackTab = em.Table(CallbackFxn);
 
 pub const EM__HOST = struct {
@@ -59,8 +58,7 @@ pub const EM__TARG = struct {
 
     fn doSleep() void {
         for (sleep_enter_fxn_tab) |fxn| {
-            const cb = fxn.unwrap();
-            cb(SleepEvent{});
+            fxn.?(SleepEvent{});
         }
         em.@"%%[b:]"(1);
         em.@"%%[b-]"();
@@ -71,8 +69,7 @@ pub const EM__TARG = struct {
         Debug.startup();
         em.@"%%[b+]"();
         for (sleep_leave_fxn_tab) |fxn| {
-            const cb = fxn.unwrap();
-            cb(SleepEvent{});
+            fxn.?(SleepEvent{});
         }
         set_PRIMASK(0);
     }

@@ -22,7 +22,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     var cur_arg: em.ptr_t = null;
-    var cur_fxn: ?em.CB(Handler) = null;
+    var cur_fxn: em.Func(Handler) = null;
 
     pub fn disable() void {
         cur_fxn = null;
@@ -31,7 +31,7 @@ pub const EM__TARG = struct {
         reg(hal.LGPT3_BASE + hal.LGPT_O_ICLR).* = hal.LGPT_ICLR_TGT;
     }
 
-    pub fn enable(msecs: u32, handler: em.CB(Handler), arg: em.ptr_t) void {
+    pub fn enable(msecs: u32, handler: em.Func(Handler), arg: em.ptr_t) void {
         cur_fxn = handler;
         cur_arg = arg;
         Idle.setWaitOnly(true);
