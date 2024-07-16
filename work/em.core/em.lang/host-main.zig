@@ -168,13 +168,11 @@ fn mkUsedSet(comptime unit: *em.Unit) !void {
         inline for (@typeInfo(unit.self).Struct.decls) |d| {
             const decl = @field(unit.self, d.name);
             const Decl = @TypeOf(decl);
-            const ti_decl = @typeInfo(Decl);
             if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__U")) {
                 try mkUsedSet(@as(*em.Unit, @field(decl, "em__U")));
-            } else if (ti_decl == .Struct and @hasDecl(Decl, "_em__proxy")) {
-                try used_set.put(decl.get(), {});
             }
         }
+        // TODO: handle em.Proxy configs
     }
 }
 
