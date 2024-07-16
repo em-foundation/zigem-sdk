@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    handler: em.Param(em.Func(em.Func(Handler))),
+    handler: em.Param(em.Func(Handler)),
 };
 
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
