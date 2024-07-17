@@ -108,8 +108,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const desc_tab = em__C.desc_tab.unwrap();
-    const val_tab = em__C.val_tab.unwrap();
+    const desc_tab = em__C.desc_tab;
+    const val_tab = em__C.val_tab;
 
     const LRF_BASE_ADDR: u32 = 0x40080000;
     const PBE_RAM_BASE_ADDR: u32 = 0x40090000;

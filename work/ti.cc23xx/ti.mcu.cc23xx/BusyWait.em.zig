@@ -19,7 +19,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const scalar = em__C.scalar.unwrap();
+    const scalar = em__C.scalar;
 
     pub fn wait(usecs: u32) void {
         if (usecs == 0) return;

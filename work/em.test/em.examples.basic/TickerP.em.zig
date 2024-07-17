@@ -21,8 +21,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const appTicker = em__C.appTicker.unwrap();
-    const sysTicker = em__C.sysTicker.unwrap();
+    const appTicker = em__C.appTicker;
+    const sysTicker = em__C.sysTicker;
 
     pub fn em__run() void {
         appTicker.start(256, &appTickCb);

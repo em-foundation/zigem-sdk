@@ -41,7 +41,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const dimN = em__C.dimN.unwrap();
+    const dimN = em__C.dimN;
 
     var matA = em__C.matA.unwrap();
     var matB = em__C.matB.unwrap();

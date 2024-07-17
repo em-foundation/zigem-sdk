@@ -24,6 +24,7 @@ pub const EM__HOST = struct {
         IntrVec.useIntrH("LRFD_IRQ0");
     }
 
+    pub fn bindHandlerH(h: em.Func(Handler)) void {
     pub fn bindHandlerH(h: em.Func(em.Func(Handler))) void {
         em__C.handler.set(h);
     }

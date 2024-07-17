@@ -55,7 +55,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const max_elems = em__C.max_elems.unwrap();
+    const max_elems = em__C.max_elems;
 
     var cur_head = em__C.cur_head;
 

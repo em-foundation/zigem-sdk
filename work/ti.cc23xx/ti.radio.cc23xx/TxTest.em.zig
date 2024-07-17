@@ -20,7 +20,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const txTicker = em__C.txTicker.unwrap();
+    const txTicker = em__C.txTicker;
 
     var data = [_]u32{ 0x0203000F, 0x000A0001, 0x04030201, 0x08070605, 0x00000A09 };
 

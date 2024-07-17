@@ -24,9 +24,9 @@ pub const EM__TARG = struct {
     //
     const AppLed = BoardC.AppLed;
 
-    const dbg_flag = em__C.dbg_flag.unwrap();
-    const min_cnt = em__C.min_cnt.unwrap();
-    const max_cnt = em__C.max_cnt.unwrap();
+    const dbg_flag = em__C.dbg_flag;
+    const min_cnt = em__C.min_cnt;
+    const max_cnt = em__C.max_cnt;
 
     pub fn em__run() void {
         AppLed.on();

@@ -42,8 +42,8 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    const sleep_enter_fxn_tab = em__C.sleep_enter_fxn_tab.unwrap();
-    const sleep_leave_fxn_tab = em__C.sleep_leave_fxn_tab.unwrap();
+    const sleep_enter_fxn_tab = em__C.sleep_enter_fxn_tab;
+    const sleep_leave_fxn_tab = em__C.sleep_leave_fxn_tab;
 
     var wait_only: bool = false;
 

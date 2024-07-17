@@ -23,8 +23,8 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const alarm = em__C.alarm.unwrap();
-    const blinkF = em__C.blinkF.unwrap();
+    const alarm = em__C.alarm;
+    const blinkF = em__C.blinkF;
     var counter: u32 = 0;
 
     pub fn em__run() void {

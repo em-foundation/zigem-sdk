@@ -604,62 +604,45 @@ pub fn Obj_T(T: type) type {
 }
 
 pub fn Param(T: type) type {
-    return if (DOMAIN == .HOST) Param_H(T) else Param_T(T);
-}
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
 
-pub fn Param_H(T: type) type {
-    return struct {
-        const Self = @This();
+                pub const _em__builtin = {};
+                pub const _em__config = {};
 
-        pub const _em__builtin = {};
-        pub const _em__config = {};
+                _val: T,
 
-        _val: T,
+                pub fn get(self: *Self) T {
+                    return self._val;
+                }
 
-        pub fn get(self: *Self) T {
-            return self._val;
-        }
+                pub fn ref(self: *Self) *Param(T) {
+                    return self;
+                }
 
-        pub fn ref(self: *Self) *Param_H(T) {
-            return self;
-        }
+                pub fn set(self: *Self, v: T) void {
+                    self._val = v;
+                }
 
-        pub fn init(v: T) Param(T) {
-            return Param(T){ ._val = v };
-        }
+                pub fn toString(self: *const Self) []const u8 {
+                    return sprint("{s}", .{toStringAux(self._val)});
+                }
 
-        pub fn set(self: *Self, v: T) void {
-            self._val = v;
-        }
+                pub fn Type(_: Self) type {
+                    return T;
+                }
 
-        pub fn toString(self: *const Self) []const u8 {
-            return sprint("em.Param_T({s}){{ ._val = {s} }}", .{ mkTypeName(T), toStringAux(self._val) });
-        }
-
-        pub fn Type(_: Self) type {
+                pub fn unwrap(self: *const Self) T {
+                    return self._val;
+                }
+            };
+        },
+        .TARG => {
             return T;
-        }
-
-        pub fn unwrap(self: *const Self) T {
-            return self._val;
-        }
-    };
-}
-
-pub fn Param_T(T: type) type {
-    return struct {
-        const Self = @This();
-
-        _val: T,
-
-        pub fn ref(self: *Self) *Param_T(T) {
-            return self;
-        }
-
-        pub fn unwrap(self: *const Self) T {
-            return self._val;
-        }
-    };
+        },
+    }
 }
 
 pub fn Proxy(I: type) type {

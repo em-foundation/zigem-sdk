@@ -20,7 +20,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = em__C.blinkF.unwrap();
+    const blinkF = em__C.blinkF;
 
     pub fn em__run() void {
         blinkF.post();
