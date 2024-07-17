@@ -374,79 +374,76 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
 
 // -------- config field types -------- //
 
-pub const TargAccess = enum { RO, RW };
+pub fn Array(T: type, comptime acc: enum { RO, RW }) type {
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
 
-pub fn Array(T: type, comptime acc: TargAccess) type {
-    return if (DOMAIN == .HOST) Array_H(T, acc) else Array_T(T, acc);
-}
+                pub const _em__builtin = {};
 
-pub fn Array_H(T: type, comptime acc: TargAccess) type {
-    return struct {
-        const Self = @This();
+                _dname: []const u8,
+                _is_virgin: bool = true,
+                _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
-        pub const _em__builtin = {};
-
-        _dname: []const u8,
-        _is_virgin: bool = true,
-        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
-
-        pub fn addElem(self: *Self, elem: T) void {
-            self._is_virgin = false;
-            self._list.append(elem) catch fail();
-        }
-
-        pub fn elems(self: *Self) []T {
-            self._is_virgin = false;
-            return self._list.items;
-        }
-
-        pub fn setLen(self: *Self, len: usize) void {
-            const sav = self._is_virgin;
-            const l = self._list.items.len;
-            if (len > l) {
-                for (l..len) |_| {
-                    self.addElem(std.mem.zeroes(T));
+                pub fn addElem(self: *Self, elem: T) void {
+                    self._is_virgin = false;
+                    self._list.append(elem) catch fail();
                 }
-            }
-            self._is_virgin = sav;
-        }
 
-        pub fn toString(self: *const Self) []const u8 {
-            const tn = mkTypeName(T);
-            return sprint("em.Array_T({s}, .{s}){{ ._a = @constCast(&@\"{s}\")}}", .{ tn, @tagName(acc), self._dname });
-        }
-
-        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
-            self._dname = upath ++ ".em__C." ++ cname;
-            const tn = mkTypeName(T);
-            var sb = StringH{};
-            if (self._is_virgin) {
-                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
-            } else {
-                sb.add(sprint("[_]{s}{{", .{tn}));
-                for (self._list.items) |e| {
-                    sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+                pub fn elems(self: *Self) []T {
+                    self._is_virgin = false;
+                    return self._list.items;
                 }
-                sb.add("}");
-            }
-            const ks = if (acc == .RO) "const" else "var";
-            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
-        }
-    };
-}
 
-pub fn Array_T(T: type, comptime acc: TargAccess) type {
-    const A = if (acc == .RO) []const T else []T;
-    return struct {
-        const Self = @This();
-        _a: A,
-        pub fn len(self: Self) usize {
-            return self._a.len;
-        }
-        pub fn unwrap(self: Self) A {
-            return self._a;
-        }
-    };
+                pub fn setLen(self: *Self, len: usize) void {
+                    const sav = self._is_virgin;
+                    const l = self._list.items.len;
+                    if (len > l) {
+                        for (l..len) |_| {
+                            self.addElem(std.mem.zeroes(T));
+                        }
+                    }
+                    self._is_virgin = sav;
+                }
+
+                pub fn toString(self: *const Self) []const u8 {
+                    const tn = mkTypeName(T);
+                    return sprint("em.Array({s}, .{s}){{ ._a = @constCast(&@\"{s}\")}}", .{ tn, @tagName(acc), self._dname });
+                }
+
+                pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+                    self._dname = upath ++ ".em__C." ++ cname;
+                    const tn = mkTypeName(T);
+                    var sb = StringH{};
+                    if (self._is_virgin) {
+                        sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
+                    } else {
+                        sb.add(sprint("[_]{s}{{", .{tn}));
+                        for (self._list.items) |e| {
+                            sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+                        }
+                        sb.add("}");
+                    }
+                    const ks = if (acc == .RO) "const" else "var";
+                    return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
+                }
+            };
+        },
+        .TARG => {
+            const A = if (acc == .RO) []const T else []T;
+            return struct {
+                const Self = @This();
+                _a: A,
+                pub fn len(self: Self) usize {
+                    return self._a.len;
+                }
+                pub fn unwrap(self: Self) A {
+                    return self._a;
+                }
+            };
+        },
+    }
 }
 
 pub fn Factory(T: type) type {
