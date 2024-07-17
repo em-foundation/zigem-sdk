@@ -17,7 +17,7 @@ pub const EM__TARG = struct {
     //
     pub const PollFxn = *const fn () bool;
 
-    const OneShot = em__C.OneShot.unwrap();
+    const OneShot = em__C.OneShot.scope;
 
     var active_flag: bool = false;
     const vptr: *volatile bool = &active_flag;

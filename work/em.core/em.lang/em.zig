@@ -645,57 +645,44 @@ pub fn Param(T: type) type {
 }
 
 pub fn Proxy(I: type) type {
-    return if (DOMAIN == .HOST) Proxy_H(I) else Proxy_T(I);
-}
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
 
-pub fn Proxy_H(I: type) type {
-    return struct {
-        const Self = @This();
+                pub const _em__builtin = {};
+                pub const _em__config = {};
 
-        pub const _em__builtin = {};
-        pub const _em__config = {};
+                _prx: []const u8 = I.em__U.upath,
 
-        _prx: []const u8 = I.em__U.upath,
+                pub fn get(self: *Self) I {
+                    return self._prx;
+                }
 
-        pub fn get(self: *Self) I {
-            return self._prx;
-        }
+                pub fn ref(self: *Self) *Proxy(I) {
+                    return self;
+                }
 
-        pub fn ref(self: *Self) *Proxy_H(I) {
-            return self;
-        }
+                pub fn set(self: *Self, x: anytype) void {
+                    self._prx = x.em__U.upath;
+                }
 
-        pub fn set(self: *Self, x: anytype) void {
-            self._prx = x.em__U.upath;
-        }
-
-        pub fn toString(self: *const Self) []const u8 {
-            var it = std.mem.splitSequence(u8, self._prx, "__");
-            var sb = StringH{};
-            sb.add(sprint("em.Proxy_T(em.import.@\"{s}\"){{ ._prx = em.import.@\"{s}\"", .{ I.em__U.upath, it.first() }));
-            while (it.next()) |seg| {
-                sb.add(sprint(".{s}", .{seg}));
-            }
-            sb.add(".em__U }");
-            return sb.get();
-        }
-    };
-}
-
-pub fn Proxy_T(I: type) type {
-    return struct {
-        const Self = @This();
-
-        _prx: *Unit,
-
-        pub fn ref(self: *Self) *Proxy_T(I) {
-            return self;
-        }
-
-        pub fn unwrap(comptime self: *const Self) @TypeOf(unitScope_T(self._prx.self)) {
-            return unitScope_T(self._prx.self);
-        }
-    };
+                pub fn toString(self: *const Self) []const u8 {
+                    var it = std.mem.splitSequence(u8, self._prx, "__");
+                    var sb = StringH{};
+                    sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+                    while (it.next()) |seg| {
+                        sb.add(sprint(".{s}", .{seg}));
+                    }
+                    sb.add(".em__U");
+                    return sb.get();
+                }
+            };
+        },
+        .TARG => {
+            return *const Unit;
+        },
+    }
 }
 
 // -------- debug operators -------- //

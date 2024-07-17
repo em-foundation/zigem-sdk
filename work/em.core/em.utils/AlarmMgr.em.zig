@@ -43,7 +43,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const WakeupTimer = em__C.WakeupTimer.unwrap();
+    const WakeupTimer = em__C.WakeupTimer.scope;
 
     var cur_alarm: ?*Alarm = null;
 

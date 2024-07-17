@@ -23,11 +23,11 @@ pub const EM__HOST = struct {
 };
 
 pub const EM__TARG = struct {
-    pub const BusyWait = em__C.BusyWait.unwrap();
-    pub const ConsoleUart = em__C.ConsoleUart.unwrap();
-    pub const GlobalInterrupts = em__C.GlobalInterrupts.unwrap();
-    pub const Idle = em__C.Idle.unwrap();
-    pub const Mcu = em__C.Mcu.unwrap();
-    pub const MsCounter = em__C.MsCounter.unwrap();
-    pub const UsCounter = em__C.UsCounter.unwrap();
+    pub const BusyWait = em__C.BusyWait.scope;
+    pub const ConsoleUart = em__C.ConsoleUart.scope;
+    pub const GlobalInterrupts = em__C.GlobalInterrupts.scope;
+    pub const Idle = em__C.Idle.scope;
+    pub const Mcu = em__C.Mcu.scope;
+    pub const MsCounter = em__C.MsCounter.scope;
+    pub const UsCounter = em__C.UsCounter.scope;
 };

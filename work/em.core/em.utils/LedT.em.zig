@@ -31,7 +31,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__TARG = struct {
             //
             const active_low = em__C.active_low;
-            const Pin = em__C.Pin.unwrap();
+            const Pin = em__C.Pin.scope;
 
             pub fn em__startup() void {
                 Pin.makeOutput();

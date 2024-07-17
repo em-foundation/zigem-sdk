@@ -20,10 +20,10 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const CS = em__C.CS.unwrap();
-    const CLK = em__C.CLK.unwrap();
-    const PICO = em__C.PICO.unwrap();
-    const POCI = em__C.POCI.unwrap();
+    const CS = em__C.CS.scope;
+    const CLK = em__C.CLK.scope;
+    const PICO = em__C.PICO.scope;
+    const POCI = em__C.POCI.scope;
 
     const SD_CMD: u8 = 0xb9;
 

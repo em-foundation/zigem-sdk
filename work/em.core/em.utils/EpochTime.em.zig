@@ -12,7 +12,7 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const Uptimer = em__C.Uptimer.unwrap();
+    const Uptimer = em__C.Uptimer.scope;
 
     pub fn getCurrent(o_subs: *u32) u32 {
         const time = Uptimer.read();
