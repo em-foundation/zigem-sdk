@@ -25,7 +25,6 @@ pub const EM__HOST = struct {
     }
 
     pub fn bindHandlerH(h: em.Func(Handler)) void {
-    pub fn bindHandlerH(h: em.Func(em.Func(Handler))) void {
         em__C.handler.set(h);
     }
 };
