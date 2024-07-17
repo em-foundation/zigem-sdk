@@ -3,8 +3,8 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    desc_tab: em.Param(em.Table(Desc)),
-    val_tab: em.Param(em.Table(u16)),
+    desc_tab: em.Param(em.Table(Desc, .RO)),
+    val_tab: em.Param(em.Table(u16, .RO)),
 };
 
 pub const Desc = struct {
@@ -15,8 +15,8 @@ pub const Desc = struct {
 
 pub const EM__HOST = struct {
     //
-    var desc_tab = em.Table(Desc){};
-    var val_tab = em.Table(u16){};
+    var desc_tab = em__C.desc_tab.get();
+    var val_tab = em__C.val_tab.get();
 
     pub fn em__constructH() void {
         const hdr = @embedFile("ti_radio_config.h");

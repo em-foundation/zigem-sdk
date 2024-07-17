@@ -30,7 +30,7 @@ pub const StringH = struct {
     }
 };
 
-pub fn Table(comptime T: type) type {
+pub fn Table(comptime T: type, acc: enum { RO, RW }) type {
     switch (DOMAIN) {
         .HOST => {
             return struct {
@@ -44,19 +44,23 @@ pub fn Table(comptime T: type) type {
                     return self._list.items;
                 }
                 pub fn toString(self: Self) []const u8 {
-                    var res: []const u8 = sprint("&[_]{s}{{", .{mkTypeName(T)});
+                    var sb = StringH{};
+                    if (acc == .RW) sb.add("@constCast(");
+                    sb.add(sprint("&[_]{s}{{", .{mkTypeName(T)}));
                     for (self._list.items) |item| {
-                        res = sprint("{s} {s},", .{ res, toStringAux(item) });
+                        sb.add(sprint(" {s},", .{toStringAux(item)}));
                     }
-                    return sprint("{s} }}", .{res});
+                    if (acc == .RW) sb.add(")");
+                    sb.add("}");
+                    return sb.get();
                 }
                 pub fn typeName() []const u8 {
-                    return sprint("em.Table({s})", .{mkTypeName(T)});
+                    return sprint("em.Table({s}, .{})", .{ mkTypeName(T), @tagName(acc) });
                 }
             };
         },
         .TARG => {
-            return []const T;
+            return if (acc == .RO) []const T else []T;
         },
     }
 }

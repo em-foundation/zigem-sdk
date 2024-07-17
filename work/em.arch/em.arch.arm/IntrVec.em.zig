@@ -8,8 +8,8 @@ export fn DEFAULT_isr() void {
 
 pub const EM__HOST = struct {
     //
-    var name_tab = em.Table(?[]const u8){};
-    var used_tab = em.Table([]const u8){};
+    var name_tab = em.Table(?[]const u8, .RO){};
+    var used_tab = em.Table([]const u8, .RO){};
 
     pub fn addIntrH(name: ?[]const u8) void {
         name_tab.add(name);
