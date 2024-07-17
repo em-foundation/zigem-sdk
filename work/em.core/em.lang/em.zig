@@ -35,27 +35,53 @@ pub fn Table(comptime T: type, acc: enum { RO, RW }) type {
         .HOST => {
             return struct {
                 const Self = @This();
+
                 pub const _em__builtin = {};
+
+                _dname: []const u8,
+                _is_virgin: bool = true,
                 _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
+
                 pub fn add(self: *Self, item: T) void {
                     self._list.append(item) catch fail();
+                    self._is_virgin = false;
                 }
+
                 pub fn items(self: *Self) []T {
+                    self._is_virgin = false;
                     return self._list.items;
                 }
-                pub fn toString(self: Self) []const u8 {
-                    var sb = StringH{};
-                    if (acc == .RW) sb.add("@constCast(");
-                    sb.add(sprint("&[_]{s}{{", .{mkTypeName(T)}));
-                    for (self._list.items) |item| {
-                        sb.add(sprint(" {s},", .{toStringAux(item)}));
+
+                pub fn setLen(self: *Self, len: usize) void {
+                    const sav = self._is_virgin;
+                    const l = self._list.items.len;
+                    if (len > l) {
+                        for (l..len) |_| {
+                            self.add(std.mem.zeroes(T));
+                        }
                     }
-                    if (acc == .RW) sb.add(")");
-                    sb.add("}");
-                    return sb.get();
+                    self._is_virgin = sav;
                 }
-                pub fn typeName() []const u8 {
-                    return sprint("em.Table({s}, .{})", .{ mkTypeName(T), @tagName(acc) });
+
+                pub fn toString(self: *const Self) []const u8 {
+                    return sprint("@constCast(&@\"{s}\")", .{self._dname});
+                }
+
+                pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+                    self._dname = upath ++ ".em__C." ++ cname;
+                    const tn = mkTypeName(T);
+                    var sb = StringH{};
+                    if (self._is_virgin) {
+                        sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
+                    } else {
+                        sb.add(sprint("[_]{s}{{", .{tn}));
+                        for (self._list.items) |e| {
+                            sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+                        }
+                        sb.add("}");
+                    }
+                    const ks = if (acc == .RO) "const" else "var";
+                    return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
                 }
             };
         },

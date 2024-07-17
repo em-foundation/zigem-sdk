@@ -5,8 +5,8 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    sleep_enter_fxn_tab: em.Param(CallbackTab),
-    sleep_leave_fxn_tab: em.Param(CallbackTab),
+    sleep_enter_fxn_tab: em.Table(CallbackFxn, .RO),
+    sleep_leave_fxn_tab: em.Table(CallbackFxn, .RO),
 };
 
 pub const Debug = em.import.@"em.lang/Debug";
@@ -18,13 +18,8 @@ pub const CallbackTab = em.Table(CallbackFxn, .RO);
 
 pub const EM__HOST = struct {
     //
-    var sleep_enter_cb_tab = CallbackTab{};
-    var sleep_leave_cb_tab = CallbackTab{};
-
-    pub fn em__constructH() void {
-        em__C.sleep_enter_fxn_tab.set(sleep_enter_cb_tab);
-        em__C.sleep_leave_fxn_tab.set(sleep_leave_cb_tab);
-    }
+    var sleep_enter_cb_tab = em__C.sleep_enter_fxn_tab;
+    var sleep_leave_cb_tab = em__C.sleep_leave_fxn_tab;
 
     pub fn addSleepEnterCbH(cb: CallbackFxn) void {
         sleep_enter_cb_tab.add(cb);

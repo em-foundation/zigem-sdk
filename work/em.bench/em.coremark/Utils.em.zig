@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    seed_tab: em.Array(seed_t, .RO),
+    seed_tab: em.Table(seed_t, .RO),
 };
 
 pub const NUM_SEEDS: usize = 5;
@@ -20,7 +20,7 @@ pub const EM__HOST = struct {
     }
 
     pub fn bindSeedH(idx: u8, val: seed_t) void {
-        em__C.seed_tab.elems()[idx - 1] = val;
+        em__C.seed_tab.items()[idx - 1] = val;
     }
 };
 
@@ -30,7 +30,7 @@ pub const EM__TARG = struct {
     var seed_tab: [em__C.seed_tab.len()]seed_t = undefined;
 
     pub fn em__startup() void {
-        @memcpy(&seed_tab, em__C.seed_tab.unwrap());
+        @memcpy(&seed_tab, em__C.seed_tab);
     }
 
     pub fn bindCrc(kind: Kind, crc: sum_t) void {

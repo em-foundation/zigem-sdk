@@ -1,5 +1,11 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
+pub const em__C = em__U.config(EM__CONFIG);
+
+pub const EM__CONFIG = struct {
+    name_tab: em.Table(?[]const u8, .RO),
+    used_tab: em.Table([]const u8, .RO),
+};
 
 export fn DEFAULT_isr() void {
     if (em.hosted) return;
@@ -8,8 +14,8 @@ export fn DEFAULT_isr() void {
 
 pub const EM__HOST = struct {
     //
-    var name_tab = em.Table(?[]const u8, .RO){};
-    var used_tab = em.Table([]const u8, .RO){};
+    var name_tab = em__C.name_tab;
+    var used_tab = em__C.used_tab;
 
     pub fn addIntrH(name: ?[]const u8) void {
         name_tab.add(name);
