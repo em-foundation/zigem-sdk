@@ -462,10 +462,10 @@ pub fn Factory_H(T: type) type {
         _dname: []const u8,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
-        pub fn createH(self: *Self, init: anytype) Obj_H(T) {
+        pub fn createH(self: *Self, init: anytype) Obj(T) {
             const l = self._list.items.len;
             self._list.append(std.mem.zeroInit(T, init)) catch fail();
-            return Obj_H(T){ ._fty = self, ._idx = l };
+            return Obj(T){ ._fty = self, ._idx = l };
         }
 
         pub fn objCount(self: *const Self) usize {
@@ -573,34 +573,33 @@ pub fn Func(FT: type) type {
 }
 
 pub fn Obj(T: type) type {
-    return if (DOMAIN == .HOST) Obj_H(T) else Obj_T(T);
-}
+    switch (DOMAIN) {
+        .HOST => {
+            return struct {
+                const Self = @This();
 
-pub fn Obj_H(T: type) type {
-    return struct {
-        const Self = @This();
+                pub const _em__builtin = {};
 
-        pub const _em__builtin = {};
-
-        _fty: ?*Factory_H(T),
-        _idx: usize,
-        pub fn getIdx(self: *const Self) usize {
-            return self._idx;
-        }
-        pub fn O(self: *const Self) *T {
-            return self._fty.?.objGet(self._idx);
-        }
-        pub fn toString(self: *const Self) []const u8 {
-            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
-        }
-        pub fn typeName() []const u8 {
-            return sprint("*{s}", .{mkTypeName(T)});
-        }
-    };
-}
-
-pub fn Obj_T(T: type) type {
-    return *T;
+                _fty: ?*Factory_H(T),
+                _idx: usize,
+                pub fn getIdx(self: *const Self) usize {
+                    return self._idx;
+                }
+                pub fn O(self: *const Self) *T {
+                    return self._fty.?.objGet(self._idx);
+                }
+                pub fn toString(self: *const Self) []const u8 {
+                    return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
+                }
+                pub fn typeName() []const u8 {
+                    return sprint("*{s}", .{mkTypeName(T)});
+                }
+            };
+        },
+        .TARG => {
+            return *T;
+        },
+    }
 }
 
 pub fn Param(T: type) type {
