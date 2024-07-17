@@ -14,7 +14,7 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        const blinkF = FiberMgr.createH(em__U.func("blinkFB", FiberMgr.FiberBody));
+        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.FiberBody));
         const alarm = AlarmMgr.createH(blinkF);
         em__C.alarm.set(alarm);
         em__C.blinkF.set(blinkF);

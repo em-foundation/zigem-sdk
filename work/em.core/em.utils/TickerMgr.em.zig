@@ -30,7 +30,7 @@ pub const Ticker = struct {
 pub const EM__HOST = struct {
     //
     pub fn createH() Obj {
-        const fiber = FiberMgr.createH(em__U.func("alarmFB", FiberMgr.FiberBody));
+        const fiber = FiberMgr.createH(em__U.fxn("alarmFB", FiberMgr.FiberBody));
         const alarm = AlarmMgr.createH(fiber);
         const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
         fiber.O().arg = ticker.getIdx();

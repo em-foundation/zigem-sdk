@@ -168,7 +168,7 @@ pub const Unit = struct {
         //}
     }
 
-    pub fn func(self: Self, name: []const u8, FT: type) Fxn(FT) {
+    pub fn fxn(self: Self, name: []const u8, FT: type) Fxn(FT) {
         return Fxn(FT){ ._upath = self.upath, ._fname = name };
     }
 
