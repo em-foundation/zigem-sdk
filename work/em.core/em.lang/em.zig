@@ -30,69 +30,72 @@ pub const StringH = struct {
     }
 };
 
-pub fn Table(comptime T: type, acc: enum { RO, RW }) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
+pub const TableAccess = enum { RO, RW };
 
-                pub const _em__builtin = {};
+pub fn Table(T: type, acc: TableAccess) type {
+    return if (DOMAIN == .HOST) Table_H(T, acc) else Table_T(T, acc);
+}
 
-                _dname: []const u8,
-                _is_virgin: bool = true,
-                _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
+pub fn Table_H(comptime T: type, acc: TableAccess) type {
+    return struct {
+        const Self = @This();
 
-                pub fn add(self: *Self, item: T) void {
-                    self._list.append(item) catch fail();
-                    self._is_virgin = false;
+        pub const _em__builtin = {};
+
+        _dname: []const u8,
+        _is_virgin: bool = true,
+        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
+
+        pub fn add(self: *Self, item: T) void {
+            self._list.append(item) catch fail();
+            self._is_virgin = false;
+        }
+
+        pub fn items(self: *Self) []T {
+            self._is_virgin = false;
+            return self._list.items;
+        }
+
+        pub fn ref(self: *Self) *Table_H(T, acc) {
+            return self;
+        }
+
+        pub fn setLen(self: *Self, len: usize) void {
+            const sav = self._is_virgin;
+            const l = self._list.items.len;
+            if (len > l) {
+                for (l..len) |_| {
+                    self.add(std.mem.zeroes(T));
                 }
+            }
+            self._is_virgin = sav;
+        }
 
-                pub fn items(self: *Self) []T {
-                    self._is_virgin = false;
-                    return self._list.items;
-                }
+        pub fn toString(self: *const Self) []const u8 {
+            return sprint("@constCast(&@\"{s}\")", .{self._dname});
+        }
 
-                pub fn ref(self: *Self) *Table(T, acc) {
-                    return self;
+        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+            self._dname = upath ++ ".em__C." ++ cname;
+            const tn = mkTypeName(T);
+            var sb = StringH{};
+            if (self._is_virgin) {
+                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
+            } else {
+                sb.add(sprint("[_]{s}{{", .{tn}));
+                for (self._list.items) |e| {
+                    sb.add(sprint("    {s},\n", .{toStringAux(e)}));
                 }
+                sb.add("}");
+            }
+            const ks = if (acc == .RO) "const" else "var";
+            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
+        }
+    };
+}
 
-                pub fn setLen(self: *Self, len: usize) void {
-                    const sav = self._is_virgin;
-                    const l = self._list.items.len;
-                    if (len > l) {
-                        for (l..len) |_| {
-                            self.add(std.mem.zeroes(T));
-                        }
-                    }
-                    self._is_virgin = sav;
-                }
-
-                pub fn toString(self: *const Self) []const u8 {
-                    return sprint("@constCast(&@\"{s}\")", .{self._dname});
-                }
-
-                pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
-                    self._dname = upath ++ ".em__C." ++ cname;
-                    const tn = mkTypeName(T);
-                    var sb = StringH{};
-                    if (self._is_virgin) {
-                        sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
-                    } else {
-                        sb.add(sprint("[_]{s}{{", .{tn}));
-                        for (self._list.items) |e| {
-                            sb.add(sprint("    {s},\n", .{toStringAux(e)}));
-                        }
-                        sb.add("}");
-                    }
-                    const ks = if (acc == .RO) "const" else "var";
-                    return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
-                }
-            };
-        },
-        .TARG => {
-            return if (acc == .RO) []const T else []T;
-        },
-    }
+pub fn Table_T(T: type, acc: TableAccess) type {
+    return if (acc == .RO) []const T else []T;
 }
 
 pub const text_t = []const u8;
@@ -532,116 +535,119 @@ pub fn Func(FT: type) type {
 }
 
 pub fn Obj(T: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
+    return if (DOMAIN == .HOST) Obj_H(T) else Obj_T(T);
+}
 
-                pub const _em__builtin = {};
+pub fn Obj_H(T: type) type {
+    return struct {
+        const Self = @This();
 
-                _fty: ?*Factory_H(T),
-                _idx: usize,
-                pub fn getIdx(self: *const Self) usize {
-                    return self._idx;
-                }
-                pub fn O(self: *const Self) *T {
-                    return self._fty.?.objGet(self._idx);
-                }
-                pub fn toString(self: *const Self) []const u8 {
-                    return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
-                }
-                pub fn typeName() []const u8 {
-                    return sprint("*{s}", .{mkTypeName(T)});
-                }
-            };
-        },
-        .TARG => {
-            return *T;
-        },
-    }
+        pub const _em__builtin = {};
+
+        _fty: ?*Factory_H(T),
+        _idx: usize,
+        pub fn getIdx(self: *const Self) usize {
+            return self._idx;
+        }
+        pub fn O(self: *const Self) *T {
+            return self._fty.?.objGet(self._idx);
+        }
+        pub fn toString(self: *const Self) []const u8 {
+            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
+        }
+        pub fn typeName() []const u8 {
+            return sprint("*{s}", .{mkTypeName(T)});
+        }
+    };
+}
+
+pub fn Obj_T(T: type) type {
+    return *T;
 }
 
 pub fn Param(T: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
+    return if (DOMAIN == .HOST) Param_H(T) else Param_T(T);
+}
 
-                pub const _em__builtin = {};
-                pub const _em__config = {};
+pub fn Param_H(T: type) type {
+    return struct {
+        const Self = @This();
 
-                _val: T,
+        pub const _em__builtin = {};
+        pub const _em__config = {};
 
-                pub fn get(self: *Self) T {
-                    return self._val;
-                }
+        _val: T,
 
-                pub fn ref(self: *Self) *Param(T) {
-                    return self;
-                }
+        pub fn get(self: *Self) T {
+            return self._val;
+        }
 
-                pub fn set(self: *Self, v: T) void {
-                    self._val = v;
-                }
+        pub fn ref(self: *Self) *Param_H(T) {
+            return self;
+        }
 
-                pub fn toString(self: *const Self) []const u8 {
-                    return sprint("{s}", .{toStringAux(self._val)});
-                }
+        pub fn set(self: *Self, v: T) void {
+            self._val = v;
+        }
 
-                pub fn Type(_: Self) type {
-                    return T;
-                }
+        pub fn toString(self: *const Self) []const u8 {
+            return sprint("{s}", .{toStringAux(self._val)});
+        }
 
-                pub fn unwrap(self: *const Self) T {
-                    return self._val;
-                }
-            };
-        },
-        .TARG => {
+        pub fn Type(_: Self) type {
             return T;
-        },
-    }
+        }
+
+        pub fn unwrap(self: *const Self) T {
+            return self._val;
+        }
+    };
+}
+
+pub fn Param_T(T: type) type {
+    return T;
 }
 
 pub fn Proxy(I: type) type {
-    switch (DOMAIN) {
-        .HOST => {
-            return struct {
-                const Self = @This();
+    return if (DOMAIN == .HOST) Proxy_H(I) else Proxy_T(I);
+}
 
-                pub const _em__builtin = {};
-                pub const _em__config = {};
+pub fn Proxy_H(I: type) type {
+    return struct {
+        const Self = @This();
 
-                _prx: []const u8 = I.em__U.upath,
+        pub const _em__builtin = {};
+        pub const _em__config = {};
 
-                pub fn get(self: *Self) I {
-                    return self._prx;
-                }
+        _prx: []const u8 = I.em__U.upath,
 
-                pub fn ref(self: *Self) *Proxy(I) {
-                    return self;
-                }
+        pub fn get(self: *Self) I {
+            return self._prx;
+        }
 
-                pub fn set(self: *Self, x: anytype) void {
-                    self._prx = x.em__U.upath;
-                }
+        pub fn ref(self: *Self) *Proxy_H(I) {
+            return self;
+        }
 
-                pub fn toString(self: *const Self) []const u8 {
-                    var it = std.mem.splitSequence(u8, self._prx, "__");
-                    var sb = StringH{};
-                    sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
-                    while (it.next()) |seg| {
-                        sb.add(sprint(".{s}", .{seg}));
-                    }
-                    sb.add(".em__U");
-                    return sb.get();
-                }
-            };
-        },
-        .TARG => {
-            return *const Unit;
-        },
-    }
+        pub fn set(self: *Self, x: anytype) void {
+            self._prx = x.em__U.upath;
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
+            var it = std.mem.splitSequence(u8, self._prx, "__");
+            var sb = StringH{};
+            sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+            while (it.next()) |seg| {
+                sb.add(sprint(".{s}", .{seg}));
+            }
+            sb.add(".em__U");
+            return sb.get();
+        }
+    };
+}
+
+pub fn Proxy_T(_: type) type {
+    return *const Unit;
 }
 
 // -------- debug operators -------- //
