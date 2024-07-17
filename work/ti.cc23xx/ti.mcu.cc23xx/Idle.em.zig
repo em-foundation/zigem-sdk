@@ -13,7 +13,7 @@ pub const Debug = em.import.@"em.lang/Debug";
 pub const Hapi = em.import.@"ti.mcu.cc23xx/Hapi";
 
 pub const SleepEvent = struct {};
-pub const CallbackFxn = em.Func(SleepEvent);
+pub const CallbackFxn = em.Fxn(SleepEvent);
 pub const CallbackTab = em.Table(CallbackFxn, .RO);
 
 pub const EM__HOST = struct {

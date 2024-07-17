@@ -168,8 +168,8 @@ pub const Unit = struct {
         //}
     }
 
-    pub fn func(self: Self, name: []const u8, FT: type) Func(FT) {
-        return Func(FT){ ._upath = self.upath, ._fname = name };
+    pub fn func(self: Self, name: []const u8, FT: type) Fxn(FT) {
+        return Fxn(FT){ ._upath = self.upath, ._fname = name };
     }
 
     fn extendPath(self: Self, comptime name: []const u8) []const u8 {
@@ -502,7 +502,7 @@ pub fn Factory_T(T: type) type {
     };
 }
 
-pub fn Func(FT: type) type {
+pub fn Fxn(FT: type) type {
     switch (DOMAIN) {
         .HOST => {
             return struct {
@@ -524,7 +524,7 @@ pub fn Func(FT: type) type {
                     return sprint("{s}", .{fval});
                 }
                 pub fn typeName() []const u8 {
-                    return sprint("em.Func({s})", .{mkTypeName(FT)});
+                    return sprint("em.Fxn({s})", .{mkTypeName(FT)});
                 }
             };
         },

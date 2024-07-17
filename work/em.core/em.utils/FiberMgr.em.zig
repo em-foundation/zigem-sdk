@@ -17,7 +17,7 @@ pub const FiberBody = struct {
 pub const Fiber = struct {
     const Self = @This();
     link: ?em.Obj(Fiber),
-    body: em.Func(FiberBody),
+    body: em.Fxn(FiberBody),
     arg: usize = 0,
     pub fn post(self: *Self) void {
         em__U.scope.Fiber_post(self);
@@ -26,7 +26,7 @@ pub const Fiber = struct {
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Func(FiberBody)) em.Obj(Fiber) {
+    pub fn createH(body: em.Fxn(FiberBody)) em.Obj(Fiber) {
         const fiber = em__C.FiberOF.createH(.{ .body = body });
         return fiber;
     }

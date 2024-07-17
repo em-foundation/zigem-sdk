@@ -7,7 +7,7 @@ pub fn disable() void {
     return;
 }
 
-pub fn enable(thresh: u32, handler: em.Func(Handler)) void {
+pub fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
     _ = thresh;
     _ = handler;
     return;

@@ -21,7 +21,7 @@ pub const EM__TARG = struct {
     const MSECS_SCALAR: u16 = 1000 / 8;
     const RES_BITS: u8 = 20;
 
-    var cur_handler: em.Func(Handler) = null;
+    var cur_handler: em.Fxn(Handler) = null;
 
     pub fn em__startup() void {
         reg(hal.CKMD_BASE + hal.CKMD_O_LFINCOVR).* = 0x80000000 + (1 << RES_BITS);
@@ -35,7 +35,7 @@ pub const EM__TARG = struct {
         reg(hal.RTC_BASE + hal.RTC_O_IMCLR).* = hal.RTC_IMCLR_EV0;
     }
 
-    pub fn enable(thresh: u32, handler: em.Func(Handler)) void {
+    pub fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
         cur_handler = handler;
         reg(hal.RTC_BASE + hal.RTC_O_CH0CC8U).* = thresh;
         reg(hal.RTC_BASE + hal.RTC_O_IMSET).* = hal.RTC_IMSET_EV0;

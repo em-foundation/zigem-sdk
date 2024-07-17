@@ -17,7 +17,7 @@ pub const EM__TARG = struct {
         Rtc.disable();
     }
 
-    pub fn enable(secs256: u32, handler: em.Func(Handler)) void {
+    pub fn enable(secs256: u32, handler: em.Fxn(Handler)) void {
         Rtc.enable(secs256, @ptrCast(handler));
     }
 

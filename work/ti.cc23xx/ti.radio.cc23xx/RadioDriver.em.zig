@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    handler: em.Param(em.Func(Handler)),
+    handler: em.Param(em.Fxn(Handler)),
 };
 
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
@@ -24,7 +24,7 @@ pub const EM__HOST = struct {
         IntrVec.useIntrH("LRFD_IRQ0");
     }
 
-    pub fn bindHandlerH(h: em.Func(Handler)) void {
+    pub fn bindHandlerH(h: em.Fxn(Handler)) void {
         em__C.handler.set(h);
     }
 };
