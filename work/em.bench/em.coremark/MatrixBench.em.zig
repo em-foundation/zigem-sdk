@@ -7,9 +7,9 @@ pub const em__C = em__U.config(EM__CONFIG);
 pub const EM__CONFIG = struct {
     dimN: em.Param(usize),
     memsize: em.Param(u16),
-    matA: em.Array(matdat_t, .RW),
-    matB: em.Array(matdat_t, .RW),
-    matC: em.Array(matres_t, .RW),
+    matA: em.Table(matdat_t, .RW),
+    matB: em.Table(matdat_t, .RW),
+    matC: em.Table(matres_t, .RW),
 };
 
 pub const Crc = em.import.@"em.coremark/Crc";
@@ -34,8 +34,8 @@ pub const EM__HOST = struct {
         em__C.matA.setLen(d * d);
         em__C.matB.setLen(d * d);
         em__C.matC.setLen(d * d);
-        em__C.matA.elems()[0] = 10; // TODO: make matA unique
-        em__C.matB.elems()[0] = 20; // TODO  make matB unique
+        em__C.matA.items()[0] = 10; // TODO: make matA unique
+        em__C.matB.items()[0] = 20; // TODO  make matB unique
     }
 };
 
@@ -43,9 +43,9 @@ pub const EM__TARG = struct {
     //
     const dimN = em__C.dimN;
 
-    var matA = em__C.matA.unwrap();
-    var matB = em__C.matB.unwrap();
-    var matC = em__C.matC.unwrap();
+    var matA = em__C.matA;
+    var matB = em__C.matB;
+    var matC = em__C.matC;
 
     fn addVal(val: matdat_t) void {
         for (0..dimN) |i| {

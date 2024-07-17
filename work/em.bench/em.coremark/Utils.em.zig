@@ -27,7 +27,7 @@ pub const EM__HOST = struct {
 pub const EM__TARG = struct {
     //
     var crc_tab = em.std.mem.zeroes([@intFromEnum(Kind.ZZZ_)]sum_t);
-    var seed_tab: [em__C.seed_tab.len()]seed_t = undefined;
+    var seed_tab: [em__C.seed_tab.len]seed_t = undefined;
 
     pub fn em__startup() void {
         @memcpy(&seed_tab, em__C.seed_tab);
