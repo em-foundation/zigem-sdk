@@ -6,6 +6,7 @@ pub const EM__CONFIG = struct {
     handler: em.Param(em.Fxn(Handler)),
 };
 
+pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 pub const RfFifo = em.import.@"ti.radio.cc23xx/RfFifo";
@@ -37,8 +38,10 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     pub fn em__startup() void {
-        RfXtal.enable();
         Idle.waitOnly(.SET);
+    }
+
+    fn enable() void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
         while ((reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKCFG0).* & hal.CLKCTL_CLKCFG0_LRFD_M) != hal.CLKCTL_CLKCFG0_LRFD_CLK_EN) {}
         reg(hal.PMUD_BASE + hal.PMUD_O_CTL).* = hal.PMUD_CTL_CALC_EN | hal.PMUD_CTL_MEAS_EN | hal.PMUD_CTL_HYST_EN_DIS;
@@ -53,9 +56,7 @@ pub const EM__TARG = struct {
             hal.LRFDDBELL_CLKCTL_MDM_M |
             hal.LRFDDBELL_CLKCTL_PBE_M;
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_HPBUFEN;
-    }
-
-    fn enable() void {
+        RfXtal.enable();
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* = 0;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_INIT).* = hal.LRFDPBE_INIT_MDMF_M | hal.LRFDPBE_INIT_TOPSM_M;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_ENABLE).* = hal.LRFDPBE_ENABLE_MDMF_M | hal.LRFDPBE_ENABLE_TOPSM_M;
@@ -131,12 +132,17 @@ pub const EM__TARG = struct {
     }
 
     pub fn startTx(word_buf: []const u32) void {
+        //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
         _ = RfFifo.prepare();
         RfFifo.write(word_buf);
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
+
+        BusyWait.wait(10000);
+        while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
     }
 
     fn updateSyncWord(syncWord: u32) u32 {
@@ -152,6 +158,22 @@ pub const EM__TARG = struct {
             syncWordOut = syncWord;
         }
         return syncWordOut;
+    }
+
+    pub fn wait() void {
+        var mis: u32 = undefined;
+        while (true) {
+            mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
+            if (mis != 0) break;
+        }
+        em.@"%%[>]"(mis);
+        em.halt();
+
+        //hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
+        ////em.@"%%[>]"(reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).*);
+        //Idle.waitOnly(.SET);
+        //Idle.exec();
+        //Idle.waitOnly(.CLR);
     }
 
     export fn LRFD_IRQ0_isr() void {

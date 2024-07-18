@@ -25,13 +25,16 @@ pub const EM__TARG = struct {
     var data = [_]u32{ 0x0203000F, 0x000A0001, 0x04030201, 0x08070605, 0x00000A09 };
 
     pub fn em__run() void {
-        RadioDriver.setup(.TX);
         txTicker.start(256, &txTickCb);
         FiberMgr.run();
     }
 
     fn txTickCb(_: TickerMgr.Callback) void {
         AppLed.wink(100);
+        em.@"%%[c+]"();
+        RadioDriver.setup(.TX);
+        em.@"%%[c]"();
         RadioDriver.startTx(data[0..]);
+        em.@"%%[c-]"();
     }
 };
