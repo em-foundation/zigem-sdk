@@ -40,7 +40,7 @@ pub const EM__TARG = struct {
     const sleep_enter_fxn_tab = em__C.sleep_enter_fxn_tab;
     const sleep_leave_fxn_tab = em__C.sleep_leave_fxn_tab;
 
-    var wait_only: bool = false;
+    var wait_only: u8 = 0;
 
     pub fn em__startup() void {
         em.@"%%[b+]"();
@@ -79,15 +79,11 @@ pub const EM__TARG = struct {
     }
 
     pub fn exec() void {
-        if (wait_only) {
+        if (wait_only > 0) {
             doWait();
         } else {
             doSleep();
         }
-    }
-
-    pub fn setWaitOnly(flag: bool) void {
-        wait_only = flag;
     }
 
     fn set_PRIMASK(m: u32) void {
@@ -96,6 +92,13 @@ pub const EM__TARG = struct {
             : [m] "r" (m),
             : "memory"
         );
+    }
+
+    pub fn waitOnly(comptime op: enum { CLR, SET }) void {
+        switch (op) {
+            .CLR => wait_only -= 1,
+            .SET => wait_only += 1,
+        }
     }
 
     pub fn wakeup() void {

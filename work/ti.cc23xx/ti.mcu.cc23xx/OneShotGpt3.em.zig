@@ -26,7 +26,7 @@ pub const EM__TARG = struct {
 
     pub fn disable() void {
         cur_fxn = null;
-        Idle.setWaitOnly(false);
+        Idle.waitOnly(.CLR);
         hal.NVIC_DisableIRQ(hal.LGPT3_COMB_IRQn);
         reg(hal.LGPT3_BASE + hal.LGPT_O_ICLR).* = hal.LGPT_ICLR_TGT;
     }
@@ -34,7 +34,7 @@ pub const EM__TARG = struct {
     pub fn enable(msecs: u32, handler: em.Fxn(Handler), arg: em.ptr_t) void {
         cur_fxn = handler;
         cur_arg = arg;
-        Idle.setWaitOnly(true);
+        Idle.waitOnly(.SET);
         hal.NVIC_EnableIRQ(hal.LGPT3_COMB_IRQn);
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LGPT3;
         reg(hal.LGPT3_BASE + hal.LGPT_O_IMSET).* = hal.LGPT_IMSET_TGT;
