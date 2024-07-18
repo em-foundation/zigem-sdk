@@ -41,7 +41,7 @@ pub const EM__HOST = struct {
 pub const EM__TARG = struct {
     //
     pub fn alarmFB(a: FiberMgr.FiberBody) void {
-        var ticker = em__C.TickerOF.objGet(a.arg);
+        var ticker = em__C.TickerOF[a.arg];
         if (ticker._tick_cb == null) return;
         ticker._tick_cb.?(.{});
         ticker._alarm.wakeupAt(ticker._rate256);
