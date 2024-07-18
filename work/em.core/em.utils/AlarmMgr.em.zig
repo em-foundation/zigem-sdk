@@ -48,7 +48,7 @@ pub const EM__TARG = struct {
     var cur_alarm: ?*Alarm = null;
 
     fn update(delta_ticks: u32) void {
-        const alarm_tab = em__C.AlarmOF.objAll();
+        const alarm_tab = em__C.AlarmOF;
         const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
         WakeupTimer.disable();
         var nxt_alarm: ?*Alarm = null;

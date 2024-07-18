@@ -167,8 +167,7 @@ pub fn Factory_H(T: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            const tn = mkTypeName(T);
-            return sprint("em.Factory_T({s}){{ ._arr = @constCast(&@\"{s}__OBJARR\"), ._len = {d}}}", .{ tn, self._dname, self.objCount() });
+            return sprint("@constCast(&@\"{s}__OBJARR\")", .{self._dname});
         }
 
         pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
@@ -206,20 +205,7 @@ pub fn Factory_H(T: type) type {
 }
 
 pub fn Factory_T(T: type) type {
-    return extern struct {
-        const Self = @This();
-        _arr: [*]T,
-        _len: usize,
-        pub fn objAll(self: Self) []T {
-            return self._arr[0..self._len];
-        }
-        pub fn objCount(self: Self) usize {
-            return self._len;
-        }
-        pub fn objGet(self: Self, idx: usize) *T {
-            return @constCast(&self._arr[idx]);
-        }
-    };
+    return []T;
 }
 
 pub fn Fxn(FT: type) type {
