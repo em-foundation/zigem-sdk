@@ -14,6 +14,7 @@ pub const RfPatch = em.import.@"ti.radio.cc23xx/RfPatch";
 pub const RfPower = em.import.@"ti.radio.cc23xx/RfPower";
 pub const RfRegs = em.import.@"ti.radio.cc23xx/RfRegs";
 pub const RfTrim = em.import.@"ti.radio.cc23xx/RfTrim";
+pub const RfXtal = em.import.@"ti.radio.cc23xx/RfXtal";
 
 pub const Handler = struct {};
 
@@ -36,6 +37,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     pub fn em__startup() void {
+        RfXtal.enable();
         Idle.waitOnly(.SET);
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
         while ((reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKCFG0).* & hal.CLKCTL_CLKCFG0_LRFD_M) != hal.CLKCTL_CLKCFG0_LRFD_CLK_EN) {}
