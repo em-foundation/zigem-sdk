@@ -37,6 +37,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 const m: u32 = @as(u32, 1) << p5;
                 break :init m;
             };
+            const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
 
             const hal = em.hal;
             const reg = em.reg;
@@ -46,19 +47,29 @@ pub fn em__generateS(comptime name: []const u8) type {
             }
 
             pub fn functionSelect(select: u8) void {
-                const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* = select;
+            }
+
+            pub fn get() bool {
+                if (!is_def) return false;
+                return if (isInput()) (reg(hal.GPIO_BASE + hal.GPIO_O_DIN31_0).* & mask) != 0 else (reg(hal.GPIO_BASE + hal.GPIO_O_DOUT31_0).* & mask) != 0;
+            }
+
+            pub fn isInput() bool {
+                return is_def and (reg(hal.GPIO_BASE + hal.GPIO_O_DOE31_0).* & mask) == 0;
+            }
+
+            pub fn isOutput() bool {
+                return is_def and (reg(hal.GPIO_BASE + hal.GPIO_O_DOE31_0).* & mask) != 0;
             }
 
             pub fn makeInput() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
-                const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* |= hal.IOC_IOC0_INPEN;
             }
 
             pub fn makeOutput() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOESET31_0).* = mask;
-                const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* &= ~hal.IOC_IOC0_INPEN;
             }
 
@@ -68,12 +79,21 @@ pub fn em__generateS(comptime name: []const u8) type {
 
             pub fn reset() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
-                const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* |= hal.IOC_IOC0_IOMODE_M | hal.IOC_IOC0_PULLCTL_M;
             }
 
             pub fn set() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTSET31_0).* = mask;
+            }
+
+            pub fn setInternalPullup(enable: bool) void {
+                if (is_def) {
+                    if (enable) {
+                        reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_PULLCTL_PULL_UP;
+                    } else {
+                        reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_PULLCTL_PULL_UP;
+                    }
+                }
             }
 
             pub fn toggle() void {

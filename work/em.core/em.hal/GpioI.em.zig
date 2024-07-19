@@ -10,6 +10,18 @@ pub fn functionSelect(select: u8) void {
     return;
 }
 
+pub fn get() bool {
+    return false;
+}
+
+pub fn isInput() bool {
+    return false;
+}
+
+pub fn isOutput() bool {
+    return false;
+}
+
 pub fn makeInput() void {
     return;
 }
@@ -27,6 +39,11 @@ pub fn reset() void {
 }
 
 pub fn set() void {
+    return;
+}
+
+pub fn setInternalPullup(enable: bool) void {
+    _ = enable;
     return;
 }
 
