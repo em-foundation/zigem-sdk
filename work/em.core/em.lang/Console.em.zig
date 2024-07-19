@@ -38,6 +38,9 @@ pub const EM__TARG = struct {
                 const bcnt = (ti.Int.bits + 1) / 8;
                 if (bcnt == 1) wr1(@intCast(v)) else if (bcnt == 2) wr2(@intCast(v)) else if (bcnt == 4) wr4(@intCast(v));
             },
+            .Bool => {
+                wr1(@intFromBool(v));
+            },
             .Enum => {
                 wr1(@intFromEnum(v));
             },
