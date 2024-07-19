@@ -31,10 +31,7 @@ pub const EM__TARG = struct {
 
     fn txTickCb(_: TickerMgr.Callback) void {
         AppLed.wink(100);
-        em.@"%%[c+]"();
         RadioDriver.setup(.TX);
-        em.@"%%[c]"();
         RadioDriver.startTx(data[0..]);
-        em.@"%%[c-]"();
     }
 };
