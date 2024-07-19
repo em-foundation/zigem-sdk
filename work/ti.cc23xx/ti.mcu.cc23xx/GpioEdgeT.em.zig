@@ -24,7 +24,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const Handler = em__U.inherits.Handler;
 
-        fn mkMask(comptime pin: i16) u32 {
+        fn mkMask(pin: i16) u32 {
             const p5 = @as(u5, @bitCast(@as(i5, @truncate(pin))));
             const m: u32 = @as(u32, 1) << p5;
             return m;
