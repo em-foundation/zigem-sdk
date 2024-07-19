@@ -42,7 +42,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 Pin.pin.set(em__C.pin.get());
             }
 
-            pub fn setDetectHandlerH(h: Handler) void {
+            pub fn setDetectHandlerH(h: em.Fxn(Handler)) void {
                 Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.get()) });
             }
         };

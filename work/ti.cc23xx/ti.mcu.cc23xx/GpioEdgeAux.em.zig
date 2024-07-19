@@ -12,7 +12,7 @@ pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
 pub const HandlerInfo = struct {
     mask: u32,
-    handler: GpioEdgeI.Handler,
+    handler: em.Fxn(GpioEdgeI.Handler),
 };
 
 pub const EM__HOST = struct {
@@ -44,7 +44,7 @@ pub const EM__TARG = struct {
         const mis = reg(hal.GPIO_BASE + hal.GPIO_O_MIS).*;
         for (handler_info_tab) |hi| {
             if ((mis & hi.mask) != 0 and hi.handler != null) {
-                hi.handler.?();
+                hi.handler.?(.{});
             }
         }
         reg(hal.GPIO_BASE + hal.GPIO_O_ICLR).* = 0xffffffff; // TODO: use `mis`
