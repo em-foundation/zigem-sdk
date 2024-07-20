@@ -14,7 +14,7 @@ pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 pub const EM__HOST = struct {
     //
     pub fn em__constructH() void {
-        em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.FiberBody)));
+        em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
     }
 };
 
@@ -28,7 +28,7 @@ pub const EM__TARG = struct {
         FiberMgr.run();
     }
 
-    pub fn blinkFB(_: FiberMgr.FiberBody) void {
+    pub fn blinkFB(_: FiberMgr.BodyArg) void {
         em.@"%%[d]"();
         count -= 1;
         if (count == 0) em.halt();
@@ -38,7 +38,7 @@ pub const EM__TARG = struct {
         OneShot.enable(100, &handler, null);
     }
 
-    fn handler(_: OneShot.Handler) void {
+    fn handler(_: OneShot.HandlerArg) void {
         em.@"%%[c]"();
         blinkF.post();
     }

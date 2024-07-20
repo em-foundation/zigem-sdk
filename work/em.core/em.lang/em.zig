@@ -80,12 +80,12 @@ pub const Unit = struct {
         }
     }
 
-    pub fn fxn(self: Self, name: []const u8, FT: type) Fxn(FT) {
-        return Fxn(FT){ ._upath = self.upath, ._fname = name };
-    }
-
     fn extendPath(self: Self, comptime name: []const u8) []const u8 {
         return self.upath ++ "__" ++ name;
+    }
+
+    pub fn fxn(self: Self, name: []const u8, FT: type) Fxn(FT) {
+        return Fxn(FT){ ._upath = self.upath, ._fname = name };
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
@@ -208,14 +208,18 @@ pub fn Factory_T(T: type) type {
     return []T;
 }
 
-pub fn Fxn(FT: type) type {
+pub fn Fxn(PT: type) type {
     switch (DOMAIN) {
         .HOST => {
             return struct {
+                const Self = @This();
                 pub const _em__builtin = {};
                 _upath: []const u8,
                 _fname: []const u8,
-                pub fn toString(self: @This()) []const u8 {
+                pub fn ParamType(_: Self) type {
+                    return PT;
+                }
+                pub fn toString(self: Self) []const u8 {
                     if (self._fname.len == 0) {
                         return "null";
                     }
@@ -230,12 +234,12 @@ pub fn Fxn(FT: type) type {
                     return sprint("{s}", .{fval});
                 }
                 pub fn typeName() []const u8 {
-                    return sprint("em.Fxn({s})", .{mkTypeName(FT)});
+                    return sprint("em.Fxn({s})", .{mkTypeName(PT)});
                 }
             };
         },
         .TARG => {
-            return ?*const fn (params: FT) void;
+            return ?*const fn (params: PT) void;
         },
     }
 }
@@ -327,8 +331,8 @@ pub fn Proxy_H(I: type) type {
 
         _prx: []const u8 = I.em__U.upath,
 
-        pub fn get(self: *Self) I {
-            return self._prx;
+        pub fn get(self: *Self) *Unit {
+            return @field(import, self._prx).em__U;
         }
 
         pub fn ref(self: *Self) *Proxy_H(I) {

@@ -9,6 +9,10 @@ pub const EM__CONFIG = struct {
 pub const Common = em.import.@"em.mcu/Common";
 
 pub const Obj = em.Obj(Fiber);
+pub const BodyFxn = em.Fxn(BodyArg);
+pub const BodyArg = struct {
+    arg: usize,
+};
 
 pub const FiberBody = struct {
     arg: usize,
@@ -16,8 +20,8 @@ pub const FiberBody = struct {
 
 pub const Fiber = struct {
     const Self = @This();
-    link: ?em.Obj(Fiber),
-    body: em.Fxn(FiberBody),
+    link: ?Obj,
+    body: BodyFxn,
     arg: usize = 0,
     pub fn post(self: *Self) void {
         em__U.scope.Fiber_post(self);
@@ -26,7 +30,7 @@ pub const Fiber = struct {
 
 pub const EM__HOST = struct {
     //
-    pub fn createH(body: em.Fxn(FiberBody)) em.Obj(Fiber) {
+    pub fn createH(body: BodyFxn) Obj {
         const fiber = em__C.FiberOF.createH(.{ .body = body });
         return fiber;
     }
@@ -65,7 +69,7 @@ pub const EM__TARG = struct {
             const fiber = ready_list.take();
             const body = fiber.body;
             Common.GlobalInterrupts.enable();
-            body.?(FiberBody{ .arg = fiber.arg });
+            body.?(.{ .arg = fiber.arg });
             _ = Common.GlobalInterrupts.disable();
         }
     }

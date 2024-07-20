@@ -15,8 +15,8 @@ pub const EM__HOST = struct {
     pub const TxPin = em__C.TxPin.ref();
 
     pub fn em__configureH() void {
-        Idle.addSleepEnterCbH(em__U.fxn("sleepEnter", Idle.SleepEvent));
-        Idle.addSleepLeaveCbH(em__U.fxn("sleepLeave", Idle.SleepEvent));
+        Idle.addSleepEnterCbH(em__U.fxn("sleepEnter", Idle.SleepCbArg));
+        Idle.addSleepLeaveCbH(em__U.fxn("sleepLeave", Idle.SleepCbArg));
     }
 };
 
@@ -27,7 +27,7 @@ pub const EM__TARG = struct {
     const TxPin = em__C.TxPin.scope;
 
     pub fn em__startup() void {
-        sleepLeave(Idle.SleepEvent{});
+        sleepLeave(.{});
     }
 
     pub fn flush() void {
@@ -39,12 +39,12 @@ pub const EM__TARG = struct {
         flush();
     }
 
-    pub fn sleepEnter(_: Idle.SleepEvent) void {
+    pub fn sleepEnter(_: Idle.SleepCbArg) void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENCLR0).* = hal.CLKCTL_CLKENCLR0_UART0;
         TxPin.reset();
     }
 
-    pub fn sleepLeave(_: Idle.SleepEvent) void {
+    pub fn sleepLeave(_: Idle.SleepCbArg) void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_UART0;
         TxPin.makeOutput();
         TxPin.set();

@@ -30,12 +30,12 @@ pub const EM__TARG = struct {
         FiberMgr.run();
     }
 
-    fn appTickCb(_: TickerMgr.Callback) void {
+    fn appTickCb(_: TickerMgr.CallbackArg) void {
         em.@"%%[c]"();
         AppLed.wink(100);
     }
 
-    fn sysTickCb(_: TickerMgr.Callback) void {
+    fn sysTickCb(_: TickerMgr.CallbackArg) void {
         em.@"%%[d]"();
         SysLed.wink(100);
     }

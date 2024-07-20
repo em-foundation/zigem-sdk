@@ -28,7 +28,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn handler(_: OneShot.Handler) void {
+    fn handler(_: OneShot.HandlerArg) void {
         em.@"%%[c]"();
         active_flag = false;
     }

@@ -5,27 +5,27 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    sleep_enter_fxn_tab: em.Table(CallbackFxn, .RO),
-    sleep_leave_fxn_tab: em.Table(CallbackFxn, .RO),
+    sleep_enter_fxn_tab: em.Table(SleepCbFxn, .RO),
+    sleep_leave_fxn_tab: em.Table(SleepCbFxn, .RO),
 };
 
 pub const Debug = em.import.@"em.lang/Debug";
 pub const Hapi = em.import.@"ti.mcu.cc23xx/Hapi";
 
-pub const SleepEvent = struct {};
-pub const CallbackFxn = em.Fxn(SleepEvent);
-pub const CallbackTab = em.Table(CallbackFxn, .RO);
+pub const SleepCbFxn = em.Fxn(SleepCbArg);
+pub const SleepCbArg = struct {};
+pub const CallbackTab = em.Table(SleepCbFxn, .RO);
 
 pub const EM__HOST = struct {
     //
     var sleep_enter_cb_tab = &em__C.sleep_enter_fxn_tab;
     var sleep_leave_cb_tab = &em__C.sleep_leave_fxn_tab;
 
-    pub fn addSleepEnterCbH(cb: CallbackFxn) void {
+    pub fn addSleepEnterCbH(cb: SleepCbFxn) void {
         sleep_enter_cb_tab.add(cb);
     }
 
-    pub fn addSleepLeaveCbH(cb: CallbackFxn) void {
+    pub fn addSleepLeaveCbH(cb: SleepCbFxn) void {
         sleep_leave_cb_tab.add(cb);
     }
 
@@ -53,7 +53,7 @@ pub const EM__TARG = struct {
 
     fn doSleep() void {
         for (sleep_enter_fxn_tab) |fxn| {
-            fxn.?(SleepEvent{});
+            fxn.?(.{});
         }
         em.@"%%[b:]"(1);
         em.@"%%[b-]"();
@@ -64,7 +64,7 @@ pub const EM__TARG = struct {
         Debug.startup();
         em.@"%%[b+]"();
         for (sleep_leave_fxn_tab) |fxn| {
-            fxn.?(SleepEvent{});
+            fxn.?(.{});
         }
         set_PRIMASK(0);
     }

@@ -6,7 +6,8 @@ pub const em__U = em.module(@This(), .{
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
-pub const Handler = em__U.inherits.Handler;
+pub const HandlerArg = em__U.inherits.HandlerArg;
+pub const HandlerFxn = em__U.inherits.HandlerFxn;
 
 pub const EM__HOST = struct {
     //
@@ -22,7 +23,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     var cur_arg: em.ptr_t = null;
-    var cur_fxn: em.Fxn(Handler) = null;
+    var cur_fxn: HandlerFxn = null;
 
     pub fn disable() void {
         cur_fxn = null;
@@ -31,7 +32,7 @@ pub const EM__TARG = struct {
         reg(hal.LGPT3_BASE + hal.LGPT_O_ICLR).* = hal.LGPT_ICLR_TGT;
     }
 
-    pub fn enable(msecs: u32, handler: em.Fxn(Handler), arg: em.ptr_t) void {
+    pub fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
         cur_fxn = handler;
         cur_arg = arg;
         Idle.waitOnly(.SET);
@@ -46,6 +47,6 @@ pub const EM__TARG = struct {
         if (em.hosted) return;
         const fxn = cur_fxn;
         disable();
-        if (fxn != null) fxn.?(Handler{ .arg = cur_arg });
+        if (fxn != null) fxn.?(.{ .arg = cur_arg });
     }
 };

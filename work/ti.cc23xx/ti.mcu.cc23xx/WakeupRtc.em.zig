@@ -5,7 +5,8 @@ pub const em__U = em.module(@This(), .{
 
 pub const Rtc = em.import.@"ti.mcu.cc23xx/Rtc";
 
-pub const Handler = em__U.inherits.Handler;
+pub const HandlerFxn = em__U.inherits.HandlerFxn;
+pub const HandlerArg = em__U.inherits.HandlerArg;
 
 pub const EM__HOST = struct {
     //
@@ -17,7 +18,7 @@ pub const EM__TARG = struct {
         Rtc.disable();
     }
 
-    pub fn enable(secs256: u32, handler: em.Fxn(Handler)) void {
+    pub fn enable(secs256: u32, handler: HandlerFxn) void {
         Rtc.enable(secs256, @ptrCast(handler));
     }
 

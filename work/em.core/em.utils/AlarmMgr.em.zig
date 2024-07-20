@@ -69,7 +69,7 @@ pub const EM__TARG = struct {
         WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
     }
 
-    fn wakeupHandler(_: WakeupTimer.Handler) void {
+    fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
         update(cur_alarm.?._ticks);
     }
 

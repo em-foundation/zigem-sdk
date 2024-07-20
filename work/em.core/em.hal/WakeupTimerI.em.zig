@@ -1,13 +1,14 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
-pub const Handler = struct {};
+pub const HandlerFxn = em.Fxn(HandlerArg);
+pub const HandlerArg = struct {};
 
 pub fn disable() void {
     return;
 }
 
-pub fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
+pub fn enable(thresh: u32, handler: HandlerFxn) void {
     _ = thresh;
     _ = handler;
     return;
