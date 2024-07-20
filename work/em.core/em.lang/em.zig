@@ -216,9 +216,6 @@ pub fn Fxn(PT: type) type {
                 pub const _em__builtin = {};
                 _upath: []const u8,
                 _fname: []const u8,
-                pub fn ParamType(_: Self) type {
-                    return PT;
-                }
                 pub fn toString(self: Self) []const u8 {
                     if (self._fname.len == 0) {
                         return "null";
