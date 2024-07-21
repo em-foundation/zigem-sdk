@@ -29,7 +29,7 @@ pub const EM__TARG = struct {
         FiberMgr.run();
     }
 
-    fn txTickCb(_: TickerMgr.Callback) void {
+    fn txTickCb(_: TickerMgr.CallbackArg) void {
         AppLed.wink(100);
         RadioDriver.setup(.TX);
         RadioDriver.startTx(data[0..]);

@@ -38,7 +38,7 @@ pub const EM__TARG = struct {
     const reg = em.reg;
 
     pub fn em__startup() void {
-        // Idle.waitOnly(.SET);
+        Idle.waitOnly(.SET);
     }
 
     fn enable() void {
