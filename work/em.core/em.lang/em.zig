@@ -58,7 +58,6 @@ pub const UnitOpts = struct {
 pub const Unit = struct {
     const Self = @This();
 
-    _CT: type = void,
     kind: UnitKind,
     upath: []const u8,
     self: type,
@@ -219,16 +218,9 @@ pub fn Fxn(PT: type) type {
                 pub fn toString(self: Self) []const u8 {
                     if (self._fname.len == 0) {
                         return "null";
+                    } else {
+                        return sprint("{s}.{s}", .{ mkUnitImport(self._upath), self._fname });
                     }
-                    const fmt =
-                        \\blk: {{
-                        \\    const u = @field(em.import, "{s}");
-                        \\    const f = @field(u, "{s}");
-                        \\    break :blk f;
-                        \\}}
-                    ;
-                    const fval = sprint(fmt, .{ self._upath, self._fname });
-                    return sprint("{s}", .{fval});
                 }
                 pub fn typeName() []const u8 {
                     return sprint("em.Fxn({s})", .{mkTypeName(PT)});
@@ -326,10 +318,10 @@ pub fn Proxy_H(I: type) type {
         pub const _em__builtin = {};
         pub const _em__config = {};
 
-        _prx: []const u8 = I.em__U.upath,
+        _upath: []const u8 = I.em__U.upath,
 
-        pub fn get(self: *Self) *Unit {
-            return @field(import, self._prx).em__U;
+        pub fn get(self: *const Self) *Unit {
+            return @field(import, self._upath).em__U;
         }
 
         pub fn ref(self: *Self) *Proxy_H(I) {
@@ -337,11 +329,11 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn set(self: *Self, x: anytype) void {
-            self._prx = x.em__U.upath;
+            self._upath = x.em__U.upath;
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            var it = std.mem.splitSequence(u8, self._prx, "__");
+            var it = std.mem.splitSequence(u8, self._upath, "__");
             var sb = StringH{};
             sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
             while (it.next()) |seg| {
@@ -561,6 +553,16 @@ fn mkTypeImport(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
     const tun = comptime tn[0..idx];
     return "em.import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
+}
+
+fn mkUnitImport(upath: []const u8) []const u8 {
+    var it = std.mem.splitSequence(u8, upath, "__");
+    var sb = StringH{};
+    sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+    while (it.next()) |seg| {
+        sb.add(sprint(".{s}", .{seg}));
+    }
+    return sb.get();
 }
 
 pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build

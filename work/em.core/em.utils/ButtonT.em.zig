@@ -9,25 +9,42 @@ pub const EM__CONFIG = struct {
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub fn em__generateS(comptime name: []const u8) type {
+    //
     return struct {
         //
-        pub const em__U = em.module(@This(), .{ .generated = true, .name = name });
+        pub const em__U = em.module(@This(), .{
+            .inherits = em.import.@"em.hal/ButtonI",
+            .generated = true,
+            .name = name,
+        });
         pub const em__C = em__U.config(EM__CONFIG);
+
+        pub const Poller = em.import.@"em.mcu/Poller";
+
+        pub const DurationMs = em__U.inherits.DurationMs;
+        pub const OnPressedCbFxn = em__U.inherits.OnPressedCbFxn;
+        pub const OnPressedCbArg = em__U.inherits.OnPressedCbArg;
 
         pub const EM__HOST = struct {
             //
             pub const Edge = em__C.Edge.ref();
 
             pub fn em__constructH() void {
-                const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.FiberBody));
+                const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
                 em__C.debounceF.set(debounceF);
-                em__C.Edge.get().scope.setDetectHandlerH(em__U.fxn("buttonHandler", Edge.Handler));
+                Edge.get().scope.setDetectHandlerH(em__U.fxn("buttonHandler", em__C.Edge.get().scope.HandlerArg));
             }
         };
 
         pub const EM__TARG = struct {
             //
-            const Edge = em__C.Edge;
+            const debounceF = em__C.debounceF;
+            const Edge = em__C.Edge.scope;
+
+            var cur_cb: OnPressedCbFxn = null;
+            var cur_dur: u16 = 0;
+            var max_dur: u16 = 0;
+            var min_dur: u16 = 0;
 
             pub fn em__startup() void {
                 Edge.makeInput();
@@ -35,9 +52,36 @@ pub fn em__generateS(comptime name: []const u8) type {
                 Edge.setDetectFallingEdge();
             }
 
-            pub fn buttonHandler(_: Edge.Handler) void {}
+            pub fn buttonHandler(_: Edge.HandlerArg) void {
+                Edge.clearDetect();
+                if (cur_cb != null) debounceF.post();
+            }
 
-            pub fn debounceFB(_: FiberMgr.FiberBody) void {}
+            pub fn debounceFB(_: FiberMgr.BodyArg) void {
+                cur_dur = 0;
+                while (true) {
+                    Poller.pause(min_dur);
+                    if (cur_dur == 0 and !isPressed()) return;
+                    cur_dur += min_dur;
+                    if (!isPressed() or cur_dur >= max_dur) break;
+                }
+                cur_cb.?(.{});
+            }
+
+            pub fn isPressed() bool {
+                return !Edge.get();
+            }
+
+            pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
+                cur_cb = cb;
+                max_dur = dur.max;
+                min_dur = dur.max;
+                if (cb == null) {
+                    Edge.disableDetect();
+                } else {
+                    Edge.enableDetect();
+                }
+            }
         };
     };
 }
