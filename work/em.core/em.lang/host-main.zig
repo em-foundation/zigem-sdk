@@ -19,7 +19,7 @@ pub fn exec(top: *em.Unit) !void {
     @setEvalBranchQuota(100_000);
     const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
-    // try validate(ulist_bot);
+    try validate(ulist_bot);
     callAll("em__initH", ulist_bot, false);
     callAll("em__configureH", ulist_top, false);
     try mkUsedSet(top);
@@ -191,8 +191,7 @@ fn revUnitList(comptime ulist: []const *em.Unit) []const *em.Unit {
 fn validate(comptime ulist: []const *em.Unit) !void {
     inline for (ulist) |u| {
         if (!u.generated) {
-            const U = u.resolve();
-            const un = @as([]const u8, @field(type_map, @typeName(U)));
+            const un = @as([]const u8, @field(type_map, @typeName(u.self)));
             if (!std.mem.eql(u8, u.upath, un)) {
                 std.log.err("found unit named \"{s}\", expected \"{s}\"", .{ u.upath, un });
                 std.process.exit(1);
