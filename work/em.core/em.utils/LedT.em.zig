@@ -11,6 +11,7 @@ pub fn em__generateS(comptime name: []const u8) type {
     return struct {
         //
         pub const em__U = em.module(@This(), .{
+            .inherits = em.import.@"em.hal/LedI",
             .generated = true,
             .name = name,
         });

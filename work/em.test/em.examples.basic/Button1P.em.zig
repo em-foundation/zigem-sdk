@@ -12,7 +12,7 @@ pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {
-        AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.Handler));
+        AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
     }
 };
 
@@ -32,7 +32,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn handler(_: AppButEdge.Handler) void {
+    pub fn handler(_: AppButEdge.HandlerArg) void {
         em.@"%%[c]"();
         AppButEdge.clearDetect();
         AppLed.on();

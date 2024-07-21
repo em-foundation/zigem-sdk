@@ -22,7 +22,8 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const Aux = em.import.@"ti.mcu.cc23xx/GpioEdgeAux";
         pub const Pin = em__U.Generate("Pin", em.import.@"ti.mcu.cc23xx/GpioT");
 
-        pub const Handler = em__U.inherits.Handler;
+        pub const HandlerArg = em__U.inherits.HandlerArg;
+        pub const HandlerFxn = em__U.inherits.HandlerFxn;
 
         fn mkMask(pin: i16) u32 {
             const p5 = @as(u5, @bitCast(@as(i5, @truncate(pin))));
@@ -42,7 +43,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 Pin.pin.set(em__C.pin.get());
             }
 
-            pub fn setDetectHandlerH(h: em.Fxn(Handler)) void {
+            pub fn setDetectHandlerH(h: HandlerFxn) void {
                 Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.get()) });
             }
         };

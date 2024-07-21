@@ -3,9 +3,10 @@ pub const em__U = em.interface(@This(), .{
     .inherits = em.import.@"em.hal/GpioI",
 });
 
-pub const Handler = struct {};
+pub const HandlerFxn = em.Fxn(HandlerArg);
+pub const HandlerArg = struct {};
 
-pub fn setDetectHandlerH(h: em.Fxn(Handler)) void {
+pub fn setDetectHandlerH(h: HandlerFxn) void {
     _ = h;
     return;
 }

@@ -12,7 +12,7 @@ pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
 pub const HandlerInfo = struct {
     mask: u32,
-    handler: em.Fxn(GpioEdgeI.Handler),
+    handler: GpioEdgeI.HandlerFxn,
 };
 
 pub const EM__HOST = struct {

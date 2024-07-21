@@ -14,8 +14,8 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const EM__HOST = struct {
     pub fn em__constructH() void {
-        AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.Handler));
-        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.FiberBody));
+        AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
+        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
         em__C.blinkF.set(blinkF);
     }
 };
@@ -35,7 +35,7 @@ pub const EM__TARG = struct {
         FiberMgr.run();
     }
 
-    pub fn blinkFB(_: FiberMgr.FiberBody) void {
+    pub fn blinkFB(_: FiberMgr.BodyArg) void {
         em.@"%%[d]"();
         AppLed.on();
         Common.BusyWait.wait(5000);
@@ -43,7 +43,7 @@ pub const EM__TARG = struct {
         AppButEdge.enableDetect();
     }
 
-    pub fn handler(_: AppButEdge.Handler) void {
+    pub fn handler(_: AppButEdge.HandlerArg) void {
         em.@"%%[c]"();
         AppButEdge.clearDetect();
         blinkF.post();
