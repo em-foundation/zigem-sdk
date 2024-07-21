@@ -15,11 +15,12 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) *Unit {
     return @constCast(&Unit{
         .generated = opts.generated,
         .host_only = opts.host_only,
-        .inherits = opts.inherits,
+        .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
+        //.inherits = opts.inherits,
         .kind = kind,
         .legacy = opts.legacy,
         .self = This,
-        .scope = unitScope(This),
+        //.scope() = unitScope(This),
         .upath = un,
     });
 }
@@ -61,11 +62,12 @@ pub const Unit = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
-    scope: type,
+    // scope: type,
     host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
-    inherits: type = void,
+    inherits: ?*Unit,
+    //inherits: type,
 
     pub fn config(self: Self, comptime CT: type) *CT {
         switch (DOMAIN) {
@@ -93,6 +95,19 @@ pub const Unit = struct {
 
     pub fn path(self: Self) []const u8 {
         return @field(type_map, @typeName(self.self));
+    }
+
+    pub fn resolve(self: Self) type {
+        var it = std.mem.splitSequence(u8, self.upath, "__");
+        var U = @field(import, it.first());
+        inline while (it.next()) |seg| {
+            U = @field(U, seg);
+        }
+        return U;
+    }
+
+    pub fn scope(self: Self) type {
+        return self.resolve();
     }
 };
 

@@ -9,7 +9,7 @@ pub const EM__CONFIG = struct {
 
 export fn DEFAULT_isr() void {
     if (em.hosted) return;
-    em__U.scope.defaultIsr();
+    em__U.scope().defaultIsr();
 }
 
 pub const EM__HOST = struct {

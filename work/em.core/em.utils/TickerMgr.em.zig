@@ -21,10 +21,10 @@ pub const Ticker = struct {
     _rate256: u32 = 0,
     _tick_cb: CallbackFxn,
     pub fn start(self: *Self, rate256: u32, tick_cb: CallbackFxn) void {
-        em__U.scope.Ticker_start(self, rate256, tick_cb);
+        em__U.scope().Ticker_start(self, rate256, tick_cb);
     }
     pub fn stop(self: *Self) void {
-        em__U.scope.Ticker_stop(self);
+        em__U.scope().Ticker_stop(self);
     }
 };
 

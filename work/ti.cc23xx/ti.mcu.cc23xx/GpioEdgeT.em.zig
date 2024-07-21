@@ -12,7 +12,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const em__U = em.module(
             @This(),
             .{
-                .inherits = em.import.@"em.hal/GpioEdgeI",
+                .inherits = GpioEdgeI,
                 .generated = true,
                 .name = name,
             },
@@ -20,10 +20,11 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const em__C = em__U.config(EM__CONFIG);
 
         pub const Aux = em.import.@"ti.mcu.cc23xx/GpioEdgeAux";
+        pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
         pub const Pin = em__U.Generate("Pin", em.import.@"ti.mcu.cc23xx/GpioT");
 
-        pub const HandlerArg = em__U.inherits.HandlerArg;
-        pub const HandlerFxn = em__U.inherits.HandlerFxn;
+        pub const HandlerArg = GpioEdgeI.HandlerArg;
+        pub const HandlerFxn = GpioEdgeI.HandlerFxn;
 
         fn mkMask(pin: i16) u32 {
             const p5 = @as(u5, @bitCast(@as(i5, @truncate(pin))));

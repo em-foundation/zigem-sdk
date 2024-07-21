@@ -1,13 +1,14 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{
-    .inherits = em.import.@"em.hal/OneShotMilliI",
+    .inherits = OneShotMilliI,
 });
 
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const OneShotMilliI = em.import.@"em.hal/OneShotMilliI";
 
-pub const HandlerArg = em__U.inherits.HandlerArg;
-pub const HandlerFxn = em__U.inherits.HandlerFxn;
+pub const HandlerArg = OneShotMilliI.HandlerArg;
+pub const HandlerFxn = OneShotMilliI.HandlerFxn;
 
 pub const EM__HOST = struct {
     //

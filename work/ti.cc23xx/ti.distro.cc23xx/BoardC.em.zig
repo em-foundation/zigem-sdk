@@ -40,6 +40,7 @@ pub const EM__HOST = struct {};
 pub fn em__configureH() void {
     AlarmMgr.WakeupTimer.set(WakeupTimer);
     AppBut.Edge.set(AppButEdge);
+    //em.print("{any}", .{&AppButEdge.em__U});
     AppButEdge.pin.set(9);
     AppLedPin.pin.set(15);
     AppLed.Pin.set(AppLedPin);

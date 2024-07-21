@@ -24,7 +24,7 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
     const reg = em.reg;
-    const TxPin = em__C.TxPin.scope;
+    const TxPin = em__C.TxPin.scope();
 
     pub fn em__startup() void {
         sleepLeave(.{});

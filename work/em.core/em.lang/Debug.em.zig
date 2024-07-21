@@ -21,10 +21,10 @@ pub const EM__HOST = struct {
 
 pub const EM__TARG = struct {
     //
-    const DbgA = em__C.DbgA.scope;
-    const DbgB = em__C.DbgB.scope;
-    const DbgC = em__C.DbgC.scope;
-    const DbgD = em__C.DbgD.scope;
+    const DbgA = em__C.DbgA.scope();
+    const DbgB = em__C.DbgB.scope();
+    const DbgC = em__C.DbgC.scope();
+    const DbgD = em__C.DbgD.scope();
 
     fn delay() void {
         Common.BusyWait.wait(1);

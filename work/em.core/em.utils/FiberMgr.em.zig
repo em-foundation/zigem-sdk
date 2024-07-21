@@ -24,7 +24,7 @@ pub const Fiber = struct {
     body: BodyFxn,
     arg: usize = 0,
     pub fn post(self: *Self) void {
-        em__U.scope.Fiber_post(self);
+        em__U.scope().Fiber_post(self);
     }
 };
 

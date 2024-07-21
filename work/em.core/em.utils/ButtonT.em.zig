@@ -13,17 +13,18 @@ pub fn em__generateS(comptime name: []const u8) type {
     return struct {
         //
         pub const em__U = em.module(@This(), .{
-            .inherits = em.import.@"em.hal/ButtonI",
+            .inherits = ButtonI,
             .generated = true,
             .name = name,
         });
         pub const em__C = em__U.config(EM__CONFIG);
 
+        pub const ButtonI = em.import.@"em.hal/ButtonI";
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const DurationMs = em__U.inherits.DurationMs;
-        pub const OnPressedCbFxn = em__U.inherits.OnPressedCbFxn;
-        pub const OnPressedCbArg = em__U.inherits.OnPressedCbArg;
+        pub const DurationMs = ButtonI.DurationMs;
+        pub const OnPressedCbFxn = ButtonI.OnPressedCbFxn;
+        pub const OnPressedCbArg = ButtonI.OnPressedCbArg;
 
         pub const EM__HOST = struct {
             //
@@ -32,14 +33,14 @@ pub fn em__generateS(comptime name: []const u8) type {
             pub fn em__constructH() void {
                 const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
                 em__C.debounceF.set(debounceF);
-                Edge.get().scope.setDetectHandlerH(em__U.fxn("buttonHandler", em__C.Edge.get().scope.HandlerArg));
+                Edge.get().scope().setDetectHandlerH(em__U.fxn("buttonHandler", em__C.Edge.get().scope().HandlerArg));
             }
         };
 
         pub const EM__TARG = struct {
             //
             const debounceF = em__C.debounceF;
-            const Edge = em__C.Edge.scope;
+            const Edge = em__C.Edge.scope();
 
             var cur_cb: OnPressedCbFxn = null;
             var cur_dur: u16 = 0;
