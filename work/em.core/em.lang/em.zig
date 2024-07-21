@@ -13,12 +13,12 @@ pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
+        ._U = This,
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
         .kind = kind,
         .legacy = opts.legacy,
-        .self = This,
         .upath = un,
     };
 }
@@ -57,9 +57,9 @@ pub const UnitOpts = struct {
 pub const Unit = struct {
     const Self = @This();
 
+    _U: type,
     kind: UnitKind,
     upath: []const u8,
-    self: type,
     host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
