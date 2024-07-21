@@ -111,10 +111,6 @@ pub const Unit = struct {
     }
 };
 
-pub fn toUnit(U: type) *Unit {
-    return @as(*Unit, @field(U, "em__U"));
-}
-
 pub fn unitScope(U: type) type {
     // TODO eliminate
     return if (DOMAIN == .HOST) unitScope_H(U) else unitScope_T(U);
