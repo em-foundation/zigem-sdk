@@ -16,11 +16,9 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
-        //.inherits = opts.inherits,
         .kind = kind,
         .legacy = opts.legacy,
         .self = This,
-        //.scope() = unitScope(This),
         .upath = un,
     };
 }
@@ -62,12 +60,10 @@ pub const Unit = struct {
     kind: UnitKind,
     upath: []const u8,
     self: type,
-    // scope: type,
     host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
-    //inherits: type,
 
     pub fn config(self: Self, comptime CT: type) *CT {
         switch (DOMAIN) {
@@ -91,10 +87,6 @@ pub const Unit = struct {
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
-    }
-
-    pub fn path(self: Self) []const u8 {
-        return @field(type_map, @typeName(self.self));
     }
 
     pub fn resolve(self: Self) type {
