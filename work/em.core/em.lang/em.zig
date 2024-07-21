@@ -10,9 +10,9 @@ const @"// -------- UNIT SPEC -------- //" = {};
 
 pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
 
-fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) *Unit {
+fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
-    return @constCast(&Unit{
+    return Unit{
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
@@ -22,22 +22,22 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) *Unit {
         .self = This,
         //.scope() = unitScope(This),
         .upath = un,
-    });
+    };
 }
 
-pub fn composite(This: type, opts: UnitOpts) *Unit {
+pub fn composite(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .composite, opts);
 }
 
-pub fn interface(This: type, opts: UnitOpts) *Unit {
+pub fn interface(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .interface, opts);
 }
 
-pub fn module(This: type, opts: UnitOpts) *Unit {
+pub fn module(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .module, opts);
 }
 
-pub fn template(This: type, opts: UnitOpts) *Unit {
+pub fn template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
@@ -66,7 +66,7 @@ pub const Unit = struct {
     host_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
-    inherits: ?*Unit,
+    inherits: ?Unit,
     //inherits: type,
 
     pub fn config(self: Self, comptime CT: type) *CT {
@@ -331,7 +331,7 @@ pub fn Proxy_H(I: type) type {
 
         _upath: []const u8 = I.em__U.upath,
 
-        pub fn get(self: *const Self) *Unit {
+        pub fn get(self: *const Self) Unit {
             return @field(import, self._upath).em__U;
         }
 
@@ -357,7 +357,7 @@ pub fn Proxy_H(I: type) type {
 }
 
 pub fn Proxy_T(_: type) type {
-    return *const Unit;
+    return Unit;
 }
 
 pub const TableAccess = enum { RO, RW };
