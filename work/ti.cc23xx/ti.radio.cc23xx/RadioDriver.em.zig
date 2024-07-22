@@ -76,7 +76,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup(mode: Mode) void {
-        enable();
         RfPatch.loadAll();
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
@@ -117,6 +116,7 @@ pub const EM__TARG = struct {
         }
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
+        enable();
         RfFreq.program(2_440_000_000);
         RfPower.program(5);
     }
