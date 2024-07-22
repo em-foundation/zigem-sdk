@@ -41,6 +41,10 @@ pub const EM__TARG = struct {
         Idle.waitOnly(.SET);
     }
 
+    fn disable() void {
+        RfXtal.disable();
+    }
+
     fn enable() void {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
         while ((reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKCFG0).* & hal.CLKCTL_CLKCFG0_LRFD_M) != hal.CLKCTL_CLKCFG0_LRFD_CLK_EN) {}
@@ -132,7 +136,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn startTx(word_buf: []const u32) void {
-        //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
+        // em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
         _ = RfFifo.prepare();
         RfFifo.write(word_buf);
         em.@"%%[c]"();
@@ -144,7 +148,7 @@ pub const EM__TARG = struct {
 
         BusyWait.wait(10000);
         //while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
-        // RfXtal.disable();
+        disable();
     }
 
     fn updateSyncWord(syncWord: u32) u32 {

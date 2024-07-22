@@ -26,20 +26,16 @@ pub const EM__TARG = struct {
         const ampl: u32 = if (2 * peak > bias) 2 * peak - bias else 0;
         const trim: u32 = (reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & hal.CKMD_HFXTTARG_IREF_M) >> hal.CKMD_HFXTTARG_IREF_S;
         const adjust: i32 = if (ampl < 10 and trim < IREF_MAX) 1 else if (ampl > 16 and trim > IREF_MIN) -1 else 0;
-        if (adjust != 0) {
-            setIrefTrim(em.@"<>"(u32, em.@"<>"(i32, trim) + adjust));
-            reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* &= ~hal.CKMD_HFXTCTL_EN_M;
-        }
+        setIrefTrim(em.@"<>"(u32, em.@"<>"(i32, trim) + adjust));
+        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* &= ~hal.CKMD_HFXTCTL_EN_M;
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* &= ~hal.CKMD_AMPADCCTL_SWOVR;
     }
 
     pub fn enable() void {
-        setIrefTrim(IREF_MAX);
-        var hfxttarg = reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & ~hal.CKMD_HFXTTARG_IREF_M;
-        hfxttarg |= (8 << hal.CKMD_HFXTTARG_IREF_S) & hal.CKMD_HFXTTARG_IREF_M;
-        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* = hfxttarg;
-
+        // Power_init
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPCFG1).* &= ~hal.CKMD_AMPCFG1_INTERVAL_M;
+        setIrefTrim(IREF_MAX);
+        // PowerCC23X0_startHFXT()
         reg(hal.CKMD_BASE + hal.CKMD_O_LDOCTL).* =
             hal.CKMD_LDOCTL_SWOVR | hal.CKMD_LDOCTL_STARTCTL | hal.CKMD_LDOCTL_START | hal.CKMD_LDOCTL_EN;
         BusyWait.wait(100);
@@ -54,14 +50,16 @@ pub const EM__TARG = struct {
         while (!((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_RIS_ADCBIASUPD_M) == hal.CKMD_RIS_ADCBIASUPD)) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* &= ~(hal.CKMD_AMPADCCTL_SWOVR_M | hal.CKMD_AMPADCCTL_ADCEN_M);
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_EN;
+        // ???
         reg(hal.CKMD_BASE + hal.CKMD_O_HFTRACKCTL).* |= hal.CKMD_HFTRACKCTL_EN_M | hal.CKMD_HFTRACKCTL_REFCLK_HFXT;
-        // continuous amp measurement
+        // PowerCC23X0_oscillatorISR
         while ((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_RIS_AMPSETTLED) == 0) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* =
             hal.CKMD_AMPADCCTL_SWOVR | hal.CKMD_AMPADCCTL_PEAKDETEN_ENABLE |
             hal.CKMD_AMPADCCTL_ADCEN_ENABLE | hal.CKMD_AMPADCCTL_SRCSEL_PEAK |
             hal.CKMD_AMPADCCTL_SARSTRT;
-        // LF clock monitoring -- TODO very long startup ???
+        // PowerCC23X0_oscillatorISR
+        while ((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_MIS_LFCLKGOOD) == 0) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_LFMONCTL).* = hal.CKMD_LFMONCTL_EN;
         reg(hal.PMCTL_BASE + hal.PMCTL_O_RSTCTL).* |= hal.PMCTL_RSTCTL_LFLOSS_ARMED;
     }
