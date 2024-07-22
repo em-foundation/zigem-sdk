@@ -15,10 +15,26 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    pub fn disable() void {}
+    const IREF_MAX = 8;
+    const IREF_MIN = 3;
+
+    pub fn disable() void {
+        // adjust amplitude
+        const stat = reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCSTAT).*;
+        const peak = (stat & hal.CKMD_AMPADCSTAT_PEAKRAW_M) >> hal.CKMD_AMPADCSTAT_PEAKRAW_S;
+        const bias = (stat & hal.CKMD_AMPADCSTAT_BIAS_M) >> hal.CKMD_AMPADCSTAT_BIAS_S;
+        const ampl: u32 = if (2 * peak > bias) 2 * peak - bias else 0;
+        const trim: u32 = (reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & hal.CKMD_HFXTTARG_IREF_M) >> hal.CKMD_HFXTTARG_IREF_S;
+        const adjust: i32 = if (ampl < 10 and trim < IREF_MAX) 1 else if (ampl > 16 and trim > IREF_MIN) -1 else 0;
+        if (adjust != 0) {
+            setIrefTrim(em.@"<>"(u32, em.@"<>"(i32, trim) + adjust));
+            reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* &= ~hal.CKMD_HFXTCTL_EN_M;
+        }
+        reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* &= ~hal.CKMD_AMPADCCTL_SWOVR;
+    }
 
     pub fn enable() void {
-        // CKMDSetTargetIrefTrim(HFXT_TARGET_IREF_MAX)
+        setIrefTrim(IREF_MAX);
         var hfxttarg = reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & ~hal.CKMD_HFXTTARG_IREF_M;
         hfxttarg |= (8 << hal.CKMD_HFXTTARG_IREF_S) & hal.CKMD_HFXTTARG_IREF_M;
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* = hfxttarg;
@@ -48,5 +64,11 @@ pub const EM__TARG = struct {
         // LF clock monitoring -- TODO very long startup ???
         reg(hal.CKMD_BASE + hal.CKMD_O_LFMONCTL).* = hal.CKMD_LFMONCTL_EN;
         reg(hal.PMCTL_BASE + hal.PMCTL_O_RSTCTL).* |= hal.PMCTL_RSTCTL_LFLOSS_ARMED;
+    }
+
+    fn setIrefTrim(iref: u32) void {
+        var hfxttarg = reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & ~hal.CKMD_HFXTTARG_IREF_M;
+        hfxttarg |= (iref << hal.CKMD_HFXTTARG_IREF_S) & hal.CKMD_HFXTTARG_IREF_M;
+        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* = hfxttarg;
     }
 };

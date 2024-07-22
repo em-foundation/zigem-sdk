@@ -32,7 +32,6 @@ pub const EM__TARG = struct {
         AppButEdge.makeInput();
         AppButEdge.setInternalPullup(true);
         AppButEdge.setDetectFallingEdge();
-        Idle.waitOnly(.SET);
     }
 
     pub fn em__run() void {

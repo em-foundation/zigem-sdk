@@ -144,6 +144,7 @@ pub const EM__TARG = struct {
 
         BusyWait.wait(10000);
         //while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
+        // RfXtal.disable();
     }
 
     fn updateSyncWord(syncWord: u32) u32 {
