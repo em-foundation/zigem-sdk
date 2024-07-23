@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    name_tab: em.Table(?[]const u8, .RO),
+    name_tab: em.Table([]const u8, .RO),
     used_tab: em.Table([]const u8, .RO),
 };
 
@@ -17,7 +17,9 @@ pub const EM__HOST = struct {
     var name_tab = em__C.name_tab.ref();
     var used_tab = em__C.used_tab.ref();
 
-    pub fn addIntrH(name: ?[]const u8) void {
+    const NO_VEC = "<NA>";
+
+    pub fn addIntrH(name: []const u8) void {
         name_tab.add(name);
     }
 
@@ -26,19 +28,19 @@ pub const EM__HOST = struct {
     }
 
     pub fn em__initH() void {
-        const core_intrs = [_]?[]const u8{
+        const core_intrs = [_][]const u8{
             "NMI",
             "HardFault",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
+            NO_VEC,
+            NO_VEC,
+            NO_VEC,
+            NO_VEC,
+            NO_VEC,
+            NO_VEC,
+            NO_VEC,
             "SVCall",
-            null,
-            null,
+            NO_VEC,
+            NO_VEC,
             "PendSV",
             "SysTick",
         };
@@ -50,8 +52,8 @@ pub const EM__HOST = struct {
     pub fn em__generateH() void {
         var sbuf = em.StringH{};
         for (name_tab.items()) |n| {
-            if (n == null) continue;
-            sbuf.add(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n.?}));
+            if (em.std.mem.eql(u8, n, NO_VEC)) continue;
+            sbuf.add(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n}));
         }
         sbuf.add(
             \\
@@ -62,11 +64,6 @@ pub const EM__HOST = struct {
             \\
             \\
         );
-        //for (a_name_tab.unwrap()) |n| {
-        //    if (n == null) continue;
-        //    sbuf.add(em.sprint("#undef __{s}_isr\n", .{}));
-        //    sbuf.add(em.sprint("void {s}_isr( void ) __attribute__((weak, alias(\"_DEFAULT_isr\")));\n", .{n.?}));
-        //}
         sbuf.add("// used\n");
         for (used_tab.items()) |n| {
             sbuf.add(em.sprint(
@@ -95,7 +92,7 @@ pub const EM__HOST = struct {
             \\
         );
         for (name_tab.items()) |n| {
-            const s = if (n == null) "0" else em.sprint("__{s}_isr", .{n.?});
+            const s = if (em.std.mem.eql(u8, n, NO_VEC)) "0" else em.sprint("__{s}_isr", .{n});
             sbuf.add(em.sprint("    {s},\n", .{s}));
         }
         sbuf.add("};\n");
