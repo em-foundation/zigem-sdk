@@ -663,6 +663,14 @@ pub fn @"<>"(T: type, val: anytype) T {
 
 pub const assert = std.debug.assert;
 
+pub fn complog(comptime fmt: []const u8, args: anytype) void {
+    //_ = fmt;
+    //_ = args;
+    const mode = if (@inComptime()) "c" else "r";
+    const msg = std.fmt.comptimePrint(fmt, args);
+    @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
+}
+
 pub const import = @import("../../.gen/imports.zig");
 
 pub const ptr_t = ?*anyopaque;
