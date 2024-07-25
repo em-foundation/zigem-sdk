@@ -44,17 +44,19 @@ fn ItabType(ImplT: type) type {
         const ti = @typeInfo(ImplT);
         var fld_list: []const std.builtin.Type.StructField = &.{};
         for (ti.Struct.decls) |decl| {
-            const dval = @field(ImplT, decl.name);
-            const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) {
-                const fld = std.builtin.Type.StructField{
-                    .name = decl.name,
-                    .type = *const @TypeOf(dval),
-                    .default_value = null,
-                    .is_comptime = false,
-                    .alignment = 0,
-                };
-                fld_list = fld_list ++ ([_]std.builtin.Type.StructField{fld})[0..];
+            if (!std.mem.eql(u8, decl.name, "em__I")) {
+                const dval = @field(ImplT, decl.name);
+                const dti = @typeInfo(@TypeOf(dval));
+                if (dti == .Fn) {
+                    const fld = std.builtin.Type.StructField{
+                        .name = decl.name,
+                        .type = *const @TypeOf(dval),
+                        .default_value = null,
+                        .is_comptime = false,
+                        .alignment = 0,
+                    };
+                    fld_list = fld_list ++ ([_]std.builtin.Type.StructField{fld})[0..];
+                }
             }
         }
         const freeze = fld_list;
@@ -71,10 +73,12 @@ fn ItabType(ImplT: type) type {
 pub fn mkItab(comptime ImplT: type) ItabType(ImplT) {
     var itab: ItabType(ImplT) = undefined;
     inline for (comptime std.meta.declarations(ImplT)) |decl| {
-        const dval = @field(ImplT, decl.name);
-        const dti = @typeInfo(@TypeOf(dval));
-        if (dti == .Fn) {
-            @field(itab, decl.name) = dval;
+        if (!std.mem.eql(u8, decl.name, "em__I")) {
+            const dval = @field(ImplT, decl.name);
+            const dti = @typeInfo(@TypeOf(dval));
+            if (dti == .Fn) {
+                @field(itab, decl.name) = dval;
+            }
         }
     }
     return itab;
@@ -128,6 +132,14 @@ pub const Unit = struct {
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
+    }
+
+    pub fn hasItab(self: Self) bool {
+        return self.inherits != null or self.kind == .interface;
+    }
+
+    pub fn itab(self: Self) if (self.hasItab()) ItabType(self.scope()) else void {
+        return if (self.hasItab()) mkItab(self.scope()) else {};
     }
 
     pub fn resolve(self: Self) type {
