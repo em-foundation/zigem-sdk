@@ -39,6 +39,47 @@ pub fn template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
+fn ItabType(ImplT: type) type {
+    comptime {
+        const ti = @typeInfo(ImplT);
+        var fld_list: []const std.builtin.Type.StructField = &.{};
+        for (ti.Struct.decls) |decl| {
+            const dval = @field(ImplT, decl.name);
+            const dti = @typeInfo(@TypeOf(dval));
+            if (dti == .Fn) {
+                const fld = std.builtin.Type.StructField{
+                    .name = decl.name,
+                    .type = *const @TypeOf(dval),
+                    .default_value = null,
+                    .is_comptime = false,
+                    .alignment = 0,
+                };
+                fld_list = fld_list ++ ([_]std.builtin.Type.StructField{fld})[0..];
+            }
+        }
+        const freeze = fld_list;
+        return @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = freeze,
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+    }
+}
+
+pub fn mkItab(comptime ImplT: type) ItabType(ImplT) {
+    var itab: ItabType(ImplT) = undefined;
+    inline for (comptime std.meta.declarations(ImplT)) |decl| {
+        const dval = @field(ImplT, decl.name);
+        const dti = @typeInfo(@TypeOf(dval));
+        if (dti == .Fn) {
+            @field(itab, decl.name) = dval;
+        }
+    }
+    return itab;
+}
+
 pub const UnitKind = enum {
     composite,
     interface,
