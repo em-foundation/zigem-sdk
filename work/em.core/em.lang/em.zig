@@ -726,6 +726,15 @@ pub fn reg16(adr: u32) *volatile u16 {
     return r;
 }
 
+pub fn sizeof(x: anytype) usize {
+    const T = @TypeOf(x);
+    if (@typeInfo(T) == .Type) {
+        return @sizeOf(x);
+    } else {
+        return @sizeOf(T);
+    }
+}
+
 pub const std = @import("std");
 
 pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
