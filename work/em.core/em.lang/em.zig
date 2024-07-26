@@ -227,7 +227,8 @@ pub fn Factory_H(T: type) type {
         pub fn createH(self: *Self, init: anytype) Obj(T) {
             const l = self._list.items.len;
             self._list.append(std.mem.zeroInit(T, init)) catch fail();
-            return Obj(T){ ._fty = self, ._idx = l };
+            const o = Obj(T){ ._fty = self, ._idx = l };
+            return o;
         }
 
         pub fn objCount(self: *const Self) usize {
@@ -320,7 +321,7 @@ pub fn Obj_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        _fty: ?Factory_H(T),
+        _fty: ?Factory_H(T) = undefined,
         _idx: usize,
         pub fn getIdx(self: *const Self) usize {
             return self._idx;
@@ -365,6 +366,10 @@ pub fn Param_H(T: type) type {
             return sprint("{s}", .{toStringAux(self._val)});
         }
 
+        pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            return "";
+        }
+
         pub fn Type(_: Self) type {
             return T;
         }
@@ -397,6 +402,10 @@ pub fn Proxy_H(I: type) type {
 
         pub fn set(self: *Self, x: anytype) void {
             self._upath = x.em__U.upath;
+        }
+
+        pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            return "";
         }
 
         pub fn toString(self: *const Self) []const u8 {
@@ -685,6 +694,25 @@ pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
                 return sprint("\"{s}\"", .{v});
             } else if (ptr_info.size == .One) {
                 return toStringAux(v.*);
+            } else {
+                return "<<ptr>>";
+            }
+        },
+        else => {
+            return "<<unknown>>";
+        },
+    }
+}
+
+pub fn toStringPre(v: anytype, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+    const T = @TypeOf(v);
+    const ti = @typeInfo(T);
+    switch (ti) {
+        .Pointer => |ptr_info| {
+            if (ptr_info.size == .Slice and ptr_info.child == u8) {
+                return "";
+            } else if (ptr_info.size == .One) {
+                return v.toStringDecls(upath, cname);
             } else {
                 return "<<ptr>>";
             }
