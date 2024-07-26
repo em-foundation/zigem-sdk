@@ -66,6 +66,7 @@ pub const EM__HOST = struct {
         );
         sbuf.add("// used\n");
         for (used_tab.items()) |n| {
+            if (em.std.mem.eql(u8, n, NO_VEC)) continue;
             sbuf.add(em.sprint(
                 \\#undef __{s}_isr
                 \\#define __{0s}_isr {0s}_isr

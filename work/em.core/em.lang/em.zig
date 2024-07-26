@@ -110,14 +110,15 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: ?Unit,
 
-    pub fn config(self: Self, comptime CT: type) *CT {
+    pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
             .HOST => {
-                const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};
-                return @constCast(&std.mem.zeroInit(CT, init));
+                return initConfig(CT, self.upath);
+                //const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};
+                //return @constCast(&std.mem.zeroInit(CT, init));
             },
             .TARG => {
-                return @constCast(&@field(targ, self.extendPath("config")));
+                return @field(targ, self.extendPath("config"));
             },
         }
     }
@@ -138,9 +139,9 @@ pub const Unit = struct {
         return self.inherits != null or self.kind == .interface;
     }
 
-    pub fn itab(self: Self) if (self.hasItab()) ItabType(self.scope()) else void {
-        return if (self.hasItab()) mkItab(self.scope()) else {};
-    }
+    //pub fn itab(self: Self) if (self.hasItab()) ItabType(self.scope()) else void {
+    //    return if (self.hasItab()) mkItab(self.scope()) else {};
+    //}
 
     pub fn resolve(self: Self) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
@@ -186,12 +187,36 @@ fn unitTypeName(unit: type) []const u8 {
 
 const @"// -------- CONFIG FLDS -------- //" = {};
 
+fn initConfig(CT: type, upath: []const u8) CT {
+    comptime {
+        var new_c: CT = undefined;
+        const cti = @typeInfo(CT);
+        for (cti.Struct.fields) |fld| {
+            if (std.mem.eql(u8, fld.name, "em__upath")) {
+                @field(new_c, fld.name) = upath;
+            } else {
+                const fti = @typeInfo(fld.type);
+                if (fti != .Pointer) complog("struct {s}", .{fld.name});
+                const FT = fti.Pointer.child;
+                const fval = &struct {
+                    var o = blk: {
+                        break :blk std.mem.zeroInit(FT, .{});
+                    };
+                }.o;
+                @field(new_c, fld.name) = fval;
+            }
+        }
+        const res = new_c;
+        return res;
+    }
+}
+
 pub fn Factory(T: type) type {
     return if (DOMAIN == .HOST) Factory_H(T) else Factory_T(T);
 }
 
 pub fn Factory_H(T: type) type {
-    return struct {
+    return *struct {
         const Self = @This();
 
         pub const _em__builtin = {};
@@ -217,7 +242,7 @@ pub fn Factory_H(T: type) type {
             return mkTypeName(T);
         }
 
-        pub fn ref(self: *Self) *Factory_H(T) {
+        pub fn ref(self: *Self) Factory_H(T) {
             return @constCast(self);
         }
 
@@ -299,7 +324,7 @@ pub fn Obj_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        _fty: ?*Factory_H(T),
+        _fty: ?Factory_H(T),
         _idx: usize,
         pub fn getIdx(self: *const Self) usize {
             return self._idx;
@@ -325,11 +350,10 @@ pub fn Param(T: type) type {
 }
 
 pub fn Param_H(T: type) type {
-    return struct {
+    return *struct {
         const Self = @This();
 
         pub const _em__builtin = {};
-        pub const _em__config = {};
 
         _val: T,
 
@@ -337,7 +361,7 @@ pub fn Param_H(T: type) type {
             return self._val;
         }
 
-        pub fn ref(self: *Self) *Param_H(T) {
+        pub fn ref(self: *Self) Param_H(T) {
             return self;
         }
 
@@ -368,19 +392,18 @@ pub fn Proxy(I: type) type {
 }
 
 pub fn Proxy_H(I: type) type {
-    return struct {
+    return *struct {
         const Self = @This();
 
         pub const _em__builtin = {};
-        pub const _em__config = {};
 
         _upath: []const u8 = I.em__U.upath,
 
-        pub fn get(self: *const Self) Unit {
-            return @field(import, self._upath).em__U;
-        }
+        //pub fn get(self: *const Self) Unit {
+        //    return @field(import, self._upath).em__U;
+        //}
 
-        pub fn ref(self: *Self) *Proxy_H(I) {
+        pub fn ref(self: *Self) Proxy_H(I) {
             return self;
         }
 
@@ -412,7 +435,7 @@ pub fn Table(T: type, acc: TableAccess) type {
 }
 
 pub fn Table_H(comptime T: type, acc: TableAccess) type {
-    return struct {
+    return *struct {
         const Self = @This();
 
         pub const _em__builtin = {};
@@ -431,7 +454,7 @@ pub fn Table_H(comptime T: type, acc: TableAccess) type {
             return self._list.items;
         }
 
-        pub fn ref(self: *Self) *Table_H(T, acc) {
+        pub fn ref(self: *Self) Table_H(T, acc) {
             return self;
         }
 
@@ -722,6 +745,22 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
     const mode = if (@inComptime()) "c" else "r";
     const msg = std.fmt.comptimePrint(fmt, args);
     @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
+}
+
+var create_key: u32 = 0;
+
+pub fn create(T: type) *T {
+    create_key += 1;
+    return create2(T, create_key);
+}
+
+fn create2(T: type, key: anytype) *T {
+    return &struct {
+        var o = blk: {
+            std.mem.doNotOptimizeAway(key);
+            break :blk std.mem.zeroInit(T, .{});
+        };
+    }.o;
 }
 
 pub const import = @import("../../.gen/imports.zig");

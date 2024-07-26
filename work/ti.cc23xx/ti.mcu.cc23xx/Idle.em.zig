@@ -18,8 +18,8 @@ pub const CallbackTab = em.Table(SleepCbFxn, .RO);
 
 pub const EM__HOST = struct {
     //
-    var sleep_enter_cb_tab = &em__C.sleep_enter_fxn_tab;
-    var sleep_leave_cb_tab = &em__C.sleep_leave_fxn_tab;
+    var sleep_enter_cb_tab = em__C.sleep_enter_fxn_tab;
+    var sleep_leave_cb_tab = em__C.sleep_leave_fxn_tab;
 
     pub fn addSleepEnterCbH(cb: SleepCbFxn) void {
         sleep_enter_cb_tab.add(cb);

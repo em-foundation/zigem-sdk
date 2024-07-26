@@ -46,7 +46,7 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
     const U = unit.resolve();
     if (!@hasDecl(U, "em__C")) return;
     const C = @field(U, "em__C");
-    const ti = @typeInfo(@typeInfo(@TypeOf(C)).Pointer.child);
+    const ti = @typeInfo(@TypeOf(C));
     inline for (ti.Struct.fields) |fld| {
         const cfld = &@field(C, fld.name);
         if (@typeInfo(@TypeOf(cfld.*)) == .Struct and @hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
@@ -141,7 +141,7 @@ fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File
 
 fn mkConfigPath(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
-    const tun = comptime tn[1..idx]; // skip leading '*'
+    const tun = comptime tn[0..idx];
     return @as([]const u8, @field(type_map, tun));
 }
 

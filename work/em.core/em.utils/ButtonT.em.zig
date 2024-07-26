@@ -33,7 +33,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             pub fn em__constructH() void {
                 const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
                 em__C.debounceF.set(debounceF);
-                Edge.get().scope().setDetectHandlerH(em__U.fxn("buttonHandler", em__C.Edge.get().scope().HandlerArg));
+                // Edge.get().scope().setDetectHandlerH(em__U.fxn("buttonHandler", em__C.Edge.get().scope().HandlerArg));
             }
         };
 
