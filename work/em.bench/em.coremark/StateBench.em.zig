@@ -12,7 +12,7 @@ pub const Crc = em.import.@"em.coremark/Crc";
 pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const EM__HOST = struct {
-    pub const memsize = em__C.memsize.ref();
+    pub const memsize = em__C.memsize;
 };
 
 pub const EM__TARG = struct {

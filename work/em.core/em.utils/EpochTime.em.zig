@@ -7,7 +7,7 @@ pub const EM__CONFIG = struct {
 };
 
 pub const EM__HOST = struct {
-    pub const Uptimer = em__C.Uptimer.ref();
+    pub const Uptimer = em__C.Uptimer;
 };
 
 pub const EM__TARG = struct {

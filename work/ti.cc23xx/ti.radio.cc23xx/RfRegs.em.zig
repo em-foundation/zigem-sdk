@@ -15,8 +15,8 @@ pub const Desc = struct {
 
 pub const EM__HOST = struct {
     //
-    var desc_tab = em__C.desc_tab.ref();
-    var val_tab = em__C.val_tab.ref();
+    var desc_tab = em__C.desc_tab;
+    var val_tab = em__C.val_tab;
 
     pub fn em__constructH() void {
         const hdr = @embedFile("ti_radio_config.h");

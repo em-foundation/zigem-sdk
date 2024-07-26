@@ -13,10 +13,10 @@ const Common = em.import.@"em.mcu/Common";
 const GpioI = em.import.@"em.hal/GpioI";
 
 pub const EM__HOST = struct {
-    pub const DbgA = em__C.DbgA.ref();
-    pub const DbgB = em__C.DbgB.ref();
-    pub const DbgC = em__C.DbgC.ref();
-    pub const DbgD = em__C.DbgD.ref();
+    pub const DbgA = em__C.DbgA;
+    pub const DbgB = em__C.DbgB;
+    pub const DbgC = em__C.DbgC;
+    pub const DbgD = em__C.DbgD;
 };
 
 pub const EM__TARG = struct {

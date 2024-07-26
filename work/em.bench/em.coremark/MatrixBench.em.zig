@@ -20,7 +20,7 @@ pub const matres_t = i32;
 
 pub const EM__HOST = struct {
     //
-    pub const memsize = em__C.memsize.ref();
+    pub const memsize = em__C.memsize;
 
     pub fn em__constructH() void {
         var i: usize = 0;

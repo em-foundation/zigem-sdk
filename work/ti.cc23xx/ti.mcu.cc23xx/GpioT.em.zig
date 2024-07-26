@@ -20,7 +20,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__HOST = struct {
             //
-            pub const pin = em__C.pin.ref();
+            pub const pin = em__C.pin;
 
             pub fn em__initH() void {
                 pin.set(-1);

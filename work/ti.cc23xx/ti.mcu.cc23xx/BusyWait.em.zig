@@ -10,7 +10,7 @@ pub const EM__CONFIG = struct {
 
 pub const EM__HOST = struct {
     //
-    pub const scalar = em__C.scalar.ref();
+    pub const scalar = em__C.scalar;
 
     pub fn em__initH() void {
         scalar.set(6);

@@ -242,10 +242,6 @@ pub fn Factory_H(T: type) type {
             return mkTypeName(T);
         }
 
-        pub fn ref(self: *Self) Factory_H(T) {
-            return @constCast(self);
-        }
-
         pub fn toString(self: *const Self) []const u8 {
             return sprint("@constCast(&@\"{s}__OBJARR\")", .{self._dname});
         }
@@ -361,10 +357,6 @@ pub fn Param_H(T: type) type {
             return self._val;
         }
 
-        pub fn ref(self: *Self) Param_H(T) {
-            return self;
-        }
-
         pub fn set(self: *Self, v: T) void {
             self._val = v;
         }
@@ -402,10 +394,6 @@ pub fn Proxy_H(I: type) type {
         //pub fn get(self: *const Self) Unit {
         //    return @field(import, self._upath).em__U;
         //}
-
-        pub fn ref(self: *Self) Proxy_H(I) {
-            return self;
-        }
 
         pub fn set(self: *Self, x: anytype) void {
             self._upath = x.em__U.upath;
@@ -452,10 +440,6 @@ pub fn Table_H(comptime T: type, acc: TableAccess) type {
         pub fn items(self: *Self) []T {
             self._is_virgin = false;
             return self._list.items;
-        }
-
-        pub fn ref(self: *Self) Table_H(T, acc) {
-            return self;
         }
 
         pub fn setLen(self: *Self, len: usize) void {

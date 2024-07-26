@@ -12,10 +12,10 @@ pub const EM__CONFIG = struct {
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 
 pub const EM__HOST = struct {
-    pub const CS = em__C.CS.ref();
-    pub const CLK = em__C.CLK.ref();
-    pub const PICO = em__C.PICO.ref();
-    pub const POCI = em__C.POCI.ref();
+    pub const CS = em__C.CS;
+    pub const CLK = em__C.CLK;
+    pub const PICO = em__C.PICO;
+    pub const POCI = em__C.POCI;
 };
 
 pub const EM__TARG = struct {

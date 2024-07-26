@@ -10,7 +10,7 @@ pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {
     //
-    pub const OneShot = em__C.OneShot.ref();
+    pub const OneShot = em__C.OneShot;
 };
 
 pub const EM__TARG = struct {

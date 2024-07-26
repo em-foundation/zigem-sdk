@@ -33,7 +33,7 @@ pub const Comparator = fn (a: em.Obj(Data), b: em.Obj(Data)) i32;
 
 pub const EM__HOST = struct {
     //
-    pub const memsize = em__C.memsize.ref();
+    pub const memsize = em__C.memsize;
 
     pub fn em__constructH() void {
         const item_size = 16 + @sizeOf(Data);

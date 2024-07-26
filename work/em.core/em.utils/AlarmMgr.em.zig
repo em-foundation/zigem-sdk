@@ -33,7 +33,7 @@ pub const Alarm = struct {
 
 pub const EM__HOST = struct {
     //
-    pub const WakeupTimer = em__C.WakeupTimer.ref();
+    pub const WakeupTimer = em__C.WakeupTimer;
 
     pub fn createH(fiber: FiberMgr.Obj) Obj {
         const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });

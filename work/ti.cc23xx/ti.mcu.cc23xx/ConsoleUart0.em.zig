@@ -12,7 +12,7 @@ pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 
 pub const EM__HOST = struct {
     //
-    pub const TxPin = em__C.TxPin.ref();
+    pub const TxPin = em__C.TxPin;
 
     pub fn em__configureH() void {
         Idle.addSleepEnterCbH(em__U.fxn("sleepEnter", Idle.SleepCbArg));

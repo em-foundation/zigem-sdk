@@ -28,7 +28,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__HOST = struct {
             //
-            pub const Edge = em__C.Edge.ref();
+            pub const Edge = em__C.Edge;
 
             pub fn em__constructH() void {
                 const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));

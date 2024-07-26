@@ -21,8 +21,8 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__HOST = struct {
             //
-            pub const active_low = em__C.active_low.ref();
-            pub const Pin = em__C.Pin.ref();
+            pub const active_low = em__C.active_low;
+            pub const Pin = em__C.Pin;
 
             pub fn em__initH() void {
                 active_low.set(false);

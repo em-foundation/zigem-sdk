@@ -9,7 +9,7 @@ pub const EM__CONFIG = struct {
 pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {
-    pub const Led = em__C.Led.ref();
+    pub const Led = em__C.Led;
 };
 
 pub const EM__TARG = struct {

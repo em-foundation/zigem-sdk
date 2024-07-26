@@ -13,13 +13,13 @@ pub const EM__CONFIG = struct {
 };
 
 pub const EM__HOST = struct {
-    pub const BusyWait = em__C.BusyWait.ref();
-    pub const ConsoleUart = em__C.ConsoleUart.ref();
-    pub const GlobalInterrupts = em__C.GlobalInterrupts.ref();
-    pub const Idle = em__C.Idle.ref();
-    pub const Mcu = em__C.Mcu.ref();
-    pub const MsCounter = em__C.MsCounter.ref();
-    pub const UsCounter = em__C.UsCounter.ref();
+    pub const BusyWait = em__C.BusyWait;
+    pub const ConsoleUart = em__C.ConsoleUart;
+    pub const GlobalInterrupts = em__C.GlobalInterrupts;
+    pub const Idle = em__C.Idle;
+    pub const Mcu = em__C.Mcu;
+    pub const MsCounter = em__C.MsCounter;
+    pub const UsCounter = em__C.UsCounter;
 };
 
 pub const EM__TARG = struct {

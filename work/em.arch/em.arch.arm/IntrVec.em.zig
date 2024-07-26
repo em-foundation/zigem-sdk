@@ -14,8 +14,8 @@ export fn DEFAULT_isr() void {
 
 pub const EM__HOST = struct {
     //
-    var name_tab = em__C.name_tab.ref();
-    var used_tab = em__C.used_tab.ref();
+    var name_tab = em__C.name_tab;
+    var used_tab = em__C.used_tab;
 
     const NO_VEC = "<NA>";
 
