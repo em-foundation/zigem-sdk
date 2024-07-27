@@ -190,6 +190,7 @@ const @"// -------- CONFIG FLDS -------- //" = {};
 fn initConfig(CT: type, upath: []const u8) CT {
     comptime {
         var new_c: CT = undefined;
+        var tid: usize = 0;
         const cti = @typeInfo(CT);
         for (cti.Struct.fields) |fld| {
             if (std.mem.eql(u8, fld.name, "em__upath")) {
@@ -198,9 +199,10 @@ fn initConfig(CT: type, upath: []const u8) CT {
                 const fti = @typeInfo(fld.type);
                 if (fti != .Pointer) complog("struct {s}", .{fld.name});
                 const FT = fti.Pointer.child;
+                tid += 1;
                 const fval = &struct {
                     var o = blk: {
-                        break :blk std.mem.zeroInit(FT, .{});
+                        break :blk std.mem.zeroInit(FT, .{ .em__typeid = tid });
                     };
                 }.o;
                 @field(new_c, fld.name) = fval;
@@ -221,6 +223,7 @@ pub fn Factory_H(T: type) type {
 
         pub const _em__builtin = {};
 
+        em__typeid: usize,
         _dname: []const u8,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
@@ -352,6 +355,7 @@ pub fn Param_H(T: type) type {
 
         pub const _em__builtin = {};
 
+        em__typeid: usize,
         _val: T,
 
         pub fn get(self: *Self) T {
@@ -394,6 +398,7 @@ pub fn Proxy_H(I: type) type {
 
         pub const _em__builtin = {};
 
+        em__typeid: usize,
         _upath: []const u8 = I.em__U.upath,
 
         //pub fn get(self: *const Self) Unit {
@@ -437,6 +442,7 @@ pub fn Table_H(comptime T: type, acc: TableAccess) type {
 
         pub const _em__builtin = {};
 
+        em__typeid: usize,
         _dname: []const u8,
         _is_virgin: bool = true,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
@@ -816,6 +822,14 @@ pub const StringH = struct {
 };
 
 pub const text_t = []const u8;
+
+pub fn typeid(comptime T: type) usize {
+    const H = struct {
+        var byte: u8 = 0;
+        var _ = T;
+    };
+    return @intFromPtr(&H.byte);
+}
 
 pub fn writeFile(dpath: []const u8, fname: []const u8, txt: []const u8) void {
     const fpath = sprint("{s}/{s}", .{ dpath, fname });
