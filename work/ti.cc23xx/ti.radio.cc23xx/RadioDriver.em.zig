@@ -136,10 +136,10 @@ pub const EM__TARG = struct {
     }
 
     pub fn startTx(word_buf: []const u32) void {
-        // em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
+        //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
         _ = RfFifo.prepare();
         RfFifo.write(word_buf);
-        em.@"%%[c]"();
+        em.@"%%[c+]"();
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
 
@@ -149,6 +149,7 @@ pub const EM__TARG = struct {
         BusyWait.wait(10000);
         //while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
         disable();
+        em.@"%%[c-]"();
     }
 
     fn updateSyncWord(syncWord: u32) u32 {
@@ -184,9 +185,14 @@ pub const EM__TARG = struct {
 
     export fn LRFD_IRQ0_isr() void {
         if (em.hosted) return;
-        em.@"%%[a]"();
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
+        //em.@"%%[>]"(mis);
+        em.@"%%[a]"();
+        if ((mis & 0x8000) != 0) {
+            em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
+            em.@"%%[>]"(em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).*);
+        }
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
     }
 };
