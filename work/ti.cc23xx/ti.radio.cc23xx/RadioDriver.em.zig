@@ -42,7 +42,7 @@ pub const EM__TARG = struct {
     }
 
     fn disable() void {
-        RfXtal.disable();
+        //RfXtal.disable();
     }
 
     fn enable() void {
