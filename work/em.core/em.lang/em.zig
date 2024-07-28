@@ -196,14 +196,21 @@ fn initConfig(CT: type, upath: []const u8) CT {
                 @field(new_c, fld.name) = upath;
             } else {
                 const fti = @typeInfo(fld.type);
-                if (fti != .Pointer) complog("struct {s}", .{fld.name});
-                const FT = fti.Pointer.child;
-                const fval = &struct {
-                    var o = blk: {
-                        break :blk std.mem.zeroInit(FT, .{ .em__cfgid = .{ .un = upath, .fi = idx } });
-                    };
-                }.o;
-                @field(new_c, fld.name) = fval;
+                switch (fti) {
+                    .Struct => {
+                        @field(new_c, fld.name) = std.mem.zeroInit(fld.type, .{});
+                    },
+                    .Pointer => {
+                        const FT = fti.Pointer.child;
+                        const fval = &struct {
+                            var o = blk: {
+                                break :blk std.mem.zeroInit(FT, .{ .em__cfgid = .{ .un = upath, .fi = idx } });
+                            };
+                        }.o;
+                        @field(new_c, fld.name) = fval;
+                    },
+                    else => unreachable,
+                }
             }
         }
         const res = new_c;

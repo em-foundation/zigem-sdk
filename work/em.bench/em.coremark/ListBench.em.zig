@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    cur_head: em.Obj(Elem),
+    cur_head: em.Param(em.Obj(Elem)),
     max_elems: em.Param(u16),
     memsize: em.Param(u16),
     DataOF: em.Factory(Data),
@@ -48,7 +48,7 @@ pub const EM__HOST = struct {
             p = q;
         }
         p.O().next = null;
-        em__C.cur_head = head;
+        em__C.cur_head.set(head);
         em__C.max_elems.set(max);
     }
 };
