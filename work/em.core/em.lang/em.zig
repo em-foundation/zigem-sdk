@@ -190,19 +190,17 @@ const @"// -------- CONFIG FLDS -------- //" = {};
 fn initConfig(CT: type, upath: []const u8) CT {
     comptime {
         var new_c: CT = undefined;
-        var tid: usize = 0;
         const cti = @typeInfo(CT);
-        for (cti.Struct.fields) |fld| {
+        for (cti.Struct.fields, 0..) |fld, idx| {
             if (std.mem.eql(u8, fld.name, "em__upath")) {
                 @field(new_c, fld.name) = upath;
             } else {
                 const fti = @typeInfo(fld.type);
                 if (fti != .Pointer) complog("struct {s}", .{fld.name});
                 const FT = fti.Pointer.child;
-                tid += 1;
                 const fval = &struct {
                     var o = blk: {
-                        break :blk std.mem.zeroInit(FT, .{ .em__typeid = tid });
+                        break :blk std.mem.zeroInit(FT, .{ .em__cfgid = .{ .un = upath, .fi = idx } });
                     };
                 }.o;
                 @field(new_c, fld.name) = fval;
@@ -212,6 +210,11 @@ fn initConfig(CT: type, upath: []const u8) CT {
         return res;
     }
 }
+
+const CfgId = struct {
+    un: []const u8,
+    fi: usize,
+};
 
 pub fn Factory(T: type) type {
     return if (DOMAIN == .HOST) Factory_H(T) else Factory_T(T);
@@ -223,7 +226,8 @@ pub fn Factory_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        em__typeid: usize,
+        em__cfgid: CfgId,
+
         _dname: []const u8,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
 
@@ -355,7 +359,8 @@ pub fn Param_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        em__typeid: usize,
+        em__cfgid: CfgId,
+
         _val: T,
 
         pub fn get(self: *Self) T {
@@ -398,7 +403,8 @@ pub fn Proxy_H(I: type) type {
 
         pub const _em__builtin = {};
 
-        em__typeid: usize,
+        em__cfgid: CfgId,
+
         _upath: []const u8 = I.em__U.upath,
 
         //pub fn get(self: *const Self) Unit {
@@ -442,7 +448,8 @@ pub fn Table_H(comptime T: type, acc: TableAccess) type {
 
         pub const _em__builtin = {};
 
-        em__typeid: usize,
+        em__cfgid: CfgId,
+
         _dname: []const u8,
         _is_virgin: bool = true,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
@@ -763,22 +770,6 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
     const mode = if (@inComptime()) "c" else "r";
     const msg = std.fmt.comptimePrint(fmt, args);
     @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
-}
-
-var create_key: u32 = 0;
-
-pub fn create(T: type) *T {
-    create_key += 1;
-    return create2(T, create_key);
-}
-
-fn create2(T: type, key: anytype) *T {
-    return &struct {
-        var o = blk: {
-            std.mem.doNotOptimizeAway(key);
-            break :blk std.mem.zeroInit(T, .{});
-        };
-    }.o;
 }
 
 pub const import = @import("../../.gen/imports.zig");
