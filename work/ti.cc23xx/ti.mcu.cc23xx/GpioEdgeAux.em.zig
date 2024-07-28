@@ -17,7 +17,7 @@ pub const HandlerInfo = struct {
 
 pub const EM__HOST = struct {
     //
-    var handler_info_tab = &em__C.handler_info_tab;
+    var handler_info_tab = em__C.handler_info_tab;
 
     pub fn em__constructH() void {
         IntrVec.useIntrH("GPIO_COMB");
