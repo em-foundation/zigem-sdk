@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    cur_head: em.Param(em.Obj(Elem)),
+    cur_head: em.Param(Elem.Obj),
     max_elems: em.Param(u16),
     memsize: em.Param(u16),
     DataOF: em.Factory(Data),
@@ -20,16 +20,18 @@ const Bench0 = em.import.@"em.coremark/StateBench";
 const Bench1 = em.import.@"em.coremark/MatrixBench";
 
 pub const Data = struct {
+    const Obj = em.Obj(Data);
     val: i16 = 0,
     idx: i16 = 0,
 };
 
 pub const Elem = struct {
-    next: ?em.Obj(Elem),
-    data: em.Obj(Data),
+    const Obj = em.Obj(Elem);
+    next: ?Elem.Obj,
+    data: Data.Obj,
 };
 
-pub const Comparator = fn (a: em.Obj(Data), b: em.Obj(Data)) i32;
+pub const Comparator = fn (a: Data.Obj, b: Data.Obj) i32;
 
 pub const EM__HOST = struct {
     //
@@ -64,8 +66,8 @@ pub const EM__TARG = struct {
         return;
     }
 
-    fn find(list: em.Obj(Elem), data: em.Obj(Data)) ?em.Obj(Elem) {
-        var elem: ?em.Obj(Elem) = list;
+    fn find(list: Elem.Obj, data: Data.Obj) ?Elem.Obj {
+        var elem: ?Elem.Obj = list;
         if (data.idx >= 0) {
             while (elem != null and (elem.?.data.idx != data.idx)) {
                 elem = elem.?.next;
@@ -84,8 +86,8 @@ pub const EM__TARG = struct {
         return .LIST;
     }
 
-    fn prList(list: em.Obj(Elem), name: []const u8) void {
-        var elem: ?em.Obj(Elem) = list;
+    fn prList(list: Elem.Obj, name: []const u8) void {
+        var elem: ?Elem.Obj = list;
         var sz: usize = 0;
         em.print("{s}\n[", .{name});
         while (elem != null) {
@@ -101,7 +103,7 @@ pub const EM__TARG = struct {
         prList(cur_head, "current");
     }
 
-    fn remove(item: em.Obj(Elem)) em.Obj(Elem) {
+    fn remove(item: Elem.Obj) Elem.Obj {
         const ret = item.next;
         const tmp = item.data;
         item.data = ret.?.data;
@@ -111,9 +113,9 @@ pub const EM__TARG = struct {
         return ret.?;
     }
 
-    fn reverse(list: em.Obj(Elem)) em.Obj(Elem) {
-        var p: ?em.Obj(Elem) = list;
-        var next: ?em.Obj(Elem) = null;
+    fn reverse(list: Elem.Obj) Elem.Obj {
+        var p: ?Elem.Obj = list;
+        var next: ?Elem.Obj = null;
         while (p != null) {
             const tmp = p.?.next;
             p.?.next = next;
@@ -179,7 +181,7 @@ pub const EM__TARG = struct {
         const seed = Utils.getSeed(1);
         var ki: u16 = 1;
         var kd: u16 = max_elems - 3;
-        var e: ?em.Obj(Elem) = cur_head;
+        var e: ?Elem.Obj = cur_head;
         e.?.data.idx = 0;
         e.?.data.val = @bitCast(@as(u16, 0x8080));
         e = e.?.next;
@@ -206,15 +208,15 @@ pub const EM__TARG = struct {
         em.@"%%[c-]"();
     }
 
-    fn sort(list: em.Obj(Elem), cmp: Comparator) em.Obj(Elem) {
-        var res: ?em.Obj(Elem) = list;
+    fn sort(list: Elem.Obj, cmp: Comparator) Elem.Obj {
+        var res: ?Elem.Obj = list;
         var insize: usize = 1;
-        var q: ?em.Obj(Elem) = undefined;
-        var e: em.Obj(Elem) = undefined;
+        var q: ?Elem.Obj = undefined;
+        var e: Elem.Obj = undefined;
         while (true) {
             var p = res;
             res = null;
-            var tail: ?em.Obj(Elem) = null;
+            var tail: ?Elem.Obj = null;
             var nmerges: i32 = 0; // count number of merges we do in this pass
             while (p != null) {
                 nmerges += 1; // there exists a merge to be done
@@ -272,7 +274,7 @@ pub const EM__TARG = struct {
         return res.?;
     }
 
-    fn unremove(removed: em.Obj(Elem), modified: em.Obj(Elem)) void {
+    fn unremove(removed: Elem.Obj, modified: Elem.Obj) void {
         const tmp = removed.data;
         removed.data = modified.data;
         modified.data = tmp;
@@ -282,7 +284,7 @@ pub const EM__TARG = struct {
 
     // IdxComparator
 
-    fn idxCompare(a: em.Obj(Data), b: em.Obj(Data)) i32 {
+    fn idxCompare(a: Data.Obj, b: Data.Obj) i32 {
         const avu: u16 = @bitCast(a.val);
         const bvu: u16 = @bitCast(b.val);
         const sft: u4 = 8;
@@ -295,7 +297,7 @@ pub const EM__TARG = struct {
 
     // ValComparator
 
-    fn valCompare(a: em.Obj(Data), b: em.Obj(Data)) i32 {
+    fn valCompare(a: Data.Obj, b: Data.Obj) i32 {
         const val1 = valCmpCalc(&a.val);
         const val2 = valCmpCalc(&b.val);
         // em.print("z: vcmp = {d}\n", .{val1 - val2});
