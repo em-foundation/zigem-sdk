@@ -40,7 +40,7 @@ pub const EM__TARG = struct {
     var cur_mode: Mode = .IDLE;
 
     pub fn em__startup() void {
-        Idle.waitOnly(.SET);
+        //Idle.waitOnly(.SET);
     }
 
     fn disable() void {
