@@ -44,6 +44,19 @@ pub const EM__TARG = struct {
     }
 
     fn disable() void {
+        em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PDREQ).* = hal.LRFDPBE_PDREQ_TOPSMPDREQ_M;
+        em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_ENABLE).* = 0;
+        em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PDREQ).* = 0;
+        //
+        em.reg16(hal.LRFDMDM_BASE + hal.LRFDMDM_O_PDREQ).* = hal.LRFDMDM_PDREQ_TOPSMPDREQ_M;
+        em.reg16(hal.LRFDMDM_BASE + hal.LRFDMDM_O_ENABLE).* = 0;
+        em.reg16(hal.LRFDMDM_BASE + hal.LRFDMDM_O_PDREQ).* = 0;
+        //
+        em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_PDREQ).* = hal.LRFDRFE_PDREQ_TOPSMPDREQ_M;
+        em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_ENABLE).* = 0;
+        em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_PDREQ).* = 0;
+        //
+        em.reg16(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_ATSTREF).* &= em.@"<>"(u16, ~hal.LRFDRFE32_ATSTREF_BIAS_M);
         RfXtal.disable();
     }
 
@@ -87,6 +100,10 @@ pub const EM__TARG = struct {
 
     pub fn setup(mode: Mode) void {
         cur_mode = mode;
+        if (mode == .IDLE) {
+            disable();
+            return;
+        }
         enable();
         RfPatch.loadAll();
         RfRegs.setup();
@@ -153,11 +170,7 @@ pub const EM__TARG = struct {
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
         em.@"%%[c]"();
-
-        while (cur_mode != .IDLE) {
-            Idle.exec();
-        }
-
+        waitDone();
         disable();
     }
 
@@ -174,6 +187,14 @@ pub const EM__TARG = struct {
             syncWordOut = syncWord;
         }
         return syncWordOut;
+    }
+
+    fn waitDone() void {
+        Idle.waitOnly(.SET);
+        while (cur_mode != .IDLE) {
+            Idle.exec();
+        }
+        Idle.waitOnly(.CLR);
     }
 
     export fn LRFD_IRQ0_isr() void {
