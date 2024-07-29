@@ -44,10 +44,11 @@ pub const EM__TARG = struct {
     }
 
     fn disable() void {
-        //RfXtal.disable();
+        RfXtal.disable();
     }
 
     fn enable() void {
+        RfXtal.disable();
         RfXtal.enable();
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
         while ((reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKCFG0).* & hal.CLKCTL_CLKCFG0_LRFD_M) != hal.CLKCTL_CLKCFG0_LRFD_CLK_EN) {}
@@ -157,8 +158,6 @@ pub const EM__TARG = struct {
             Idle.exec();
         }
 
-        //BusyWait.wait(10000);
-        //while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
         disable();
     }
 
@@ -177,33 +176,16 @@ pub const EM__TARG = struct {
         return syncWordOut;
     }
 
-    pub fn wait() void {
-        var mis: u32 = undefined;
-        while (true) {
-            mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
-            if (mis != 0) break;
-        }
-        em.@"%%[>]"(mis);
-        em.halt();
-
-        //hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
-        ////em.@"%%[>]"(reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).*);
-        //Idle.waitOnly(.SET);
-        //Idle.exec();
-        //Idle.waitOnly(.CLR);
-    }
-
     export fn LRFD_IRQ0_isr() void {
         if (em.hosted) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
+        em.@"%%[a]"();
         cur_mode = .IDLE;
-        //em.@"%%[>]"(mis);
         if ((mis & 0x8000) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
-            //em.@"%%[>]"(em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).*);
+            em.fail();
         }
-        em.@"%%[a]"();
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
     }
 };

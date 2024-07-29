@@ -18,6 +18,12 @@ pub const EM__TARG = struct {
     const IREF_MAX = 8;
     const IREF_MIN = 3;
 
+    pub fn em__startup() void {
+        // Power_init
+        reg(hal.CKMD_BASE + hal.CKMD_O_AMPCFG1).* &= ~hal.CKMD_AMPCFG1_INTERVAL_M;
+        setIrefTrim(IREF_MAX);
+    }
+
     pub fn disable() void {
         // adjust amplitude
         const stat = reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCSTAT).*;
@@ -32,9 +38,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn enable() void {
-        // Power_init
-        reg(hal.CKMD_BASE + hal.CKMD_O_AMPCFG1).* &= ~hal.CKMD_AMPCFG1_INTERVAL_M;
-        setIrefTrim(IREF_MAX);
         // PowerCC23X0_startHFXT()
         reg(hal.CKMD_BASE + hal.CKMD_O_LDOCTL).* =
             hal.CKMD_LDOCTL_SWOVR | hal.CKMD_LDOCTL_STARTCTL | hal.CKMD_LDOCTL_START | hal.CKMD_LDOCTL_EN;
@@ -50,18 +53,18 @@ pub const EM__TARG = struct {
         while (!((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_RIS_ADCBIASUPD_M) == hal.CKMD_RIS_ADCBIASUPD)) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* &= ~(hal.CKMD_AMPADCCTL_SWOVR_M | hal.CKMD_AMPADCCTL_ADCEN_M);
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_EN;
-        // ???
-        reg(hal.CKMD_BASE + hal.CKMD_O_HFTRACKCTL).* |= hal.CKMD_HFTRACKCTL_EN_M | hal.CKMD_HFTRACKCTL_REFCLK_HFXT;
+        reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = hal.CKMD_ICLR_AMPSETTLED | hal.CKMD_ICLR_LFCLKGOOD;
+        reg(hal.CKMD_BASE + hal.CKMD_O_IMSET).* = hal.CKMD_IMSET_AMPSETTLED | hal.CKMD_IMSET_LFCLKGOOD;
         // PowerCC23X0_oscillatorISR
         while ((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_RIS_AMPSETTLED) == 0) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* =
             hal.CKMD_AMPADCCTL_SWOVR | hal.CKMD_AMPADCCTL_PEAKDETEN_ENABLE |
             hal.CKMD_AMPADCCTL_ADCEN_ENABLE | hal.CKMD_AMPADCCTL_SRCSEL_PEAK |
             hal.CKMD_AMPADCCTL_SARSTRT;
-        // PowerCC23X0_oscillatorISR
         while ((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_MIS_LFCLKGOOD) == 0) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_LFMONCTL).* = hal.CKMD_LFMONCTL_EN;
         reg(hal.PMCTL_BASE + hal.PMCTL_O_RSTCTL).* |= hal.PMCTL_RSTCTL_LFLOSS_ARMED;
+        reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = hal.CKMD_ICLR_AMPSETTLED | hal.CKMD_ICLR_LFCLKGOOD;
     }
 
     fn setIrefTrim(iref: u32) void {
