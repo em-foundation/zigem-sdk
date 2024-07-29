@@ -80,6 +80,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn setup(mode: Mode) void {
+        enable();
         RfPatch.loadAll();
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
@@ -120,7 +121,6 @@ pub const EM__TARG = struct {
         }
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
-        enable();
         RfFreq.program(2_440_000_000);
         RfPower.program(5);
     }
@@ -142,6 +142,7 @@ pub const EM__TARG = struct {
         em.@"%%[c+]"();
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+        em.@"%%[c-]"();
 
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
@@ -149,7 +150,6 @@ pub const EM__TARG = struct {
         BusyWait.wait(10000);
         //while (reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).* == 0) {}
         disable();
-        em.@"%%[c-]"();
     }
 
     fn updateSyncWord(syncWord: u32) u32 {
@@ -188,11 +188,11 @@ pub const EM__TARG = struct {
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
         //em.@"%%[>]"(mis);
-        em.@"%%[a]"();
         if ((mis & 0x8000) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
-            em.@"%%[>]"(em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).*);
+            //em.@"%%[>]"(em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).*);
         }
+        em.@"%%[a]"();
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
     }
 };
