@@ -86,6 +86,10 @@ pub const EM__TARG = struct {
         }
     }
 
+    pub fn pause() void {
+        doWait();
+    }
+
     fn set_PRIMASK(m: u32) void {
         asm volatile ("msr primask, %[m]"
             :

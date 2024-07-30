@@ -7,7 +7,11 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
 
+    var loaded = false;
+
     pub fn loadAll() void {
+        if (loaded) return;
+        loaded = true;
         loadPatch(hal.LRFD_MCERAM_BASE, LRF_MCE_binary_genfsk[0..]);
         loadPatch(hal.LRFD_PBERAM_BASE, LRF_PBE_binary_generic[0..]);
         loadPatch(hal.LRFD_RFERAM_BASE, LRF_RFE_binary_genfsk[0..]);

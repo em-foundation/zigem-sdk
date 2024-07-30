@@ -39,9 +39,7 @@ pub const EM__TARG = struct {
 
     var cur_mode: Mode = .IDLE;
 
-    pub fn em__startup() void {
-        //Idle.waitOnly(.SET);
-    }
+    pub fn em__startup() void {}
 
     fn disable() void {
         em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PDREQ).* = hal.LRFDPBE_PDREQ_TOPSMPDREQ_M;
@@ -61,8 +59,9 @@ pub const EM__TARG = struct {
     }
 
     fn enable() void {
-        RfXtal.disable();
+        em.@"%%[c+]"();
         RfXtal.enable();
+        em.@"%%[c-]"();
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LRFD;
         while ((reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKCFG0).* & hal.CLKCTL_CLKCFG0_LRFD_M) != hal.CLKCTL_CLKCFG0_LRFD_CLK_EN) {}
         reg(hal.PMUD_BASE + hal.PMUD_O_CTL).* = hal.PMUD_CTL_CALC_EN | hal.PMUD_CTL_MEAS_EN | hal.PMUD_CTL_HYST_EN_DIS;
@@ -169,7 +168,7 @@ pub const EM__TARG = struct {
 
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
-        em.@"%%[c]"();
+        em.@"%%[a+]"();
         waitDone();
         disable();
     }
@@ -201,7 +200,7 @@ pub const EM__TARG = struct {
         if (em.hosted) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
-        em.@"%%[a]"();
+        em.@"%%[a-]"();
         cur_mode = .IDLE;
         if ((mis & 0x8000) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
