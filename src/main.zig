@@ -15,90 +15,6 @@ var params = struct {
     work: []const u8 = ".",
 }{};
 
-var load_opt = cli.Option{
-    .long_name = "load",
-    .short_alias = 'l',
-    .help = "Load executable image after building",
-    .required = false,
-    .value_name = "LOAD",
-    .value_ref = cli.mkRef(&params.load),
-};
-
-var meta_opt = cli.Option{
-    .long_name = "meta-only",
-    .short_alias = 'm',
-    .help = "Only run the HOST meta-program",
-    .required = false,
-    .value_name = "META",
-    .value_ref = cli.mkRef(&params.meta),
-};
-
-var unit_opt = cli.Option{
-    .long_name = "unit",
-    .short_alias = 'u',
-    .help = "Workspace-relative path to <unit>.em.zig file",
-    .required = true,
-    .value_name = "UPATH",
-    .value_ref = cli.mkRef(&params.unit),
-};
-
-var work_opt = cli.Option{
-    .long_name = "workspace",
-    .short_alias = 'w',
-    .help = "Root location of the workspace",
-    .required = false,
-    .value_name = "WPATH",
-    .value_ref = cli.mkRef(&params.work),
-};
-
-var build_cmd = cli.Command{
-    .name = "build",
-    .options = &.{
-        &load_opt,
-        &meta_opt,
-        &unit_opt,
-        &work_opt,
-    },
-    .target = cli.CommandTarget{
-        .action = cli.CommandAction{ .exec = doBuild },
-    },
-};
-
-var clean_cmd = cli.Command{
-    .name = "clean",
-    .options = &.{
-        &work_opt,
-    },
-    .target = cli.CommandTarget{
-        .action = cli.CommandAction{ .exec = doClean },
-    },
-};
-
-var refresh_cmd = cli.Command{
-    .name = "refresh",
-    .options = &.{
-        &work_opt,
-    },
-    .target = cli.CommandTarget{
-        .action = cli.CommandAction{ .exec = doRefresh },
-    },
-};
-
-const app = &cli.App{
-    .command = cli.Command{
-        .name = "zig-em",
-        .target = cli.CommandTarget{
-            .subcommands = &.{
-                &build_cmd,
-                &clean_cmd,
-                &refresh_cmd,
-            },
-        },
-    },
-    .help_config = cli.HelpConfig{ .color_usage = .never },
-    .version = "0.24.0",
-};
-
 fn doBuild() !void {
     const writer = std.io.getStdOut().writer();
     const path = params.unit;
@@ -142,7 +58,7 @@ fn doRefresh() !void {
 
 fn execMake(goal: []const u8) ![]const u8 {
     const argv = [_][]const u8{ "make", goal };
-    const proc = try std.ChildProcess.run(.{
+    const proc = try std.process.Child.run(.{
         .allocator = Heap.get(),
         .argv = &argv,
     });
@@ -184,5 +100,91 @@ fn getSizes(lines: []const u8) ![4]usize {
 pub fn main() !void {
     defer Heap.deinit();
     t0 = @floatFromInt(std.time.milliTimestamp());
-    return cli.run(app, Heap.get());
+    var runner = try cli.AppRunner.init(Heap.get());
+
+    const load_opt = cli.Option{
+        .long_name = "load",
+        .short_alias = 'l',
+        .help = "Load executable image after building",
+        .required = false,
+        .value_name = "LOAD",
+        .value_ref = runner.mkRef(&params.load),
+    };
+
+    const meta_opt = cli.Option{
+        .long_name = "meta-only",
+        .short_alias = 'm',
+        .help = "Only run the HOST meta-program",
+        .required = false,
+        .value_name = "META",
+        .value_ref = runner.mkRef(&params.meta),
+    };
+
+    const unit_opt = cli.Option{
+        .long_name = "unit",
+        .short_alias = 'u',
+        .help = "Workspace-relative path to <unit>.em.zig file",
+        .required = true,
+        .value_name = "UPATH",
+        .value_ref = runner.mkRef(&params.unit),
+    };
+
+    const work_opt = cli.Option{
+        .long_name = "workspace",
+        .short_alias = 'w',
+        .help = "Root location of the workspace",
+        .required = false,
+        .value_name = "WPATH",
+        .value_ref = runner.mkRef(&params.work),
+    };
+
+    const build_cmd = cli.Command{
+        .name = "build",
+        .options = &.{
+            load_opt,
+            meta_opt,
+            unit_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doBuild },
+        },
+    };
+
+    const clean_cmd = cli.Command{
+        .name = "clean",
+        .options = &.{
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doClean },
+        },
+    };
+
+    const refresh_cmd = cli.Command{
+        .name = "refresh",
+        .options = &.{
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doRefresh },
+        },
+    };
+
+    const app = &cli.App{
+        .command = cli.Command{
+            .name = "zig-em",
+            .target = cli.CommandTarget{
+                .subcommands = &.{
+                    build_cmd,
+                    clean_cmd,
+                    refresh_cmd,
+                },
+            },
+        },
+        .help_config = cli.HelpConfig{ .color_usage = .never },
+        .version = "0.24.0",
+    };
+
+    return runner.run(app);
 }
