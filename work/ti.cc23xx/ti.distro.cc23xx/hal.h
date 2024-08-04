@@ -38,6 +38,8 @@ typedef int __copy_table_t;
 #include "inc/hw_uart.h"
 #include "inc/hw_vims.h"
 
+#include "inc/pbe_ble5_ram_regs.h"
+#include "inc/pbe_ble5_regdef_regs.h"
 #include "inc/pbe_common_ram_regs.h"
 #include "inc/pbe_generic_ram_regs.h"
 #include "inc/pbe_generic_regdef_regs.h"
