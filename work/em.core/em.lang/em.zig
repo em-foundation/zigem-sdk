@@ -544,7 +544,7 @@ pub fn halt() void {
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     switch (DOMAIN) {
         .HOST => {
-            std.log.info(fmt, args);
+            std.log.debug(fmt, args);
         },
         .TARG => {
             std.fmt.format(Console.writer(), fmt, args) catch fail();
