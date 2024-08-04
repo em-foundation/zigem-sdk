@@ -15,7 +15,7 @@ pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__HOST = struct {
     pub fn em__configureH() void {
-        //RadioConfig.phy.set(.PROP_250K);
+        RadioConfig.phy.set(.PROP_250K);
     }
     pub fn em__constructH() void {
         em__C.txTicker.set(TickerMgr.createH());
