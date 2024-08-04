@@ -127,6 +127,12 @@ pub const Unit = struct {
         return self.upath ++ "__" ++ name;
     }
 
+    pub fn failif(self: Self, cond: bool, msg: []const u8) void {
+        if (!cond) return;
+        std.log.err("{s}: {s}", .{ self.upath, msg });
+        fail();
+    }
+
     pub fn fxn(self: Self, name: []const u8, FT: type) Fxn(FT) {
         return Fxn(FT){ ._upath = self.upath, ._fname = name };
     }
@@ -514,7 +520,7 @@ const @"// -------- BUILTIN FXNS -------- //" = {};
 pub fn fail() void {
     switch (DOMAIN) {
         .HOST => {
-            std.log.info("em.fail", .{});
+            std.log.err("em.fail", .{});
             std.process.exit(1);
         },
         .TARG => {
@@ -538,7 +544,7 @@ pub fn halt() void {
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     switch (DOMAIN) {
         .HOST => {
-            std.log.debug(fmt, args);
+            std.log.info(fmt, args);
         },
         .TARG => {
             std.fmt.format(Console.writer(), fmt, args) catch fail();
