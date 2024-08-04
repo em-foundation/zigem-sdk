@@ -9,6 +9,7 @@ pub const EM__CONFIG = struct {
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 pub const RfFifo = em.import.@"ti.radio.cc23xx/RfFifo";
 pub const RfFreq = em.import.@"ti.radio.cc23xx/RfFreq";
 pub const RfPatch = em.import.@"ti.radio.cc23xx/RfPatch";
@@ -145,7 +146,12 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
         enable2();
-        RfFreq.program(2_440_000_000);
+        const freq: u32 = switch (RadioConfig.phy) {
+            .BLE_1M => 2_402_000_000,
+            .PROP_250K => 2_440_000_000,
+            else => 0,
+        };
+        RfFreq.program(freq);
         RfPower.program(5);
     }
 
@@ -165,6 +171,7 @@ pub const EM__TARG = struct {
         RfFifo.write(word_buf);
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+        // asm volatile ("bkpt");
 
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
