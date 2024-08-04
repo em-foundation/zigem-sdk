@@ -10,9 +10,13 @@ pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
+pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__HOST = struct {
+    pub fn em__configureH() void {
+        //RadioConfig.phy.set(.PROP_250K);
+    }
     pub fn em__constructH() void {
         em__C.txTicker.set(TickerMgr.createH());
     }
