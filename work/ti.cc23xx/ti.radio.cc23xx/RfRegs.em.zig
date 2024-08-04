@@ -23,6 +23,7 @@ pub const EM__HOST = struct {
     pub fn em__constructH() void {
         const regfile = switch (RadioConfig.phy.get()) {
             .PROP_250K => @embedFile("regs_prop_250k.txt"),
+            .BLE_1M => @embedFile("regs_ble_1m.txt"),
             else => return,
         };
         var pre_flag = true;
@@ -42,7 +43,7 @@ pub const EM__HOST = struct {
             const addr = parseHex(col[1][2..]);
             const hwmod = col[2];
             const bits = col[4][1 .. col[4].len - 1];
-            const val: u16 = if (em.std.mem.eql(u8, col[6], "<TRIM>")) 0 else parseHex(col[6][2..]);
+            const val: u16 = if (em.std.mem.eql(u8, col[6], "-")) 0 else parseHex(col[6][2..]);
             Encoder.add(addr, hwmod, bits, val);
         }
         Encoder.finalize();
