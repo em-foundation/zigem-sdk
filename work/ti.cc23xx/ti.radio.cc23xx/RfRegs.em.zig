@@ -7,6 +7,8 @@ pub const EM__CONFIG = struct {
     val_tab: em.Table(u16, .RO),
 };
 
+pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
+
 pub const Desc = struct {
     off: u16,
     cnt: u8,
@@ -19,9 +21,12 @@ pub const EM__HOST = struct {
     var val_tab = em__C.val_tab;
 
     pub fn em__constructH() void {
-        const hdr = @embedFile("ti_radio_config.h");
+        const regfile = switch (RadioConfig.phy.get()) {
+            .PROP_250K => @embedFile("regs_prop_250k.txt"),
+            else => return,
+        };
         var pre_flag = true;
-        var it = em.std.mem.splitSequence(u8, hdr, "\n");
+        var it = em.std.mem.splitSequence(u8, regfile, "\n");
         _ = it.first();
         while (it.next()) |ln| {
             if (pre_flag) {
