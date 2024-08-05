@@ -1,6 +1,8 @@
 pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 
+pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
+
 pub const EM__HOST = struct {};
 
 pub const EM__TARG = struct {
@@ -15,6 +17,18 @@ pub const EM__TARG = struct {
     const FRAC_EXTRA_BITS: u32 = (32 - FRAC_NUM_BITS);
 
     const fXtalInv = [_]u32{ 0x00001E52, 0x02CBD3F0 };
+
+    const Shape = struct {
+        scale: u32,
+        freqdev: u32,
+        coeff: []const u8,
+    };
+
+    const BLE_1M_SHAPE = Shape{
+        .scale = 0x0FDE2,
+        .freqdev = 0x0003D090,
+        .coeff = &[_]u8{ 0x01, 0x02, 0x05, 0x0A, 0x14, 0x22, 0x37, 0x52, 0x71, 0x91, 0xB0, 0xCB, 0xE0, 0xEE, 0xF8, 0xFD, 0xFF },
+    };
 
     fn countLeadingZeros(valueIn: u16) u32 {
         var value = valueIn;
@@ -103,7 +117,10 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_RXIF).* = em.@"<>"(u16, findFoff(0, invSynthFreq)); // rxFreqOff
         em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_TXIF).* = em.@"<>"(u16, findFoff(1_000_000, invSynthFreq)); // txFreqOff
         programCMixN(1_000_000, invSynthFreq); // rxIntFreq
-        // skip programShape
+        switch (RadioConfig.phy) {
+            .BLE_1M => programShape(BLE_1M_SHAPE, invSynthFreq << 4),
+            else => {},
+        }
     }
 
     fn programCMixN(rxIntFrequency: i32, invSynthFreq: u32) void {
@@ -183,6 +200,79 @@ pub const EM__TARG = struct {
         reg(hal.LRFDMDM32_BASE + hal.LRFDMDM32_O_DEMFRAC1_DEMFRAC0).* = demFracP;
         reg(hal.LRFDMDM32_BASE + hal.LRFDMDM32_O_DEMFRAC3_DEMFRAC2).* = demFracQ;
         return pllMBaseRounded;
+    }
+
+    fn programShape(shape: Shape, invSynthFreq: u32) void {
+        const NUM_TX_FILTER_TAPS = 24;
+        var filterCoeff = union {
+            b: [NUM_TX_FILTER_TAPS]u8,
+            w: [NUM_TX_FILTER_TAPS / 4]u32,
+        }{ .b = undefined };
+        const deviation = shape.freqdev;
+        const deviationFactor1: u32 =
+            ((deviation >> 12) * invSynthFreq) + (((deviation & 0x0FFF) * invSynthFreq) >> 12);
+        const scale = shape.scale;
+        const deviationFactor2: u32 =
+            ((((deviationFactor1 >> 15) * scale) >> 1) + (((deviationFactor1 & 0x7FFF) * scale) >> 16) + (1 << 4)) >> 5;
+        var shapeGain: u32 = 8 - countLeadingZeros(em.@"<>"(u16, deviationFactor2 >> 11));
+        if (shapeGain > 0x7FFFFFF) shapeGain = 0;
+        const startCoeff: u32 = NUM_TX_FILTER_TAPS - shape.coeff.len;
+        for (0..startCoeff) |i| filterCoeff.b[i] = 0;
+        for (0..NUM_TX_FILTER_TAPS - startCoeff) |i| {
+            filterCoeff.b[i + startCoeff] = em.@"<>"(u8, ((deviationFactor2 * shape.coeff[i]) + (em.@"<>"(u32, 1) << (em.@"<>"(u5, 18 + shapeGain)))) >> (em.@"<>"(u5, 19 + shapeGain)));
+        }
+        for (0..NUM_TX_FILTER_TAPS / 4) |i| {
+            const off = em.@"<>"(u32, hal.LRFDRFE32_O_DTX1_DTX0 + em.@"<>"(c_uint, i * 4));
+            reg(em.@"<>"(u32, hal.LRFDRFE32_BASE) + off).* = filterCoeff.w[i];
+        }
+        if (shapeGain > 3) shapeGain = 3;
+        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_MOD0).* = (reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_MOD0).* & ~hal.LRFDRFE_MOD0_SHPGAIN_M) | (shapeGain << hal.LRFDRFE_MOD0_SHPGAIN_S);
+
+        //        union {
+        //            uint8_t  b[NUM_TX_FILTER_TAPS];
+        //            uint32_t w[NUM_TX_FILTER_TAPS/4];
+        //        } filterCoeff;
+        //        /* Find deviation * 2^29/fs * 2^10 */
+        //        uint32_t deviationFactor1 = ((deviation >> 12) * invSynthFreq) +
+        //            (((deviation & 0x0FFFU) * invSynthFreq) >> 12);
+        //        /* Find deviation * 2^29/fs * scale / 2^16 */
+        //        uint32_t scale = txShape->scale;
+        //        uint32_t deviationFactor2 = ((((deviationFactor1 >> 15) * scale) >> 1) +
+        //                                     (((deviationFactor1 & 0x7FFF) * scale) >> 16) + (1 << 4)) >> 5;
+        //        /* Find shapeGain and scaling */
+        //        int32_t shapeGain = 8 - countLeadingZeros(deviationFactor2 >> 11);
+        //        if (shapeGain < 0)
+        //        {
+        //            shapeGain = 0;
+        //        }
+        //        uint32_t startCoeff = NUM_TX_FILTER_TAPS - txShape->numCoeff;
+        //        for (uint32_t i = 0; i < startCoeff; i++)
+        //        {
+        //            filterCoeff.b[i] = 0;
+        //        }
+        //        for (uint32_t i = 0; i < NUM_TX_FILTER_TAPS - startCoeff; i++)
+        //        {
+        //            filterCoeff.b[i + startCoeff] =
+        //                ((deviationFactor2 * txShape->coeff[i]) + (1 << (18 + shapeGain))) >> (19 + shapeGain);
+        //        }
+        //
+        //        /* [RCL-515 WORKAROUND]: Protect the first memory write on BLE High PG1.x due to the hardware bugs */
+        //#ifdef DeviceFamily_CC27XX
+        //        ASM_4_NOPS();
+        //#endif //DeviceFamily_CC27XX
+        //        for (int i = 0; i <  NUM_TX_FILTER_TAPS / 4; i++)
+        //        {
+        //            *((unsigned long*) (LRFDRFE32_BASE + LRFDRFE32_O_DTX1_DTX0) + i) = filterCoeff.w[i];
+        //        }
+        //        if (shapeGain > 3)
+        //        {
+        //            /* TODO: Scale by adjusting the symbol mapping */
+        //            shapeGain = 3;
+        //        }
+        //        HWREG_WRITE_LRF(LRFDRFE_BASE + LRFDRFE_O_MOD0) = (HWREG_READ_LRF(LRFDRFE_BASE + LRFDRFE_O_MOD0) & ~LRFDRFE_MOD0_SHPGAIN_M) | (shapeGain << LRFDRFE_MOD0_SHPGAIN_S);
+        //
+        //
+        //
     }
 
     fn scaleFreqWithHFXTOffset(frequency: u32) u32 {

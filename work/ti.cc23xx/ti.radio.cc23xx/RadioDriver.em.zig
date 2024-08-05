@@ -110,41 +110,57 @@ pub const EM__TARG = struct {
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = em.@"<>"(u16, ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2);
         RfTrim.apply();
-        var cfg_val: u32 = 0;
-        switch (mode) {
-            .CW => {
-                cfg_val =
-                    (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
-                    (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
-                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
-                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
-                    (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+        switch (RadioConfig.phy) {
+            .BLE_1M => {
+                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x8E89BED6;
+                reg(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_CRCINITL).* = (0x555555 << 8);
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_EXTRABYTES).* = 6; // stat + rssi + timestamp
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRL).* = 0xAAAA;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRM).* = 0xBBBB;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRH).* = 0xCCCC;
+                // ADVCFG, FILTPOLICY, RPAMODE, RPACONNECT, FL1MASK, FL2MASK = 0
+                // OPCFG = 0
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = 37 | 0x40;
             },
-            .TX => {
-                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
-                cfg_val =
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
-                    (2 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
-                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
-                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
-                    (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
-                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+            .PROP_250K => {
+                var cfg_val: u32 = 0;
+                switch (mode) {
+                    .CW => {
+                        cfg_val =
+                            (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
+                            (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+                            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+                            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+                            (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+                    },
+                    .TX => {
+                        reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
+                        cfg_val =
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
+                            (2 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+                            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+                            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+                            (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+                            (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+                    },
+                    .IDLE => {},
+                }
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
             },
-            .IDLE => {},
+            else => unreachable,
         }
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
         enable2();
         const freq: u32 = switch (RadioConfig.phy) {
             .BLE_1M => 2_402_000_000,
@@ -171,10 +187,16 @@ pub const EM__TARG = struct {
         RfFifo.write(word_buf);
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
-        // asm volatile ("bkpt");
-
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
+        const op = switch (RadioConfig.phy) {
+            .BLE_1M => hal.PBE_BLE5_REGDEF_API_OP_ADV,
+            .PROP_250K => hal.PBE_GENERIC_REGDEF_API_OP_TX,
+            else => unreachable,
+        };
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = op;
+
+        //asm volatile ("bkpt");
+
         em.@"%%[a+]"();
         waitDone();
         disable();
