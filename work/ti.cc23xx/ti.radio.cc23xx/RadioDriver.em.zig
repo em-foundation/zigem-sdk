@@ -40,7 +40,9 @@ pub const EM__TARG = struct {
 
     var cur_mode: Mode = .IDLE;
 
-    pub fn em__startup() void {}
+    pub fn em__startup() void {
+        Idle.waitOnly(.SET);
+    }
 
     fn disable() void {
         em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PDREQ).* = hal.LRFDPBE_PDREQ_TOPSMPDREQ_M;
