@@ -73,7 +73,6 @@ pub const EM__HOST = struct {
                 if (cur_addr != 0) flush();
                 prev_addr = cur_addr;
                 cur_addr = addr;
-                cur_val = 0;
             }
             const idx = em.std.mem.indexOf(u8, bits, ":");
             const hi_bit = em.@"<>"(u4, if (idx == null) parseDec(bits) else parseDec(bits[0..idx.?]));
@@ -94,9 +93,10 @@ pub const EM__HOST = struct {
                     cur_desc.cnt += 1;
                 }
             }
-            // em.print("[{d}] @{X:0>4} = {X:0>4} ({d})", .{ cur_serial, cur_addr, cur_val, diff });
+            //em.print("[{d}] @{X:0>4} = {X:0>4} ({d})", .{ cur_serial, cur_addr, cur_val, diff });
             cur_serial += 1;
             val_tab.add(cur_val);
+            cur_val = 0;
             cur_desc.cnt += 1;
         }
     };
