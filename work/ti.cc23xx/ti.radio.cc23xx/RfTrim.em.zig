@@ -132,12 +132,15 @@ pub const EM__TARG = struct {
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFADCDLDO).* |= TRIMS.trim2.ifadcDldo;
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMIQMC0).* |= TRIMS.trim4.demIQMC0;
         em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_IFAMPRFLDODEFAULT).* = em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFAMPRFLDO).* & @as(u16, hal.LRFDRFE_IFAMPRFLDO_TRIM_M);
-        // common: bwIndex = 0
+        // common: bwIndex = 0, bwIndexDither = 1
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFADCQUANT).* |= TRIMS.trimVariant[0].ifadcQuant;
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFADC0).* |= TRIMS.trimVariant[0].ifadc0;
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFADC1).* |= TRIMS.trimVariant[0].ifadc1;
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFADCLF).* |= TRIMS.trimVariant[0].ifadclf;
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFAMPRFLDO).* |= TRIMS.trim4.ifamprfldo[0];
+        reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_IFADC0).* &= ~(hal.LRFDRFE_IFADC0_DITHEREN_M | hal.LRFDRFE_IFADC0_DITHERTRIM_M) |
+            (TRIMS.trimVariant[1].ifadc0 & (hal.LRFDRFE_IFADC0_DITHEREN_M | hal.LRFDRFE_IFADC0_DITHERTRIM_M));
+
         // temperature
         em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_DIVLDOF).* &= ~(@as(u16, hal.RFE_COMMON_RAM_DIVLDOF_VOUTTRIM_M));
         em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_DIVLDOI).* &= ~(@as(u16, hal.RFE_COMMON_RAM_DIVLDOI_VOUTTRIM_M));

@@ -116,6 +116,7 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRM).* = 0xBBBB;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRH).* = 0xCCCC;
                 // ADVCFG, FILTPOLICY, RPAMODE, RPACONNECT, FL1MASK, FL2MASK = 0
+                //em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_RPACONNECT).* = 0;
                 // OPCFG = 0
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = BLE_CHAN | 0x40;
             },
@@ -182,8 +183,13 @@ pub const EM__TARG = struct {
         //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
         _ = RfFifo.prepare();
         RfFifo.write(word_buf);
+        //em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FIFOCFG).*);
+
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+
+        // asm volatile ("bkpt");
+
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         const op = switch (RadioConfig.phy) {
             .BLE_1M => hal.PBE_BLE5_REGDEF_API_OP_ADV,
@@ -191,8 +197,6 @@ pub const EM__TARG = struct {
             else => unreachable,
         };
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = op;
-
-        //asm volatile ("bkpt");
 
         em.@"%%[a+]"();
         waitDone();
