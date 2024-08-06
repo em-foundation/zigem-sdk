@@ -38,6 +38,9 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
+    const BLE_CHAN = 37;
+    const BLE_FREQ = 2_402_000_000;
+
     var cur_mode: Mode = .IDLE;
 
     pub fn em__startup() void {
@@ -92,15 +95,7 @@ pub const EM__TARG = struct {
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
     }
 
-    fn prepareFifo() u32 {
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
-        var fcfg0 = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
-        fcfg0 &= ~em.@"<>"(u32, hal.LRFDPBE_FCFG0_TXADEAL_M);
-        fcfg0 |= hal.LRFDPBE_FCFG0_TXACOM_M;
-        return reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWRITABLE).*;
-    }
-
-    pub fn setup(mode: Mode) void {
+    pub fn setup(mode: Mode, freq: u32) void {
         cur_mode = mode;
         if (mode == .IDLE) {
             disable();
@@ -122,7 +117,7 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRH).* = 0xCCCC;
                 // ADVCFG, FILTPOLICY, RPAMODE, RPACONNECT, FL1MASK, FL2MASK = 0
                 // OPCFG = 0
-                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = 37 | 0x40;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = BLE_CHAN | 0x40;
             },
             .PROP_250K => {
                 var cfg_val: u32 = 0;
@@ -164,12 +159,12 @@ pub const EM__TARG = struct {
             else => unreachable,
         }
         enable2();
-        const freq: u32 = switch (RadioConfig.phy) {
-            .BLE_1M => 2_402_000_000,
+        const freq2: u32 = if (freq != 0) freq else switch (RadioConfig.phy) {
+            .BLE_1M => BLE_FREQ,
             .PROP_250K => 2_440_000_000,
             else => 0,
         };
-        RfFreq.program(freq);
+        RfFreq.program(freq2);
         RfPower.program(5);
     }
 

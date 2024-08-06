@@ -13,13 +13,20 @@ pub const EM__TARG = struct {
     const RXF_UNWRAPPED_BASE_ADDR: u32 = 0x40093000;
     const TXF_UNWRAPPED_BASE_ADDR: u32 = 0x40093800;
 
-    pub fn prepare() u32 {
+    pub fn prepare() void {
+        // TX fifo
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
-        var fcfg0 = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
-        fcfg0 &= ~em.@"<>"(u32, hal.LRFDPBE_FCFG0_TXADEAL_M);
-        fcfg0 |= hal.LRFDPBE_FCFG0_TXACOM_M;
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).* = fcfg0;
-        return reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWRITABLE).*;
+        var txcfg = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
+        txcfg &= ~em.@"<>"(u32, hal.LRFDPBE_FCFG0_TXADEAL_M);
+        txcfg |= hal.LRFDPBE_FCFG0_TXACOM_M;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).* = txcfg;
+        // RX fifo
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = hal.LRFDPBE_FCMD_DATA_RXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S;
+        var rxcfg = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
+        rxcfg &= ~em.@"<>"(u32, hal.LRFDPBE_FCFG0_RXADEAL_M);
+        rxcfg |= hal.LRFDPBE_FCFG0_RXACOM_M;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).* = rxcfg;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 0;
     }
 
     pub fn write(data: []const u32) void {
