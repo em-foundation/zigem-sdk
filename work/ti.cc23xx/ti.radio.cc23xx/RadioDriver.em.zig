@@ -44,7 +44,7 @@ pub const EM__TARG = struct {
     var cur_mode: Mode = .IDLE;
 
     pub fn em__startup() void {
-        Idle.waitOnly(.SET);
+        // Idle.waitOnly(.SET);
     }
 
     fn disable() void {
@@ -115,9 +115,14 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRL).* = 0xAAAA;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRM).* = 0xBBBB;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRH).* = 0xCCCC;
-                // ADVCFG, FILTPOLICY, RPAMODE, RPACONNECT, FL1MASK, FL2MASK = 0
-                //em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_RPACONNECT).* = 0;
-                // OPCFG = 0
+                //
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_ADVCFG).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FILTPOLICY).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_RPACONNECT).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_RPACONNECT).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FL1MASK).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FL2MASK).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = BLE_CHAN | 0x40;
             },
             .PROP_250K => {
@@ -181,7 +186,10 @@ pub const EM__TARG = struct {
 
     pub fn startTx(word_buf: []const u32) void {
         //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
-        _ = RfFifo.prepare();
+
+        // asm volatile ("bkpt");
+
+        RfFifo.prepare();
         RfFifo.write(word_buf);
         //em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FIFOCFG).*);
 

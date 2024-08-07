@@ -32,7 +32,6 @@ pub const EM__TARG = struct {
         //txTicker.start(128, &txTickCb);
         //FiberMgr.run();
         Common.GlobalInterrupts.enable();
-        //for (0..25) |_| {
         while (true) {
             Common.BusyWait.wait(500_000);
             txTickCb(.{});
