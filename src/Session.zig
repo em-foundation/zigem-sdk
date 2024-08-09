@@ -16,20 +16,28 @@ var gen_root: []const u8 = undefined;
 var out_root: []const u8 = undefined;
 var work_root: []const u8 = undefined;
 
-pub fn activate(work: []const u8, mode: Mode, bundle: ?[]const u8) !void {
-    work_root = try Fs.normalize(work);
-    cur_mode = mode;
+pub const ActivateParams = struct {
+    work: []const u8,
+    mode: Mode,
+    bundle: ?[]const u8 = null,
+    setup: ?[]const u8 = null,
+};
+
+pub fn activate(params: ActivateParams) !void {
+    work_root = try Fs.normalize(params.work);
+    cur_mode = params.mode;
     gen_root = Fs.slashify(Fs.join(&.{ work_root, ".gen" }));
     out_root = Fs.slashify(Fs.join(&.{ work_root, ".out" }));
     Fs.delete(gen_root);
     Fs.delete(out_root);
-    if (mode == .CLEAN) return;
+    if (cur_mode == .CLEAN) return;
     Fs.mkdirs(work_root, ".gen");
     Fs.mkdirs(work_root, ".out");
     Fs.chdir(work_root);
-    Props.init(work_root, false);
+    Props.init(work_root, params.setup != null);
     try Props.addBundle("em.core");
-    if (bundle) |b| try Props.addBundle(b);
+    if (params.bundle) |bn| try Props.addBundle(bn);
+    if (params.setup) |sn| try Props.addSetup(sn);
     try Props.addLocal();
     try Props.addBundle(getDistroBundle());
 }
@@ -44,20 +52,6 @@ pub fn doRefresh() !void {
     try genEmStub();
     try genTarg();
     try genUnits();
-}
-
-fn getDistroBundle() []const u8 {
-    const distro = Props.getProps().get("em.lang.DistroPackage").?;
-    return distro[0..std.mem.indexOf(u8, distro, "://").?];
-}
-
-fn getDistroPkg() []const u8 {
-    const distro = Props.getProps().get("em.lang.DistroPackage").?;
-    return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
-}
-
-pub fn getOutRoot() []const u8 {
-    return out_root;
 }
 
 fn genEmStub() !void {
@@ -168,6 +162,20 @@ fn genUnits() !void {
     }
     file.print("}};\n", .{});
     file.close();
+}
+
+fn getDistroBundle() []const u8 {
+    const distro = Props.getProps().get("em.lang.DistroPackage").?;
+    return distro[0..std.mem.indexOf(u8, distro, "://").?];
+}
+
+fn getDistroPkg() []const u8 {
+    const distro = Props.getProps().get("em.lang.DistroPackage").?;
+    return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
+}
+
+pub fn getOutRoot() []const u8 {
+    return out_root;
 }
 
 fn mkUname(upath: []const u8) []const u8 {

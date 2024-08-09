@@ -4,6 +4,7 @@ const cli = @import("zig-cli");
 
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
+const Props = @import("./Props.zig");
 const Session = @import("./Session.zig");
 
 var t0: f80 = 0.0;
@@ -11,6 +12,7 @@ var t0: f80 = 0.0;
 var params = struct {
     load: bool = false,
     meta: bool = false,
+    setup: ?[]const u8 = null,
     unit: []const u8 = undefined,
     work: []const u8 = ".",
 }{};
@@ -21,7 +23,7 @@ fn doBuild() !void {
     const idx = std.mem.indexOf(u8, path, "/").?;
     const bn = path[0..idx];
     const un = path[idx + 1 ..];
-    try Session.activate(params.work, .BUILD, bn);
+    try Session.activate(.{ .work = params.work, .mode = .BUILD, .bundle = bn, .setup = params.setup });
     try Session.doRefresh();
     try Session.doBuild(un);
     try writer.print("compiling HOST ...\n", .{});
@@ -48,11 +50,19 @@ fn doBuild() !void {
 }
 
 fn doClean() !void {
-    try Session.activate(params.work, .CLEAN, null);
+    try Session.activate(.{ .work = params.work, .mode = .CLEAN });
+}
+
+fn doProperties() !void {
+    try Session.activate(.{ .work = params.work, .mode = .REFRESH, .setup = params.setup });
+    const writer = std.io.getStdOut().writer();
+    const pm = Props.getProps();
+    var ent_iter = pm.iterator();
+    while (ent_iter.next()) |e| try writer.print("{s} = {s}\n", .{ e.key_ptr.*, e.value_ptr.* });
 }
 
 fn doRefresh() !void {
-    try Session.activate(params.work, .REFRESH, null);
+    try Session.activate(.{ .work = params.work, .mode = .REFRESH });
     try Session.doRefresh();
 }
 
@@ -120,6 +130,15 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.meta),
     };
 
+    const setup_opt = cli.Option{
+        .long_name = "setup",
+        .short_alias = 's',
+        .help = "Setup name",
+        .required = false,
+        .value_name = "SETUP",
+        .value_ref = runner.mkRef(&params.setup),
+    };
+
     const unit_opt = cli.Option{
         .long_name = "unit",
         .short_alias = 'u',
@@ -143,6 +162,7 @@ pub fn main() !void {
         .options = &.{
             load_opt,
             meta_opt,
+            setup_opt,
             unit_opt,
             work_opt,
         },
@@ -158,6 +178,17 @@ pub fn main() !void {
         },
         .target = cli.CommandTarget{
             .action = cli.CommandAction{ .exec = doClean },
+        },
+    };
+
+    const properties_cmd = cli.Command{
+        .name = "properties",
+        .options = &.{
+            setup_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doProperties },
         },
     };
 
@@ -178,6 +209,7 @@ pub fn main() !void {
                 .subcommands = &.{
                     build_cmd,
                     clean_cmd,
+                    properties_cmd,
                     refresh_cmd,
                 },
             },
