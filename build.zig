@@ -1,6 +1,7 @@
 const std = @import("std");
 
 const DEPS = [_][]const u8{
+    "ini",
     "zig-cli",
 };
 

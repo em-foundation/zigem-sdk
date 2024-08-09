@@ -4,6 +4,7 @@ const BundlePath = @import("./BundlePath.zig");
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
 const Out = @import("./Out.zig");
+const Props = @import("./Props.zig");
 const Setup = @import("./Setup.zig");
 
 pub const Mode = enum {
@@ -32,6 +33,12 @@ pub fn activate(work: []const u8, mode: Mode, bundle: ?[]const u8) !void {
     if (bundle != null) try BundlePath.add(work_root, bundle.?);
     try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
     try BundlePath.add(work_root, getDistroBundle());
+    //
+    Props.init(work_root, false);
+    try Props.addBundle("em.core");
+    if (bundle) |b| try Props.addBundle(b);
+    try Props.addLocal();
+    Props.print();
 }
 
 pub fn doBuild(upath: []const u8) !void {
