@@ -1,11 +1,9 @@
 const std = @import("std");
 
-const BundlePath = @import("./BundlePath.zig");
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
 const Out = @import("./Out.zig");
 const Props = @import("./Props.zig");
-const Setup = @import("./Setup.zig");
 
 pub const Mode = enum {
     BUILD,
@@ -29,16 +27,11 @@ pub fn activate(work: []const u8, mode: Mode, bundle: ?[]const u8) !void {
     Fs.mkdirs(work_root, ".gen");
     Fs.mkdirs(work_root, ".out");
     Fs.chdir(work_root);
-    try BundlePath.add(work_root, "em.core");
-    if (bundle != null) try BundlePath.add(work_root, bundle.?);
-    try Setup.add(Fs.join(&.{ work_root, "local.zon" }));
-    try BundlePath.add(work_root, getDistroBundle());
-    //
     Props.init(work_root, false);
     try Props.addBundle("em.core");
     if (bundle) |b| try Props.addBundle(b);
     try Props.addLocal();
-    Props.print();
+    try Props.addBundle(getDistroBundle());
 }
 
 pub fn doBuild(upath: []const u8) !void {
@@ -54,12 +47,12 @@ pub fn doRefresh() !void {
 }
 
 fn getDistroBundle() []const u8 {
-    const distro = Setup.get().object.get("em__distro").?.string;
+    const distro = Props.getProps().get("em.lang.DistroPackage").?;
     return distro[0..std.mem.indexOf(u8, distro, "://").?];
 }
 
 fn getDistroPkg() []const u8 {
-    const distro = Setup.get().object.get("em__distro").?.string;
+    const distro = Props.getProps().get("em.lang.DistroPackage").?;
     return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
 }
 
@@ -123,7 +116,7 @@ fn genUnits() !void {
         \\
     ;
     file.print(pre, .{});
-    for (BundlePath.get()) |bp| {
+    for (Props.getBundles().items) |bp| {
         var iter = Fs.openDir(bp).iterate();
         const bname = Fs.basename(bp);
         while (try iter.next()) |ent| {
