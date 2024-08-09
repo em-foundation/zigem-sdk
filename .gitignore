@@ -6,4 +6,4 @@ zig-out
 .gen
 .out
 .main-*.zig
-local.ini
+**/local.ini
