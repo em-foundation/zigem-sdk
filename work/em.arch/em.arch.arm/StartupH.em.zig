@@ -12,8 +12,6 @@ pub const EM__HOST = struct {
 
     fn genArmStartup() void {
         const txt =
-            \\#define __EM_BOOT_FLASH__ 0
-            \\
             \\#include <stdbool.h>
             \\#include <stdint.h>
             \\
@@ -79,7 +77,10 @@ pub const EM__HOST = struct {
             \\};
             \\#endif
         ;
-        em.writeFile(em.out_root, "arm-startup.c", txt);
+        var sb = em.StringH{};
+        sb.add(em.sprint("#define __EM_BOOT_FLASH__ {d}\n\n", .{@intFromBool(em.property("em.build.BootFlash", bool))}));
+        sb.add(txt);
+        em.writeFile(em.out_root, "arm-startup.c", sb.get());
     }
 
     fn genStartup() void {

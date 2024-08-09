@@ -121,6 +121,7 @@ pub const EM__HOST = struct {
     ;
 
     pub fn em__generateH() void {
-        em.writeFile(em.out_root, "linkcmd.ld", flash_txt);
+        const txt = if (em.property("em.build.BootFlash", bool)) sram_txt else flash_txt;
+        em.writeFile(em.out_root, "linkcmd.ld", txt);
     }
 };

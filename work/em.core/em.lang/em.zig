@@ -749,6 +749,21 @@ pub fn toStringPre(v: anytype, comptime upath: []const u8, comptime cname: []con
     }
 }
 
+const @"// -------- PROPERTY VALUES -------- //" = {};
+
+const props = @import("../../.gen/props.zig");
+
+pub fn property(comptime name: []const u8, T: type) T {
+    if (!@hasDecl(props, name)) return std.mem.zeroes(T);
+    const vs = @field(props, name);
+    const ti = @typeInfo(T);
+    switch (ti) {
+        .Bool => return std.mem.eql(u8, vs, "true"),
+        .ComptimeInt, .Int => return std.fmt.parseInt(T, vs, 0),
+        else => return std.mem.zeroes(T),
+    }
+}
+
 const @"// -------- MISC HELPERS -------- //" = {};
 
 pub fn @"<>"(T: type, val: anytype) T {

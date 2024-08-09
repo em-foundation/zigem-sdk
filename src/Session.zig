@@ -50,6 +50,7 @@ pub fn doBuild(upath: []const u8) !void {
 
 pub fn doRefresh() !void {
     try genEmStub();
+    try genProps();
     try genTarg();
     try genUnits();
 }
@@ -68,6 +69,15 @@ fn genEmStub() !void {
         \\pub const hal = @import("../{2s}/{3s}/hal.zig");
     ;
     file.print(fmt, .{ gen_root, out_root, getDistroBundle(), getDistroPkg() });
+    file.close();
+}
+
+fn genProps() !void {
+    var file = try Out.open(Fs.join(&.{ gen_root, "props.zig" }));
+    var ent_iter = Props.getProps().iterator();
+    while (ent_iter.next()) |e| {
+        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ e.key_ptr.*, e.value_ptr.* });
+    }
     file.close();
 }
 
