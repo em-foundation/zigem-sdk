@@ -27,6 +27,7 @@ fn doBuild() !void {
     try Session.doRefresh();
     try Session.doBuild(un);
     try writer.print("compiling HOST ...\n", .{});
+    try writer.print("    setup: {s}\n", .{Session.getSetup()});
     var stdout = try execMake("host");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     if (params.meta) {

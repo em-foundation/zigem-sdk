@@ -184,6 +184,10 @@ fn getDistroPkg() []const u8 {
     return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
 }
 
+pub fn getSetup() []const u8 {
+    return Props.getProps().get("em.lang.SetupExtends").?;
+}
+
 pub fn getOutRoot() []const u8 {
     return out_root;
 }
