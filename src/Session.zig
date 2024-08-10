@@ -74,10 +74,14 @@ fn genEmStub() !void {
 
 fn genProps() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "props.zig" }));
+    file.print("const std = @import(\"std\");\n\n", .{});
+    file.print("pub const map = std.StaticStringMap([]const u8).initComptime(.{{\n", .{});
     var ent_iter = Props.getProps().iterator();
     while (ent_iter.next()) |e| {
-        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ e.key_ptr.*, e.value_ptr.* });
+        //        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ e.key_ptr.*, e.value_ptr.* });
+        file.print("    .{{ \"{s}\", \"{s}\" }},\n", .{ e.key_ptr.*, e.value_ptr.* });
     }
+    file.print("}});\n", .{});
     file.close();
 }
 

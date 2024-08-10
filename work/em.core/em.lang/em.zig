@@ -210,7 +210,7 @@ fn initConfig(CT: type, upath: []const u8) CT {
                         const FT = fti.Pointer.child;
                         const fval = &struct {
                             var o = blk: {
-                                break :blk std.mem.zeroInit(FT, .{ .em__cfgid = .{ .un = upath, .fi = idx } });
+                                break :blk std.mem.zeroInit(FT, .{ .em__cfgid = .{ .un = upath, .cn = fld.name, .fi = idx } });
                             };
                         }.o;
                         @field(new_c, fld.name) = fval;
@@ -226,6 +226,7 @@ fn initConfig(CT: type, upath: []const u8) CT {
 
 const CfgId = struct {
     un: []const u8,
+    cn: []const u8,
     fi: usize,
 };
 
@@ -378,6 +379,11 @@ pub fn Param_H(T: type) type {
 
         pub fn get(self: *Self) T {
             return self._val;
+        }
+
+        pub fn init(self: *Self, comptime v: T) void {
+            const pn = sprint("em.config.{s}.{s}", .{ self.em__cfgid.un, self.em__cfgid.cn });
+            self._val = property(pn, T, v);
         }
 
         pub fn set(self: *Self, v: T) void {
@@ -753,9 +759,9 @@ const @"// -------- PROPERTY VALUES -------- //" = {};
 
 const props = @import("../../.gen/props.zig");
 
-pub fn property(comptime name: []const u8, T: type) T {
-    if (!@hasDecl(props, name)) return std.mem.zeroes(T);
-    const vs = @field(props, name);
+pub fn property(name: []const u8, T: type, v: T) T {
+    if (!props.map.has(name)) return v;
+    const vs = props.map.get(name).?;
     const ti = @typeInfo(T);
     switch (ti) {
         .Bool => return std.mem.eql(u8, vs, "true"),

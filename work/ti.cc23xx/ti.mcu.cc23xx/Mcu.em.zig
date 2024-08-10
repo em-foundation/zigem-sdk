@@ -2,12 +2,20 @@ pub const em = @import("../../.gen/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/McuI",
 });
+pub const em__C = em__U.config(EM__CONFIG);
+
+pub const EM__CONFIG = struct {
+    no_cache: em.Param(bool),
+};
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Debug = em.import.@"em.lang/Debug";
 
 pub const EM__HOST = struct {
     //
+    pub fn em__initH() void {
+        em__C.no_cache.init(false);
+    }
 };
 
 pub const EM__TARG = struct {
@@ -37,10 +45,10 @@ pub const EM__TARG = struct {
         //reg(hal.CKMD_BASE + hal.CKMD_O_LFOSCCTL).* = hal.CKMD_LFOSCCTL_EN;
         //reg(hal.CKMD_BASE + hal.CKMD_O_LFINCCTL).* &= ~hal.CKMD_LFINCCTL_PREVENTSTBY_M;
         //reg(hal.CKMD_BASE + hal.CKMD_O_IMSET).* = hal.CKMD_IMASK_LFCLKGOOD;
-        if (em.property("em.build.BootFlash", bool)) {
-            reg(hal.CLKCTL_BASE + hal.CLKCTL_O_IDLECFG).* = 1;
-            reg(hal.VIMS_BASE + hal.VIMS_O_CCHCTRL).* = 0;
-        }
+        //if (em.property("em.build.BootFlash", bool, false)) {
+        //reg(hal.CLKCTL_BASE + hal.CLKCTL_O_IDLECFG).* = 1;
+        reg(hal.VIMS_BASE + hal.VIMS_O_CCHCTRL).* = 0;
+        //}
         em.@"%%[a-]"();
     }
 };

@@ -78,7 +78,7 @@ pub const EM__HOST = struct {
             \\#endif
         ;
         var sb = em.StringH{};
-        sb.add(em.sprint("#define __EM_BOOT_FLASH__ {d}\n\n", .{@intFromBool(em.property("em.build.BootFlash", bool))}));
+        sb.add(em.sprint("#define __EM_BOOT_FLASH__ {d}\n\n", .{@intFromBool(em.property("em.build.BootFlash", bool, false))}));
         sb.add(txt);
         em.writeFile(em.out_root, "arm-startup.c", sb.get());
     }
