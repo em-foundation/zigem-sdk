@@ -31,9 +31,7 @@ pub const EM__TARG = struct {
         active_flag = true;
         OneShot.enable(time_ms, handler, null);
         while (vptr.*) {
-            em.@"%%[d+]"();
             Common.Idle.exec();
-            em.@"%%[d-]"();
         }
     }
 

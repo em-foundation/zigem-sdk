@@ -88,9 +88,11 @@ pub const EM__TARG = struct {
 
     export fn CPUIRQ3_isr() void {
         if (em.hosted) return;
+        hal.NVIC_ClearPendingIRQ(hal.CPUIRQ3_IRQn);
         const mis = reg(hal.CKMD_BASE + hal.CKMD_O_MIS).*;
         reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = mis;
         reg(hal.CKMD_BASE + hal.CKMD_O_IMCLR).* = mis;
         osc_ready = (mis & hal.CKMD_MIS_AMPSETTLED) != 0;
+        BusyWait.wait(1); // TODO -- needed for SRAM execution
     }
 };

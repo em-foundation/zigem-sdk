@@ -185,7 +185,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn startTx(word_buf: []const u32) void {
-        //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
+        // em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
 
         // asm volatile ("bkpt");
 
