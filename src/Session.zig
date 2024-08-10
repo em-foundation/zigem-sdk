@@ -174,6 +174,10 @@ fn genUnits() !void {
     file.close();
 }
 
+pub fn getBoard() []const u8 {
+    return Props.getProps().get("em.lang.BoardKind").?;
+}
+
 fn getDistroBundle() []const u8 {
     const distro = Props.getProps().get("em.lang.DistroPackage").?;
     return distro[0..std.mem.indexOf(u8, distro, "://").?];
