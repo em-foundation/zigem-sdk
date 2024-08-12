@@ -79,11 +79,21 @@ pub fn em__generateS(comptime name: []const u8) type {
 
             pub fn reset() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
-                if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* |= hal.IOC_IOC0_IOMODE_M | hal.IOC_IOC0_PULLCTL_M;
+                if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* = 0;
             }
 
             pub fn set() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTSET31_0).* = mask;
+            }
+
+            pub fn setInternalPulldown(enable: bool) void {
+                if (is_def) {
+                    if (enable) {
+                        reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_PULLCTL_PULL_DOWN;
+                    } else {
+                        reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_PULLCTL_PULL_DOWN;
+                    }
+                }
             }
 
             pub fn setInternalPullup(enable: bool) void {
