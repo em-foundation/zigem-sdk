@@ -49,6 +49,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn enable() void {
+        em.@"%%[c+]"();
         // PowerCC23X0_startHFXT()
         reg(hal.CKMD_BASE + hal.CKMD_O_LDOCTL).* =
             hal.CKMD_LDOCTL_SWOVR | hal.CKMD_LDOCTL_STARTCTL | hal.CKMD_LDOCTL_START | hal.CKMD_LDOCTL_EN;
@@ -78,6 +79,7 @@ pub const EM__TARG = struct {
         reg(hal.CKMD_BASE + hal.CKMD_O_LFMONCTL).* = hal.CKMD_LFMONCTL_EN;
         reg(hal.PMCTL_BASE + hal.PMCTL_O_RSTCTL).* |= hal.PMCTL_RSTCTL_LFLOSS_ARMED;
         reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = hal.CKMD_ICLR_AMPSETTLED | hal.CKMD_ICLR_LFCLKGOOD;
+        em.@"%%[c-]"();
     }
 
     fn setIrefTrim(iref: u32) void {
