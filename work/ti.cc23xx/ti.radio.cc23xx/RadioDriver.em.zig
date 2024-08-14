@@ -95,7 +95,7 @@ pub const EM__TARG = struct {
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
     }
 
-    pub fn setup(mode: Mode, freq: u32) void {
+    pub fn setup(mode: Mode, _: u32) void {
         cur_mode = mode;
         if (mode == .IDLE) {
             disable();
@@ -164,14 +164,6 @@ pub const EM__TARG = struct {
             },
             else => unreachable,
         }
-        enable2();
-        const freq2: u32 = if (freq != 0) freq else switch (RadioConfig.phy) {
-            .BLE_1M => BLE_FREQ,
-            .PROP_250K => 2_440_000_000,
-            else => 0,
-        };
-        RfFreq.program(freq2);
-        RfPower.program(5);
     }
 
     pub fn startCw() void {
@@ -185,18 +177,26 @@ pub const EM__TARG = struct {
     }
 
     pub fn startTx(word_buf: []const u32) void {
-        // em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
+        //em.@"%%[>]"(reg(hal.CKMD_BASE + hal.CKMD_O_HFXTSTAT).*);
 
-        // asm volatile ("bkpt");
+        RfPower.program(5);
 
         RfFifo.prepare();
         RfFifo.write(word_buf);
+
+        enable2();
+        const freq = switch (RadioConfig.phy) {
+            .BLE_1M => BLE_FREQ,
+            .PROP_250K => 2_440_000_000,
+            else => 0,
+        };
+        RfFreq.program(freq);
         //em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FIFOCFG).*);
 
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
 
-        // asm volatile ("bkpt");
+        asm volatile ("bkpt");
 
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         const op = switch (RadioConfig.phy) {
@@ -205,6 +205,8 @@ pub const EM__TARG = struct {
             else => unreachable,
         };
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = op;
+
+        //asm volatile ("bkpt");
 
         em.@"%%[a+]"();
         waitDone();
