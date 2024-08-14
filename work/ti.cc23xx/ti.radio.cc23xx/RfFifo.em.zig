@@ -24,6 +24,8 @@ pub const EM__TARG = struct {
         _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 0;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
+        writeFifoPtr(reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP));
+
         // TX fifo
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
         var txcfg = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
