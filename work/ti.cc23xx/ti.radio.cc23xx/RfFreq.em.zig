@@ -183,20 +183,6 @@ pub const EM__TARG = struct {
             }
             demFracP >>= lshft5;
         }
-
-        //if (demFracP >= demFracQ)
-        //{
-        //    Log_printf(RclCore, Log_ERROR, "Error: resampler fraction greater than 1; demodulator will not work");
-        //}
-        //if (roundingError)
-        //{
-        //    Log_printf(RclCore, Log_WARNING, "Rounding error in fractional resampler");
-        //}
-        //if (pllMBaseRounded != pllMBase)
-        //{
-        //    Log_printf(RclCore, Log_INFO, "PLLM base rounded from %08X to %08X to fit in fractional resampler", pllMBase, pllMBaseRounded);
-        //}
-
         reg(hal.LRFDMDM32_BASE + hal.LRFDMDM32_O_DEMFRAC1_DEMFRAC0).* = demFracP;
         reg(hal.LRFDMDM32_BASE + hal.LRFDMDM32_O_DEMFRAC3_DEMFRAC2).* = demFracQ;
         return pllMBaseRounded;
@@ -227,52 +213,6 @@ pub const EM__TARG = struct {
         }
         if (shapeGain > 3) shapeGain = 3;
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_MOD0).* = (reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_MOD0).* & ~hal.LRFDRFE_MOD0_SHPGAIN_M) | (shapeGain << hal.LRFDRFE_MOD0_SHPGAIN_S);
-
-        //        union {
-        //            uint8_t  b[NUM_TX_FILTER_TAPS];
-        //            uint32_t w[NUM_TX_FILTER_TAPS/4];
-        //        } filterCoeff;
-        //        /* Find deviation * 2^29/fs * 2^10 */
-        //        uint32_t deviationFactor1 = ((deviation >> 12) * invSynthFreq) +
-        //            (((deviation & 0x0FFFU) * invSynthFreq) >> 12);
-        //        /* Find deviation * 2^29/fs * scale / 2^16 */
-        //        uint32_t scale = txShape->scale;
-        //        uint32_t deviationFactor2 = ((((deviationFactor1 >> 15) * scale) >> 1) +
-        //                                     (((deviationFactor1 & 0x7FFF) * scale) >> 16) + (1 << 4)) >> 5;
-        //        /* Find shapeGain and scaling */
-        //        int32_t shapeGain = 8 - countLeadingZeros(deviationFactor2 >> 11);
-        //        if (shapeGain < 0)
-        //        {
-        //            shapeGain = 0;
-        //        }
-        //        uint32_t startCoeff = NUM_TX_FILTER_TAPS - txShape->numCoeff;
-        //        for (uint32_t i = 0; i < startCoeff; i++)
-        //        {
-        //            filterCoeff.b[i] = 0;
-        //        }
-        //        for (uint32_t i = 0; i < NUM_TX_FILTER_TAPS - startCoeff; i++)
-        //        {
-        //            filterCoeff.b[i + startCoeff] =
-        //                ((deviationFactor2 * txShape->coeff[i]) + (1 << (18 + shapeGain))) >> (19 + shapeGain);
-        //        }
-        //
-        //        /* [RCL-515 WORKAROUND]: Protect the first memory write on BLE High PG1.x due to the hardware bugs */
-        //#ifdef DeviceFamily_CC27XX
-        //        ASM_4_NOPS();
-        //#endif //DeviceFamily_CC27XX
-        //        for (int i = 0; i <  NUM_TX_FILTER_TAPS / 4; i++)
-        //        {
-        //            *((unsigned long*) (LRFDRFE32_BASE + LRFDRFE32_O_DTX1_DTX0) + i) = filterCoeff.w[i];
-        //        }
-        //        if (shapeGain > 3)
-        //        {
-        //            /* TODO: Scale by adjusting the symbol mapping */
-        //            shapeGain = 3;
-        //        }
-        //        HWREG_WRITE_LRF(LRFDRFE_BASE + LRFDRFE_O_MOD0) = (HWREG_READ_LRF(LRFDRFE_BASE + LRFDRFE_O_MOD0) & ~LRFDRFE_MOD0_SHPGAIN_M) | (shapeGain << LRFDRFE_MOD0_SHPGAIN_S);
-        //
-        //
-        //
     }
 
     fn scaleFreqWithHFXTOffset(frequency: u32) u32 {
