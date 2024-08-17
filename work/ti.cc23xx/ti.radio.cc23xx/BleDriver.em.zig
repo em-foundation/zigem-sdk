@@ -21,7 +21,7 @@ pub const RfXtal = em.import.@"ti.radio.cc23xx/RfXtal";
 
 pub const Handler = struct {};
 
-pub const STATE = enum { IDLE, SETUP, READY, RX, TX };
+pub const State = enum { IDLE, SETUP, READY, RX, TX };
 
 pub const EM__HOST = struct {
     //
@@ -39,20 +39,16 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    var cur_state: STATE = .IDLE;
-
-    pub fn em__startup() void {
-        // Idle.waitOnly(.SET);
-    }
+    var cur_state: State = .IDLE;
 
     pub fn disable() void {
-        cur_state = .IDLE;
+        setState(.IDLE);
         RfCtrl.disable();
         RfXtal.disable();
     }
 
     pub fn enable() void {
-        cur_state = .SETUP;
+        setState(.SETUP);
         RfXtal.enable();
         RfCtrl.enableClocks();
         RfPatch.loadAll();
@@ -75,8 +71,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FL1MASK).* = 0;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FL2MASK).* = 0;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0;
-        RfCtrl.enableImages();
-        cur_state = .READY;
+        setState(.READY);
     }
 
     fn freqFromChan(chan: u32) u32 {
@@ -97,20 +92,23 @@ pub const EM__TARG = struct {
         RfFifo.write(wbuf);
     }
 
+    fn setState(s: State) void {
+        em.@"%%[a:]"(@intFromEnum(s));
+        cur_state = s;
+    }
+
     pub fn startTx(chan: u8, power: i8) void {
+        setState(.TX);
+        RfPower.program(power);
+        RfCtrl.enableImages();
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = chan | 0x40;
         RfFreq.program(freqFromChan(chan));
-        RfPower.program(power);
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // done | error
+        hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
-        const op = switch (RadioConfig.phy) {
-            .BLE_1M => hal.PBE_BLE5_REGDEF_API_OP_ADV,
-            .PROP_250K => hal.PBE_GENERIC_REGDEF_API_OP_TX,
-            else => unreachable,
-        };
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = op;
-        em.@"%%[a+]"();
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_BLE5_REGDEF_API_OP_ADV;
     }
 
     pub fn waitReady() void {
@@ -125,12 +123,11 @@ pub const EM__TARG = struct {
         if (em.hosted) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
-        em.@"%%[a-]"();
-        cur_state = .READY;
         if ((mis & 0x8000) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
             em.fail();
         }
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
+        setState(.READY);
     }
 };
