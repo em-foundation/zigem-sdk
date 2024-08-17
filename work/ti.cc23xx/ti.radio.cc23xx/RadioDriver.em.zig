@@ -43,11 +43,6 @@ pub const EM__TARG = struct {
 
     var cur_mode: Mode = .IDLE;
 
-    pub fn em__startup() void {
-        reg(hal.RTC_BASE + hal.RTC_O_EMU).* = hal.RTC_EMU_HALT_STOP;
-        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_EMU).* = hal.SYSTIM_EMU_HALT_STOP;
-    }
-
     fn disable() void {
         em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PDREQ).* = hal.LRFDPBE_PDREQ_TOPSMPDREQ_M;
         em.reg16(hal.LRFDPBE_BASE + hal.LRFDPBE_O_ENABLE).* = 0;
