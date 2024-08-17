@@ -29,13 +29,13 @@ pub const EM__TARG = struct {
     var data = [_]u32{ 0x02030014, 0x0E220001, 0xBBBBCCCC, 0x0804AAAA, 0x0247495A, 0x00000601 };
 
     pub fn em__run() void {
-        //txTicker.start(256, &txTickCb);
-        //FiberMgr.run();
-        Common.GlobalInterrupts.enable();
-        while (true) {
-            Common.BusyWait.wait(200_000);
-            txTickCb(.{});
-        }
+        txTicker.start(128, &txTickCb);
+        FiberMgr.run();
+        //Common.GlobalInterrupts.enable();
+        //while (true) {
+        //    Common.BusyWait.wait(200_000);
+        //    txTickCb(.{});
+        //}
     }
 
     fn txTickCb(_: TickerMgr.CallbackArg) void {

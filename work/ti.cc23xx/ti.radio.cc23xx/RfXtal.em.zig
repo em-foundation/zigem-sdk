@@ -79,6 +79,7 @@ pub const EM__TARG = struct {
         reg(hal.CKMD_BASE + hal.CKMD_O_LFMONCTL).* = hal.CKMD_LFMONCTL_EN;
         reg(hal.PMCTL_BASE + hal.PMCTL_O_RSTCTL).* |= hal.PMCTL_RSTCTL_LFLOSS_ARMED;
         reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = hal.CKMD_ICLR_AMPSETTLED | hal.CKMD_ICLR_LFCLKGOOD;
+        reg(hal.CKMD_BASE + hal.CKMD_O_HFTRACKCTL).* |= hal.CKMD_HFTRACKCTL_EN_M;
         em.@"%%[c-]"();
     }
 
