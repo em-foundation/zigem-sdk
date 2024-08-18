@@ -52,6 +52,7 @@ pub const EM__TARG = struct {
         RfXtal.enable();
         RfCtrl.enableClocks();
         RfPatch.loadAll();
+        RfXtal.waitReady();
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = em.@"<>"(u16, ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2);
@@ -82,7 +83,7 @@ pub const EM__TARG = struct {
             11...36 => return BASE + (chan * SPACE) + SPACE,
             37 => return 2_402_000_000,
             38 => return 2_426_000_000,
-            39 => return 2_800_000_000,
+            39 => return 2_480_000_000,
             else => unreachable,
         }
     }
@@ -93,12 +94,13 @@ pub const EM__TARG = struct {
     }
 
     fn setState(s: State) void {
-        em.@"%%[a:]"(@intFromEnum(s));
+        // em.@"%%[a:]"(@intFromEnum(s));
         cur_state = s;
     }
 
     pub fn startTx(chan: u8, power: i8) void {
         setState(.TX);
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RETRY >> hal.LRFDPBE_FCMD_DATA_S);
         RfPower.program(power);
         RfCtrl.enableImages();
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0;

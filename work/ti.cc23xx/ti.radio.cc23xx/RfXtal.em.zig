@@ -65,10 +65,20 @@ pub const EM__TARG = struct {
         while (!((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_RIS_ADCBIASUPD_M) == hal.CKMD_RIS_ADCBIASUPD)) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* &= ~(hal.CKMD_AMPADCCTL_SWOVR_M | hal.CKMD_AMPADCCTL_ADCEN_M);
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* |= hal.CKMD_HFXTCTL_EN;
-        osc_ready = false;
         reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = hal.CKMD_ICLR_AMPSETTLED | hal.CKMD_ICLR_LFCLKGOOD;
         reg(hal.CKMD_BASE + hal.CKMD_O_IMSET).* = hal.CKMD_IMSET_AMPSETTLED | hal.CKMD_IMSET_LFCLKGOOD;
-        while (!osc_ready) Idle.pause();
+        osc_ready = false;
+    }
+
+    fn setIrefTrim(iref: u32) void {
+        var hfxttarg = reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & ~hal.CKMD_HFXTTARG_IREF_M;
+        hfxttarg |= (iref << hal.CKMD_HFXTTARG_IREF_S) & hal.CKMD_HFXTTARG_IREF_M;
+        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* = hfxttarg;
+    }
+
+    pub fn waitReady() void {
+        const vp: *volatile bool = &osc_ready;
+        while (!vp.*) Idle.pause();
         // PowerCC23X0_oscillatorISR
         //while ((reg(hal.CKMD_BASE + hal.CKMD_O_RIS).* & hal.CKMD_RIS_AMPSETTLED) == 0) {}
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* =
@@ -81,12 +91,6 @@ pub const EM__TARG = struct {
         reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = hal.CKMD_ICLR_AMPSETTLED | hal.CKMD_ICLR_LFCLKGOOD;
         reg(hal.CKMD_BASE + hal.CKMD_O_HFTRACKCTL).* |= hal.CKMD_HFTRACKCTL_EN_M;
         em.@"%%[c-]"();
-    }
-
-    fn setIrefTrim(iref: u32) void {
-        var hfxttarg = reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & ~hal.CKMD_HFXTTARG_IREF_M;
-        hfxttarg |= (iref << hal.CKMD_HFXTTARG_IREF_S) & hal.CKMD_HFXTTARG_IREF_M;
-        reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* = hfxttarg;
     }
 
     export fn CPUIRQ3_isr() void {

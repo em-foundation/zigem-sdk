@@ -42,8 +42,11 @@ pub const EM__TARG = struct {
         //AppLed.wink(5);
         BleDriver.enable();
         BleDriver.putWords(&data);
-        BleDriver.startTx(37, 5);
-        BleDriver.waitReady();
+        var chan: u8 = 37;
+        while (chan < 40) : (chan += 1) {
+            BleDriver.startTx(chan, 5);
+            BleDriver.waitReady();
+        }
         BleDriver.disable();
     }
 };
