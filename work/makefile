@@ -15,8 +15,10 @@ hal:
 
 TOOLS=C:/Users/biosb/em-sdk/tools
 
-OBJCOPY=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objcopy.exe
-OBJDUMP=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objdump.exe
+OBJCOPY?=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objcopy.exe
+OBJDUMP?=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objdump.exe
+
+UNIFLASH?=/t/ti/uniflash_8.7.0/dslite.bat
 
 TARG_OPTS=\
 	--name main \
@@ -42,5 +44,5 @@ targ:
 	@$(OBJDUMP) -h .out/main.out
 
 load:
-	@$(TOOLS)/ti-uniflash/dslite.bat -c ti.cc23xx/ti.distro.cc23xx/CC2340R5.ccxml .out/main.out
+	@$(UNIFLASH) --mode noConnectFlash -c ti.cc23xx/ti.distro.cc23xx/CC2340R5.ccxml .out/main.out
 
