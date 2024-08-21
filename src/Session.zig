@@ -38,7 +38,7 @@ pub fn activate(params: ActivateParams) !void {
     try Props.addBundle("em.core");
     if (params.bundle) |bn| try Props.addBundle(bn);
     if (params.setup) |sn| try Props.addSetup(sn);
-    try Props.addLocal();
+    try Props.addWorkspace();
     try Props.addBundle(getDistroBundle());
 }
 

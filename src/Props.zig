@@ -6,6 +6,7 @@ const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
 
 const LOCAL_FILE = "local.ini";
+const ZIGEM_FILE = "zigem.ini";
 
 const PROP_EXTENDS = "em.lang.SetupExtends";
 const PROP_REQUIRES = "em.lang.BundleRequires";
@@ -41,18 +42,21 @@ pub fn addBundle(name: []const u8) anyerror!void {
     try cur_bundles.insert(0, Fs.dirname(path));
 }
 
-pub fn addLocal() anyerror!void {
-    const path = Fs.join(&.{ root_dir, LOCAL_FILE });
-    if (!Fs.exists(path)) return;
-    try addWorkspaceProps(path);
-}
-
 pub fn addSetup(name: []const u8) anyerror!void {
     var seg_iter = std.mem.splitSequence(u8, name, SETUP_SEP);
     const seg0 = seg_iter.first();
     const seg1 = seg_iter.next().?;
     const conc: []const []const u8 = &.{ "setup-", seg1, ".ini" };
     const path = Fs.join(&.{ root_dir, seg0, try std.mem.concat(Heap.get(), u8, conc) });
+    try addWorkspaceProps(path);
+}
+
+pub fn addWorkspace() anyerror!void {
+    var path = Fs.join(&.{ root_dir, ZIGEM_FILE });
+    if (!Fs.exists(path)) std.zig.fatal("can't find '{s}'", .{ZIGEM_FILE});
+    try addWorkspaceProps(path);
+    path = Fs.join(&.{ root_dir, LOCAL_FILE });
+    if (!Fs.exists(path)) return;
     try addWorkspaceProps(path);
 }
 
