@@ -1,6 +1,6 @@
 .{
     .name = "zig-em",
-    .version = "0.24.0",
+    .version = "25.0.1",
     .paths = .{"./src"},
     .dependencies = .{
         .ini = .{
