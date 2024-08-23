@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) void {
     //
-    const target = b.standardTargetOptions(.{});
+    const target = b.host;
     const optimize = b.standardOptimizeOption(.{});
     const exe = b.addExecutable(.{
         .name = "zig-em",
@@ -18,6 +18,20 @@ pub fn build(b: *std.Build) void {
         });
         exe.root_module.addImport(name, dep.module(name));
     }
+
+    const tr = target.result;
+    for (TOOLS) |name| {
+        const dep = b.dependency(b.fmt("{s}-{s}-{s}", .{ name, @tagName(tr.os.tag), tr.osArchName() }), .{});
+        const install_step = b.addInstallDirectory(.{
+            .source_dir = dep.path("."),
+            .install_dir = std.Build.InstallDir{ .custom = "tools" },
+            .install_subdir = name,
+        });
+        exe.step.dependOn(&install_step.step);
+    }
+
+    //const tr = target.result;
+    //std.log.debug("plat = {any}, arch = {s}", .{ tr.os.tag, tr.osArchName() });
 
     b.installArtifact(exe);
 
@@ -37,4 +51,8 @@ pub fn build(b: *std.Build) void {
 const DEPS = [_][]const u8{
     "ini",
     "zig-cli",
+};
+
+const TOOLS = [_][]const u8{
+    "arm-binutils",
 };

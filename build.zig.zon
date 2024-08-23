@@ -11,5 +11,9 @@
             .url = "https://github.com/sam701/zig-cli/archive/9a94c4803a52e54c26b198096d63fb5bde752da2.tar.gz", // 0.9.0
             .hash = "1220ab73fb7cc11b2308edc3364988e05efcddbcac31b707f55e6216d1b9c0da13f1",
         },
+        .@"arm-binutils-windows-x86_64" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/arm-binutils-2.37/arm-binutils-windows-x86_64.zip",
+            .hash = "1220cfaa3fdfbf30dd1b230e32a881b12ff98999361bfd91d7e6e484f12a16aea6da",
+        },
     },
 }
