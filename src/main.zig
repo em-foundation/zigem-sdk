@@ -217,7 +217,8 @@ pub fn main() !void {
             },
         },
         .help_config = cli.HelpConfig{ .color_usage = .never },
-        .version = "0.24.0",
+        .author = "The EM Foundation",
+        .version = "25.0.1",
     };
 
     return runner.run(app);
