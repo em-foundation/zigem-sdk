@@ -15,5 +15,9 @@
             .url = "https://github.com/em-foundation/tools-pkg/releases/download/arm-binutils-2.37/arm-binutils-windows-x86_64.zip",
             .hash = "1220cfaa3fdfbf30dd1b230e32a881b12ff98999361bfd91d7e6e484f12a16aea6da",
         },
+        .@"ti-uniflash-windows-x86_64" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-windows-x86_64.zip",
+            .hash = "122061ba98f3bc7cc3948d52b85b3540bee1e9a27bf67b0fa1676322e2ffba70302b",
+        },
     },
 }

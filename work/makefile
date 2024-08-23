@@ -26,7 +26,7 @@ endif
 OBJCOPY?=$(TOOLS)/arm-binutils/objcopy$(BIN_SUF)
 OBJDUMP?=$(TOOLS)/arm-binutils/objdump$(BIN_SUF)
 
-UNIFLASH?=/t/ti/uniflash_8.7.0/dslite$(SCRIPT_SUF)
+UNIFLASH?=$(TOOLS)/ti-uniflash/dslite$(SCRIPT_SUF)
 
 TARG_OPTS=\
 	--name main \

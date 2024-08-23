@@ -30,9 +30,6 @@ pub fn build(b: *std.Build) void {
         exe.step.dependOn(&install_step.step);
     }
 
-    //const tr = target.result;
-    //std.log.debug("plat = {any}, arch = {s}", .{ tr.os.tag, tr.osArchName() });
-
     b.installArtifact(exe);
 
     const verify_exe = b.addRunArtifact(exe);
@@ -55,4 +52,5 @@ const DEPS = [_][]const u8{
 
 const TOOLS = [_][]const u8{
     "arm-binutils",
+    "ti-uniflash",
 };
