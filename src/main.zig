@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 const cli = @import("zig-cli");
 
@@ -69,7 +70,8 @@ fn doRefresh() !void {
 }
 
 fn execMake(goal: []const u8) ![]const u8 {
-    const argv = [_][]const u8{ "make", goal };
+    const OS = "OS=" ++ @tagName(builtin.os.tag);
+    const argv = [_][]const u8{ "make", goal, OS };
     const proc = try std.process.Child.run(.{
         .allocator = Heap.get(),
         .argv = &argv,

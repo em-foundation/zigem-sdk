@@ -13,12 +13,20 @@ hal:
 
 ## -----------------
 
-TOOLS=C:/Users/biosb/em-sdk/tools
+TOOLS=../zig-out/tools
 
-OBJCOPY?=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objcopy.exe
-OBJDUMP?=$(TOOLS)/segger-arm/gcc/arm-none-eabi/bin/objdump.exe
+ifeq ($(OS),windows)
+   BIN_SUF=".exe"
+   SCRIPT_SUF=".bat"
+else
+   BIN_SUF=""
+   SCRIPT_SUF=".sh"
+endif
 
-UNIFLASH?=/t/ti/uniflash_8.7.0/dslite.bat
+OBJCOPY?=$(TOOLS)/arm-binutils/objcopy$(BIN_SUF)
+OBJDUMP?=$(TOOLS)/arm-binutils/objdump$(BIN_SUF)
+
+UNIFLASH?=/t/ti/uniflash_8.7.0/dslite$(SCRIPT_SUF)
 
 TARG_OPTS=\
 	--name main \
