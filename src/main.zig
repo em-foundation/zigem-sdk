@@ -18,13 +18,17 @@ var params = struct {
     work: []const u8 = ".",
 }{};
 
-fn doBuild() !void {
+fn doClean() !void {
+    try Session.activate(.{ .work = params.work, .mode = .CLEAN });
+}
+
+fn doCompile() !void {
     const writer = std.io.getStdOut().writer();
     const path = params.unit;
     const idx = std.mem.indexOf(u8, path, "/").?;
     const bn = path[0..idx];
     const un = path[idx + 1 ..];
-    try Session.activate(.{ .work = params.work, .mode = .BUILD, .bundle = bn, .setup = params.setup });
+    try Session.activate(.{ .work = params.work, .mode = .COMPILE, .bundle = bn, .setup = params.setup });
     try Session.doRefresh();
     try Session.doBuild(un);
     try writer.print("compiling HOST ...\n", .{});
@@ -50,10 +54,6 @@ fn doBuild() !void {
     stdout = try execMake("load");
     // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     try writer.print("done.\n", .{});
-}
-
-fn doClean() !void {
-    try Session.activate(.{ .work = params.work, .mode = .CLEAN });
 }
 
 fn doProperties() !void {
@@ -119,7 +119,7 @@ pub fn main() !void {
     const load_opt = cli.Option{
         .long_name = "load",
         .short_alias = 'l',
-        .help = "Load executable image after building",
+        .help = "Load executable image after compiling",
         .required = false,
         .value_name = "LOAD",
         .value_ref = runner.mkRef(&params.load),
@@ -161,8 +161,18 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.work),
     };
 
-    const build_cmd = cli.Command{
-        .name = "build",
+    const clean_cmd = cli.Command{
+        .name = "clean",
+        .options = &.{
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doClean },
+        },
+    };
+
+    const compile_cmd = cli.Command{
+        .name = "compile",
         .options = &.{
             load_opt,
             meta_opt,
@@ -171,17 +181,7 @@ pub fn main() !void {
             work_opt,
         },
         .target = cli.CommandTarget{
-            .action = cli.CommandAction{ .exec = doBuild },
-        },
-    };
-
-    const clean_cmd = cli.Command{
-        .name = "clean",
-        .options = &.{
-            work_opt,
-        },
-        .target = cli.CommandTarget{
-            .action = cli.CommandAction{ .exec = doClean },
+            .action = cli.CommandAction{ .exec = doCompile },
         },
     };
 
@@ -211,8 +211,8 @@ pub fn main() !void {
             .name = "zig-em",
             .target = cli.CommandTarget{
                 .subcommands = &.{
-                    build_cmd,
                     clean_cmd,
+                    compile_cmd,
                     properties_cmd,
                     refresh_cmd,
                 },

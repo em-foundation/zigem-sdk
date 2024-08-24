@@ -34,7 +34,7 @@ pub fn build(b: *std.Build) void {
 
     const verify_exe = b.addRunArtifact(exe);
     verify_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "work" } });
-    verify_exe.addArgs(&.{ "build", "-u", "em.test/em.examples.basic/BlinkerP.em.zig" });
+    verify_exe.addArgs(&.{ "compile", "-u", "em.test/em.examples.basic/BlinkerP.em.zig" });
     const verify_step = b.step("verify", "Verify zig-em");
     verify_step.dependOn(&verify_exe.step);
 

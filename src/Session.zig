@@ -6,8 +6,8 @@ const Out = @import("./Out.zig");
 const Props = @import("./Props.zig");
 
 pub const Mode = enum {
-    BUILD,
     CLEAN,
+    COMPILE,
     REFRESH,
 };
 
