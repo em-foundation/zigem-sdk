@@ -42,7 +42,7 @@ fn doCompile() !void {
         return;
     }
     try writer.print("compiling TARG ...\n", .{});
-    stdout = try execMake("TARG");
+    stdout = try execMake("targ");
     const sha32 = Fs.readFile(Fs.join(&.{ Session.getOutRoot(), "main.out.sha32" }));
     try writer.print("    image sha: {s}", .{sha32}); // contains \n
     const sz = try getSizes(stdout);
