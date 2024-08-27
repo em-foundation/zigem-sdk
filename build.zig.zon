@@ -1,0 +1,45 @@
+.{
+    .name = "zig-em",
+    .version = "25.0.1",
+    .paths = .{"./src"},
+    .dependencies = .{
+        .ini = .{
+            .url = "https://github.com/ziglibs/ini/archive/e18d36665905c1e7ba0c1ce3e8780076b33e3002.tar.gz", // 0.13.0
+            .hash = "1220b0979ea9891fa4aeb85748fc42bc4b24039d9c99a4d65d893fb1c83e921efad8",
+        },
+        .@"zig-cli" = .{
+            .url = "https://github.com/sam701/zig-cli/archive/9a94c4803a52e54c26b198096d63fb5bde752da2.tar.gz", // 0.9.0
+            .hash = "1220ab73fb7cc11b2308edc3364988e05efcddbcac31b707f55e6216d1b9c0da13f1",
+        },
+        .@"arm-binutils-windows-x86_64" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/arm-binutils-2.37/arm-binutils-windows-x86_64.zip",
+            .hash = "1220cfaa3fdfbf30dd1b230e32a881b12ff98999361bfd91d7e6e484f12a16aea6da",
+            .lazy = true,
+        },
+        .@"ti-uniflash-windows-x86_64" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-windows-x86_64.zip",
+            .hash = "122061ba98f3bc7cc3948d52b85b3540bee1e9a27bf67b0fa1676322e2ffba70302b",
+            .lazy = true,
+        },
+        .@"arm-binutils-linux-x86" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/arm-binutils-2.37/arm-binutils-linux-x86.zip",
+            .hash = "122057cb75e72e3651d238a1c5c801fddabcf3afb395667d55a0d906df70e8165e6a",
+            .lazy = true,
+        },
+        .@"ti-uniflash-linux-x86" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-linux-x86_64.zip",
+            .hash = "12205de1eef9492a1cbee4461db6d9db803f14b32e5309ee4a036ac5a3d2a7640902",
+            .lazy = true,
+        },
+        .@"ti-uniflash-macos-x86_64" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-macos-x86_64.tar.gz",
+            .hash = "12203b87852ad433493c47cb209df32a3090d1b5605526c7d85bb3d980db079d5f31",
+            .lazy = true,
+        },
+        .@"arm-binutils-macos-x86_64" = .{
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/arm-binutils-2.37/arm-binutils-macos-x86_64.tar.gz",
+            .hash = "1220e083de87e1aadeb0c0446c301d4214b2eebb2632389eb650556462c80ec9b71d",
+            .lazy = true,
+        },
+    },
+}
