@@ -19,28 +19,32 @@ pub fn build(b: *std.Build) void {
         exe.root_module.addImport(name, dep.module(name));
     }
 
+    const chmod_step = b.addSystemCommand(&.{ "chmod", "-R", "777", "zig-out/tools" });
+    exe.step.dependOn(&chmod_step.step);
+
     const tr = target.result;
     for (TOOLS) |name| {
-        const dep = b.dependency(b.fmt("{s}-{s}-{s}", .{ name, @tagName(tr.os.tag), tr.osArchName() }), .{});
-        const install_step = b.addInstallDirectory(.{
-            .source_dir = dep.path("."),
-            .install_dir = std.Build.InstallDir{ .custom = "tools" },
-            .install_subdir = name,
-        });
-        exe.step.dependOn(&install_step.step);
+        if (b.lazyDependency(b.fmt("{s}-{s}-{s}", .{ name, @tagName(tr.os.tag), tr.osArchName() }), .{})) |dep| {
+            const install_step = b.addInstallDirectory(.{
+                .source_dir = dep.path("."),
+                .install_dir = std.Build.InstallDir{ .custom = "tools" },
+                .install_subdir = name,
+            });
+            chmod_step.step.dependOn(&install_step.step);
+        }
     }
 
     b.installArtifact(exe);
 
     const verify_exe = b.addRunArtifact(exe);
-    verify_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "work" } });
+    verify_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "workspace" } });
     verify_exe.addArgs(&.{ "compile", "-u", "em.test/em.examples.basic/BlinkerP.em.zig" });
     const verify_step = b.step("verify", "Verify zig-em");
     verify_step.dependOn(&verify_exe.step);
 
     const zigem_exe = b.addRunArtifact(exe);
     if (b.args) |args| zigem_exe.addArgs(args);
-    zigem_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "work" } });
+    zigem_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "workspace" } });
     const zigem_step = b.step("zig-em", "Execute the ZigEM CLI");
     zigem_step.dependOn(&zigem_exe.step);
 }
