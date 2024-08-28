@@ -25,14 +25,14 @@ endif
 
 ifeq ($(OS),macos)
     SHA256=shasum -a 256
+    UNIFLASH?=/Applications/ti/uniflash_8.7.0/dslite.sh
 else
     SHA256=sha256sum
+    UNIFLASH?=$(TOOLS)/ti-uniflash/dslite$(SCRIPT_SUF)
 endif
 
 OBJCOPY?=$(TOOLS)/arm-binutils/objcopy$(BIN_SUF)
 OBJDUMP?=$(TOOLS)/arm-binutils/objdump$(BIN_SUF)
-
-UNIFLASH?=$(TOOLS)/ti-uniflash/dslite$(SCRIPT_SUF)
 
 TARG_OPTS=\
 	--name main \
