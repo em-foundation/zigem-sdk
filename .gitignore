@@ -7,3 +7,4 @@ zig-out
 .out
 .main-*.zig
 **/local.ini
+.vscode/
