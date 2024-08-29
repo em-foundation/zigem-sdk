@@ -34,6 +34,7 @@ pub fn build(b: *std.Build) void {
         }
     }
 
+    b.installArtifact(b.dependency("zls-em", .{}).artifact("zls-em"));
     b.installArtifact(exe);
 
     const verify_exe = b.addRunArtifact(exe);
