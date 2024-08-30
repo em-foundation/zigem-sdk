@@ -34,6 +34,11 @@ pub fn build(b: *std.Build) void {
         }
     }
 
+    b.installDirectory(.{
+        .source_dir = b.dependency("vscode-zigem", .{}).path("."),
+        .install_dir = std.Build.InstallDir{ .custom = "tools" },
+        .install_subdir = "",
+    });
     b.installArtifact(b.dependency("zls-em", .{}).artifact("zls-em"));
     b.installArtifact(exe);
 
