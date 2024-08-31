@@ -103,7 +103,7 @@ fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
     ;
     file.print(fmt1, .{ pre, kind });
     file.close();
-    // .gen/<kind>.zig
+    // build/.gen/<kind>.zig
     const fn2 = try sprint("{s}.zig", .{kind});
     file = try Out.open(Fs.join(&.{ gen_root, fn2 }));
     const fmt2 =
