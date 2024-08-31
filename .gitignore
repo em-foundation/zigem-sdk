@@ -8,3 +8,4 @@ zig-out
 .main-*.zig
 **/local.ini
 .vscode/
+workspace/build

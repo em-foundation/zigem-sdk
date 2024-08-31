@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../build/.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const Common = em.import.@"em.mcu/Common";

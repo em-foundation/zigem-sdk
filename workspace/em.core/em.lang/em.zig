@@ -1,6 +1,6 @@
 const @"// -------- EXECUTION DOMAIN -------- //" = {};
 
-const domain_desc = @import("../../.gen/domain.zig");
+const domain_desc = @import("../../build/.gen/domain.zig");
 pub const Domain = domain_desc.Domain;
 pub const DOMAIN = domain_desc.DOMAIN;
 
@@ -8,7 +8,7 @@ pub const hosted = (DOMAIN == .HOST);
 
 const @"// -------- UNIT SPEC -------- //" = {};
 
-pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
+pub const UnitName = @import("../../build/.gen/unit_names.zig").UnitName;
 
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
@@ -630,8 +630,8 @@ pub fn getHeap() std.mem.Allocator {
 
 const @"// -------- TARGET GEN -------- //" = {};
 
-const targ = @import("../../.gen/targ.zig");
-const type_map = @import("../../.gen/type_map.zig");
+const targ = @import("../../build/.gen/targ.zig");
+const type_map = @import("../../build/.gen/type_map.zig");
 
 fn mkTypeName(T: type) []const u8 {
     const ti = @typeInfo(T);
@@ -757,7 +757,7 @@ pub fn toStringPre(v: anytype, comptime upath: []const u8, comptime cname: []con
 
 const @"// -------- PROPERTY VALUES -------- //" = {};
 
-const props = @import("../../.gen/props.zig");
+const props = @import("../../build/.gen/props.zig");
 
 pub fn property(name: []const u8, T: type, v: T) T {
     if (!props.map.has(name)) return v;
@@ -806,7 +806,7 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
     @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
 }
 
-pub const import = @import("../../.gen/imports.zig");
+pub const import = @import("../../build/.gen/imports.zig");
 
 pub const ptr_t = ?*anyopaque;
 

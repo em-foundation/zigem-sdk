@@ -5,6 +5,8 @@ const Heap = @import("./Heap.zig");
 const Out = @import("./Out.zig");
 const Props = @import("./Props.zig");
 
+const makefile_txt = @embedFile("./makefile.txt");
+
 pub const Mode = enum {
     CLEAN,
     COMPILE,
@@ -12,6 +14,7 @@ pub const Mode = enum {
 };
 
 var cur_mode: Mode = undefined;
+var build_root: []const u8 = undefined;
 var gen_root: []const u8 = undefined;
 var out_root: []const u8 = undefined;
 var work_root: []const u8 = undefined;
@@ -24,15 +27,15 @@ pub const ActivateParams = struct {
 };
 
 pub fn activate(params: ActivateParams) !void {
-    work_root = try Fs.normalize(params.work);
     cur_mode = params.mode;
-    gen_root = Fs.slashify(Fs.join(&.{ work_root, ".gen" }));
-    out_root = Fs.slashify(Fs.join(&.{ work_root, ".out" }));
-    Fs.delete(gen_root);
-    Fs.delete(out_root);
+    work_root = try Fs.normalize(params.work);
+    build_root = Fs.slashify(Fs.join(&.{ work_root, "build" }));
+    gen_root = Fs.slashify(Fs.join(&.{ build_root, ".gen" }));
+    out_root = Fs.slashify(Fs.join(&.{ build_root, ".out" }));
+    Fs.delete(build_root);
     if (cur_mode == .CLEAN) return;
-    Fs.mkdirs(work_root, ".gen");
-    Fs.mkdirs(work_root, ".out");
+    Fs.mkdirs(work_root, "build/.gen");
+    Fs.mkdirs(work_root, "build/.out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
     try Props.addBundle("em.core");
@@ -50,6 +53,7 @@ pub fn doBuild(upath: []const u8) !void {
 
 pub fn doRefresh() !void {
     try genEmStub();
+    try genMakefile();
     try genProps();
     try genTarg();
     try genUnits();
@@ -58,7 +62,7 @@ pub fn doRefresh() !void {
 fn genEmStub() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
     const fmt =
-        \\pub usingnamespace @import("../em.core/em.lang/em.zig");
+        \\pub usingnamespace @import("../../em.core/em.lang/em.zig");
         \\
         \\pub const gen_root = "{0s}";
         \\pub const out_root = "{1s}";
@@ -66,9 +70,15 @@ fn genEmStub() !void {
         \\pub const _domain_file = "{0s}/domain.zig";
         \\pub const _targ_file = "{0s}/targ.zig";
         \\
-        \\pub const hal = @import("../{2s}/{3s}/hal.zig");
+        \\pub const hal = @import("../../{2s}/{3s}/hal.zig");
     ;
     file.print(fmt, .{ gen_root, out_root, getDistroBundle(), getDistroPkg() });
+    file.close();
+}
+
+fn genMakefile() !void {
+    var file = try Out.open(Fs.join(&.{ build_root, "makefile" }));
+    file.print("{s}", .{makefile_txt});
     file.close();
 }
 
@@ -78,7 +88,6 @@ fn genProps() !void {
     file.print("pub const map = std.StaticStringMap([]const u8).initComptime(.{{\n", .{});
     var ent_iter = Props.getProps().iterator();
     while (ent_iter.next()) |e| {
-        //        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ e.key_ptr.*, e.value_ptr.* });
         file.print("    .{{ \"{s}\", \"{s}\" }},\n", .{ e.key_ptr.*, e.value_ptr.* });
     }
     file.print("}});\n", .{});
@@ -90,7 +99,7 @@ fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
     const fn1 = try sprint(".main-{s}.zig", .{kind});
     var file = try Out.open(Fs.join(&.{ work_root, fn1 }));
     const fmt1 =
-        \\{0s} fn main() void {{ @import(".gen/{1s}.zig").exec(); }}
+        \\{0s} fn main() void {{ @import("build/.gen/{1s}.zig").exec(); }}
     ;
     file.print(fmt1, .{ pre, kind });
     file.close();
@@ -101,7 +110,7 @@ fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
-        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
+        \\    @import("../../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
         \\}}
     ;
     file.print(fmt2, .{ kind, uname });
@@ -138,11 +147,11 @@ fn genUnits() !void {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
                 const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
                 const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
-                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
         }
     }

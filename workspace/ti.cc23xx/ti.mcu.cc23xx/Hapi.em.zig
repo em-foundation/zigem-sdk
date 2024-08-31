@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../build/.gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 const ROM_T = extern struct {
