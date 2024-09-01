@@ -39,51 +39,6 @@ pub fn template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
-fn ItabType(ImplT: type) type {
-    comptime {
-        const ti = @typeInfo(ImplT);
-        var fld_list: []const std.builtin.Type.StructField = &.{};
-        for (ti.Struct.decls) |decl| {
-            if (!std.mem.eql(u8, decl.name, "em__I")) {
-                const dval = @field(ImplT, decl.name);
-                const dti = @typeInfo(@TypeOf(dval));
-                if (dti == .Fn) {
-                    const fld = std.builtin.Type.StructField{
-                        .name = decl.name,
-                        .type = *const @TypeOf(dval),
-                        .default_value = null,
-                        .is_comptime = false,
-                        .alignment = 0,
-                    };
-                    fld_list = fld_list ++ ([_]std.builtin.Type.StructField{fld})[0..];
-                }
-            }
-        }
-        const freeze = fld_list;
-        return @Type(.{ .Struct = .{
-            .layout = .auto,
-            .fields = freeze,
-            .decls = &.{},
-            .is_tuple = false,
-            .backing_integer = null,
-        } });
-    }
-}
-
-pub fn mkItab(comptime ImplT: type) ItabType(ImplT) {
-    var itab: ItabType(ImplT) = undefined;
-    inline for (comptime std.meta.declarations(ImplT)) |decl| {
-        if (!std.mem.eql(u8, decl.name, "em__I")) {
-            const dval = @field(ImplT, decl.name);
-            const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) {
-                @field(itab, decl.name) = dval;
-            }
-        }
-    }
-    return itab;
-}
-
 pub const UnitKind = enum {
     composite,
     interface,
@@ -141,13 +96,39 @@ pub const Unit = struct {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
     }
 
-    pub fn hasItab(self: Self) bool {
-        return self.inherits != null or self.kind == .interface;
+    pub fn ITab(self: Self) type {
+        comptime {
+            const U = self.scope();
+            const I = self.inherits.?.scope();
+            const ti = @typeInfo(I);
+            var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+            for (ti.Struct.decls) |decl| {
+                const dval = @field(I, decl.name);
+                const dti = @typeInfo(@TypeOf(dval));
+                if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+            }
+            var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+            for (fdecl_list, 0..) |fdecl, i| {
+                const func = @field(U, fdecl.name);
+                const func_ptr = &func;
+                fld_list[i] = std.builtin.Type.StructField{
+                    .name = fdecl.name,
+                    .type = *const @TypeOf(func),
+                    .default_value = @ptrCast(&func_ptr),
+                    .is_comptime = false,
+                    .alignment = 0,
+                };
+            }
+            const freeze = fld_list;
+            return @Type(.{ .Struct = .{
+                .layout = .auto,
+                .fields = freeze[0..],
+                .decls = &.{},
+                .is_tuple = false,
+                .backing_integer = null,
+            } });
+        }
     }
-
-    //pub fn itab(self: Self) if (self.hasItab()) ItabType(self.scope()) else void {
-    //    return if (self.hasItab()) mkItab(self.scope()) else {};
-    //}
 
     pub fn resolve(self: Self) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
