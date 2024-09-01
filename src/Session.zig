@@ -95,7 +95,7 @@ fn genMakefile() !void {
 fn genMain() !void {
     var file = try Out.open(Fs.join(&.{ work_root, ZIGEM_MAIN }));
     const txt =
-        \\GENERATED FILE -- do not edit!!!
+        \\// GENERATED FILE -- do not edit!!!
         \\
         \\pub usingnamespace @import("zigem/em.zig");
         \\const domain_desc = @import("zigem/domain.zig");
