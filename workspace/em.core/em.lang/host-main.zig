@@ -1,7 +1,7 @@
-const em = @import("../../.gen/em.zig");
+const em = @import("../../zigem/em.zig");
 const std = @import("std");
 
-const type_map = @import("../../.gen/type_map.zig");
+const type_map = @import("../../zigem/type_map.zig");
 
 var used_set = std.StringHashMap(void).init(em.getHeap());
 

@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.composite(@This(), .{});
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";

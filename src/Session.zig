@@ -5,13 +5,18 @@ const Heap = @import("./Heap.zig");
 const Out = @import("./Out.zig");
 const Props = @import("./Props.zig");
 
+const makefile_txt = @embedFile("./makefile.txt");
+
 pub const Mode = enum {
     CLEAN,
     COMPILE,
     REFRESH,
 };
 
+const ZIGEM_MAIN = ".zigem-main.zig";
+
 var cur_mode: Mode = undefined;
+var build_root: []const u8 = undefined;
 var gen_root: []const u8 = undefined;
 var out_root: []const u8 = undefined;
 var work_root: []const u8 = undefined;
@@ -24,15 +29,22 @@ pub const ActivateParams = struct {
 };
 
 pub fn activate(params: ActivateParams) !void {
-    work_root = try Fs.normalize(params.work);
     cur_mode = params.mode;
-    gen_root = Fs.slashify(Fs.join(&.{ work_root, ".gen" }));
-    out_root = Fs.slashify(Fs.join(&.{ work_root, ".out" }));
-    Fs.delete(gen_root);
-    Fs.delete(out_root);
-    if (cur_mode == .CLEAN) return;
-    Fs.mkdirs(work_root, ".gen");
-    Fs.mkdirs(work_root, ".out");
+    work_root = try Fs.normalize(params.work);
+    build_root = Fs.slashify(Fs.join(&.{ work_root, "zigem" }));
+    gen_root = build_root;
+    out_root = Fs.slashify(Fs.join(&.{ build_root, "out" }));
+    Fs.delete(build_root);
+    Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ZIGEM_MAIN })));
+    if (cur_mode == .CLEAN) {
+        // legacy
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".gen" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".out" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-host.zig" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-targ.zig" })));
+        return;
+    }
+    Fs.mkdirs(work_root, "zigem/out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
     try Props.addBundle("em.core");
@@ -44,13 +56,15 @@ pub fn activate(params: ActivateParams) !void {
 
 pub fn doBuild(upath: []const u8) !void {
     const uname = mkUname(upath);
-    try genStubs("host", uname, "pub");
-    try genStubs("targ", uname, "export");
+    try genStub("host", uname);
+    try genStub("targ", uname);
 }
 
 pub fn doRefresh() !void {
     try genEmStub();
+    try genMakefile();
     try genProps();
+    try genMain();
     try genTarg();
     try genUnits();
 }
@@ -72,39 +86,56 @@ fn genEmStub() !void {
     file.close();
 }
 
+fn genMakefile() !void {
+    var file = try Out.open(Fs.join(&.{ build_root, "makefile" }));
+    file.print("{s}", .{makefile_txt});
+    file.close();
+}
+
+fn genMain() !void {
+    var file = try Out.open(Fs.join(&.{ work_root, ZIGEM_MAIN }));
+    const txt =
+        \\// GENERATED FILE -- do not edit!!!
+        \\
+        \\pub usingnamespace @import("zigem/em.zig");
+        \\const domain_desc = @import("zigem/domain.zig");
+        \\
+        \\pub fn main() void {
+        \\    if (domain_desc.DOMAIN == .HOST) @import("zigem/host.zig").exec();
+        \\}
+        \\
+        \\export fn zigem_main() void {
+        \\    if (domain_desc.DOMAIN == .TARG) @import("zigem/targ.zig").exec();
+        \\}
+    ;
+    file.print("{s}", .{txt});
+    file.close();
+}
+
 fn genProps() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "props.zig" }));
     file.print("const std = @import(\"std\");\n\n", .{});
     file.print("pub const map = std.StaticStringMap([]const u8).initComptime(.{{\n", .{});
     var ent_iter = Props.getProps().iterator();
     while (ent_iter.next()) |e| {
-        //        file.print("pub const @\"{s}\" = \"{s}\";\n", .{ e.key_ptr.*, e.value_ptr.* });
         file.print("    .{{ \"{s}\", \"{s}\" }},\n", .{ e.key_ptr.*, e.value_ptr.* });
     }
     file.print("}});\n", .{});
     file.close();
 }
 
-fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
-    // .main-<kind>.zig
-    const fn1 = try sprint(".main-{s}.zig", .{kind});
-    var file = try Out.open(Fs.join(&.{ work_root, fn1 }));
-    const fmt1 =
-        \\{0s} fn main() void {{ @import(".gen/{1s}.zig").exec(); }}
-    ;
-    file.print(fmt1, .{ pre, kind });
-    file.close();
-    // .gen/<kind>.zig
-    const fn2 = try sprint("{s}.zig", .{kind});
-    file = try Out.open(Fs.join(&.{ gen_root, fn2 }));
-    const fmt2 =
+fn genStub(kind: []const u8, uname: []const u8) !void {
+    // zigem/<kind>.zig
+    const fn1 = try sprint("{s}.zig", .{kind});
+    var file = try Out.open(Fs.join(&.{ gen_root, fn1 }));
+    const fmt =
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
         \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
         \\}}
     ;
-    file.print(fmt2, .{ kind, uname });
+    file.print(fmt, .{ kind, uname });
     file.close();
 }
 

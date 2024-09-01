@@ -1,0 +1,68 @@
+DISTRO=ti.cc23xx/ti.distro.cc23xx
+
+BLD=zigem
+GEN=$(BLD)
+OUT=$(BLD)/out
+
+MAIN=.zigem-main.zig
+
+host:
+	@rm -f $(GEN)/targ.zig
+	@touch $(GEN)/targ.zig
+	@rm -rf $(OUT)/*
+	@zig build-exe -I. -femit-bin=$(OUT)/host-main.exe $(MAIN)
+	@$(OUT)/host-main.exe 
+	@zig fmt $(GEN)/targ.zig 2>&1 >/dev/null
+
+hal:
+	@zig translate-c $(DISTRO)/hal.h > $(DISTRO)/hal.zig
+
+## -----------------
+
+TOOLS=../zig-out/tools
+
+ifeq ($(OS),windows)
+    BIN_SUF=".exe"
+    SCRIPT_SUF=".bat"
+else
+    BIN_SUF=""
+    SCRIPT_SUF=".sh"
+endif
+
+ifeq ($(OS),macos)
+    SHA256=shasum -a 256
+    UNIFLASH?=/Applications/ti/uniflash_8.7.0/dslite.sh
+else
+    SHA256=sha256sum
+    UNIFLASH?=$(TOOLS)/ti-uniflash/dslite$(SCRIPT_SUF)
+endif
+
+OBJCOPY?=$(TOOLS)/arm-binutils/objcopy$(BIN_SUF)
+OBJDUMP?=$(TOOLS)/arm-binutils/objdump$(BIN_SUF)
+
+TARG_OPTS=\
+	--name main \
+	-fentry=em__start \
+	-fno-lto \
+	-fsingle-threaded \
+	-fno-strip \
+	-mcpu cortex_m0plus \
+	-target thumb-freestanding-eabi \
+	-O ReleaseSmall	\
+	-femit-asm=$(OUT)/main.asm \
+	-femit-bin=$(OUT)/main.out \
+
+targ:
+	@zig build-exe -I. $(TARG_OPTS) --script $(OUT)/linkcmd.ld $(OUT)/startup.c $(MAIN)
+	@rm -f $(OUT)/main.out.o
+	@$(OBJCOPY) -O ihex $(OUT)/main.out $(OUT)/main.out.hex
+	@$(OBJDUMP) -h -d $(OUT)/main.out >$(OUT)/main.out.dis
+	@$(OBJDUMP) -t $(OUT)/main.out | tail -n +5 | sed -e 's/[FO] /  /' | sed -e 's/df /   /' >$(OUT)/main.out.sym
+	@sort -k1 $(OUT)/main.out.sym > $(OUT)/main.out.syma
+	@sort -k5 $(OUT)/main.out.sym > $(OUT)/main.out.symn
+	@$(SHA256) $(OUT)/main.out.hex | cut -c -8 >$(OUT)/main.out.sha32
+	@$(OBJDUMP) -h $(OUT)/main.out
+
+load:
+	@$(UNIFLASH) --mode noConnectFlash -c ti.cc23xx/ti.distro.cc23xx/CC2340R5.ccxml $(OUT)/main.out
+
