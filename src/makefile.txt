@@ -4,11 +4,13 @@ BLD=build
 GEN=$(BLD)/.gen
 OUT=$(BLD)/.out
 
+MAIN=.zigem-main.zig
+
 host:
 	@rm -f $(GEN)/targ.zig
 	@touch $(GEN)/targ.zig
 	@rm -rf $(OUT)/*
-	@zig build-exe -I. -femit-bin=$(OUT)/host-main.exe .main-host.zig
+	@zig build-exe -I. -femit-bin=$(OUT)/host-main.exe $(MAIN)
 	@$(OUT)/host-main.exe 
 	@zig fmt $(GEN)/targ.zig 2>&1 >/dev/null
 
@@ -51,7 +53,7 @@ TARG_OPTS=\
 	-femit-bin=$(OUT)/main.out \
 
 targ:
-	@zig build-exe -I. $(TARG_OPTS) --script $(OUT)/linkcmd.ld $(OUT)/startup.c .main-targ.zig
+	@zig build-exe -I. $(TARG_OPTS) --script $(OUT)/linkcmd.ld $(OUT)/startup.c $(MAIN)
 	@rm -f $(OUT)/main.out.o
 	@$(OBJCOPY) -O ihex $(OUT)/main.out $(OUT)/main.out.hex
 	@$(OBJDUMP) -h -d $(OUT)/main.out >$(OUT)/main.out.dis

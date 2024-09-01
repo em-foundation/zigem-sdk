@@ -26,7 +26,7 @@ pub const EM__HOST = struct {
             \\extern uint32_t __global_pointer__;
             \\extern uint32_t __stack_top__;
             \\
-            \\extern void main();
+            \\extern void zigem_main();
             \\extern bool __is_warm();
             \\
             \\typedef struct {
@@ -66,7 +66,7 @@ pub const EM__HOST = struct {
             \\#endif
             \\    }
             \\
-            \\    main();
+            \\    zigem_main();
             \\    __builtin_unreachable();
             \\}
             \\
@@ -92,7 +92,7 @@ pub const EM__HOST = struct {
             \\
             \\#include "arm-startup.c"
             \\
-            \\extern void main();
+            \\extern void zigem_main();
             \\
             \\bool __is_warm() {
             \\    return false;

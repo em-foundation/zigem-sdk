@@ -47,14 +47,15 @@ pub fn activate(params: ActivateParams) !void {
 
 pub fn doBuild(upath: []const u8) !void {
     const uname = mkUname(upath);
-    try genStubs("host", uname, "pub");
-    try genStubs("targ", uname, "export");
+    try genStub("host", uname);
+    try genStub("targ", uname);
 }
 
 pub fn doRefresh() !void {
     try genEmStub();
     try genMakefile();
     try genProps();
+    try genRoot();
     try genTarg();
     try genUnits();
 }
@@ -94,26 +95,34 @@ fn genProps() !void {
     file.close();
 }
 
-fn genStubs(kind: []const u8, uname: []const u8, pre: []const u8) !void {
-    // .main-<kind>.zig
-    const fn1 = try sprint(".main-{s}.zig", .{kind});
-    var file = try Out.open(Fs.join(&.{ work_root, fn1 }));
-    const fmt1 =
-        \\{0s} fn main() void {{ @import("build/.gen/{1s}.zig").exec(); }}
+fn genRoot() !void {
+    var file = try Out.open(Fs.join(&.{ work_root, ".zigem-main.zig" }));
+    const txt =
+        \\pub usingnamespace @import("build/.gen/em.zig");
+        \\const domain_desc = @import("build/.gen/domain.zig");
+        \\pub fn main() void {
+        \\    if (domain_desc.DOMAIN == .HOST) @import("build/.gen/host.zig").exec();
+        \\}
+        \\export fn zigem_main() void {
+        \\    if (domain_desc.DOMAIN == .TARG) @import("build/.gen/targ.zig").exec();
+        \\}
     ;
-    file.print(fmt1, .{ pre, kind });
+    file.print("{s}", .{txt});
     file.close();
+}
+
+fn genStub(kind: []const u8, uname: []const u8) !void {
     // build/.gen/<kind>.zig
-    const fn2 = try sprint("{s}.zig", .{kind});
-    file = try Out.open(Fs.join(&.{ gen_root, fn2 }));
-    const fmt2 =
+    const fn1 = try sprint("{s}.zig", .{kind});
+    var file = try Out.open(Fs.join(&.{ gen_root, fn1 }));
+    const fmt =
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
         \\    @import("../../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
         \\}}
     ;
-    file.print(fmt2, .{ kind, uname });
+    file.print(fmt, .{ kind, uname });
     file.close();
 }
 
