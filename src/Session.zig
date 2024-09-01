@@ -30,11 +30,11 @@ pub fn activate(params: ActivateParams) !void {
     cur_mode = params.mode;
     work_root = try Fs.normalize(params.work);
     build_root = Fs.slashify(Fs.join(&.{ work_root, "build" }));
-    gen_root = Fs.slashify(Fs.join(&.{ build_root, ".gen" }));
+    gen_root = Fs.slashify(Fs.join(&.{ build_root, "gen" }));
     out_root = Fs.slashify(Fs.join(&.{ build_root, ".out" }));
     Fs.delete(build_root);
     if (cur_mode == .CLEAN) return;
-    Fs.mkdirs(work_root, "build/.gen");
+    Fs.mkdirs(work_root, "build/gen");
     Fs.mkdirs(work_root, "build/.out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
@@ -98,13 +98,13 @@ fn genProps() !void {
 fn genRoot() !void {
     var file = try Out.open(Fs.join(&.{ work_root, ".zigem-main.zig" }));
     const txt =
-        \\pub usingnamespace @import("build/.gen/em.zig");
-        \\const domain_desc = @import("build/.gen/domain.zig");
+        \\pub usingnamespace @import("build/gen/em.zig");
+        \\const domain_desc = @import("build/gen/domain.zig");
         \\pub fn main() void {
-        \\    if (domain_desc.DOMAIN == .HOST) @import("build/.gen/host.zig").exec();
+        \\    if (domain_desc.DOMAIN == .HOST) @import("build/gen/host.zig").exec();
         \\}
         \\export fn zigem_main() void {
-        \\    if (domain_desc.DOMAIN == .TARG) @import("build/.gen/targ.zig").exec();
+        \\    if (domain_desc.DOMAIN == .TARG) @import("build/gen/targ.zig").exec();
         \\}
     ;
     file.print("{s}", .{txt});
@@ -112,7 +112,7 @@ fn genRoot() !void {
 }
 
 fn genStub(kind: []const u8, uname: []const u8) !void {
-    // build/.gen/<kind>.zig
+    // build/gen/<kind>.zig
     const fn1 = try sprint("{s}.zig", .{kind});
     var file = try Out.open(Fs.join(&.{ gen_root, fn1 }));
     const fmt =

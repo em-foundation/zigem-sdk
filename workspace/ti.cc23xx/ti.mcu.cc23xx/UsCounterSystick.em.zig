@@ -1,4 +1,4 @@
-pub const em = @import("../../build/.gen/em.zig");
+pub const em = @import("../../build/gen/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/UsCounterI",
 });

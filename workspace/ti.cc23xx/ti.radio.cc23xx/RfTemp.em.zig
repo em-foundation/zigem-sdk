@@ -1,4 +1,4 @@
-pub const em = @import("../../build/.gen/em.zig");
+pub const em = @import("../../build/gen/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const TXPOWER_REFERENCE_TEMPERATURE: i16 = 25;
