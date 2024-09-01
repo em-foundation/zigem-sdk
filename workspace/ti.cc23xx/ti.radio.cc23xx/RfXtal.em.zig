@@ -1,4 +1,4 @@
-pub const em = @import("../../zigem/gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 

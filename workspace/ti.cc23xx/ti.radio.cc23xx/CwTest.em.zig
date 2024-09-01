@@ -1,4 +1,4 @@
-pub const em = @import("../../zigem/gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;

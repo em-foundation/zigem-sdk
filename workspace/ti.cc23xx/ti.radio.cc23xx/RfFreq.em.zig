@@ -1,4 +1,4 @@
-pub const em = @import("../../zigem/gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";

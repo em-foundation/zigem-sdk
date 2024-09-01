@@ -30,11 +30,10 @@ pub fn activate(params: ActivateParams) !void {
     cur_mode = params.mode;
     work_root = try Fs.normalize(params.work);
     build_root = Fs.slashify(Fs.join(&.{ work_root, "zigem" }));
-    gen_root = Fs.slashify(Fs.join(&.{ build_root, "gen" }));
+    gen_root = build_root;
     out_root = Fs.slashify(Fs.join(&.{ build_root, "out" }));
     Fs.delete(build_root);
     if (cur_mode == .CLEAN) return;
-    Fs.mkdirs(work_root, "zigem/gen");
     Fs.mkdirs(work_root, "zigem/out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
@@ -63,7 +62,7 @@ pub fn doRefresh() !void {
 fn genEmStub() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "em.zig" }));
     const fmt =
-        \\pub usingnamespace @import("../../em.core/em.lang/em.zig");
+        \\pub usingnamespace @import("../em.core/em.lang/em.zig");
         \\
         \\pub const gen_root = "{0s}";
         \\pub const out_root = "{1s}";
@@ -71,7 +70,7 @@ fn genEmStub() !void {
         \\pub const _domain_file = "{0s}/domain.zig";
         \\pub const _targ_file = "{0s}/targ.zig";
         \\
-        \\pub const hal = @import("../../{2s}/{3s}/hal.zig");
+        \\pub const hal = @import("../{2s}/{3s}/hal.zig");
     ;
     file.print(fmt, .{ gen_root, out_root, getDistroBundle(), getDistroPkg() });
     file.close();
@@ -98,13 +97,13 @@ fn genProps() !void {
 fn genRoot() !void {
     var file = try Out.open(Fs.join(&.{ work_root, ".zigem-main.zig" }));
     const txt =
-        \\pub usingnamespace @import("zigem/gen/em.zig");
-        \\const domain_desc = @import("zigem/gen/domain.zig");
+        \\pub usingnamespace @import("zigem/em.zig");
+        \\const domain_desc = @import("zigem/domain.zig");
         \\pub fn main() void {
-        \\    if (domain_desc.DOMAIN == .HOST) @import("zigem/gen/host.zig").exec();
+        \\    if (domain_desc.DOMAIN == .HOST) @import("zigem/host.zig").exec();
         \\}
         \\export fn zigem_main() void {
-        \\    if (domain_desc.DOMAIN == .TARG) @import("zigem/gen/targ.zig").exec();
+        \\    if (domain_desc.DOMAIN == .TARG) @import("zigem/targ.zig").exec();
         \\}
     ;
     file.print("{s}", .{txt});
@@ -112,14 +111,14 @@ fn genRoot() !void {
 }
 
 fn genStub(kind: []const u8, uname: []const u8) !void {
-    // zigem/gen/<kind>.zig
+    // zigem/<kind>.zig
     const fn1 = try sprint("{s}.zig", .{kind});
     var file = try Out.open(Fs.join(&.{ gen_root, fn1 }));
     const fmt =
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
-        \\    @import("../../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
+        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
         \\}}
     ;
     file.print(fmt, .{ kind, uname });
@@ -156,11 +155,11 @@ fn genUnits() !void {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
                 const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
                 const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
-                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
         }
     }
