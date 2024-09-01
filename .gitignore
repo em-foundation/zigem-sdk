@@ -6,4 +6,7 @@ zig-out
 **/local.ini
 .vscode/
 workspace/zigem
+workspace/.gen
+workspace/.out
+workspace/.main-*.zig
 workspace/.zigem-main.zig
