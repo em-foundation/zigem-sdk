@@ -26,7 +26,7 @@ pub fn exec(top: em.Unit) !void {
     callAll("em__constructH", ulist_top, false);
     callAll("em__generateH", ulist_top, false);
     try genDomain();
-    try genTarg(ulist_bot, ulist_top);
+    try genTarg(top, ulist_bot, ulist_top);
     std.process.exit(0);
 }
 
@@ -87,14 +87,14 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     if (std.mem.eql(u8, un, "em")) {
         try out.print("em", .{});
     } else {
-        try out.print("em.unitScope(em.import.@\"{s}\")", .{un});
+        try out.print("em.import.@\"{s}\"", .{un});
     }
     while (it.next()) |seg| {
         try out.print(".{s}", .{seg});
     }
 }
 
-fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
+fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
     const fmt =
@@ -133,7 +133,7 @@ fn genTarg(ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     try out.print("    asm volatile (\".global __em__run\");\n", .{});
     try out.print("    asm volatile (\"__em__run:\");\n", .{});
     try out.print("    ", .{});
-    try genImport(ulist_top[0].upath, out);
+    try genImport(cur_top.upath, out);
     try out.print(".em__run();\n", .{});
     try out.print("    em.halt();\n", .{});
     try out.print("}}\n", .{});
