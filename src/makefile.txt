@@ -2,7 +2,7 @@ DISTRO=ti.cc23xx/ti.distro.cc23xx
 
 BLD=build
 GEN=$(BLD)/gen
-OUT=$(BLD)/.out
+OUT=$(BLD)/out
 
 MAIN=.zigem-main.zig
 

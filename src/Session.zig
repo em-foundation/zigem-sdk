@@ -31,11 +31,11 @@ pub fn activate(params: ActivateParams) !void {
     work_root = try Fs.normalize(params.work);
     build_root = Fs.slashify(Fs.join(&.{ work_root, "build" }));
     gen_root = Fs.slashify(Fs.join(&.{ build_root, "gen" }));
-    out_root = Fs.slashify(Fs.join(&.{ build_root, ".out" }));
+    out_root = Fs.slashify(Fs.join(&.{ build_root, "out" }));
     Fs.delete(build_root);
     if (cur_mode == .CLEAN) return;
     Fs.mkdirs(work_root, "build/gen");
-    Fs.mkdirs(work_root, "build/.out");
+    Fs.mkdirs(work_root, "build/out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
     try Props.addBundle("em.core");
