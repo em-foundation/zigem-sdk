@@ -5,5 +5,5 @@ zig-cache
 zig-out
 **/local.ini
 .vscode/
-workspace/build
+workspace/zigem
 workspace/.zigem-main.zig

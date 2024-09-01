@@ -1,4 +1,4 @@
-pub const em = @import("../../build/gen/em.zig");
+pub const em = @import("../../zigem/gen/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
 pub const Time = struct {

@@ -1,6 +1,6 @@
 DISTRO=ti.cc23xx/ti.distro.cc23xx
 
-BLD=build
+BLD=zigem
 GEN=$(BLD)/gen
 OUT=$(BLD)/out
 

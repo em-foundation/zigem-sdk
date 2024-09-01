@@ -71,7 +71,7 @@ fn doRefresh() !void {
 
 fn execMake(goal: []const u8) ![]const u8 {
     const OS = "OS=" ++ @tagName(builtin.os.tag);
-    const argv = [_][]const u8{ "make", "-f", "build/makefile", goal, OS };
+    const argv = [_][]const u8{ "make", "-f", "zigem/makefile", goal, OS };
     const proc = try std.process.Child.run(.{
         .allocator = Heap.get(),
         .argv = &argv,
