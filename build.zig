@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) void {
     const target = b.host;
     const optimize = b.standardOptimizeOption(.{});
     const exe = b.addExecutable(.{
-        .name = "zig-em",
+        .name = "zigem",
         .root_source_file = std.Build.path(b, "src/main.zig"),
         .target = target,
         .optimize = optimize,
@@ -45,13 +45,13 @@ pub fn build(b: *std.Build) void {
     const verify_exe = b.addRunArtifact(exe);
     verify_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "workspace" } });
     verify_exe.addArgs(&.{ "compile", "-u", "em.test/em.examples.basic/BlinkerP.em.zig" });
-    const verify_step = b.step("verify", "Verify zig-em");
+    const verify_step = b.step("verify", "Verify ZigEM");
     verify_step.dependOn(&verify_exe.step);
 
     const zigem_exe = b.addRunArtifact(exe);
     if (b.args) |args| zigem_exe.addArgs(args);
     zigem_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "workspace" } });
-    const zigem_step = b.step("zig-em", "Execute the ZigEM CLI");
+    const zigem_step = b.step("zigem", "Execute the ZigEM CLI");
     zigem_step.dependOn(&zigem_exe.step);
 }
 
