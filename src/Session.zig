@@ -13,6 +13,8 @@ pub const Mode = enum {
     REFRESH,
 };
 
+const ZIGEM_MAIN = ".zigem-main.zig";
+
 var cur_mode: Mode = undefined;
 var build_root: []const u8 = undefined;
 var gen_root: []const u8 = undefined;
@@ -33,7 +35,15 @@ pub fn activate(params: ActivateParams) !void {
     gen_root = build_root;
     out_root = Fs.slashify(Fs.join(&.{ build_root, "out" }));
     Fs.delete(build_root);
-    if (cur_mode == .CLEAN) return;
+    Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ZIGEM_MAIN })));
+    if (cur_mode == .CLEAN) {
+        // legacy
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".gen" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".out" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-host.zig" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-targ.zig" })));
+        return;
+    }
     Fs.mkdirs(work_root, "zigem/out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
@@ -54,7 +64,7 @@ pub fn doRefresh() !void {
     try genEmStub();
     try genMakefile();
     try genProps();
-    try genRoot();
+    try genMain();
     try genTarg();
     try genUnits();
 }
@@ -82,6 +92,26 @@ fn genMakefile() !void {
     file.close();
 }
 
+fn genMain() !void {
+    var file = try Out.open(Fs.join(&.{ work_root, ZIGEM_MAIN }));
+    const txt =
+        \\GENERATED FILE -- do not edit!!!
+        \\
+        \\pub usingnamespace @import("zigem/em.zig");
+        \\const domain_desc = @import("zigem/domain.zig");
+        \\
+        \\pub fn main() void {
+        \\    if (domain_desc.DOMAIN == .HOST) @import("zigem/host.zig").exec();
+        \\}
+        \\
+        \\export fn zigem_main() void {
+        \\    if (domain_desc.DOMAIN == .TARG) @import("zigem/targ.zig").exec();
+        \\}
+    ;
+    file.print("{s}", .{txt});
+    file.close();
+}
+
 fn genProps() !void {
     var file = try Out.open(Fs.join(&.{ gen_root, "props.zig" }));
     file.print("const std = @import(\"std\");\n\n", .{});
@@ -91,22 +121,6 @@ fn genProps() !void {
         file.print("    .{{ \"{s}\", \"{s}\" }},\n", .{ e.key_ptr.*, e.value_ptr.* });
     }
     file.print("}});\n", .{});
-    file.close();
-}
-
-fn genRoot() !void {
-    var file = try Out.open(Fs.join(&.{ work_root, ".zigem-main.zig" }));
-    const txt =
-        \\pub usingnamespace @import("zigem/em.zig");
-        \\const domain_desc = @import("zigem/domain.zig");
-        \\pub fn main() void {
-        \\    if (domain_desc.DOMAIN == .HOST) @import("zigem/host.zig").exec();
-        \\}
-        \\export fn zigem_main() void {
-        \\    if (domain_desc.DOMAIN == .TARG) @import("zigem/targ.zig").exec();
-        \\}
-    ;
-    file.print("{s}", .{txt});
     file.close();
 }
 
