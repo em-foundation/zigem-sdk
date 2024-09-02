@@ -17,10 +17,44 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
+        .itab = if (opts.inherits == void) null else mkItab(unitScope(This), opts.inherits.em__U.scope()),
         .kind = kind,
         .legacy = opts.legacy,
         .upath = un,
     };
+}
+
+fn mkItab(U: type, I: type) *const anyopaque {
+    comptime {
+        const ti = @typeInfo(I);
+        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        for (ti.Struct.decls) |decl| {
+            const dval = @field(I, decl.name);
+            const dti = @typeInfo(@TypeOf(dval));
+            if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+        }
+        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+        for (fdecl_list, 0..) |fdecl, i| {
+            const func = @field(U, fdecl.name);
+            const func_ptr = &func;
+            fld_list[i] = std.builtin.Type.StructField{
+                .name = fdecl.name,
+                .type = *const @TypeOf(func),
+                .default_value = @ptrCast(&func_ptr),
+                .is_comptime = false,
+                .alignment = 0,
+            };
+        }
+        const freeze = fld_list;
+        const ITab = @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = freeze[0..],
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+        return @as(*const anyopaque, &ITab{});
+    }
 }
 
 pub fn composite(This: type, opts: UnitOpts) Unit {
@@ -64,6 +98,7 @@ pub const Unit = struct {
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
+    itab: ?*const anyopaque,
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
@@ -102,40 +137,6 @@ pub const Unit = struct {
             if (std.mem.eql(u8, iuval.upath, inter.upath)) return true;
         }
         return false;
-    }
-
-    pub fn ITab(self: Self) type {
-        comptime {
-            const U = self.scope();
-            const I = self.inherits.?.scope();
-            const ti = @typeInfo(I);
-            var fdecl_list: []const std.builtin.Type.Declaration = &.{};
-            for (ti.Struct.decls) |decl| {
-                const dval = @field(I, decl.name);
-                const dti = @typeInfo(@TypeOf(dval));
-                if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
-            }
-            var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
-            for (fdecl_list, 0..) |fdecl, i| {
-                const func = @field(U, fdecl.name);
-                const func_ptr = &func;
-                fld_list[i] = std.builtin.Type.StructField{
-                    .name = fdecl.name,
-                    .type = *const @TypeOf(func),
-                    .default_value = @ptrCast(&func_ptr),
-                    .is_comptime = false,
-                    .alignment = 0,
-                };
-            }
-            const freeze = fld_list;
-            return @Type(.{ .Struct = .{
-                .layout = .auto,
-                .fields = freeze[0..],
-                .decls = &.{},
-                .is_tuple = false,
-                .backing_integer = null,
-            } });
-        }
     }
 
     pub fn resolve(self: Self) type {
@@ -414,13 +415,20 @@ pub fn Proxy_H(I: type) type {
         em__cfgid: CfgId,
 
         _upath: []const u8 = I.em__U.upath,
+        _itab: ?*const anyopaque = I.em__U.itab,
 
-        //pub fn get(self: *const Self) Unit {
-        //    return @field(import, self._upath).em__U;
-        //}
+        pub fn get(self: *const Self) *const anyopaque {
+            return self._itab.?;
+        }
 
-        pub fn set(self: *Self, x: anytype) void {
-            self._upath = x.em__U.upath;
+        pub fn set(self: *Self, mod: anytype) void {
+            const u: Unit = mod.em__U;
+            std.debug.assert(u.hasInterface(I.em__U));
+            if (!u.hasInterface(I.em__U)) {
+                std.log.err("unit {s} does not implement {s}", .{ u.upath, I.em__U.upath });
+                fail();
+            }
+            self._upath = mod.em__U.upath;
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
