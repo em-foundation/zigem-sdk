@@ -96,6 +96,14 @@ pub const Unit = struct {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
     }
 
+    pub fn hasInterface(self: Self, inter: Unit) bool {
+        comptime var iu = self.inherits;
+        inline while (iu) |iuval| : (iu = iuval.inherits) {
+            if (std.mem.eql(u8, iuval.upath, inter.upath)) return true;
+        }
+        return false;
+    }
+
     pub fn ITab(self: Self) type {
         comptime {
             const U = self.scope();
