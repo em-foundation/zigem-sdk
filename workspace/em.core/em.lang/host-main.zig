@@ -108,7 +108,10 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
         if (u.kind == .module and !u.host_only and !u.legacy) {
-            try out.print("// {0s} {1s} {0s}\n", .{ "=" ** 8, u.upath });
+            //const @"// -------- BUILTIN FXNS -------- //" = {};
+
+            try out.print("const @\"// {0s} {1s} {0s} //\" = {{}};\n\n", .{ "-" ** 8, u.upath });
+            //try out.print("// {0s} {1s} {0s}\n", .{ "=" ** 8, u.upath });
             try genConfig(u, out);
             try out.print("\n", .{});
         }
