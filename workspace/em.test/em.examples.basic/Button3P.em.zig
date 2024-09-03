@@ -6,11 +6,11 @@ pub const EM__CONFIG = struct {
     em__upath: []const u8,
 };
 
-pub const AppBut = em.import.@"em__distro/BoardC".AppBut;
-pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const AppBut = em.import.@"em$distro/BoardC".AppBut;
+pub const AppLed = em.import.@"em$distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
+pub const SysLed = em.import.@"em$distro/BoardC".SysLed;
 
 pub const EM__HOST = struct {};
 

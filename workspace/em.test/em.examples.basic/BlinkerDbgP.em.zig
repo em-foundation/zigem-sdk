@@ -8,7 +8,7 @@ pub const EM__CONFIG = struct {
     max_cnt: em.Param(u16),
 };
 
-pub const BoardC = em.import.@"em__distro/BoardC";
+pub const BoardC = em.import.@"em$distro/BoardC";
 pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__HOST = struct {

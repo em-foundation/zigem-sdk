@@ -7,8 +7,8 @@ pub const EM__CONFIG = struct {
     blinkF: em.Param(FiberMgr.Obj),
 };
 
-pub const AppButEdge = em.import.@"em__distro/BoardC".AppButEdge;
-pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const AppButEdge = em.import.@"em$distro/BoardC".AppButEdge;
+pub const AppLed = em.import.@"em$distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 

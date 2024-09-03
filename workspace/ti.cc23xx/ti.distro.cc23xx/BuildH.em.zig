@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .host_only = true,
 });
 
-pub const BoardC = em.import.@"em__distro/BoardC";
+pub const BoardC = em.import.@"em$distro/BoardC";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 pub const LinkerH = em.import.@"em.build.misc/LinkerH";
 pub const StartupH = em.import.@"em.arch.arm/StartupH";
