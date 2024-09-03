@@ -77,7 +77,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
                 cur_cb = cb;
                 max_dur = dur.max;
-                min_dur = dur.max;
+                min_dur = dur.min;
                 if (cb == null) {
                     Edge.disableDetect();
                 } else {
