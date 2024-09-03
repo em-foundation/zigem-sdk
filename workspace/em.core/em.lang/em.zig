@@ -324,7 +324,7 @@ pub fn Factory_H(T: type) type {
                 const abs_txt =
                     \\comptime {{
                     \\    asm (".globl \"{0s}${1d}\"");
-                    \\    asm ("\"{0s}${1d}\" = \"gen.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
+                    \\    asm ("\"{0s}${1d}\" = \"zigem.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
                     \\}}
                     \\extern const @"{0s}${1d}": usize;
                     \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
