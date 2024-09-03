@@ -8,7 +8,7 @@ pub const EM__CONFIG = struct {
 };
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
-pub const AppLed = em.import.@"em$distro/BoardC".AppLed;
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const EM__HOST = struct {

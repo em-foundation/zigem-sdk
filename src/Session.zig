@@ -173,7 +173,7 @@ fn genUnits() !void {
                 const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
                 const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
-                if (is_distro) file.print("pub const @\"em$distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
             }
         }
     }

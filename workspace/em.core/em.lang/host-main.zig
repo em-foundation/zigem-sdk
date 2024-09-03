@@ -15,7 +15,7 @@ inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_use
 }
 
 pub fn exec(top: em.Unit) !void {
-    const BuildH = em.import.@"em$distro/BuildH";
+    const BuildH = em.import.@"em__distro/BuildH";
     @setEvalBranchQuota(100_000);
     const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
