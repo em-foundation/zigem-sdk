@@ -58,7 +58,7 @@ fn ItabType(T: type) type {
     }
 }
 
-fn mkIobj(Itab: type, U: type) *const Itab {
+fn mkIobj(Itab: type, U: type) Itab {
     var iobj = Itab{};
     const ti = @typeInfo(Itab);
     inline for (ti.Struct.fields) |fld| {
@@ -67,7 +67,7 @@ fn mkIobj(Itab: type, U: type) *const Itab {
         }
     }
     const iobj_freeze = iobj;
-    return &iobj_freeze;
+    return iobj_freeze;
 }
 
 fn mkItab(U: type, I: type) *const anyopaque {
@@ -457,7 +457,7 @@ pub fn Proxy_H(I: type) type {
         const Self = @This();
         pub const _em__builtin = {};
 
-        const Iobj = *const I.em__U.Itab;
+        const Iobj = I.em__U.Itab;
 
         em__cfgid: CfgId,
 
@@ -469,13 +469,14 @@ pub fn Proxy_H(I: type) type {
         }
 
         pub fn set(self: *Self, mod: anytype) void {
-            const u: Unit = mod.em__U;
-            std.debug.assert(u.hasInterface(I.em__U));
-            if (!u.hasInterface(I.em__U)) {
-                std.log.err("unit {s} does not implement {s}", .{ u.upath, I.em__U.upath });
+            const unit: Unit = mod.em__U;
+            std.debug.assert(unit.hasInterface(I.em__U));
+            if (!unit.hasInterface(I.em__U)) {
+                std.log.err("unit {s} does not implement {s}", .{ unit.upath, I.em__U.upath });
                 fail();
             }
-            self._upath = mod.em__U.upath;
+            self._upath = unit.upath;
+            self._iobj = mkIobj(I.em__U.Itab, unit.scope());
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
