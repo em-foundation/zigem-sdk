@@ -29,11 +29,12 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__HOST = struct {
             //
             pub const Edge = em__C.Edge;
+            const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
 
             pub fn em__constructH() void {
                 const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
                 em__C.debounceF.set(debounceF);
-                // Edge.get().scope().setDetectHandlerH(em__U.fxn("buttonHandler", em__C.Edge.get().scope().HandlerArg));
+                Edge.get().setDetectHandlerH(em__U.fxn("buttonHandler", GpioEdgeI.HandlerArg));
             }
         };
 
@@ -76,7 +77,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
                 cur_cb = cb;
                 max_dur = dur.max;
-                min_dur = dur.max;
+                min_dur = dur.min;
                 if (cb == null) {
                     Edge.disableDetect();
                 } else {

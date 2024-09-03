@@ -209,7 +209,7 @@ pub fn main() !void {
 
     const app = &cli.App{
         .command = cli.Command{
-            .name = "zig-em",
+            .name = "zigem",
             .target = cli.CommandTarget{
                 .subcommands = &.{
                     clean_cmd,

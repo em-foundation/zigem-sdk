@@ -17,10 +17,90 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
+        .Itab = if (kind == .interface) ItabType(unitScope(This)) else void,
         .kind = kind,
         .legacy = opts.legacy,
         .upath = un,
     };
+}
+
+fn ItabType(T: type) type {
+    comptime {
+        const ti = @typeInfo(T);
+        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        for (ti.Struct.decls) |decl| {
+            if (!isBuiltin(decl.name)) {
+                const dval = @field(T, decl.name);
+                const dti = @typeInfo(@TypeOf(dval));
+                if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+            }
+        }
+        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+        for (fdecl_list, 0..) |fdecl, i| {
+            const func = @field(T, fdecl.name);
+            const func_ptr = &func;
+            fld_list[i] = std.builtin.Type.StructField{
+                .name = fdecl.name,
+                .type = *const @TypeOf(func),
+                .default_value = @ptrCast(&func_ptr),
+                .is_comptime = false,
+                .alignment = 0,
+            };
+        }
+        const fld_list_freeze = fld_list;
+        return @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = fld_list_freeze[0..],
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+    }
+}
+
+fn mkIobj(Itab: type, U: type) Itab {
+    var iobj = Itab{};
+    const ti = @typeInfo(Itab);
+    inline for (ti.Struct.fields) |fld| {
+        if (@hasDecl(U, fld.name)) {
+            @field(iobj, fld.name) = @field(U, fld.name);
+        }
+    }
+    const iobj_freeze = iobj;
+    return iobj_freeze;
+}
+
+fn mkItab(U: type, I: type) *const anyopaque {
+    comptime {
+        const ti = @typeInfo(I);
+        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        for (ti.Struct.decls) |decl| {
+            const dval = @field(I, decl.name);
+            const dti = @typeInfo(@TypeOf(dval));
+            if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+        }
+        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+        for (fdecl_list, 0..) |fdecl, i| {
+            const func = @field(U, fdecl.name);
+            const func_ptr = &func;
+            fld_list[i] = std.builtin.Type.StructField{
+                .name = fdecl.name,
+                .type = *const @TypeOf(func),
+                .default_value = @ptrCast(&func_ptr),
+                .is_comptime = false,
+                .alignment = 0,
+            };
+        }
+        const freeze = fld_list;
+        const ITab = @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = freeze[0..],
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+        return @as(*const anyopaque, &ITab{});
+    }
 }
 
 pub fn composite(This: type, opts: UnitOpts) Unit {
@@ -37,51 +117,6 @@ pub fn module(This: type, opts: UnitOpts) Unit {
 
 pub fn template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
-}
-
-fn ItabType(ImplT: type) type {
-    comptime {
-        const ti = @typeInfo(ImplT);
-        var fld_list: []const std.builtin.Type.StructField = &.{};
-        for (ti.Struct.decls) |decl| {
-            if (!std.mem.eql(u8, decl.name, "em__I")) {
-                const dval = @field(ImplT, decl.name);
-                const dti = @typeInfo(@TypeOf(dval));
-                if (dti == .Fn) {
-                    const fld = std.builtin.Type.StructField{
-                        .name = decl.name,
-                        .type = *const @TypeOf(dval),
-                        .default_value = null,
-                        .is_comptime = false,
-                        .alignment = 0,
-                    };
-                    fld_list = fld_list ++ ([_]std.builtin.Type.StructField{fld})[0..];
-                }
-            }
-        }
-        const freeze = fld_list;
-        return @Type(.{ .Struct = .{
-            .layout = .auto,
-            .fields = freeze,
-            .decls = &.{},
-            .is_tuple = false,
-            .backing_integer = null,
-        } });
-    }
-}
-
-pub fn mkItab(comptime ImplT: type) ItabType(ImplT) {
-    var itab: ItabType(ImplT) = undefined;
-    inline for (comptime std.meta.declarations(ImplT)) |decl| {
-        if (!std.mem.eql(u8, decl.name, "em__I")) {
-            const dval = @field(ImplT, decl.name);
-            const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) {
-                @field(itab, decl.name) = dval;
-            }
-        }
-    }
-    return itab;
 }
 
 pub const UnitKind = enum {
@@ -109,6 +144,7 @@ pub const Unit = struct {
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
+    Itab: type,
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
@@ -141,13 +177,13 @@ pub const Unit = struct {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
     }
 
-    pub fn hasItab(self: Self) bool {
-        return self.inherits != null or self.kind == .interface;
+    pub fn hasInterface(self: Self, inter: Unit) bool {
+        comptime var iu = self.inherits;
+        inline while (iu) |iuval| : (iu = iuval.inherits) {
+            if (std.mem.eql(u8, iuval.upath, inter.upath)) return true;
+        }
+        return false;
     }
-
-    //pub fn itab(self: Self) if (self.hasItab()) ItabType(self.scope()) else void {
-    //    return if (self.hasItab()) mkItab(self.scope()) else {};
-    //}
 
     pub fn resolve(self: Self) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
@@ -288,7 +324,7 @@ pub fn Factory_H(T: type) type {
                 const abs_txt =
                     \\comptime {{
                     \\    asm (".globl \"{0s}${1d}\"");
-                    \\    asm ("\"{0s}${1d}\" = \"gen.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
+                    \\    asm ("\"{0s}${1d}\" = \"zigem.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
                     \\}}
                     \\extern const @"{0s}${1d}": usize;
                     \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
@@ -419,19 +455,28 @@ pub fn Proxy(I: type) type {
 pub fn Proxy_H(I: type) type {
     return *struct {
         const Self = @This();
-
         pub const _em__builtin = {};
+
+        const Iobj = I.em__U.Itab;
 
         em__cfgid: CfgId,
 
         _upath: []const u8 = I.em__U.upath,
+        _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
 
-        //pub fn get(self: *const Self) Unit {
-        //    return @field(import, self._upath).em__U;
-        //}
+        pub fn get(self: *const Self) Iobj {
+            return self._iobj;
+        }
 
-        pub fn set(self: *Self, x: anytype) void {
-            self._upath = x.em__U.upath;
+        pub fn set(self: *Self, mod: anytype) void {
+            const unit: Unit = mod.em__U;
+            std.debug.assert(unit.hasInterface(I.em__U));
+            if (!unit.hasInterface(I.em__U)) {
+                std.log.err("unit {s} does not implement {s}", .{ unit.upath, I.em__U.upath });
+                fail();
+            }
+            self._upath = unit.upath;
+            self._iobj = mkIobj(I.em__U.Itab, unit.scope());
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
@@ -807,6 +852,10 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
 }
 
 pub const import = @import("../../zigem/imports.zig");
+
+pub fn isBuiltin(name: []const u8) bool {
+    return std.mem.eql(u8, name, "em") or std.mem.startsWith(u8, name, "em__") or std.mem.startsWith(u8, name, "EM__");
+}
 
 pub const ptr_t = ?*anyopaque;
 
