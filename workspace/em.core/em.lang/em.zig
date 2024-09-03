@@ -17,11 +17,57 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .generated = opts.generated,
         .host_only = opts.host_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
-        .itab = if (opts.inherits == void) null else mkItab(unitScope(This), opts.inherits.em__U.scope()),
+        .Itab = if (kind == .interface) ItabType(unitScope(This)) else void,
         .kind = kind,
         .legacy = opts.legacy,
         .upath = un,
     };
+}
+
+fn ItabType(T: type) type {
+    comptime {
+        const ti = @typeInfo(T);
+        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        for (ti.Struct.decls) |decl| {
+            if (!isBuiltin(decl.name)) {
+                const dval = @field(T, decl.name);
+                const dti = @typeInfo(@TypeOf(dval));
+                if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+            }
+        }
+        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+        for (fdecl_list, 0..) |fdecl, i| {
+            const func = @field(T, fdecl.name);
+            const func_ptr = &func;
+            fld_list[i] = std.builtin.Type.StructField{
+                .name = fdecl.name,
+                .type = *const @TypeOf(func),
+                .default_value = @ptrCast(&func_ptr),
+                .is_comptime = false,
+                .alignment = 0,
+            };
+        }
+        const fld_list_freeze = fld_list;
+        return @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = fld_list_freeze[0..],
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+    }
+}
+
+fn mkIobj(Itab: type, U: type) *const Itab {
+    var iobj = Itab{};
+    const ti = @typeInfo(Itab);
+    inline for (ti.Struct.fields) |fld| {
+        if (@hasDecl(U, fld.name)) {
+            @field(iobj, fld.name) = @field(U, fld.name);
+        }
+    }
+    const iobj_freeze = iobj;
+    return &iobj_freeze;
 }
 
 fn mkItab(U: type, I: type) *const anyopaque {
@@ -98,7 +144,7 @@ pub const Unit = struct {
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
-    itab: ?*const anyopaque,
+    Itab: type,
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
@@ -409,16 +455,17 @@ pub fn Proxy(I: type) type {
 pub fn Proxy_H(I: type) type {
     return *struct {
         const Self = @This();
-
         pub const _em__builtin = {};
+
+        const Iobj = *const I.em__U.Itab;
 
         em__cfgid: CfgId,
 
         _upath: []const u8 = I.em__U.upath,
-        _itab: ?*const anyopaque = I.em__U.itab,
+        _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
 
-        pub fn get(self: *const Self) *const anyopaque {
-            return self._itab.?;
+        pub fn get(self: *const Self) Iobj {
+            return self._iobj;
         }
 
         pub fn set(self: *Self, mod: anytype) void {
@@ -804,6 +851,10 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
 }
 
 pub const import = @import("../../zigem/imports.zig");
+
+pub fn isBuiltin(name: []const u8) bool {
+    return std.mem.eql(u8, name, "em") or std.mem.startsWith(u8, name, "em__") or std.mem.startsWith(u8, name, "EM__");
+}
 
 pub const ptr_t = ?*anyopaque;
 
