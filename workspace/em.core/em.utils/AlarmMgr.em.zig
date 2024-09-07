@@ -48,15 +48,15 @@ pub const EM__TARG = struct {
     var cur_alarm: ?*Alarm = null;
 
     fn update(delta_ticks: u32) void {
+        WakeupTimer.disable();
         const alarm_tab = em__C.AlarmOF;
         const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
-        WakeupTimer.disable();
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
             if (a._ticks == 0) continue; // inactive alarm
-            a._ticks -= delta_ticks;
+            a._ticks = if (a._ticks > delta_ticks) a._ticks - delta_ticks else 0;
             if (a._thresh <= thresh) { // expired alarm
                 a._fiber.post();
             } else if (a._ticks < max_ticks) {
@@ -64,9 +64,10 @@ pub const EM__TARG = struct {
                 max_ticks = a._ticks;
             }
         }
-        if (nxt_alarm == null) return; // no active alarms
         cur_alarm = nxt_alarm;
-        WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
+        if (cur_alarm != null) {
+            WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
+        }
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
