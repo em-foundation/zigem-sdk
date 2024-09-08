@@ -1,6 +1,10 @@
 # **Zig&bull;EM**
 ## v25.0.2
-- initial **VS Code** support through the `vscode-zigem` extension
+- initial **VS Code** support through `vscode-zigem` extension
+- new overall workspace organization
+- renamed `em.test` bundle as `examples`
+- critical bug-fix in `em.utils/FiberMgr`
+- `em.examples.basic/TickerP` not fully operational
 - additional information at [blog.zigem.tech/post-003](https://blog.zigem.tech/post-003/)
 
 ## v25.0.1
