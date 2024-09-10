@@ -6,7 +6,7 @@ pub const EM__CONFIG = struct {};
 
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     pub fn em__constructH() void {
         IntrVec.useIntrH("CPUIRQ0");
     }
@@ -67,7 +67,7 @@ pub const EM__TARG = struct {
     }
 
     export fn CPUIRQ0_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         em.reg(hal.RTC_BASE + hal.RTC_O_ICLR).* = hal.RTC_ICLR_EV0;
         if (cur_handler != null) cur_handler.?(Handler{});
     }

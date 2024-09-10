@@ -26,7 +26,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const OnPressedCbFxn = ButtonI.OnPressedCbFxn;
         pub const OnPressedCbArg = ButtonI.OnPressedCbArg;
 
-        pub const EM__HOST = struct {
+        pub const EM_META = struct {
             //
             pub const Edge = em__C.Edge;
             const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";

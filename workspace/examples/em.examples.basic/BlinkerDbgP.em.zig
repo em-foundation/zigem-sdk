@@ -11,7 +11,7 @@ pub const EM__CONFIG = struct {
 pub const BoardC = em.import.@"em__distro/BoardC";
 pub const Common = em.import.@"em.mcu/Common";
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     pub fn em__initH() void {
         em__C.dbg_flag.set(true);

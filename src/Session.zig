@@ -40,7 +40,7 @@ pub fn activate(params: ActivateParams) !void {
         // legacy
         Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".gen" })));
         Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".out" })));
-        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-host.zig" })));
+        Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-meta.zig" })));
         Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ".main-targ.zig" })));
         return;
     }
@@ -56,7 +56,7 @@ pub fn activate(params: ActivateParams) !void {
 
 pub fn doBuild(upath: []const u8) !void {
     const uname = mkUname(upath);
-    try genStub("host", uname);
+    try genStub("meta", uname);
     try genStub("targ", uname);
 }
 
@@ -101,7 +101,7 @@ fn genMain() !void {
         \\const domain_desc = @import("zigem/domain.zig");
         \\
         \\pub fn main() void {
-        \\    if (domain_desc.DOMAIN == .HOST) @import("zigem/host.zig").exec();
+        \\    if (domain_desc.DOMAIN == .META) @import("zigem/meta.zig").exec();
         \\}
         \\
         \\export fn zigem_main() void {
@@ -181,8 +181,8 @@ fn genUnits() !void {
     //
     file = try Out.open(Fs.join(&.{ gen_root, "domain.zig" }));
     file.print(
-        \\pub const Domain = enum {{HOST, TARG}};
-        \\pub const DOMAIN: Domain = .HOST;
+        \\pub const Domain = enum {{META, TARG}};
+        \\pub const DOMAIN: Domain = .META;
         \\
     , .{});
     file.close();

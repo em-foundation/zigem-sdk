@@ -16,7 +16,7 @@ pub const SleepCbFxn = em.Fxn(SleepCbArg);
 pub const SleepCbArg = struct {};
 pub const CallbackTab = em.Table(SleepCbFxn, .RO);
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     var sleep_enter_cb_tab = em__C.sleep_enter_fxn_tab;
     var sleep_leave_cb_tab = em__C.sleep_leave_fxn_tab;

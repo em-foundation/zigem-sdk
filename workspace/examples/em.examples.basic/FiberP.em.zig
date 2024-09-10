@@ -9,37 +9,34 @@ pub const EM__CONFIG = struct {
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     pub fn em__constructH() void {
-        em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
+        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
+        em__C.blinkF.set(blinkF);
     }
 };
 
 pub const EM__TARG = struct {
     //
     const blinkF = em__C.blinkF;
-    var count: u8 = 5;
 
     pub fn em__run() void {
         blinkF.post();
         FiberMgr.run();
     }
 
+    var count: u8 = 5;
+
     pub fn blinkFB(_: FiberMgr.BodyArg) void {
         em.@"%%[d]"();
         count -= 1;
         if (count == 0) em.halt();
         AppLed.on();
-        Common.BusyWait.wait(5000);
+        Common.BusyWait.wait(100_000);
         AppLed.off();
-        OneShot.enable(100, &handler, null);
-    }
-
-    fn handler(_: OneShot.HandlerArg) void {
-        em.@"%%[c]"();
+        Common.BusyWait.wait(100_000);
         blinkF.post();
     }
 };

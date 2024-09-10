@@ -19,7 +19,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const EM__HOST = struct {
+        pub const EM_META = struct {
             //
             pub const active_low = em__C.active_low;
             pub const Pin = em__C.Pin;

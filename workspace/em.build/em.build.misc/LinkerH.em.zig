@@ -1,9 +1,9 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
-    .host_only = true,
+    .meta_only = true,
 });
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     const flash_txt =
         \\MEMORY {

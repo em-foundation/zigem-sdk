@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/UsCounterI",
 });
 
-pub const EM__HOST = struct {};
+pub const EM_META = struct {};
 
 pub const EM__TARG = struct {
     //

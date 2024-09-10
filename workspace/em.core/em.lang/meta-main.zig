@@ -74,7 +74,7 @@ fn genDomain() !void {
     const file = try std.fs.createFileAbsolute(em._domain_file, .{});
     const out = file.writer();
     try out.print(
-        \\pub const Domain = enum {{HOST, TARG}};
+        \\pub const Domain = enum {{META, TARG}};
         \\pub const DOMAIN: Domain = .TARG;
         \\
     , .{});
@@ -107,7 +107,7 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     ;
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
-        if (u.kind == .module and !u.host_only and !u.legacy) {
+        if (u.kind == .module and !u.meta_only and !u.legacy) {
             //const @"// -------- BUILTIN FXNS -------- //" = {};
 
             try out.print("const @\"// {0s} {1s} {0s} //\" = {{}};\n\n", .{ "-" ** 8, u.upath });

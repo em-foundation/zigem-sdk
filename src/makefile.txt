@@ -6,12 +6,12 @@ OUT=$(BLD)/out
 
 MAIN=.zigem-main.zig
 
-host:
+meta:
 	@rm -f $(GEN)/targ.zig
 	@touch $(GEN)/targ.zig
 	@rm -rf $(OUT)/*
-	@zig build-exe -I. -femit-bin=$(OUT)/host-main.exe $(MAIN)
-	@$(OUT)/host-main.exe 
+	@zig build-exe -I. -femit-bin=$(OUT)/meta-main.exe $(MAIN)
+	@$(OUT)/meta-main.exe 
 	@zig fmt $(GEN)/targ.zig 2>&1 >/dev/null
 
 hal:

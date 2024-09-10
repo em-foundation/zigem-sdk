@@ -15,7 +15,7 @@ pub const HandlerInfo = struct {
     handler: GpioEdgeI.HandlerFxn,
 };
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     var handler_info_tab = em__C.handler_info_tab;
 
@@ -40,7 +40,7 @@ pub const EM__TARG = struct {
     }
 
     export fn GPIO_COMB_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         const mis = reg(hal.GPIO_BASE + hal.GPIO_O_MIS).*;
         for (handler_info_tab) |hi| {
             if ((mis & hi.mask) != 0 and hi.handler != null) {
