@@ -31,7 +31,7 @@ fn doCompile() !void {
     try Session.activate(.{ .work = params.work, .mode = .COMPILE, .bundle = bn, .setup = params.setup });
     try Session.doRefresh();
     try Session.doBuild(un);
-    try writer.print("compiling HOST ...\n", .{});
+    try writer.print("compiling META ...\n", .{});
     try writer.print("    board: {s}\n", .{Session.getBoard()});
     try writer.print("    setup: {s}\n", .{Session.getSetup()});
     var stdout = try execMake("host");
@@ -127,9 +127,9 @@ pub fn main() !void {
     };
 
     const meta_opt = cli.Option{
-        .long_name = "meta-only",
+        .long_name = "--meta",
         .short_alias = 'm',
-        .help = "Only run the HOST meta-program",
+        .help = "Only run the hosted meta-program",
         .required = false,
         .value_name = "META",
         .value_ref = runner.mkRef(&params.meta),

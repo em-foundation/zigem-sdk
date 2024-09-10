@@ -4,7 +4,7 @@ const domain_desc = @import("../../zigem/domain.zig");
 pub const Domain = domain_desc.Domain;
 pub const DOMAIN = domain_desc.DOMAIN;
 
-pub const hosted = (DOMAIN == .HOST);
+pub const hosted = (DOMAIN == .META);
 
 const @"// -------- UNIT SPEC -------- //" = {};
 
@@ -148,7 +148,7 @@ pub const Unit = struct {
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
-            .HOST => {
+            .META => {
                 return initConfig(CT, self.upath);
                 //const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};
                 //return @constCast(&std.mem.zeroInit(CT, init));
@@ -201,7 +201,7 @@ pub const Unit = struct {
 
 pub fn unitScope(U: type) type {
     // TODO eliminate
-    return if (DOMAIN == .HOST) unitScope_H(U) else unitScope_T(U);
+    return if (DOMAIN == .META) unitScope_H(U) else unitScope_T(U);
 }
 
 pub fn unitScope_H(U: type) type {
@@ -267,7 +267,7 @@ const CfgId = struct {
 };
 
 pub fn Factory(T: type) type {
-    return if (DOMAIN == .HOST) Factory_H(T) else Factory_T(T);
+    return if (DOMAIN == .META) Factory_H(T) else Factory_T(T);
 }
 
 pub fn Factory_H(T: type) type {
@@ -344,7 +344,7 @@ pub fn Factory_T(T: type) type {
 
 pub fn Fxn(PT: type) type {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             return struct {
                 const Self = @This();
                 pub const _em__builtin = {};
@@ -369,7 +369,7 @@ pub fn Fxn(PT: type) type {
 }
 
 pub fn Obj(T: type) type {
-    return if (DOMAIN == .HOST) Obj_H(T) else Obj_T(T);
+    return if (DOMAIN == .META) Obj_H(T) else Obj_T(T);
 }
 
 pub fn Obj_H(T: type) type {
@@ -400,7 +400,7 @@ pub fn Obj_T(T: type) type {
 }
 
 pub fn Param(T: type) type {
-    return if (DOMAIN == .HOST) Param_H(T) else Param_T(T);
+    return if (DOMAIN == .META) Param_H(T) else Param_T(T);
 }
 
 pub fn Param_H(T: type) type {
@@ -449,7 +449,7 @@ pub fn Param_T(T: type) type {
 }
 
 pub fn Proxy(I: type) type {
-    return if (DOMAIN == .HOST) Proxy_H(I) else Proxy_T(I);
+    return if (DOMAIN == .META) Proxy_H(I) else Proxy_T(I);
 }
 
 pub fn Proxy_H(I: type) type {
@@ -503,7 +503,7 @@ pub fn Proxy_T(_: type) type {
 pub const TableAccess = enum { RO, RW };
 
 pub fn Table(T: type, acc: TableAccess) type {
-    return if (DOMAIN == .HOST) Table_H(T, acc) else Table_T(T, acc);
+    return if (DOMAIN == .META) Table_H(T, acc) else Table_T(T, acc);
 }
 
 pub fn Table_H(comptime T: type, acc: TableAccess) type {
@@ -570,7 +570,7 @@ const @"// -------- BUILTIN FXNS -------- //" = {};
 
 pub fn fail() void {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             std.log.err("em.fail", .{});
             std.process.exit(1);
         },
@@ -582,7 +582,7 @@ pub fn fail() void {
 
 pub fn halt() void {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             std.log.info("em.halt", .{});
             std.process.exit(0);
         },
@@ -594,7 +594,7 @@ pub fn halt() void {
 
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             std.log.debug(fmt, args);
         },
         .TARG => {

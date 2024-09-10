@@ -74,7 +74,7 @@ fn genDomain() !void {
     const file = try std.fs.createFileAbsolute(em._domain_file, .{});
     const out = file.writer();
     try out.print(
-        \\pub const Domain = enum {{HOST, TARG}};
+        \\pub const Domain = enum {{META, TARG}};
         \\pub const DOMAIN: Domain = .TARG;
         \\
     , .{});
