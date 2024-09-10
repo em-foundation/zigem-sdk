@@ -4,7 +4,7 @@ const domain_desc = @import("../../zigem/domain.zig");
 pub const Domain = domain_desc.Domain;
 pub const DOMAIN = domain_desc.DOMAIN;
 
-pub const hosted = (DOMAIN == .META);
+pub const IS_META = (DOMAIN == .META);
 
 const @"// -------- UNIT SPEC -------- //" = {};
 
@@ -15,7 +15,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     return Unit{
         ._U = This,
         .generated = opts.generated,
-        .host_only = opts.host_only,
+        .meta_only = opts.meta_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
         .Itab = if (kind == .interface) ItabType(unitScope(This)) else void,
         .kind = kind,
@@ -128,7 +128,7 @@ pub const UnitKind = enum {
 
 pub const UnitOpts = struct {
     name: ?[]const u8 = null,
-    host_only: bool = false,
+    meta_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,
@@ -140,7 +140,7 @@ pub const Unit = struct {
     _U: type,
     kind: UnitKind,
     upath: []const u8,
-    host_only: bool = false,
+    meta_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
@@ -714,7 +714,7 @@ fn mkUnitImport(upath: []const u8) []const u8 {
     return sb.get();
 }
 
-pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
+pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
     const T = @TypeOf(v);
     const ti = @typeInfo(T);
     const tn = @typeName(T);

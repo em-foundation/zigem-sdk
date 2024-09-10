@@ -67,7 +67,7 @@ pub const EM__TARG = struct {
     }
 
     export fn CPUIRQ0_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         em.reg(hal.RTC_BASE + hal.RTC_O_ICLR).* = hal.RTC_ICLR_EV0;
         if (cur_handler != null) cur_handler.?(Handler{});
     }

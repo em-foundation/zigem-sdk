@@ -8,7 +8,7 @@ pub const EM__CONFIG = struct {
 };
 
 export fn DEFAULT_isr() void {
-    if (em.hosted) return;
+    if (em.IS_META) return;
     em__U.scope().defaultIsr();
 }
 

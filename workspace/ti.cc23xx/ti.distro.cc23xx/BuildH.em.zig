@@ -1,6 +1,6 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
-    .host_only = true,
+    .meta_only = true,
 });
 
 pub const BoardC = em.import.@"em__distro/BoardC";

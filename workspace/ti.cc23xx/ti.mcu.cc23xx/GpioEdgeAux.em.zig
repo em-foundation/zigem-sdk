@@ -40,7 +40,7 @@ pub const EM__TARG = struct {
     }
 
     export fn GPIO_COMB_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         const mis = reg(hal.GPIO_BASE + hal.GPIO_O_MIS).*;
         for (handler_info_tab) |hi| {
             if ((mis & hi.mask) != 0 and hi.handler != null) {

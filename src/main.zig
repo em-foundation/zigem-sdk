@@ -34,7 +34,7 @@ fn doCompile() !void {
     try writer.print("compiling META ...\n", .{});
     try writer.print("    board: {s}\n", .{Session.getBoard()});
     try writer.print("    setup: {s}\n", .{Session.getSetup()});
-    var stdout = try execMake("host");
+    var stdout = try execMake("meta");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     if (params.meta) {
         const t2: f80 = @floatFromInt(std.time.milliTimestamp());
