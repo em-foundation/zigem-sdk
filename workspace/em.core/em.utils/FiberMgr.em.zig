@@ -28,7 +28,7 @@ pub const Fiber = struct {
     }
 };
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
     pub fn createH(body: BodyFxn) Obj {
         const fiber = em__C.FiberOF.createH(.{ .body = body });

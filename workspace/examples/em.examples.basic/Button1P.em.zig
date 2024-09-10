@@ -10,7 +10,7 @@ pub const AppButEdge = em.import.@"em__distro/BoardC".AppButEdge;
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     pub fn em__constructH() void {
         AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
     }

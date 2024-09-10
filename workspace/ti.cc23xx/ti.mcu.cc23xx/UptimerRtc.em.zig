@@ -8,7 +8,7 @@ pub const UptimerI = em.import.@"em.hal/UptimerI";
 
 pub const Time = UptimerI.Time;
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
 };
 

@@ -12,7 +12,7 @@ export fn DEFAULT_isr() void {
     em__U.scope().defaultIsr();
 }
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
     var name_tab = em__C.name_tab;
     var used_tab = em__C.used_tab;

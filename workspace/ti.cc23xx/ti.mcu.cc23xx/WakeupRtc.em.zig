@@ -9,7 +9,7 @@ pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 pub const HandlerFxn = WakeupTimerI.HandlerFxn;
 pub const HandlerArg = WakeupTimerI.HandlerArg;
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
 };
 
