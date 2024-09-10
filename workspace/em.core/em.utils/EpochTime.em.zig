@@ -6,7 +6,7 @@ pub const EM__CONFIG = struct {
     Uptimer: em.Proxy(em.import.@"em.hal/UptimerI"),
 };
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     pub const Uptimer = em__C.Uptimer;
 };
 

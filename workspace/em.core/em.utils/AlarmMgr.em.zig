@@ -31,7 +31,7 @@ pub const Alarm = struct {
     }
 };
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     pub const WakeupTimer = em__C.WakeupTimer;
 

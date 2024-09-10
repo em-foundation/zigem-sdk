@@ -10,7 +10,7 @@ pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     pub fn em__constructH() void {
         const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));

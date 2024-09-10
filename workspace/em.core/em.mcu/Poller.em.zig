@@ -8,7 +8,7 @@ pub const EM__CONFIG = struct {
 
 pub const Common = em.import.@"em.mcu/Common";
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     pub const OneShot = em__C.OneShot;
 };

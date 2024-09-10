@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/GlobalInterruptsI",
 });
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
 };
 

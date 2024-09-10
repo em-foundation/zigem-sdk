@@ -5,7 +5,7 @@ pub const Common = em.import.@"em.mcu/Common";
 
 pub const Error = error{};
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
 };
 

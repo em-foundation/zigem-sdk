@@ -6,7 +6,7 @@ pub const EM__CONFIG = struct {};
 
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     pub fn em__constructH() void {
         IntrVec.useIntrH("CPUIRQ0");
     }

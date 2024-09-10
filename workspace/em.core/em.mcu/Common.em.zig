@@ -12,7 +12,7 @@ pub const EM__CONFIG = struct {
     UsCounter: em.Proxy(em.import.@"em.hal/UsCounterI"),
 };
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     pub const BusyWait = em__C.BusyWait;
     pub const ConsoleUart = em__C.ConsoleUart;
     pub const GlobalInterrupts = em__C.GlobalInterrupts;

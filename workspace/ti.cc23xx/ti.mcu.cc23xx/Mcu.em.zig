@@ -11,7 +11,7 @@ pub const EM__CONFIG = struct {
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Debug = em.import.@"em.lang/Debug";
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     //
     pub fn em__initH() void {
         em__C.no_cache.init(false);

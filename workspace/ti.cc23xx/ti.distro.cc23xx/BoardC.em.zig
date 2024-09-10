@@ -35,7 +35,7 @@ pub const Uptimer = em.import.@"ti.mcu.cc23xx/UptimerRtc";
 pub const UsCounter = em.import.@"ti.mcu.cc23xx/UsCounterSystick";
 pub const WakeupTimer = em.import.@"ti.mcu.cc23xx/WakeupRtc";
 
-pub const EM__HOST = struct {};
+pub const EM_META = struct {};
 
 pub fn em__configureH() void {
     AlarmMgr.WakeupTimer.set(WakeupTimer);

@@ -18,7 +18,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         );
         pub const em__C = em__U.config(EM__CONFIG);
 
-        pub const EM__HOST = struct {
+        pub const EM_META = struct {
             //
             pub const pin = em__C.pin;
 

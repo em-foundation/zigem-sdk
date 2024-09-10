@@ -6,7 +6,7 @@ pub const em__U = em.interface(@This(), .{
 pub const HandlerFxn = em.Fxn(HandlerArg);
 pub const HandlerArg = struct {};
 
-pub const EM__HOST = struct {
+pub const EM_META = struct {
     pub fn setDetectHandlerH(h: HandlerFxn) void {
         _ = h;
         return;

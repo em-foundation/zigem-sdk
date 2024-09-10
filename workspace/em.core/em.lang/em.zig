@@ -205,7 +205,7 @@ pub fn unitScope(U: type) type {
 }
 
 pub fn unitScope_H(U: type) type {
-    const S = if (@hasDecl(U, "EM__HOST")) U.EM__HOST else struct {};
+    const S = if (@hasDecl(U, "EM_META")) U.EM_META else struct {};
     return struct {
         const _UID = @typeName(U) ++ "_scope";
         pub usingnamespace U;
