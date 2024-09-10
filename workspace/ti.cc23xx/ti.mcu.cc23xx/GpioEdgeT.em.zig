@@ -32,7 +32,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             return m;
         }
 
-        pub const EM_META = struct {
+        pub const EM__META = struct {
             //
             pub const pin = em__C.pin;
 

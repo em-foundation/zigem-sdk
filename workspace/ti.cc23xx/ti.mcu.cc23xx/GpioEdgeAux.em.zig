@@ -15,7 +15,7 @@ pub const HandlerInfo = struct {
     handler: GpioEdgeI.HandlerFxn,
 };
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
     var handler_info_tab = em__C.handler_info_tab;
 

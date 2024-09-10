@@ -11,7 +11,7 @@ pub const EM__CONFIG = struct {
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     pub const CS = em__C.CS;
     pub const CLK = em__C.CLK;
     pub const PICO = em__C.PICO;

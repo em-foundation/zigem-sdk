@@ -8,7 +8,7 @@ pub const EM__CONFIG = struct {
     scalar: em.Param(u8),
 };
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
     pub const scalar = em__C.scalar;
 

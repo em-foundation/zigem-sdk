@@ -7,7 +7,7 @@ const ROM_T = extern struct {
 
 const ROM_TABLE: *const ROM_T = @ptrFromInt(0x0F00004C);
 
-pub const EM_META = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //

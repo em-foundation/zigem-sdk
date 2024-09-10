@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .meta_only = true,
 });
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
     pub fn em__generateH() void {
         genArmStartup();

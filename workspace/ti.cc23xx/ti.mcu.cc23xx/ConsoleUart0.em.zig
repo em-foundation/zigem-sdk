@@ -10,7 +10,7 @@ pub const EM__CONFIG = struct {
 
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 
-pub const EM_META = struct {
+pub const EM__META = struct {
     //
     pub const TxPin = em__C.TxPin;
 
