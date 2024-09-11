@@ -47,11 +47,11 @@ pub fn activate(params: ActivateParams) !void {
     Fs.mkdirs(work_root, "zigem/out");
     Fs.chdir(work_root);
     Props.init(work_root, params.setup != null);
-    try Props.addBundle("em.core");
-    if (params.bundle) |bn| try Props.addBundle(bn);
+    try Props.addPackage("em.core");
+    if (params.bundle) |bn| try Props.addPackage(bn);
     if (params.setup) |sn| try Props.addSetup(sn);
     try Props.addWorkspace();
-    try Props.addBundle(getDistroBundle());
+    try Props.addPackage(getDistroBundle());
 }
 
 pub fn doBuild(upath: []const u8) !void {

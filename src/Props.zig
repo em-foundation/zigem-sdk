@@ -13,12 +13,12 @@ const PROP_REQUIRES = "em.lang.BundleRequires";
 
 const SETUP_SEP = "://";
 
-const BundleList = std.ArrayList([]const u8);
+const PkgList = std.ArrayList([]const u8);
 
 const PropMap = std.StringHashMap([]const u8);
 const PropSet = std.StringHashMap(void);
 
-var cur_bundles = BundleList.init(Heap.get());
+var cur_pkgs = PkgList.init(Heap.get());
 var cur_props = PropMap.init(Heap.get());
 
 var done_set = PropSet.init(Heap.get());
@@ -27,19 +27,19 @@ var work_set = PropSet.init(Heap.get());
 var has_setup: bool = undefined;
 var root_dir: []const u8 = undefined;
 
-pub fn addBundle(name: []const u8) anyerror!void {
-    // std.log.info("adding bunding {s}", .{name});
+pub fn addPackage(name: []const u8) anyerror!void {
+    // std.log.info("adding package {s}", .{name});
     if (done_set.contains(name)) return;
-    if (work_set.contains(name)) std.zig.fatal("bundle cycle in {s}", .{name});
+    if (work_set.contains(name)) std.zig.fatal("package cycle in {s}", .{name});
     try work_set.put(name, {});
-    const path = Fs.join(&.{ root_dir, name, "em-bundle.ini" });
+    const path = Fs.join(&.{ root_dir, name, "zigem-package.ini" });
     const pm = try readProps(path);
     try applyRequires(pm);
     var ent_iter = pm.iterator();
     while (ent_iter.next()) |e| try cur_props.put(e.key_ptr.*, e.value_ptr.*);
     _ = work_set.remove(name);
     try done_set.put(name, {});
-    try cur_bundles.insert(0, Fs.dirname(path));
+    try cur_pkgs.insert(0, Fs.dirname(path));
 }
 
 pub fn addSetup(name: []const u8) anyerror!void {
@@ -80,12 +80,12 @@ fn applyRequires(pm: PropMap) anyerror!void {
     if (pm.contains(PROP_REQUIRES)) {
         const reqs = std.mem.trim(u8, pm.get(PROP_REQUIRES).?, &std.ascii.whitespace);
         var tok_iter = std.mem.tokenizeAny(u8, reqs, ", ");
-        while (tok_iter.next()) |bn| try addBundle(bn);
+        while (tok_iter.next()) |bn| try addPackage(bn);
     }
 }
 
-pub fn getBundles() BundleList {
-    return cur_bundles;
+pub fn getBundles() PkgList {
+    return cur_pkgs;
 }
 
 pub fn getProps() PropMap {
@@ -100,7 +100,7 @@ pub fn init(dir: []const u8, sflg: bool) void {
 pub fn print() void {
     var props_iter = cur_props.iterator();
     while (props_iter.next()) |ent| std.log.debug("{s} = {s}", .{ ent.key_ptr.*, ent.value_ptr.* });
-    for (cur_bundles.items) |bn| std.log.debug("bundle {s}", .{bn});
+    for (cur_pkgs.items) |bn| std.log.debug("bundle {s}", .{bn});
 }
 
 fn readProps(path: []const u8) !PropMap {
