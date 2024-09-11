@@ -9,7 +9,7 @@ const LOCAL_FILE = "local.ini";
 const ZIGEM_FILE = "zigem.ini";
 
 const PROP_EXTENDS = "em.lang.SetupExtends";
-const PROP_REQUIRES = "em.lang.BundleRequires";
+const PROP_REQUIRES = "em.lang.PackageRequires";
 
 const SETUP_SEP = "://";
 
