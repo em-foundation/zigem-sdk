@@ -117,6 +117,15 @@ pub fn main() !void {
     t0 = @floatFromInt(std.time.milliTimestamp());
     var runner = try cli.AppRunner.init(Heap.get());
 
+    const file_opt = cli.Option{
+        .long_name = "file",
+        .short_alias = 'f',
+        .help = "Workspace-relative path to a <unit>.em.zig source file",
+        .required = true,
+        .value_name = "UPATH",
+        .value_ref = runner.mkRef(&params.unit),
+    };
+
     const load_opt = cli.Option{
         .long_name = "load",
         .short_alias = 'l',
@@ -127,7 +136,7 @@ pub fn main() !void {
     };
 
     const meta_opt = cli.Option{
-        .long_name = "--meta",
+        .long_name = "meta",
         .short_alias = 'm',
         .help = "Only run the hosted meta-program",
         .required = false,
@@ -142,15 +151,6 @@ pub fn main() !void {
         .required = false,
         .value_name = "SETUP",
         .value_ref = runner.mkRef(&params.setup),
-    };
-
-    const unit_opt = cli.Option{
-        .long_name = "unit",
-        .short_alias = 'u',
-        .help = "Workspace-relative path to <unit>.em.zig file",
-        .required = true,
-        .value_name = "UPATH",
-        .value_ref = runner.mkRef(&params.unit),
     };
 
     const work_opt = cli.Option{
@@ -175,10 +175,10 @@ pub fn main() !void {
     const compile_cmd = cli.Command{
         .name = "compile",
         .options = &.{
+            file_opt,
             load_opt,
             meta_opt,
             setup_opt,
-            unit_opt,
             work_opt,
         },
         .target = cli.CommandTarget{
