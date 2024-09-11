@@ -84,7 +84,7 @@ fn applyRequires(pm: PropMap) anyerror!void {
     }
 }
 
-pub fn getBundles() PkgList {
+pub fn getPackages() PkgList {
     return cur_pkgs;
 }
 

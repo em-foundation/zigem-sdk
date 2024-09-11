@@ -51,7 +51,7 @@ pub fn activate(params: ActivateParams) !void {
     if (params.bundle) |bn| try Props.addPackage(bn);
     if (params.setup) |sn| try Props.addSetup(sn);
     try Props.addWorkspace();
-    try Props.addPackage(getDistroBundle());
+    try Props.addPackage(getDistroPkg());
 }
 
 pub fn doBuild(upath: []const u8) !void {
@@ -82,7 +82,7 @@ fn genEmStub() !void {
         \\
         \\pub const hal = @import("../{2s}/{3s}/hal.zig");
     ;
-    file.print(fmt, .{ gen_root, out_root, getDistroBundle(), getDistroPkg() });
+    file.print(fmt, .{ gen_root, out_root, getDistroPkg(), getDistroBuck() });
     file.close();
 }
 
@@ -145,8 +145,8 @@ fn genTarg() !void {
 }
 
 fn genUnits() !void {
-    const distro_pkg = getDistroPkg();
-    var pkg_set = std.StringArrayHashMap(void).init(Heap.get());
+    const distro_buck = getDistroBuck();
+    var buck_set = std.StringArrayHashMap(void).init(Heap.get());
     var type_map = std.StringArrayHashMap([]const u8).init(Heap.get());
     var file = try Out.open(Fs.join(&.{ gen_root, "imports.zig" }));
     const pre =
@@ -155,25 +155,25 @@ fn genUnits() !void {
         \\
     ;
     file.print(pre, .{});
-    for (Props.getBundles().items) |bp| {
-        var iter = Fs.openDir(bp).iterate();
-        const bname = Fs.basename(bp);
+    for (Props.getPackages().items) |pkgpath| {
+        var iter = Fs.openDir(pkgpath).iterate();
+        const pkgname = Fs.basename(pkgpath);
         while (try iter.next()) |ent| {
             if (ent.kind != .directory) continue;
-            const pname = ent.name;
-            const is_distro = std.mem.eql(u8, pname, distro_pkg);
-            if (pkg_set.contains(pname)) continue;
-            try pkg_set.put(pname, {});
-            var iter2 = Fs.openDir(Fs.join(&.{ bp, ent.name })).iterate();
+            const buckname = ent.name;
+            const is_distro = std.mem.eql(u8, buckname, distro_buck);
+            if (buck_set.contains(buckname)) continue;
+            try buck_set.put(buckname, {});
+            var iter2 = Fs.openDir(Fs.join(&.{ pkgpath, ent.name })).iterate();
             while (try iter2.next()) |ent2| {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
-                const tn = try sprint("{s}.{s}.{s}.em", .{ bname, pname, ent2.name[0..idx.?] });
-                const un = try sprint("{s}/{s}", .{ pname, ent2.name[0..idx.?] });
+                file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
+                const tn = try sprint("{s}.{s}.{s}.em", .{ pkgname, buckname, ent2.name[0..idx.?] });
+                const un = try sprint("{s}/{s}", .{ buckname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
-                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ pname, ent2.name[0..idx.?], bname, ent2.name });
+                if (is_distro) file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
             }
         }
     }
@@ -213,13 +213,13 @@ pub fn getBoard() []const u8 {
     return Props.getProps().get("em.lang.BoardKind").?;
 }
 
-fn getDistroBundle() []const u8 {
-    const distro = Props.getProps().get("em.lang.DistroPackage").?;
+fn getDistroPkg() []const u8 {
+    const distro = Props.getProps().get("em.lang.Distro").?;
     return distro[0..std.mem.indexOf(u8, distro, "://").?];
 }
 
-fn getDistroPkg() []const u8 {
-    const distro = Props.getProps().get("em.lang.DistroPackage").?;
+fn getDistroBuck() []const u8 {
+    const distro = Props.getProps().get("em.lang.Distro").?;
     return distro[std.mem.indexOf(u8, distro, "://").? + 3 ..];
 }
 
