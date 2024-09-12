@@ -65,8 +65,24 @@ pub fn doRefresh() !void {
     try genMakefile();
     try genProps();
     try genMain();
-    try genTarg();
+    try genDomain();
     try genUnits();
+}
+
+fn genDomain() !void {
+    var file = try Out.open(Fs.join(&.{ gen_root, "domain.zig" }));
+    file.print(
+        \\pub const Domain = enum {{META, TARG}};
+        \\pub const DOMAIN: Domain = .META;
+        \\
+    , .{});
+    file.close();
+    //
+    file = try Out.open(Fs.join(&.{ gen_root, "meta.zig" }));
+    file.close();
+    //
+    file = try Out.open(Fs.join(&.{ gen_root, "targ.zig" }));
+    file.close();
 }
 
 fn genEmStub() !void {
@@ -139,11 +155,6 @@ fn genStub(kind: []const u8, uname: []const u8) !void {
     file.close();
 }
 
-fn genTarg() !void {
-    var file = try Out.open(Fs.join(&.{ gen_root, "targ.zig" }));
-    file.close();
-}
-
 fn genUnits() !void {
     const distro_buck = getDistroBuck();
     var buck_set = std.StringArrayHashMap(void).init(Heap.get());
@@ -177,14 +188,6 @@ fn genUnits() !void {
             }
         }
     }
-    file.close();
-    //
-    file = try Out.open(Fs.join(&.{ gen_root, "domain.zig" }));
-    file.print(
-        \\pub const Domain = enum {{META, TARG}};
-        \\pub const DOMAIN: Domain = .META;
-        \\
-    , .{});
     file.close();
     //
     file = try Out.open(Fs.join(&.{ gen_root, "type_map.zig" }));
