@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = WakeupTimerI,
 });
@@ -9,7 +9,7 @@ pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 pub const HandlerFxn = WakeupTimerI.HandlerFxn;
 pub const HandlerArg = WakeupTimerI.HandlerArg;
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
 };
 

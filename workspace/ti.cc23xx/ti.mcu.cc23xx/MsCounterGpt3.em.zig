@@ -1,9 +1,9 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/MsCounterI",
 });
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
 };
 

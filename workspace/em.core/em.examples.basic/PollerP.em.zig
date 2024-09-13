@@ -1,11 +1,11 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const Poller = em.import.@"em.mcu/Poller";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
 };
 

@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = UptimerI,
 });
@@ -8,7 +8,7 @@ pub const UptimerI = em.import.@"em.hal/UptimerI";
 
 pub const Time = UptimerI.Time;
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
 };
 

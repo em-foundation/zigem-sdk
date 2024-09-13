@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -12,7 +12,7 @@ pub const EM__CONFIG = struct {
 const Common = em.import.@"em.mcu/Common";
 const GpioI = em.import.@"em.hal/GpioI";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     pub const DbgA = em__C.DbgA;
     pub const DbgB = em__C.DbgB;
     pub const DbgC = em__C.DbgC;
@@ -30,7 +30,14 @@ pub const EM__TARG = struct {
         Common.BusyWait.wait(1);
     }
 
-    pub fn mark(comptime id: u8, k: u8) void {
+    pub fn mark(comptime id: u8, e: anytype) void {
+        const ti = @typeInfo(@TypeOf(e));
+        const k: u8 = switch (ti) {
+            .Bool => @intFromBool(e),
+            .Enum => @intFromEnum(e),
+            .Int, .ComptimeInt => em.@"<>"(u8, e),
+            else => 0,
+        };
         for (0..k + 1) |_| {
             pulse(id);
         }

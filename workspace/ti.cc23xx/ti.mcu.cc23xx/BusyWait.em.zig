@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/BusyWaitI",
 });
@@ -8,7 +8,7 @@ pub const EM__CONFIG = struct {
     scalar: em.Param(u8),
 };
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     pub const scalar = em__C.scalar;
 

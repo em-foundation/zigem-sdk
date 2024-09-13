@@ -41,5 +41,13 @@
             .hash = "1220e083de87e1aadeb0c0446c301d4214b2eebb2632389eb650556462c80ec9b71d",
             .lazy = true,
         },
+        .@"zls-em" = .{
+            .url = "https://github.com/em-foundation/zls-em/archive/refs/tags/v0.0.1.tar.gz",
+            .hash = "12201b80d7156dfba486ba255f282e67ee3e84f782b6816d93fcd68466f9193be267",
+        },
+        .@"vscode-zigem" = .{
+            .url = "https://github.com/em-foundation/vscode-zigem/releases/download/v0.0.2.202409131250/vscode-zigem.zip",
+            .hash = "1220291e6f88b53eb17dbd6c47ef8f45eb8bae0a7181e51b1a3158bbe414862c110b",
+        },
     },
 }

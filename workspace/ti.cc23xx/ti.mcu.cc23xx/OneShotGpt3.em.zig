@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = OneShotMilliI,
 });
@@ -10,7 +10,7 @@ pub const OneShotMilliI = em.import.@"em.hal/OneShotMilliI";
 pub const HandlerArg = OneShotMilliI.HandlerArg;
 pub const HandlerFxn = OneShotMilliI.HandlerFxn;
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     pub fn em__constructH() void {
         IntrVec.useIntrH("LGPT3_COMB");
@@ -40,12 +40,13 @@ pub const EM__TARG = struct {
         hal.NVIC_EnableIRQ(hal.LGPT3_COMB_IRQn);
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LGPT3;
         reg(hal.LGPT3_BASE + hal.LGPT_O_IMSET).* = hal.LGPT_IMSET_TGT;
-        reg(hal.LGPT3_BASE + hal.LGPT_O_TGT).* = msecs * (48_000_000 / 1000);
+        reg(hal.LGPT3_BASE + hal.LGPT_O_PRECFG).* = (192 << hal.LGPT_PRECFG_TICKDIV_S);
+        reg(hal.LGPT3_BASE + hal.LGPT_O_TGT).* = msecs * (250);
         reg(hal.LGPT3_BASE + hal.LGPT_O_CTL).* = hal.LGPT_CTL_MODE_UP_ONCE | hal.LGPT_CTL_C0RST;
     }
 
     export fn LGPT3_COMB_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         const fxn = cur_fxn;
         disable();
         if (fxn != null) fxn.?(.{ .arg = cur_arg });

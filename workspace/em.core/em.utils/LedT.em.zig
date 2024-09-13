@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__T = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
@@ -19,7 +19,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const EM__HOST = struct {
+        pub const EM__META = struct {
             //
             pub const active_low = em__C.active_low;
             pub const Pin = em__C.Pin;

@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/McuI",
 });
@@ -11,7 +11,7 @@ pub const EM__CONFIG = struct {
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Debug = em.import.@"em.lang/Debug";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     pub fn em__initH() void {
         em__C.no_cache.init(false);

@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -6,7 +6,7 @@ pub const EM__CONFIG = struct {
     Uptimer: em.Proxy(em.import.@"em.hal/UptimerI"),
 };
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     pub const Uptimer = em__C.Uptimer;
 };
 

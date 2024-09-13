@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -28,7 +28,7 @@ pub const Fiber = struct {
     }
 };
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     pub fn createH(body: BodyFxn) Obj {
         const fiber = em__C.FiberOF.createH(.{ .body = body });
@@ -40,26 +40,27 @@ pub const EM__TARG = struct {
     //
     var ready_list = struct {
         const Self = @This();
-        const NIL: *Fiber = @ptrFromInt(4);
-        head: *Fiber = NIL,
-        tail: *Fiber = NIL,
+        const END: *Fiber = @ptrFromInt(4);
+        head: *Fiber = END,
+        tail: *Fiber = END,
+        count: u8 = 0,
         fn empty(self: *Self) bool {
-            return self.head == NIL;
+            return self.head == END;
         }
         fn give(self: *Self, elem: *Fiber) void {
             if (self.empty()) {
                 self.head = elem;
-                self.tail = elem;
             } else {
                 self.tail.link = elem;
             }
-            elem.link = NIL;
+            self.tail = elem;
+            elem.link = END;
         }
         fn take(self: *Self) *Fiber {
             const e = self.head;
             self.head = e.link.?;
             e.link = null;
-            if (self.head == NIL) self.tail = NIL;
+            if (self.head == END) self.tail = END;
             return e;
         }
     }{};

@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.hal/IdleI",
 });
@@ -16,7 +16,7 @@ pub const SleepCbFxn = em.Fxn(SleepCbArg);
 pub const SleepCbArg = struct {};
 pub const CallbackTab = em.Table(SleepCbFxn, .RO);
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     var sleep_enter_cb_tab = em__C.sleep_enter_fxn_tab;
     var sleep_leave_cb_tab = em__C.sleep_leave_fxn_tab;

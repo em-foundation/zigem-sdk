@@ -1,26 +1,106 @@
 const @"// -------- EXECUTION DOMAIN -------- //" = {};
 
-const domain_desc = @import("../../.gen/domain.zig");
+const domain_desc = @import("../../zigem/domain.zig");
 pub const Domain = domain_desc.Domain;
 pub const DOMAIN = domain_desc.DOMAIN;
 
-pub const hosted = (DOMAIN == .HOST);
+pub const IS_META = (DOMAIN == .META);
 
 const @"// -------- UNIT SPEC -------- //" = {};
 
-pub const UnitName = @import("../../.gen/unit_names.zig").UnitName;
+pub const UnitName = @import("../../zigem/unit_names.zig").UnitName;
 
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
         ._U = This,
         .generated = opts.generated,
-        .host_only = opts.host_only,
+        .meta_only = opts.meta_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
+        .Itab = if (kind == .interface) ItabType(unitScope(This)) else void,
         .kind = kind,
         .legacy = opts.legacy,
         .upath = un,
     };
+}
+
+fn ItabType(T: type) type {
+    comptime {
+        const ti = @typeInfo(T);
+        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        for (ti.Struct.decls) |decl| {
+            if (!isBuiltin(decl.name)) {
+                const dval = @field(T, decl.name);
+                const dti = @typeInfo(@TypeOf(dval));
+                if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+            }
+        }
+        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+        for (fdecl_list, 0..) |fdecl, i| {
+            const func = @field(T, fdecl.name);
+            const func_ptr = &func;
+            fld_list[i] = std.builtin.Type.StructField{
+                .name = fdecl.name,
+                .type = *const @TypeOf(func),
+                .default_value = @ptrCast(&func_ptr),
+                .is_comptime = false,
+                .alignment = 0,
+            };
+        }
+        const fld_list_freeze = fld_list;
+        return @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = fld_list_freeze[0..],
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+    }
+}
+
+fn mkIobj(Itab: type, U: type) Itab {
+    var iobj = Itab{};
+    const ti = @typeInfo(Itab);
+    inline for (ti.Struct.fields) |fld| {
+        if (@hasDecl(U, fld.name)) {
+            @field(iobj, fld.name) = @field(U, fld.name);
+        }
+    }
+    const iobj_freeze = iobj;
+    return iobj_freeze;
+}
+
+fn mkItab(U: type, I: type) *const anyopaque {
+    comptime {
+        const ti = @typeInfo(I);
+        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        for (ti.Struct.decls) |decl| {
+            const dval = @field(I, decl.name);
+            const dti = @typeInfo(@TypeOf(dval));
+            if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+        }
+        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
+        for (fdecl_list, 0..) |fdecl, i| {
+            const func = @field(U, fdecl.name);
+            const func_ptr = &func;
+            fld_list[i] = std.builtin.Type.StructField{
+                .name = fdecl.name,
+                .type = *const @TypeOf(func),
+                .default_value = @ptrCast(&func_ptr),
+                .is_comptime = false,
+                .alignment = 0,
+            };
+        }
+        const freeze = fld_list;
+        const ITab = @Type(.{ .Struct = .{
+            .layout = .auto,
+            .fields = freeze[0..],
+            .decls = &.{},
+            .is_tuple = false,
+            .backing_integer = null,
+        } });
+        return @as(*const anyopaque, &ITab{});
+    }
 }
 
 pub fn composite(This: type, opts: UnitOpts) Unit {
@@ -39,51 +119,6 @@ pub fn template(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .template, opts);
 }
 
-fn ItabType(ImplT: type) type {
-    comptime {
-        const ti = @typeInfo(ImplT);
-        var fld_list: []const std.builtin.Type.StructField = &.{};
-        for (ti.Struct.decls) |decl| {
-            if (!std.mem.eql(u8, decl.name, "em__I")) {
-                const dval = @field(ImplT, decl.name);
-                const dti = @typeInfo(@TypeOf(dval));
-                if (dti == .Fn) {
-                    const fld = std.builtin.Type.StructField{
-                        .name = decl.name,
-                        .type = *const @TypeOf(dval),
-                        .default_value = null,
-                        .is_comptime = false,
-                        .alignment = 0,
-                    };
-                    fld_list = fld_list ++ ([_]std.builtin.Type.StructField{fld})[0..];
-                }
-            }
-        }
-        const freeze = fld_list;
-        return @Type(.{ .Struct = .{
-            .layout = .auto,
-            .fields = freeze,
-            .decls = &.{},
-            .is_tuple = false,
-            .backing_integer = null,
-        } });
-    }
-}
-
-pub fn mkItab(comptime ImplT: type) ItabType(ImplT) {
-    var itab: ItabType(ImplT) = undefined;
-    inline for (comptime std.meta.declarations(ImplT)) |decl| {
-        if (!std.mem.eql(u8, decl.name, "em__I")) {
-            const dval = @field(ImplT, decl.name);
-            const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) {
-                @field(itab, decl.name) = dval;
-            }
-        }
-    }
-    return itab;
-}
-
 pub const UnitKind = enum {
     composite,
     interface,
@@ -93,7 +128,7 @@ pub const UnitKind = enum {
 
 pub const UnitOpts = struct {
     name: ?[]const u8 = null,
-    host_only: bool = false,
+    meta_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,
@@ -105,14 +140,15 @@ pub const Unit = struct {
     _U: type,
     kind: UnitKind,
     upath: []const u8,
-    host_only: bool = false,
+    meta_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
+    Itab: type,
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
-            .HOST => {
+            .META => {
                 return initConfig(CT, self.upath);
                 //const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};
                 //return @constCast(&std.mem.zeroInit(CT, init));
@@ -141,13 +177,13 @@ pub const Unit = struct {
         return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
     }
 
-    pub fn hasItab(self: Self) bool {
-        return self.inherits != null or self.kind == .interface;
+    pub fn hasInterface(self: Self, inter: Unit) bool {
+        comptime var iu = self.inherits;
+        inline while (iu) |iuval| : (iu = iuval.inherits) {
+            if (std.mem.eql(u8, iuval.upath, inter.upath)) return true;
+        }
+        return false;
     }
-
-    //pub fn itab(self: Self) if (self.hasItab()) ItabType(self.scope()) else void {
-    //    return if (self.hasItab()) mkItab(self.scope()) else {};
-    //}
 
     pub fn resolve(self: Self) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
@@ -165,11 +201,11 @@ pub const Unit = struct {
 
 pub fn unitScope(U: type) type {
     // TODO eliminate
-    return if (DOMAIN == .HOST) unitScope_H(U) else unitScope_T(U);
+    return if (DOMAIN == .META) unitScope_H(U) else unitScope_T(U);
 }
 
 pub fn unitScope_H(U: type) type {
-    const S = if (@hasDecl(U, "EM__HOST")) U.EM__HOST else struct {};
+    const S = if (@hasDecl(U, "EM__META")) U.EM__META else struct {};
     return struct {
         const _UID = @typeName(U) ++ "_scope";
         pub usingnamespace U;
@@ -231,7 +267,7 @@ const CfgId = struct {
 };
 
 pub fn Factory(T: type) type {
-    return if (DOMAIN == .HOST) Factory_H(T) else Factory_T(T);
+    return if (DOMAIN == .META) Factory_H(T) else Factory_T(T);
 }
 
 pub fn Factory_H(T: type) type {
@@ -288,7 +324,7 @@ pub fn Factory_H(T: type) type {
                 const abs_txt =
                     \\comptime {{
                     \\    asm (".globl \"{0s}${1d}\"");
-                    \\    asm ("\"{0s}${1d}\" = \".gen.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
+                    \\    asm ("\"{0s}${1d}\" = \"zigem.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
                     \\}}
                     \\extern const @"{0s}${1d}": usize;
                     \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
@@ -308,7 +344,7 @@ pub fn Factory_T(T: type) type {
 
 pub fn Fxn(PT: type) type {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             return struct {
                 const Self = @This();
                 pub const _em__builtin = {};
@@ -333,7 +369,7 @@ pub fn Fxn(PT: type) type {
 }
 
 pub fn Obj(T: type) type {
-    return if (DOMAIN == .HOST) Obj_H(T) else Obj_T(T);
+    return if (DOMAIN == .META) Obj_H(T) else Obj_T(T);
 }
 
 pub fn Obj_H(T: type) type {
@@ -364,7 +400,7 @@ pub fn Obj_T(T: type) type {
 }
 
 pub fn Param(T: type) type {
-    return if (DOMAIN == .HOST) Param_H(T) else Param_T(T);
+    return if (DOMAIN == .META) Param_H(T) else Param_T(T);
 }
 
 pub fn Param_H(T: type) type {
@@ -413,25 +449,34 @@ pub fn Param_T(T: type) type {
 }
 
 pub fn Proxy(I: type) type {
-    return if (DOMAIN == .HOST) Proxy_H(I) else Proxy_T(I);
+    return if (DOMAIN == .META) Proxy_H(I) else Proxy_T(I);
 }
 
 pub fn Proxy_H(I: type) type {
     return *struct {
         const Self = @This();
-
         pub const _em__builtin = {};
+
+        const Iobj = I.em__U.Itab;
 
         em__cfgid: CfgId,
 
         _upath: []const u8 = I.em__U.upath,
+        _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
 
-        //pub fn get(self: *const Self) Unit {
-        //    return @field(import, self._upath).em__U;
-        //}
+        pub fn get(self: *const Self) Iobj {
+            return self._iobj;
+        }
 
-        pub fn set(self: *Self, x: anytype) void {
-            self._upath = x.em__U.upath;
+        pub fn set(self: *Self, mod: anytype) void {
+            const unit: Unit = mod.em__U;
+            std.debug.assert(unit.hasInterface(I.em__U));
+            if (!unit.hasInterface(I.em__U)) {
+                std.log.err("unit {s} does not implement {s}", .{ unit.upath, I.em__U.upath });
+                fail();
+            }
+            self._upath = unit.upath;
+            self._iobj = mkIobj(I.em__U.Itab, unit.scope());
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
@@ -458,7 +503,7 @@ pub fn Proxy_T(_: type) type {
 pub const TableAccess = enum { RO, RW };
 
 pub fn Table(T: type, acc: TableAccess) type {
-    return if (DOMAIN == .HOST) Table_H(T, acc) else Table_T(T, acc);
+    return if (DOMAIN == .META) Table_H(T, acc) else Table_T(T, acc);
 }
 
 pub fn Table_H(comptime T: type, acc: TableAccess) type {
@@ -525,7 +570,7 @@ const @"// -------- BUILTIN FXNS -------- //" = {};
 
 pub fn fail() void {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             std.log.err("em.fail", .{});
             std.process.exit(1);
         },
@@ -537,7 +582,7 @@ pub fn fail() void {
 
 pub fn halt() void {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             std.log.info("em.halt", .{});
             std.process.exit(0);
         },
@@ -549,7 +594,7 @@ pub fn halt() void {
 
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     switch (DOMAIN) {
-        .HOST => {
+        .META => {
             std.log.debug(fmt, args);
         },
         .TARG => {
@@ -577,8 +622,8 @@ pub fn @"%%[a+]"() void {
 pub fn @"%%[a-]"() void {
     Debug.minus('A');
 }
-pub fn @"%%[a:]"(k: u8) void {
-    Debug.mark('A', k);
+pub fn @"%%[a:]"(e: anytype) void {
+    Debug.mark('A', e);
 }
 
 pub fn @"%%[b]"() void {
@@ -590,8 +635,8 @@ pub fn @"%%[b+]"() void {
 pub fn @"%%[b-]"() void {
     Debug.minus('B');
 }
-pub fn @"%%[b:]"(k: u8) void {
-    Debug.mark('B', k);
+pub fn @"%%[b:]"(e: anytype) void {
+    Debug.mark('B', e);
 }
 
 pub fn @"%%[c]"() void {
@@ -603,8 +648,8 @@ pub fn @"%%[c+]"() void {
 pub fn @"%%[c-]"() void {
     Debug.minus('C');
 }
-pub fn @"%%[c:]"(k: u8) void {
-    Debug.mark('C', k);
+pub fn @"%%[c:]"(e: anytype) void {
+    Debug.mark('C', e);
 }
 
 pub fn @"%%[d]"() void {
@@ -616,8 +661,8 @@ pub fn @"%%[d+]"() void {
 pub fn @"%%[d-]"() void {
     Debug.minus('D');
 }
-pub fn @"%%[d:]"(k: u8) void {
-    Debug.mark('D', k);
+pub fn @"%%[d:]"(e: anytype) void {
+    Debug.mark('D', e);
 }
 
 const @"// -------- MEM MGMT -------- //" = {};
@@ -630,8 +675,8 @@ pub fn getHeap() std.mem.Allocator {
 
 const @"// -------- TARGET GEN -------- //" = {};
 
-const targ = @import("../../.gen/targ.zig");
-const type_map = @import("../../.gen/type_map.zig");
+const targ = @import("../../zigem/targ.zig");
+const type_map = @import("../../zigem/type_map.zig");
 
 fn mkTypeName(T: type) []const u8 {
     const ti = @typeInfo(T);
@@ -669,7 +714,7 @@ fn mkUnitImport(upath: []const u8) []const u8 {
     return sb.get();
 }
 
-pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after host build
+pub fn toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
     const T = @TypeOf(v);
     const ti = @typeInfo(T);
     const tn = @typeName(T);
@@ -757,7 +802,7 @@ pub fn toStringPre(v: anytype, comptime upath: []const u8, comptime cname: []con
 
 const @"// -------- PROPERTY VALUES -------- //" = {};
 
-const props = @import("../../.gen/props.zig");
+const props = @import("../../zigem/props.zig");
 
 pub fn property(name: []const u8, T: type, v: T) T {
     if (!props.map.has(name)) return v;
@@ -806,7 +851,11 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
     @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
 }
 
-pub const import = @import("../../.gen/imports.zig");
+pub const import = @import("../../zigem/imports.zig");
+
+pub fn isBuiltin(name: []const u8) bool {
+    return std.mem.eql(u8, name, "em") or std.mem.startsWith(u8, name, "em__") or std.mem.startsWith(u8, name, "EM__");
+}
 
 pub const ptr_t = ?*anyopaque;
 

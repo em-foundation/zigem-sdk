@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 const ROM_T = extern struct {
@@ -7,7 +7,7 @@ const ROM_T = extern struct {
 
 const ROM_TABLE: *const ROM_T = @ptrFromInt(0x0F00004C);
 
-pub const EM__HOST = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //

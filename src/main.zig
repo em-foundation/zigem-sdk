@@ -31,10 +31,10 @@ fn doCompile() !void {
     try Session.activate(.{ .work = params.work, .mode = .COMPILE, .bundle = bn, .setup = params.setup });
     try Session.doRefresh();
     try Session.doBuild(un);
-    try writer.print("compiling HOST ...\n", .{});
+    try writer.print("compiling META ...\n", .{});
     try writer.print("    board: {s}\n", .{Session.getBoard()});
     try writer.print("    setup: {s}\n", .{Session.getSetup()});
-    var stdout = try execMake("host");
+    var stdout = try execMake("meta");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     if (params.meta) {
         const t2: f80 = @floatFromInt(std.time.milliTimestamp());
@@ -71,10 +71,11 @@ fn doRefresh() !void {
 
 fn execMake(goal: []const u8) ![]const u8 {
     const OS = "OS=" ++ @tagName(builtin.os.tag);
-    const argv = [_][]const u8{ "make", goal, OS };
+    const argv = [_][]const u8{ "make", "-f", "zigem/makefile", goal, OS };
     const proc = try std.process.Child.run(.{
         .allocator = Heap.get(),
         .argv = &argv,
+        // .cwd = Fs.join(&.{ Fs.cwd(), "build" }),
     });
 
     if (proc.stderr.len > 0) {
@@ -116,6 +117,15 @@ pub fn main() !void {
     t0 = @floatFromInt(std.time.milliTimestamp());
     var runner = try cli.AppRunner.init(Heap.get());
 
+    const file_opt = cli.Option{
+        .long_name = "file",
+        .short_alias = 'f',
+        .help = "Workspace-relative path to a <unit>.em.zig source file",
+        .required = true,
+        .value_name = "UPATH",
+        .value_ref = runner.mkRef(&params.unit),
+    };
+
     const load_opt = cli.Option{
         .long_name = "load",
         .short_alias = 'l',
@@ -126,9 +136,9 @@ pub fn main() !void {
     };
 
     const meta_opt = cli.Option{
-        .long_name = "meta-only",
+        .long_name = "meta",
         .short_alias = 'm',
-        .help = "Only run the HOST meta-program",
+        .help = "Only run the hosted meta-program",
         .required = false,
         .value_name = "META",
         .value_ref = runner.mkRef(&params.meta),
@@ -141,15 +151,6 @@ pub fn main() !void {
         .required = false,
         .value_name = "SETUP",
         .value_ref = runner.mkRef(&params.setup),
-    };
-
-    const unit_opt = cli.Option{
-        .long_name = "unit",
-        .short_alias = 'u',
-        .help = "Workspace-relative path to <unit>.em.zig file",
-        .required = true,
-        .value_name = "UPATH",
-        .value_ref = runner.mkRef(&params.unit),
     };
 
     const work_opt = cli.Option{
@@ -174,10 +175,10 @@ pub fn main() !void {
     const compile_cmd = cli.Command{
         .name = "compile",
         .options = &.{
+            file_opt,
             load_opt,
             meta_opt,
             setup_opt,
-            unit_opt,
             work_opt,
         },
         .target = cli.CommandTarget{
@@ -208,7 +209,7 @@ pub fn main() !void {
 
     const app = &cli.App{
         .command = cli.Command{
-            .name = "zig-em",
+            .name = "zigem",
             .target = cli.CommandTarget{
                 .subcommands = &.{
                     clean_cmd,

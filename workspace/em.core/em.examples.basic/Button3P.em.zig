@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -12,7 +12,7 @@ pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
-pub const EM__HOST = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //

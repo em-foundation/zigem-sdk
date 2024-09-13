@@ -3,7 +3,10 @@
 .zig-cache
 zig-cache
 zig-out
-.gen
-.out
-.main-*.zig
 **/local.ini
+.vscode/
+workspace/zigem
+workspace/.gen
+workspace/.out
+workspace/.main-*.zig
+workspace/.zigem-main.zig

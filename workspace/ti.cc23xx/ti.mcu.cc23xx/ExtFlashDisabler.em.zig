@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -11,7 +11,7 @@ pub const EM__CONFIG = struct {
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     pub const CS = em__C.CS;
     pub const CLK = em__C.CLK;
     pub const PICO = em__C.PICO;

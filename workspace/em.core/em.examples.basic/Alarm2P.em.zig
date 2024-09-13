@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -11,7 +11,7 @@ pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     pub fn em__constructH() void {
         const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
@@ -34,12 +34,12 @@ pub const EM__TARG = struct {
 
     pub fn blinkFB(_: FiberMgr.BodyArg) void {
         em.@"%%[c]"();
-        AppLed.wink(100); // 100 ms
         counter += 1;
         if ((counter & 0x1) != 0) {
-            alarm.wakeup(512); // 2s
+            AppLed.wink(100); // 100ms
         } else {
-            alarm.wakeup(192); // 750ms
+            AppLed.wink(5); // 5ms
         }
+        alarm.wakeupAt(384); // 1.5s window
     }
 };
