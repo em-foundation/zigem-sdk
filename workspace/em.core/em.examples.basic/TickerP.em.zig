@@ -25,8 +25,8 @@ pub const EM__TARG = struct {
     const sysTicker = em__C.sysTicker;
 
     pub fn em__run() void {
-        appTicker.start(256, &appTickCb);
-        sysTicker.start(384, &sysTickCb);
+        appTicker.start(256 / 8, &appTickCb);
+        sysTicker.start(384 / 8, &sysTickCb);
         FiberMgr.run();
     }
 
