@@ -1,2 +1,2 @@
-workspace/em.core/em.arch.arm/cmsis/**/*.h lingust-vendored
-workspace/ti.cc23xx/ti.distro.cc23xx/**/*.h linguist-vendored
+workspace/em.core/em.arch.arm/cmsis/* lingust-vendored
+workspace/ti.cc23xx/ti.distro.cc23xx/inc/* linguist-vendored
