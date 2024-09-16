@@ -47,35 +47,42 @@ pub const EM__TARG = struct {
 
     var cur_alarm: ?*Alarm = null;
 
-    fn update(delta_ticks: u32) void {
-        const alarm_tab = em__C.AlarmOF;
-        const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
+    fn findNextAlarm(delta_ticks: u32) void {
         WakeupTimer.disable();
+        const alarm_tab = em__C.AlarmOF;
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            if (a._ticks == 0) continue; // inactive alarm
-            a._ticks -= delta_ticks;
-            if (a._thresh <= thresh) { // expired alarm
-                a._fiber.post();
-            } else if (a._ticks < max_ticks) {
+            a._ticks -|= delta_ticks;
+            if (a._ticks > 0 and a._ticks < max_ticks) {
                 nxt_alarm = a;
                 max_ticks = a._ticks;
             }
         }
-        if (nxt_alarm == null) return; // no active alarms
         cur_alarm = nxt_alarm;
-        WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
+        if (cur_alarm != null) {
+            WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
+        }
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
-        update(cur_alarm.?._ticks);
+        const alarm_tab = em__C.AlarmOF;
+        const thresh: u32 = cur_alarm.?._thresh;
+        for (0..alarm_tab.len) |idx| {
+            var a = &alarm_tab[idx];
+            // TODO: The check below doesn't take wrap of thresh into account.
+            if (a._ticks > 0 and a._thresh <= thresh) { // expired alarm, ring it
+                a._ticks = 0;
+                a._fiber.post();
+            }
+        }
+        findNextAlarm(cur_alarm.?._ticks);
     }
 
     pub fn Alarm_cancel(alarm: *Alarm) void {
         alarm._ticks = 0;
-        update(0);
+        findNextAlarm(0);
     }
 
     pub fn Alarm_isActive(alarm: *Alarm) bool {
@@ -85,7 +92,7 @@ pub const EM__TARG = struct {
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
         alarm._ticks = ticks;
-        update(0);
+        findNextAlarm(0);
     }
 
     pub fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
