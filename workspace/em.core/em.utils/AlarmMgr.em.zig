@@ -66,21 +66,18 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn update(delta_ticks: u32) void {
+    fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
         const alarm_tab = em__C.AlarmOF;
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
+            // TODO: The check below doesn't take wrap of thresh into account.
             if (a._ticks > 0 and a._thresh <= thresh) { // expired alarm, ring it
                 a._ticks = 0;
                 a._fiber.post();
             }
         }
-        findNextAlarm(delta_ticks);
-    }
-
-    fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
-        update(cur_alarm.?._ticks);
+        findNextAlarm(cur_alarm.?._ticks);
     }
 
     pub fn Alarm_cancel(alarm: *Alarm) void {
