@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const CoreBench = em.import.@"em.coremark/CoreBench";
@@ -6,7 +6,7 @@ pub const Utils = em.import.@"em.coremark/Utils";
 
 pub const ITERATIONS: u16 = 10;
 
-pub const EM__HOST = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //

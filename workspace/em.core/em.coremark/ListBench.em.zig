@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.coremark/BenchAlgI",
 });
@@ -33,7 +33,7 @@ pub const Elem = struct {
 
 pub const Comparator = fn (a: Data.Obj, b: Data.Obj) i32;
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     //
     pub const memsize = em__C.memsize;
 

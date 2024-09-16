@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -14,7 +14,7 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     pub fn em__constructH() void {
         AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
         const xmitF = FiberMgr.createH(em__U.fxn("xmitFB", FiberMgr.BodyArg));

@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
     .inherits = em.import.@"em.coremark/BenchAlgI",
 });
@@ -11,7 +11,7 @@ pub const EM__CONFIG = struct {
 pub const Crc = em.import.@"em.coremark/Crc";
 pub const Utils = em.import.@"em.coremark/Utils";
 
-pub const EM__HOST = struct {
+pub const EM__META = struct {
     pub const memsize = em__C.memsize;
 };
 

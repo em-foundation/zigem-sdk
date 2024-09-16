@@ -1,10 +1,10 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const Utils = em.import.@"em.coremark/Utils";
 pub const sum_t = Utils.sum_t;
 
-pub const EM__HOST = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //

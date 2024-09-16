@@ -1,4 +1,4 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const RfTemp = em.import.@"ti.radio.cc23xx/RfTemp";
@@ -38,7 +38,7 @@ const TABLE = [_]TableEntry{
     .{ .power = .{ .fraction = 0, .dBm = 8 }, .tempCoeff = 180, .value = .{ .bits = .{ .reserved = 0, .ib = 63, .gain = 7, .mode = 1, .noIfampRfLdoBypass = 0 } } },
 };
 
-pub const EM__HOST = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //

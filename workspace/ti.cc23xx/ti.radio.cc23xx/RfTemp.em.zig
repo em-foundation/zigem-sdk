@@ -1,10 +1,10 @@
-pub const em = @import("../../.gen/em.zig");
+pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const TXPOWER_REFERENCE_TEMPERATURE: i16 = 25;
 pub const TXPOWER_TEMPERATURE_SCALING: i16 = 0x100;
 
-pub const EM__HOST = struct {};
+pub const EM__META = struct {};
 
 pub const EM__TARG = struct {
     //
