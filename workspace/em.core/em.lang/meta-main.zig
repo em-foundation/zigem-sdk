@@ -94,6 +94,13 @@ fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
     }
 }
 
+fn genExit(ulist: []const em.Unit, out: std.fs.File.Writer) !void {
+    try out.print("pub fn em__exit() void {{\n", .{});
+    try genCall("em__onexit", ulist, .all, out);
+    try out.print("em__halt();\n", .{});
+    try out.print("}}\n", .{});
+}
+
 fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.Unit) !void {
     const file = try std.fs.createFileAbsolute(em._targ_file, .{});
     const out = file.writer();
@@ -129,6 +136,7 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     try out.print(fmt2, .{});
     try genTermFn("em__fail", ulist_top, out);
     try genTermFn("em__halt", ulist_top, out);
+    try genExit(ulist_top, out);
     try out.print("pub fn exec() void {{\n", .{});
     try genCall("em__reset", ulist_top, .first, out);
     try genCall("em__startup", ulist_bot, .all, out);
@@ -138,16 +146,13 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     try out.print("    ", .{});
     try genImport(cur_top.upath, out);
     try out.print(".em__run();\n", .{});
-    try out.print("    em.halt();\n", .{});
+    try out.print("    em__halt();\n", .{});
     try out.print("}}\n", .{});
     file.close();
 }
 
 fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File.Writer) !void {
     try out.print("pub fn {s}() void {{\n", .{name});
-    if (std.mem.eql(u8, name, "em__halt")) {
-        try genCall("em__onexit", ulist, .all, out);
-    }
     try genCall(name, ulist, .first, out);
     try out.print("    em__done();\n", .{});
     try out.print("}}\n", .{});
