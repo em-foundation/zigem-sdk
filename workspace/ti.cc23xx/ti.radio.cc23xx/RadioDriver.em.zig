@@ -222,7 +222,7 @@ pub const EM__TARG = struct {
     }
 
     export fn LRFD_IRQ0_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
         em.@"%%[a-]"();

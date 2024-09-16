@@ -94,7 +94,7 @@ pub const EM__TARG = struct {
     }
 
     export fn CPUIRQ3_isr() void {
-        if (em.hosted) return;
+        if (em.IS_META) return;
         hal.NVIC_ClearPendingIRQ(hal.CPUIRQ3_IRQn);
         const mis = reg(hal.CKMD_BASE + hal.CKMD_O_MIS).*;
         reg(hal.CKMD_BASE + hal.CKMD_O_ICLR).* = mis;
