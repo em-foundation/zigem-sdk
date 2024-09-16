@@ -58,7 +58,7 @@ pub const EM__TARG = struct {
             if (a._ticks == 0) continue; // inactive alarm
             a._ticks -= delta_ticks;
             if (a._thresh <= thresh) { // expired alarm
-                // em.@"%%[a]"();
+                em.@"%%[a]"();
                 asm volatile ("nop");
                 a._fiber.post();
             } else if (a._ticks < max_ticks) {

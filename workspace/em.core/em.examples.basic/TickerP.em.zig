@@ -8,6 +8,7 @@ pub const EM__CONFIG = struct {
 };
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
@@ -24,19 +25,38 @@ pub const EM__TARG = struct {
     const appTicker = em__C.appTicker;
     const sysTicker = em__C.sysTicker;
 
+    const SCALAR = 4;
+    const WATCH = 5;
+
+    var sys_ctr: u8 = WATCH;
+
     pub fn em__run() void {
-        appTicker.start(256 / 8, &appTickCb);
-        sysTicker.start(384 / 8, &sysTickCb);
+        appTicker.start(256 / SCALAR, &appTickCb);
+        sysTicker.start(384 / SCALAR, &sysTickCb);
         FiberMgr.run();
     }
 
     fn appTickCb(_: TickerMgr.CallbackArg) void {
-        em.@"%%[c]"();
+        //em.@"%%[c]"();
+        sys_ctr -= 1;
+        if (sys_ctr == 0) {
+            em.@"%%[d]"();
+            em.halt();
+        }
+
+        // em.@"%%[>]"(sys_ctr);
+        //AppLed.on();
+        //Common.BusyWait.wait(100_000);
+        //AppLed.off();
         AppLed.wink(100);
     }
 
     fn sysTickCb(_: TickerMgr.CallbackArg) void {
-        em.@"%%[d]"();
+        //em.@"%%[d]"();
+        sys_ctr = WATCH;
+        //SysLed.on();
+        //Common.BusyWait.wait(100_000);
+        //SysLed.off();
         SysLed.wink(100);
     }
 };
