@@ -145,6 +145,9 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
 
 fn genTermFn(comptime name: []const u8, ulist: []const em.Unit, out: std.fs.File.Writer) !void {
     try out.print("pub fn {s}() void {{\n", .{name});
+    if (std.mem.eql(u8, name, "em__halt")) {
+        try genCall("em__onexit", ulist, .all, out);
+    }
     try genCall(name, ulist, .first, out);
     try out.print("    em__done();\n", .{});
     try out.print("}}\n", .{});

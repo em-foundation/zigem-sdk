@@ -47,6 +47,15 @@ pub const EM__TARG = struct {
 
     var cur_alarm: ?*Alarm = null;
 
+    pub fn em__onexit() void {
+        const alarm_tab = em__C.AlarmOF;
+        if (cur_alarm) |a| em.print("cur_alarm@{x}: ticks = {d}, thresh = {d}\n", .{ @intFromPtr(a), a._ticks, a._thresh });
+        for (0..alarm_tab.len) |idx| {
+            const a = &alarm_tab[idx];
+            em.print("a@{x}: ticks = {d}, thresh = {d}\n", .{ @intFromPtr(a), a._ticks, a._thresh });
+        }
+    }
+
     fn update(delta_ticks: u32) void {
         const alarm_tab = em__C.AlarmOF;
         const thresh: u32 = if (delta_ticks > 0) cur_alarm.?._thresh else 0;
