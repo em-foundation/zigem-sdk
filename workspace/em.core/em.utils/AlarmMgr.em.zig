@@ -54,9 +54,8 @@ pub const EM__TARG = struct {
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            if (a._ticks == 0) continue; // inactive alarm, skip it
             a._ticks = if (a._ticks > delta_ticks) a._ticks - delta_ticks else 0;
-            if (a._ticks < max_ticks) {
+            if (a._ticks > 0 and a._ticks < max_ticks) {
                 nxt_alarm = a;
                 max_ticks = a._ticks;
             }
