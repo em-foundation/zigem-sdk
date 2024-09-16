@@ -8,7 +8,6 @@ pub const EM__CONFIG = struct {
 };
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
@@ -25,12 +24,9 @@ pub const EM__TARG = struct {
     const appTicker = em__C.appTicker;
     const sysTicker = em__C.sysTicker;
 
-    const SCALAR = 4;
-    const WATCH = 5;
-
     pub fn em__run() void {
-        appTicker.start(256 / SCALAR, &appTickCb);
-        sysTicker.start(384 / SCALAR, &sysTickCb);
+        appTicker.start(256, &appTickCb);
+        sysTicker.start(384, &sysTickCb);
         FiberMgr.run();
     }
 
