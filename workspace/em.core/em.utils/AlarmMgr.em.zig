@@ -68,7 +68,6 @@ pub const EM__TARG = struct {
             a._ticks -= delta_ticks;
             if (a._thresh <= thresh) { // expired alarm
                 em.@"%%[a]"();
-                asm volatile ("nop");
                 a._fiber.post();
             } else if (a._ticks < max_ticks) {
                 nxt_alarm = a;
@@ -81,7 +80,9 @@ pub const EM__TARG = struct {
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
+        em.@"%%[c+]"();
         update(cur_alarm.?._ticks);
+        em.@"%%[c-]"();
     }
 
     pub fn Alarm_cancel(alarm: *Alarm) void {
