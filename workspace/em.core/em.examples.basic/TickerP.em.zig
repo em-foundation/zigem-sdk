@@ -28,8 +28,6 @@ pub const EM__TARG = struct {
     const SCALAR = 4;
     const WATCH = 5;
 
-    var sys_ctr: u8 = WATCH;
-
     pub fn em__run() void {
         appTicker.start(256 / SCALAR, &appTickCb);
         sysTicker.start(384 / SCALAR, &sysTickCb);
@@ -37,26 +35,12 @@ pub const EM__TARG = struct {
     }
 
     fn appTickCb(_: TickerMgr.CallbackArg) void {
-        //em.@"%%[c]"();
-        sys_ctr -= 1;
-        if (sys_ctr == 0) {
-            em.@"%%[d]"();
-            em.halt();
-        }
-
-        // em.@"%%[>]"(sys_ctr);
-        //AppLed.on();
-        //Common.BusyWait.wait(100_000);
-        //AppLed.off();
+        em.@"%%[c]"();
         AppLed.wink(100);
     }
 
     fn sysTickCb(_: TickerMgr.CallbackArg) void {
-        //em.@"%%[d]"();
-        sys_ctr = WATCH;
-        //SysLed.on();
-        //Common.BusyWait.wait(100_000);
-        //SysLed.off();
+        em.@"%%[d]"();
         SysLed.wink(100);
     }
 };
