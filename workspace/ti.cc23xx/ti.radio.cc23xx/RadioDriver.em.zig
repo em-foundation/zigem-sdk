@@ -100,8 +100,10 @@ pub const EM__TARG = struct {
         cur_state = s;
     }
 
-    pub fn startCw() void {
+    pub fn startCw(chan: u8, power: i8) void {
         setState(.CW);
+        RfPower.program(power);
+        RfCtrl.enableImages();
         const cfg_val: u32 =
             (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
             (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
@@ -118,6 +120,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PATTERN).* = 0;
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_MODCTRL).* |= hal.LRFDMDM_MODCTRL_TONEINSERT_M;
+        RfFreq.program(freqFromChan(chan));
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         const time = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
