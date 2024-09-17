@@ -7,11 +7,11 @@ pub const EM__CONFIG = struct {
 };
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const BleDriver = em.import.@"ti.radio.cc23xx/BleDriver";
 pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
+pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__META = struct {
     pub fn em__configureH() void {
@@ -31,22 +31,17 @@ pub const EM__TARG = struct {
     pub fn em__run() void {
         txTicker.start(256, &txTickCb);
         FiberMgr.run();
-        //Common.GlobalInterrupts.enable();
-        //while (true) {
-        //    Common.BusyWait.wait(500_000);
-        //    txTickCb(.{});
-        //}
     }
 
     fn txTickCb(_: TickerMgr.CallbackArg) void {
-        //AppLed.wink(5);
-        BleDriver.enable();
-        BleDriver.putWords(&data);
+        AppLed.wink(5);
+        RadioDriver.enable();
+        RadioDriver.putWords(&data);
         var chan: u8 = 37;
         while (chan < 40) : (chan += 1) {
-            BleDriver.startTx(chan, 5);
-            BleDriver.waitReady();
+            RadioDriver.startTx(chan, 5);
+            RadioDriver.waitReady();
         }
-        BleDriver.disable();
+        RadioDriver.disable();
     }
 };
