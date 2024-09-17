@@ -587,7 +587,7 @@ pub fn halt() void {
             std.process.exit(0);
         },
         .TARG => {
-            targ.em__halt();
+            targ.em__exit();
         },
     }
 }

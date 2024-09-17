@@ -20,17 +20,17 @@ pub const EM__TARG = struct {
     const OneShot = em__C.OneShot.scope();
 
     var active_flag: bool = false;
-    const vptr: *volatile bool = &active_flag;
+    const active_flag_VP: *volatile bool = &active_flag;
 
     fn handler(_: OneShot.HandlerArg) void {
-        vptr.* = false;
+        active_flag_VP.* = false;
     }
 
     pub fn pause(time_ms: u32) void {
         if (time_ms == 0) return;
-        active_flag = true;
+        active_flag_VP.* = true;
         OneShot.enable(time_ms, handler, null);
-        while (vptr.*) {
+        while (active_flag_VP.*) {
             Common.Idle.exec();
         }
     }
