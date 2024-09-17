@@ -35,6 +35,7 @@ pub const EM__TARG = struct {
     pub fn fiberFB(_: FiberMgr.BodyArg) void {
         RadioDriver.enable();
         RadioDriver.startCw(17, 5);
+        AppLed.on();
         RadioDriver.waitReady();
     }
 };

@@ -96,8 +96,9 @@ pub const EM__TARG = struct {
         RfFifo.write(wbuf);
     }
 
-    pub fn readRssi() u32 {
-        return reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M;
+    pub fn readRssi() i8 {
+        const raw = reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M;
+        return em.@"<>"(i8, raw);
     }
 
     fn setState(s: State) void {
@@ -132,7 +133,7 @@ pub const EM__TARG = struct {
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
     }
 
-    pub fn startRx(chan: u8) void {
+    pub fn startRx(chan: u8, timeout: u16) void {
         setState(.RX);
         RfCtrl.enableImages();
         const cfg_val: u32 =
@@ -162,10 +163,11 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 32; // TODO
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = 0;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = 0;
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = timeout * 4;
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = timeout * 4;
         RfFreq.program(freqFromChan(chan));
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
+        hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_RX;
@@ -246,5 +248,11 @@ pub const EM__TARG = struct {
         }
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
         setState(.READY);
+    }
+
+    pub fn em__onexit() void {
+        const ris = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_RIS0).*;
+        const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
+        em.print("ris = {x}, mis = {x}\n", .{ ris, mis });
     }
 };
