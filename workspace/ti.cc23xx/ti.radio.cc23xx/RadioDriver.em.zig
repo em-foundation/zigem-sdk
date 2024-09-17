@@ -95,6 +95,11 @@ pub const EM__TARG = struct {
         RfFifo.prepare();
         RfFifo.write(wbuf);
     }
+
+    pub fn readRssi() u32 {
+        return reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M;
+    }
+
     fn setState(s: State) void {
         // em.@"%%[a:]"(@intFromEnum(s));
         cur_state = s;
@@ -123,9 +128,47 @@ pub const EM__TARG = struct {
         RfFreq.program(freqFromChan(chan));
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
-        const time = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
-        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = time + 1000;
+        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
+    }
+
+    pub fn startRx(chan: u8) void {
+        setState(.RX);
+        RfCtrl.enableImages();
+        const cfg_val: u32 =
+            // (1 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
+            // (1 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
+            // (0 << hal.PBE_GENERIC_RAM_OPCFG_TXFCMD_S) |
+            // (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+            // // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+            // // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+            // (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+            // (0 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+            // (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+            // (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+            // (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXFILTEROP_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_RXINCLUDEHDR_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATNOK_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+            (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+            (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 32; // TODO
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = 0;
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = 0;
+        RfFreq.program(freqFromChan(chan));
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
+        while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
+        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_RX;
     }
 
     pub fn startTx(chan: u8, power: i8) void {
