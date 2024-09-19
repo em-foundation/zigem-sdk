@@ -19,7 +19,11 @@ pub fn exec(path: []const u8) !void {
         std.debug.print("Server returned `null` as the result\n", .{});
         return error.InvalidResponse;
     };
-    std.log.debug("rsp: {any}", .{response});
+
+    var tok_str = SemTokStream.init(response.data);
+    while (tok_str.next()) |tok| {
+        std.log.debug("{d:>3},{d:>3}:    {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
+    }
 }
 
 const builtin = @import("builtin");
@@ -38,7 +42,7 @@ const default_config: Config = .{
     .global_cache_path = null,
 };
 
-pub const Context = struct {
+const Context = struct {
     server: *Server,
 
     pub fn init() !Context {
@@ -83,5 +87,42 @@ pub const Context = struct {
         };
         _ = try self.server.sendNotificationSync(Heap.get(), "textDocument/didOpen", params);
         return uri;
+    }
+};
+
+const SemTokStream = struct {
+    data: []const u32,
+    idx: usize = 0,
+    line_num: u32 = 1,
+    col_num: u32 = 1,
+    pub const Token = struct {
+        ttype: zls.semantic_tokens.TokenType,
+        line: u32,
+        col: u32,
+        len: u32,
+        tmods: u32,
+    };
+    pub fn init(data: []const u32) SemTokStream {
+        return SemTokStream{
+            .data = data,
+        };
+    }
+    pub fn next(self: *SemTokStream) ?Token {
+        if (self.idx >= self.data.len) return null;
+        const chunk = self.data[self.idx .. self.idx + 5];
+        self.idx += 5;
+        if (chunk[0] > 0) {
+            self.line_num += chunk[0];
+            self.col_num = 1;
+        }
+        self.col_num += chunk[1];
+        const tok = Token{
+            .line = self.line_num,
+            .col = self.col_num,
+            .len = chunk[2],
+            .ttype = @enumFromInt(chunk[3]),
+            .tmods = chunk[4],
+        };
+        return tok;
     }
 };
