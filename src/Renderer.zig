@@ -10,20 +10,16 @@ pub fn exec(path: []const u8) !void {
     defer ctx.deinit();
 
     std.log.debug("\n\n", .{});
-    const txt = Fs.readFileZ(try Fs.normalize(path));
 
-    const uri = try ctx.addDocument(txt);
-    std.log.debug("uri = {s}", .{uri});
-
-    // const ast = try Ast.parse(Heap.get(), txt, .zig);
-    // std.log.debug("root: {any}", .{ast.rootDecls()});
-    // std.log.debug("var: {any}", .{ast.simpleVarDecl(1)});
-    // std.log.debug("id: {any}", .{ast.tokens.get(3)});
-    // for (0..ast.nodes.len) |i| {
-    //     std.log.debug("node{d}: {any}", .{ i, ast.nodes.get(i) });
-    // }
-    // const rend = try ast.render(Heap.get());
-    // std.log.debug("{s}", .{rend});
+    const uri = try ctx.addDocument(path);
+    const params = types.SemanticTokensParams{
+        .textDocument = .{ .uri = uri },
+    };
+    const response = try ctx.server.sendRequestSync(Heap.get(), "textDocument/semanticTokens/full", params) orelse {
+        std.debug.print("Server returned `null` as the result\n", .{});
+        return error.InvalidResponse;
+    };
+    std.log.debug("rsp: {any}", .{response});
 }
 
 const builtin = @import("builtin");
@@ -69,17 +65,14 @@ pub const Context = struct {
     }
 
     // helper
-    pub fn addDocument(self: *Context, source: []const u8) ![]const u8 {
-        const fmt = switch (builtin.os.tag) {
-            .windows => "file:///C:\\nonexistent\\test-{d}.zig",
-            else => "file:///nonexistent/test-{d}.zig",
-        };
+    pub fn addDocument(self: *Context, path: []const u8) ![]const u8 {
+        const norm = try Fs.normalize(path);
+        const source = Fs.readFileZ(norm);
         const uri = try std.fmt.allocPrint(
             Heap.get(),
-            fmt,
-            .{0},
+            "file://{s}",
+            .{norm},
         );
-
         const params = types.DidOpenTextDocumentParams{
             .textDocument = .{
                 .uri = uri,
@@ -88,9 +81,7 @@ pub const Context = struct {
                 .text = source,
             },
         };
-
         _ = try self.server.sendNotificationSync(Heap.get(), "textDocument/didOpen", params);
-
         return uri;
     }
 };

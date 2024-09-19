@@ -243,3 +243,20 @@ pub fn main() !void {
 
     return runner.run(app);
 }
+
+pub const std_options = .{
+    .logFn = log,
+};
+
+pub fn log(
+    comptime message_level: std.log.Level,
+    comptime scope: @Type(.EnumLiteral),
+    comptime format: []const u8,
+    args: anytype,
+) void {
+    if (message_level == .debug and std.mem.startsWith(u8, format, "***")) return;
+    if (std.mem.startsWith(u8, @tagName(scope), "zls_config")) return;
+    if (std.mem.startsWith(u8, @tagName(scope), "zls_server")) return;
+    if (std.mem.startsWith(u8, @tagName(scope), "zls_store")) return;
+    std.log.defaultLog(message_level, scope, format, args);
+}
