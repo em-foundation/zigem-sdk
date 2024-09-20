@@ -15,9 +15,8 @@ pub const Obj = em.Obj(Alarm);
 pub const Alarm = struct {
     const Self = @This();
     _fiber: FiberMgr.Obj,
-    _start: u32 = 0,
-    _thresh: u32 = 0,
-    _ticks: u32 = 0,
+    _thresh: u32 = 0, // time of alarm
+    _ticks: u32 = 0, // ticks remaining until alarm (0 == alarm inactive)
     pub fn active(self: *Self) bool {
         em__U.scope().Alarm_active(self);
     }
@@ -69,10 +68,10 @@ pub const EM__TARG = struct {
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
         const alarm_tab = em__C.AlarmOF;
-        const now: u32 = cur_alarm.?._thresh;
+        const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            if ((a._ticks > 0) and (now >= a._thresh) and ((a._start <= a._thresh) or (a._start > a._thresh and now < a._start))) {
+            if (a._ticks > 0 and thresh == a._thresh) {
                 a._ticks = 0;
                 a._fiber.post(); // ring the alarm
             }
@@ -92,7 +91,6 @@ pub const EM__TARG = struct {
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
         // Note:  thresh is the lower 32-bits of the RTC value.  As such it may wrap
         // after a very long time (2**32 * tick period)
-        alarm._start = WakeupTimer.ticksToThresh(0);
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
         alarm._ticks = ticks;
         findNextAlarm(0);
