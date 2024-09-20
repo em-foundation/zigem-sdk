@@ -56,6 +56,6 @@ pub const EM__TARG = struct {
 
     pub fn Ticker_stop(ticker: *Ticker) void {
         ticker._alarm.cancel();
-        ticker._tick_cb._fxn = null;
+        ticker._tick_cb = null;
     }
 };
