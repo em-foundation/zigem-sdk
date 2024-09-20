@@ -89,8 +89,6 @@ pub const EM__TARG = struct {
     }
 
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
-        // Note:  thresh is the lower 32-bits of the RTC value.  As such it may wrap
-        // after a very long time (2**32 * tick period)
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
         alarm._ticks = ticks;
         findNextAlarm(0);
