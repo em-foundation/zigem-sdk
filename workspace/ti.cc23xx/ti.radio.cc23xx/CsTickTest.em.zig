@@ -35,7 +35,7 @@ pub const EM__TARG = struct {
     fn tickCb(_: TickerMgr.CallbackArg) void {
         RadioDriver.enable();
         RadioDriver.startRx(17, 0);
-        Poller.pause(1);
+        Poller.upause(125);
         //RadioDriver.waitReady();
         const rssi = RadioDriver.readRssi();
         if (rssi > -35) AppLed.wink(5);
