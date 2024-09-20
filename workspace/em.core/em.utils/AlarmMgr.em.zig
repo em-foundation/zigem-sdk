@@ -15,8 +15,8 @@ pub const Obj = em.Obj(Alarm);
 pub const Alarm = struct {
     const Self = @This();
     _fiber: FiberMgr.Obj,
-    _thresh: u32 = 0,
-    _ticks: u32 = 0,
+    _thresh: u32 = 0, // time of alarm
+    _ticks: u32 = 0, // ticks remaining until alarm (0 == alarm inactive)
     pub fn active(self: *Self) bool {
         em__U.scope().Alarm_active(self);
     }
@@ -71,10 +71,9 @@ pub const EM__TARG = struct {
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            // TODO: The check below doesn't take wrap of thresh into account.
-            if (a._ticks > 0 and a._thresh <= thresh) { // expired alarm, ring it
+            if (a._ticks > 0 and thresh == a._thresh) {
                 a._ticks = 0;
-                a._fiber.post();
+                a._fiber.post(); // ring the alarm
             }
         }
         findNextAlarm(cur_alarm.?._ticks);
