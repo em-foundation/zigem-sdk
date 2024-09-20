@@ -14,7 +14,7 @@ pub const EM__TARG = struct {
     pub fn em__run() void {
         Common.GlobalInterrupts.enable();
         for (0..5) |_| {
-            Poller.pause(100); // 100ms
+            Poller.upause(100_000); // 100ms
             AppLed.wink(5); // 5ms
         }
     }
