@@ -3,8 +3,8 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    alarm: em.Param(AlarmMgr.Obj),
-    blinkF: em.Param(FiberMgr.Obj),
+    alarm: em.Param2(AlarmMgr.Obj),
+    blinkF: em.Param2(FiberMgr.Obj),
 };
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
@@ -23,8 +23,8 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const alarm = em__C.alarm;
-    const blinkF = em__C.blinkF;
+    const alarm = em__C.alarm.get();
+    const blinkF = em__C.blinkF.get();
     var counter: u32 = 0;
 
     pub fn em__run() void {

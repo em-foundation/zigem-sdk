@@ -3,7 +3,7 @@ pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
     Edge: em.Proxy(em.import.@"em.hal/GpioEdgeI"),
-    debounceF: em.Param(FiberMgr.Obj),
+    debounceF: em.Param2(FiberMgr.Obj),
 };
 
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
@@ -40,7 +40,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__TARG = struct {
             //
-            const debounceF = em__C.debounceF;
+            const debounceF = em__C.debounceF.get();
             const Edge = em__C.Edge.scope();
 
             var cur_cb: OnPressedCbFxn = null;

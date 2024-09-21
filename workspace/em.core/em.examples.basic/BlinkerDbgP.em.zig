@@ -3,9 +3,9 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    dbg_flag: em.Param(bool),
-    min_cnt: em.Param(u16),
-    max_cnt: em.Param(u16),
+    dbg_flag: em.Param2(bool),
+    min_cnt: em.Param2(u16),
+    max_cnt: em.Param2(u16),
 };
 
 pub const BoardC = em.import.@"em__distro/BoardC";
@@ -24,9 +24,9 @@ pub const EM__TARG = struct {
     //
     const AppLed = BoardC.AppLed;
 
-    const dbg_flag = em__C.dbg_flag;
-    const min_cnt = em__C.min_cnt;
-    const max_cnt = em__C.max_cnt;
+    const dbg_flag = em__C.dbg_flag.get();
+    const min_cnt = em__C.min_cnt.get();
+    const max_cnt = em__C.max_cnt.get();
 
     pub fn em__run() void {
         AppLed.on();
