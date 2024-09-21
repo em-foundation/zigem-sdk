@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    OneShot: em.Proxy(em.import.@"em.hal/OneShotMilliI"),
+    OneShot: em.Proxy(em.import.@"em.hal/OneShotI"),
 };
 
 pub const Common = em.import.@"em.mcu/Common";
@@ -27,9 +27,13 @@ pub const EM__TARG = struct {
     }
 
     pub fn pause(time_ms: u32) void {
-        if (time_ms == 0) return;
+        upause(time_ms * 1000);
+    }
+
+    pub fn upause(time_us: u32) void {
+        if (time_us == 0) return;
         active_flag_VP.* = true;
-        OneShot.enable(time_ms, handler, null);
+        OneShot.uenable(time_us, handler, null);
         while (active_flag_VP.*) {
             Common.Idle.exec();
         }

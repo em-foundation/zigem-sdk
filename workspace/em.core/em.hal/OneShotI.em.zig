@@ -16,4 +16,10 @@ pub const EM__TARG = struct {
         _ = arg;
         return;
     }
+    pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+        _ = usecs;
+        _ = handler;
+        _ = arg;
+        return;
+    }
 };
