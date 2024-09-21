@@ -3,7 +3,7 @@ pub const em__T = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    pin: em.Param(i16),
+    pin: em.Param2(i16),
 };
 
 pub fn em__generateS(comptime name: []const u8) type {
@@ -30,7 +30,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__TARG = struct {
             //
 
-            const pin = em__C.pin;
+            const pin = em__C.pin.get();
             const is_def = (pin >= 0);
             const mask = init: {
                 const p5 = @as(u5, @bitCast(@as(i5, @truncate(pin))));

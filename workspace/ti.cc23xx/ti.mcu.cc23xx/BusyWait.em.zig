@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    scalar: em.Param(u8),
+    scalar: em.Param2(u8),
 };
 
 pub const EM__META = struct {
@@ -13,13 +13,13 @@ pub const EM__META = struct {
     pub const scalar = em__C.scalar;
 
     pub fn em__initH() void {
-        scalar.set(6);
+        em__C.scalar.set(6);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const scalar = em__C.scalar;
+    const scalar = em__C.scalar.get();
 
     pub fn wait(usecs: u32) void {
         if (usecs == 0) return;

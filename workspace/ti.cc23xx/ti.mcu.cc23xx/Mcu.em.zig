@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    no_cache: em.Param(bool),
+    no_cache: em.Param2(bool),
 };
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
@@ -14,7 +14,7 @@ pub const Debug = em.import.@"em.lang/Debug";
 pub const EM__META = struct {
     //
     pub fn em__initH() void {
-        em__C.no_cache.init(false);
+        em__C.no_cache.set(false);
     }
 };
 

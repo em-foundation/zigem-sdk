@@ -4,7 +4,7 @@ pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
     Pin: em.Proxy(em.import.@"em.hal/GpioI"),
-    pin: em.Param(i16),
+    pin: em.Param2(i16),
 };
 
 pub fn em__generateS(comptime name: []const u8) type {
@@ -37,7 +37,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             pub const pin = em__C.pin;
 
             pub fn em__initH() void {
-                pin.set(-1);
+                em__C.pin.set(-1);
             }
 
             pub fn em__constructH() void {
@@ -51,7 +51,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__TARG = struct {
             //
-            const pin = em__C.pin;
+            const pin = em__C.pin.get();
             const is_def = (pin >= 0);
             const mask = mkMask(pin);
             const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
