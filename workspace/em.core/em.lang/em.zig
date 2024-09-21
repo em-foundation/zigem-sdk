@@ -450,12 +450,16 @@ pub fn Param_T(T: type) type {
 }
 
 pub fn Param2(T: type) type {
-    return *struct {
+    return *Param2_S(T);
+}
+
+pub fn Param2_S(T: type) type {
+    return struct {
         const Self = @This();
 
         pub const _em__builtin = {};
 
-        em__cfgid: ?*const CfgId,
+        em__cfgid: ?*const CfgId = null,
 
         _val: T,
 
@@ -468,7 +472,7 @@ pub fn Param2(T: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("&.{{._val = {s}}}", .{toStringAux(self._val)});
+            return sprint("@constCast(&em.Param2_S({s}){{._val = {s}}})", .{ mkTypeName(T), toStringAux(self._val) });
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
