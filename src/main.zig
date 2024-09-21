@@ -254,7 +254,7 @@ pub fn log(
     comptime format: []const u8,
     args: anytype,
 ) void {
-    if (message_level == .debug and std.mem.startsWith(u8, format, "***")) return;
+    // if (message_level == .debug and std.mem.startsWith(u8, format, "***")) return;
     if (std.mem.startsWith(u8, @tagName(scope), "zls_config")) return;
     if (std.mem.startsWith(u8, @tagName(scope), "zls_server")) return;
     if (std.mem.startsWith(u8, @tagName(scope), "zls_store")) return;
