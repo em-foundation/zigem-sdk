@@ -34,14 +34,14 @@ pub const EM__TARG = struct {
     }
 
     pub fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
-        start(msecs * 1000, handler, arg);
+        ustart(msecs * 1000, handler, arg);
     }
 
     pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
-        start(usecs, handler, arg);
+        ustart(usecs, handler, arg);
     }
 
-    fn start(ticks: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    fn ustart(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
         cur_fxn = handler;
         cur_arg = arg;
         Idle.waitOnly(.SET);
@@ -49,7 +49,7 @@ pub const EM__TARG = struct {
         reg(hal.CLKCTL_BASE + hal.CLKCTL_O_CLKENSET0).* = hal.CLKCTL_CLKENSET0_LGPT3;
         reg(hal.LGPT3_BASE + hal.LGPT_O_IMSET).* = hal.LGPT_IMSET_TGT;
         reg(hal.LGPT3_BASE + hal.LGPT_O_PRECFG).* = (48 << hal.LGPT_PRECFG_TICKDIV_S);
-        reg(hal.LGPT3_BASE + hal.LGPT_O_TGT).* = ticks;
+        reg(hal.LGPT3_BASE + hal.LGPT_O_TGT).* = usecs;
         reg(hal.LGPT3_BASE + hal.LGPT_O_CTL).* = hal.LGPT_CTL_MODE_UP_ONCE | hal.LGPT_CTL_C0RST;
     }
 
