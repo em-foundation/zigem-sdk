@@ -4,7 +4,7 @@ pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    blinkF: em.Param2(FiberMgr.Obj),
+    blinkF: em.Param(FiberMgr.Obj),
 };
 
 pub const AppButEdge = em.import.@"em__distro/BoardC".AppButEdge;

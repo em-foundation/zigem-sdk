@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    blinkF: em.Param2(FiberMgr.Obj),
+    blinkF: em.Param(FiberMgr.Obj),
 };
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;

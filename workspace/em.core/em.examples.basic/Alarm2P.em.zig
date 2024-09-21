@@ -3,8 +3,8 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    alarm: em.Param2(AlarmMgr.Obj),
-    blinkF: em.Param2(FiberMgr.Obj),
+    alarm: em.Param(AlarmMgr.Obj),
+    blinkF: em.Param(FiberMgr.Obj),
 };
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";

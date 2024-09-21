@@ -3,7 +3,7 @@ pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
     Edge: em.Proxy(em.import.@"em.hal/GpioEdgeI"),
-    debounceF: em.Param2(FiberMgr.Obj),
+    debounceF: em.Param(FiberMgr.Obj),
 };
 
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";

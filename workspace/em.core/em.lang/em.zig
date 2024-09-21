@@ -401,59 +401,10 @@ pub fn Obj_T(T: type) type {
 }
 
 pub fn Param(T: type) type {
-    return if (DOMAIN == .META) Param_H(T) else Param_T(T);
+    return *Param_S(T);
 }
 
-pub fn Param_H(T: type) type {
-    return *struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-
-        em__cfgid: ?*const CfgId,
-
-        _val: T,
-
-        pub fn get(self: *Self) T {
-            return self._val;
-        }
-
-        pub fn init(self: *Self, comptime v: T) void {
-            const pn = sprint("em.config.{s}.{s}", .{ self.em__cfgid.?.un, self.em__cfgid.?.cn });
-            self._val = property(pn, T, v);
-        }
-
-        pub fn set(self: *Self, v: T) void {
-            self._val = v;
-        }
-
-        pub fn toString(self: *const Self) []const u8 {
-            return sprint("{s}", .{toStringAux(self._val)});
-        }
-
-        pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
-            return "";
-        }
-
-        pub fn Type(_: Self) type {
-            return T;
-        }
-
-        pub fn unwrap(self: *const Self) T {
-            return self._val;
-        }
-    };
-}
-
-pub fn Param_T(T: type) type {
-    return T;
-}
-
-pub fn Param2(T: type) type {
-    return *Param2_S(T);
-}
-
-pub fn Param2_S(T: type) type {
+pub fn Param_S(T: type) type {
     return struct {
         const Self = @This();
 
@@ -472,7 +423,7 @@ pub fn Param2_S(T: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
-            return sprint("@constCast(&em.Param2_S({s}){{._val = {s}}})", .{ mkTypeName(T), toStringAux(self._val) });
+            return sprint("@constCast(&em.Param_S({s}){{._val = {s}}})", .{ mkTypeName(T), toStringAux(self._val) });
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {

@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    no_cache: em.Param2(bool),
+    no_cache: em.Param(bool),
 };
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";

@@ -3,7 +3,7 @@ pub const em__T = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    pin: em.Param2(i16),
+    pin: em.Param(i16),
 };
 
 pub fn em__generateS(comptime name: []const u8) type {

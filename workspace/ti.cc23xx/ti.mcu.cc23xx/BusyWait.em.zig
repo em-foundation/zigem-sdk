@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    scalar: em.Param2(u8),
+    scalar: em.Param(u8),
 };
 
 pub const EM__META = struct {

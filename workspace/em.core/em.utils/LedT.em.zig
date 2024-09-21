@@ -4,7 +4,7 @@ pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
     Pin: em.Proxy(em.import.@"em.hal/GpioI"),
-    active_low: em.Param2(bool),
+    active_low: em.Param(bool),
 };
 
 pub fn em__generateS(comptime name: []const u8) type {

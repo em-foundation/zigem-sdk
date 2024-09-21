@@ -3,8 +3,8 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    appTicker: em.Param2(TickerMgr.Obj),
-    sysTicker: em.Param2(TickerMgr.Obj),
+    appTicker: em.Param(TickerMgr.Obj),
+    sysTicker: em.Param(TickerMgr.Obj),
 };
 
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
