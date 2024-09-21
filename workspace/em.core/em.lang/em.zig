@@ -246,7 +246,8 @@ fn initConfig(CT: type, upath: []const u8) CT {
                         const FT = fti.Pointer.child;
                         const fval = &struct {
                             var o = blk: {
-                                break :blk std.mem.zeroInit(FT, .{ .em__cfgid = .{ .un = upath, .cn = fld.name, .fi = idx } });
+                                const cid: *const CfgId = &.{ .un = upath, .cn = fld.name, .fi = idx };
+                                break :blk std.mem.zeroInit(FT, .{ .em__cfgid = cid });
                             };
                         }.o;
                         @field(new_c, fld.name) = fval;
@@ -276,7 +277,7 @@ pub fn Factory_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        em__cfgid: CfgId,
+        em__cfgid: ?*const CfgId,
 
         _dname: []const u8,
         _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
@@ -409,7 +410,7 @@ pub fn Param_H(T: type) type {
 
         pub const _em__builtin = {};
 
-        em__cfgid: CfgId,
+        em__cfgid: ?*const CfgId,
 
         _val: T,
 
@@ -418,7 +419,7 @@ pub fn Param_H(T: type) type {
         }
 
         pub fn init(self: *Self, comptime v: T) void {
-            const pn = sprint("em.config.{s}.{s}", .{ self.em__cfgid.un, self.em__cfgid.cn });
+            const pn = sprint("em.config.{s}.{s}", .{ self.em__cfgid.?.un, self.em__cfgid.?.cn });
             self._val = property(pn, T, v);
         }
 
@@ -448,6 +449,34 @@ pub fn Param_T(T: type) type {
     return T;
 }
 
+pub fn Param2(T: type) type {
+    return *struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+
+        em__cfgid: ?*const CfgId,
+
+        _val: T,
+
+        pub fn get(self: *Self) T {
+            return self._val;
+        }
+
+        pub fn set(self: *Self, v: T) void {
+            self._val = v;
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
+            return sprint("&.{{._val = {s}}}", .{toStringAux(self._val)});
+        }
+
+        pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            return "";
+        }
+    };
+}
+
 pub fn Proxy(I: type) type {
     return if (DOMAIN == .META) Proxy_H(I) else Proxy_T(I);
 }
@@ -459,7 +488,7 @@ pub fn Proxy_H(I: type) type {
 
         const Iobj = I.em__U.Itab;
 
-        em__cfgid: CfgId,
+        em__cfgid: ?*const CfgId,
 
         _upath: []const u8 = I.em__U.upath,
         _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
@@ -512,7 +541,7 @@ pub fn Table_H(comptime T: type, acc: TableAccess) type {
 
         pub const _em__builtin = {};
 
-        em__cfgid: CfgId,
+        em__cfgid: ?*const CfgId,
 
         _dname: []const u8,
         _is_virgin: bool = true,
