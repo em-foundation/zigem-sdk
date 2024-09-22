@@ -10,6 +10,15 @@ const @"// -------- UNIT SPEC -------- //" = {};
 
 pub const UnitName = @import("../../zigem/unit_names.zig").UnitName;
 
+pub fn asI(I: type, U: type) I.em__I {
+    comptime {
+        if (!U.em__U.hasInterface(I.em__U)) {
+            @compileError(std.fmt.comptimePrint("{s} does not inherit {s}", .{ U.em__U.upath, I.em__U.upath }));
+        }
+    }
+    return mkIobj(I.em__I, U);
+}
+
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
