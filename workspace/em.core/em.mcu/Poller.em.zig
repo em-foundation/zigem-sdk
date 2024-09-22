@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    OneShot: em.Proxy2(OneShotI),
+    OneShot: em.Proxy(OneShotI),
 };
 
 pub const Common = em.import.@"em.mcu/Common";
@@ -18,7 +18,7 @@ pub const EM__TARG = struct {
     //
     pub const PollFxn = *const fn () bool;
 
-    const OneShot = em__C.OneShot.get();
+    const OneShot = em__C.OneShot.scope();
 
     var active_flag: bool = false;
     const active_flag_VP: *volatile bool = &active_flag;
