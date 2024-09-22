@@ -31,6 +31,7 @@ pub const EM__TARG = struct {
 
     const maxSysLedTicks: u32 = 384; // 1.5s
     const maxAppLedTicks: u32 = 512; // 2s
+    const printLedTicks: u32 = 1280; // 5s
     const minPressTime = 10; // 10ms
     const maxPressTime = 2000; // 2s
     var dividedBy: u32 = 1;
@@ -45,7 +46,7 @@ pub const EM__TARG = struct {
         AppBut.onPressed(onButtonPressed, .{ .min = minPressTime, .max = maxPressTime });
         appTicker.start(maxAppLedTicks, &appTickCb);
         sysTicker.start(maxSysLedTicks, &sysTickCb);
-        printTicker.start(1024, &printTickCb);
+        printTicker.start(printLedTicks, &printTickCb);
         FiberMgr.run();
     }
 
@@ -63,7 +64,7 @@ pub const EM__TARG = struct {
         printCount += 1;
         var subSeconds: u32 = 0;
         const seconds = EpochTime.getCurrent(&subSeconds);
-        em.print("{}: Hello World: Rate={}x appCount={} sysCount={}\n", .{ seconds, dividedBy, appCount, sysCount });
+        em.print("{}.{}: Hello World: Rate={}x appCount={} sysCount={}\n", .{ seconds, subSeconds, dividedBy, appCount, sysCount });
         if (dividedBy > 0 and lastSysCount > 0 and lastSysCount == sysCount) {
             em.print("Sys ticker count did not increment\n", .{});
             em.halt();
