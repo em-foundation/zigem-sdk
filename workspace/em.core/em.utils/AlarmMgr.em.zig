@@ -48,6 +48,7 @@ pub const EM__TARG = struct {
     var cur_alarm: ?*Alarm = null;
 
     fn findNextAlarm(delta_ticks: u32) void {
+        WakeupTimer.disable();
         const alarm_tab = em__C.AlarmOF;
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
@@ -66,7 +67,6 @@ pub const EM__TARG = struct {
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
-        WakeupTimer.disable();
         const alarm_tab = em__C.AlarmOF;
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
