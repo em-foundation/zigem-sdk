@@ -71,7 +71,7 @@ pub const EM__TARG = struct {
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            if (a._ticks > 0 and thresh == a._thresh) {
+            if ((a._ticks > 0) and (thresh >= a._thresh) and ((a._start <= a._thresh) or (a._start > a._thresh and thresh < a._start))) {
                 a._ticks = 0;
                 a._fiber.post(); // ring the alarm
             }
