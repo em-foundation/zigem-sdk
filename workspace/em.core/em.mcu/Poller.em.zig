@@ -3,10 +3,11 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    OneShot: em.Proxy(em.import.@"em.hal/OneShotI"),
+    OneShot: em.Proxy2(OneShotI),
 };
 
 pub const Common = em.import.@"em.mcu/Common";
+pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const EM__META = struct {
     //
@@ -17,12 +18,12 @@ pub const EM__TARG = struct {
     //
     pub const PollFxn = *const fn () bool;
 
-    const OneShot = em__C.OneShot.scope();
+    const OneShot = em__C.OneShot.get();
 
     var active_flag: bool = false;
     const active_flag_VP: *volatile bool = &active_flag;
 
-    fn handler(_: OneShot.HandlerArg) void {
+    fn handler(_: OneShotI.HandlerArg) void {
         active_flag_VP.* = false;
     }
 

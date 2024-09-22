@@ -58,7 +58,7 @@ fn ItabType(T: type) type {
     }
 }
 
-fn mkIobj(Itab: type, U: type) Itab {
+pub fn mkIobj(Itab: type, U: type) Itab {
     var iobj = Itab{};
     const ti = @typeInfo(Itab);
     inline for (ti.Struct.fields) |fld| {
@@ -482,6 +482,56 @@ pub fn Proxy_H(I: type) type {
 
 pub fn Proxy_T(_: type) type {
     return Unit;
+}
+
+pub fn Proxy2(I: type) type {
+    return *Proxy_S(I);
+}
+
+pub fn Proxy_S(I: type) type {
+    return struct {
+        const Self = @This();
+        pub const _em__builtin = {};
+
+        const Iobj = I.em__U.Itab;
+
+        em__cfgid: ?*const CfgId = null,
+
+        _upath: []const u8 = I.em__U.upath,
+        _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
+
+        pub fn get(self: *const Self) Iobj {
+            return self._iobj;
+        }
+
+        pub fn set(self: *Self, Mod: anytype) void {
+            const unit: Unit = Mod.em__U;
+            std.debug.assert(unit.hasInterface(I.em__U));
+            if (!unit.hasInterface(I.em__U)) {
+                std.log.err("unit {s} does not implement {s}", .{ unit.upath, I.em__U.upath });
+                fail();
+            }
+            self._upath = unit.upath;
+            self._iobj = mkIobj(I.em__U.Itab, unit.scope());
+        }
+
+        pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            return "";
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
+            var it = std.mem.splitSequence(u8, self._upath, "__");
+            var sb = StringH{};
+            sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+            while (it.next()) |seg| {
+                sb.add(sprint(".{s}", .{seg}));
+            }
+            const IMod = mkUnitImport(I.em__U.upath);
+            const XMod = mkUnitImport(self._upath);
+            const iobj = sprint("em.mkIobj({s}.em__U.Itab, {s}.em__U.scope())", .{ IMod, XMod });
+            return sprint("@constCast(&em.Proxy_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
+        }
+    };
 }
 
 pub const TableAccess = enum { RO, RW };
