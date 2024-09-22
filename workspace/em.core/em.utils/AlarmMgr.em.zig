@@ -15,6 +15,7 @@ pub const Obj = em.Obj(Alarm);
 pub const Alarm = struct {
     const Self = @This();
     _fiber: FiberMgr.Obj,
+    _start: u32 = 0, // start time of alarm
     _thresh: u32 = 0, // time of alarm
     _ticks: u32 = 0, // ticks remaining until alarm (0 == alarm inactive)
     pub fn active(self: *Self) bool {
@@ -71,7 +72,7 @@ pub const EM__TARG = struct {
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            if (a._ticks > 0 and thresh == a._thresh) {
+            if ((a._ticks > 0) and (thresh >= a._thresh) and ((a._start <= a._thresh) or (a._start > a._thresh and thresh < a._start))) {
                 a._ticks = 0;
                 a._fiber.post(); // ring the alarm
             }
@@ -89,6 +90,7 @@ pub const EM__TARG = struct {
     }
 
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
+        alarm._start = WakeupTimer.ticksToThresh(0);
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
         alarm._ticks = ticks;
         findNextAlarm(0);
