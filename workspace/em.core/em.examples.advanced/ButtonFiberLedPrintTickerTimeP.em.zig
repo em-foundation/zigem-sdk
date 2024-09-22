@@ -70,7 +70,11 @@ pub const EM__TARG = struct {
         const seconds = EpochTime.getCurrent(&subSeconds);
         const deltaAppCount = appCount - lastAppCount;
         const deltaSysCount = sysCount - lastSysCount;
-        em.print("{}: Hello World: Rate={}x deltaAppCount={} deltaSysCount={}\n", .{ seconds, dividedBy, deltaAppCount, deltaSysCount });
+        const minDeltaAppCount = dividedBy * printTicks / maxAppLedTicks;
+        const minDeltaSysCount = dividedBy * printTicks / maxSysLedTicks;
+        const deltaAppErr = if (deltaAppCount < minDeltaAppCount or deltaAppCount > minDeltaAppCount + 1) "*" else "";
+        const deltaSysErr = if (deltaSysCount < minDeltaSysCount or deltaSysCount > minDeltaSysCount + 1) "*" else "";
+        em.print("{}: Hello World: Rate={}x deltaAppCount={}{s} deltaSysCount={}{s}\n", .{ seconds, dividedBy, deltaAppCount, deltaAppErr, deltaSysCount, deltaSysErr });
         if (dividedBy > 0 and lastSysCount > 0 and lastSysCount == sysCount) {
             em.print("Sys ticker count did not increment\n", .{});
             em.halt();
