@@ -98,10 +98,6 @@ pub const EM__TARG = struct {
             em.print("Short button press: Setting rate to {}x\n", .{dividedBy});
             em.print("... deltaAppCount should be {} - {}\n", .{ dividedBy * printTicks / maxAppLedTicks, (dividedBy * printTicks / maxAppLedTicks) + 1 });
             em.print("... deltaSysCount should be {} - {}\n", .{ dividedBy * printTicks / maxSysLedTicks, (dividedBy * printTicks / maxSysLedTicks) + 1 });
-            appTicker.stop();
-            sysTicker.stop();
-            lastAppCount = 0;
-            lastSysCount = 0;
             appTicker.start(maxAppLedTicks / dividedBy, &appTickCb);
             sysTicker.start(maxSysLedTicks / dividedBy, &sysTickCb);
         }
