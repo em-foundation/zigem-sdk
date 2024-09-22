@@ -18,6 +18,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .meta_only = opts.meta_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
         .Itab = if (kind == .interface) ItabType(unitScope(This)) else void,
+        .IT = if (@hasDecl(This, "em__I")) This.em__I else void,
         .kind = kind,
         .legacy = opts.legacy,
         .upath = un,
@@ -145,6 +146,7 @@ pub const Unit = struct {
     generated: bool = false,
     inherits: ?Unit,
     Itab: type,
+    IT: type,
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
