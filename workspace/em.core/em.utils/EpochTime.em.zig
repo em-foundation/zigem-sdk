@@ -14,9 +14,13 @@ pub const EM__TARG = struct {
     //
     const Uptimer = em__C.Uptimer.scope();
 
-    pub fn getCurrent(o_subs: *u32) u32 {
+    pub fn getRawTime(o_subs: *u32) u32 {
         const time = Uptimer.read();
         o_subs.* = time.subs;
         return time.secs;
+    }
+
+    pub fn msecsFromSubs(subs: u32) u32 {
+        return ((subs >> 24) * 1000) / 256;
     }
 };
