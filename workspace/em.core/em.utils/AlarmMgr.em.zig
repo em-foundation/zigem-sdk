@@ -51,44 +51,37 @@ pub const EM__TARG = struct {
 
     var cur_alarm: ?*Alarm = null;
 
-    fn findNextAlarm() void {
+    fn dispatch(delta: u32) void {
         WakeupTimer.disable();
         const alarm_tab = em__C.AlarmOF;
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
             const a = &alarm_tab[idx];
-            if (a._dticks > 0 and a._dticks < max_ticks) {
+            if (a._dticks == 0) continue; // inactive
+            a._dticks -|= delta;
+            if (a._dticks == 0) {
+                a._fiber.post(); // ring the alarm
+                continue; // inactive
+            }
+            if (a._dticks < max_ticks) {
                 nxt_alarm = a;
                 max_ticks = a._dticks;
             }
         }
         cur_alarm = nxt_alarm;
         if (cur_alarm) |ca| {
-            // em.@"%%[a:]"(1);
-            // em.@"%%[>]"(ca._idx);
-            // em.@"%%[>]"(ca._thresh);
             WakeupTimer.enable(ca._thresh, &wakeupHandler);
         }
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
-        // em.@"%%[a]"();
-        // em.@"%%[>]"(cur_alarm.?._idx);
-        const alarm_tab = em__C.AlarmOF;
-        const dt: u32 = cur_alarm.?._dticks;
-        for (0..alarm_tab.len) |idx| {
-            var a = &alarm_tab[idx];
-            if (a._dticks == 0) continue;
-            a._dticks -|= dt;
-            if (a._dticks == 0) a._fiber.post(); // ring the alarm
-        }
-        findNextAlarm();
+        dispatch(cur_alarm.?._dticks);
     }
 
     pub fn Alarm_cancel(alarm: *Alarm) void {
         alarm._dticks = 0;
-        findNextAlarm();
+        dispatch(0);
     }
 
     pub fn Alarm_isActive(alarm: *Alarm) bool {
@@ -98,11 +91,7 @@ pub const EM__TARG = struct {
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
         alarm._dticks = ticks;
-        //em.@"%%[a:]"(2);
-        //em.@"%%[>]"(alarm._idx);
-        //em.@"%%[>]"(alarm._dticks);
-        //em.@"%%[>]"(alarm._thresh);
-        findNextAlarm();
+        dispatch(0);
     }
 
     pub fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
@@ -117,6 +106,5 @@ pub const EM__TARG = struct {
         const ticks = WakeupTimer.secs256ToTicks(secs256);
         const rem = et_ticks % ticks;
         Alarm_setup(alarm, ticks - rem);
-        // em.print("ticks = {d}, et_ticks = {d} , rem = {d}\n", .{ ticks, et_ticks, rem });
     }
 };
