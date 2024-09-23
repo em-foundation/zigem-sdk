@@ -15,6 +15,7 @@ pub const Obj = em.Obj(Alarm);
 pub const Alarm = struct {
     const Self = @This();
     _fiber: FiberMgr.Obj,
+    _start: u32 = 0, // start time of alarm
     _thresh: u32 = 0, // time of alarm
     _dticks: u32 = 0, // delta ticks until alarm (0 == alarm inactive)
     pub fn active(self: *Self) bool {
@@ -85,6 +86,7 @@ pub const EM__TARG = struct {
     }
 
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
+        alarm._start = WakeupTimer.ticksToThresh(0);
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
         alarm._dticks = ticks;
         dispatch(0);
