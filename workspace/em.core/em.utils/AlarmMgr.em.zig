@@ -17,7 +17,7 @@ pub const Alarm = struct {
     _fiber: FiberMgr.Obj,
     _start: u32 = 0, // start time of alarm
     _thresh: u32 = 0, // time of alarm
-    _ticks: u32 = 0, // ticks remaining until alarm (0 == alarm inactive)
+    _dticks: u32 = 0, // delta ticks until alarm (0 == alarm inactive)
     pub fn active(self: *Self) bool {
         em__U.scope().Alarm_active(self);
     }
@@ -48,41 +48,37 @@ pub const EM__TARG = struct {
 
     var cur_alarm: ?*Alarm = null;
 
-    fn findNextAlarm(delta_ticks: u32) void {
+    fn dispatch(delta: u32) void {
         WakeupTimer.disable();
         const alarm_tab = em__C.AlarmOF;
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
-            var a = &alarm_tab[idx];
-            a._ticks -|= delta_ticks;
-            if (a._ticks > 0 and a._ticks < max_ticks) {
+            const a = &alarm_tab[idx];
+            if (a._dticks == 0) continue; // inactive
+            a._dticks -|= delta;
+            if (a._dticks == 0) {
+                a._fiber.post(); // ring the alarm
+                continue; // inactive
+            }
+            if (a._dticks < max_ticks) {
                 nxt_alarm = a;
-                max_ticks = a._ticks;
+                max_ticks = a._dticks;
             }
         }
         cur_alarm = nxt_alarm;
-        if (cur_alarm != null) {
-            WakeupTimer.enable(cur_alarm.?._thresh, &wakeupHandler);
+        if (cur_alarm) |ca| {
+            WakeupTimer.enable(ca._thresh, &wakeupHandler);
         }
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
-        const alarm_tab = em__C.AlarmOF;
-        const thresh: u32 = cur_alarm.?._thresh;
-        for (0..alarm_tab.len) |idx| {
-            var a = &alarm_tab[idx];
-            if ((a._ticks > 0) and (thresh >= a._thresh) and ((a._start <= a._thresh) or (a._start > a._thresh and thresh < a._start))) {
-                a._ticks = 0;
-                a._fiber.post(); // ring the alarm
-            }
-        }
-        findNextAlarm(cur_alarm.?._ticks);
+        dispatch(cur_alarm.?._dticks);
     }
 
     pub fn Alarm_cancel(alarm: *Alarm) void {
-        alarm._ticks = 0;
-        findNextAlarm(0);
+        alarm._dticks = 0;
+        dispatch(0);
     }
 
     pub fn Alarm_isActive(alarm: *Alarm) bool {
@@ -92,8 +88,8 @@ pub const EM__TARG = struct {
     fn Alarm_setup(alarm: *Alarm, ticks: u32) void {
         alarm._start = WakeupTimer.ticksToThresh(0);
         alarm._thresh = WakeupTimer.ticksToThresh(ticks);
-        alarm._ticks = ticks;
-        findNextAlarm(0);
+        alarm._dticks = ticks;
+        dispatch(0);
     }
 
     pub fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
@@ -106,6 +102,7 @@ pub const EM__TARG = struct {
         const et_secs = EpochTime.getCurrent(&et_subs);
         const et_ticks = WakeupTimer.timeToTicks(et_secs, et_subs);
         const ticks = WakeupTimer.secs256ToTicks(secs256);
-        Alarm_setup(alarm, ticks - (et_ticks % ticks));
+        const rem = et_ticks % ticks;
+        Alarm_setup(alarm, ticks - rem);
     }
 };
