@@ -17,7 +17,6 @@ pub const Alarm = struct {
     _fiber: FiberMgr.Obj,
     _thresh: u32 = 0, // time of alarm
     _dticks: u32 = 0, // delta ticks until alarm (0 == alarm inactive)
-    _idx: u8,
     pub fn active(self: *Self) bool {
         em__U.scope().Alarm_active(self);
     }
@@ -36,11 +35,8 @@ pub const EM__META = struct {
     //
     pub const WakeupTimer = em__C.WakeupTimer;
 
-    var cur_idx: u8 = 0;
-
     pub fn createH(fiber: FiberMgr.Obj) Obj {
-        cur_idx += 1;
-        const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber, ._idx = cur_idx });
+        const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
         return alarm;
     }
 };
