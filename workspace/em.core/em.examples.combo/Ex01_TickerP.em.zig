@@ -79,7 +79,7 @@ pub const EM__TARG = struct {
         const min_delta_sys_count = divided_by * print_ticks / max_sys_led_ticks;
         const delta_app_err = if (delta_app_count < min_delta_app_count or delta_app_count > min_delta_app_count + 1) "*" else "";
         const delta_sys_err = if (delta_sys_count < min_delta_sys_count or delta_sys_count > min_delta_sys_count + 1) "*" else "";
-        em.print("{d}.{d:0>3}:  Hello World:  Rate={d}x  delta_app_count={d}{s}  delta_sys_count={d}{s}\n", .{ seconds, ms, divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
+        em.print("{d}.{d:0>3}:  Hello World:  rate={d}x  delta_app_count={d}{s}  delta_sys_count={d}{s}\n", .{ seconds, ms, divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
         if (divided_by > 0 and last_sys_count > 0 and last_sys_count == sys_count) {
             em.print("Sys ticker count did not increment\n", .{});
             em.halt();
