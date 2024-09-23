@@ -10,13 +10,13 @@ const @"// -------- UNIT SPEC -------- //" = {};
 
 pub const UnitName = @import("../../zigem/unit_names.zig").UnitName;
 
-pub fn asI(I: type, U: type) I.em__I {
+pub fn asI(I: type, U: type) I.EM__SPEC {
     comptime {
         if (!U.em__U.hasInterface(I.em__U)) {
             @compileError(std.fmt.comptimePrint("{s} does not inherit {s}", .{ U.em__U.upath, I.em__U.upath }));
         }
     }
-    return mkIobj(I.em__I, U);
+    return mkIobj(I.EM__SPEC, U);
 }
 
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
@@ -189,6 +189,7 @@ pub const Unit = struct {
     }
 
     pub fn hasInterface(self: Self, inter: Unit) bool {
+        if (self.kind == .interface and std.mem.eql(u8, self.upath, inter.upath)) return true;
         comptime var iu = self.inherits;
         inline while (iu) |iuval| : (iu = iuval.inherits) {
             if (std.mem.eql(u8, iuval.upath, inter.upath)) return true;
@@ -496,34 +497,26 @@ pub fn Proxy_T(_: type) type {
 }
 
 pub fn Proxy2(I: type) type {
-    return *Proxy_S(I);
+    return *Proxy2_S(I);
 }
 
-pub fn Proxy_S(I: type) type {
+pub fn Proxy2_S(I: type) type {
     return struct {
         const Self = @This();
         pub const _em__builtin = {};
 
-        const Iobj = I.em__U.Itab;
-
         em__cfgid: ?*const CfgId = null,
 
         _upath: []const u8 = I.em__U.upath,
-        _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
+        _iobj: I.EM__SPEC = asI(I, I),
 
-        pub fn get(self: *const Self) Iobj {
+        pub fn get(self: *const Self) I.EM__SPEC {
             return self._iobj;
         }
 
         pub fn set(self: *Self, Mod: anytype) void {
-            const unit: Unit = Mod.em__U;
-            std.debug.assert(unit.hasInterface(I.em__U));
-            if (!unit.hasInterface(I.em__U)) {
-                std.log.err("unit {s} does not implement {s}", .{ unit.upath, I.em__U.upath });
-                fail();
-            }
-            self._upath = unit.upath;
-            self._iobj = mkIobj(I.em__U.Itab, unit.scope());
+            self._upath = Mod.em__U.upath;
+            self._iobj = asI(I, Mod);
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
@@ -539,8 +532,8 @@ pub fn Proxy_S(I: type) type {
             }
             const IMod = mkUnitImport(I.em__U.upath);
             const XMod = mkUnitImport(self._upath);
-            const iobj = sprint("em.mkIobj({s}.em__U.Itab, {s}.em__U.scope())", .{ IMod, XMod });
-            return sprint("@constCast(&em.Proxy_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
+            const iobj = sprint("em.asI({s}, {s})", .{ IMod, XMod });
+            return sprint("@constCast(&em.Proxy2_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
         }
     };
 }

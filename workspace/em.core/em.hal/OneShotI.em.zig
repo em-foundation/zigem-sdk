@@ -6,6 +6,12 @@ pub const HandlerArg = struct {
     arg: em.ptr_t,
 };
 
+pub const EM__SPEC = struct {
+    disable: *const @TypeOf(EM__TARG.disable) = &EM__TARG.disable,
+    enable: *const @TypeOf(EM__TARG.enable) = &EM__TARG.enable,
+    uenable: *const @TypeOf(EM__TARG.uenable) = &EM__TARG.uenable,
+};
+
 pub const EM__TARG = struct {
     pub fn disable() void {
         return;
