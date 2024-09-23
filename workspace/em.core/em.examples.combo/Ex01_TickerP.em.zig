@@ -44,14 +44,18 @@ pub const EM__TARG = struct {
 
     pub fn em__run() void {
         em.print("Starting at rate {}x\n", .{dividedBy});
-        em.print("... delta print time should be {}\n", .{printTicks / 256});
-        em.print("... deltaAppCount should be {} - {}\n", .{ dividedBy * printTicks / maxAppLedTicks, (dividedBy * printTicks / maxAppLedTicks) + 1 });
-        em.print("... deltaSysCount should be {} - {}\n", .{ dividedBy * printTicks / maxSysLedTicks, (dividedBy * printTicks / maxSysLedTicks) + 1 });
+        printStatus();
         AppBut.onPressed(onButtonPressed, .{ .min = minPressTime, .max = maxPressTime });
         appTicker.start(maxAppLedTicks, &appTickCb);
         sysTicker.start(maxSysLedTicks, &sysTickCb);
         printTicker.start(printTicks, &printTickCb);
         FiberMgr.run();
+    }
+
+    fn printStatus() void {
+        em.print("... delta print time should be {}\n", .{printTicks / 256});
+        em.print("... deltaAppCount should be {} - {}\n", .{ dividedBy * printTicks / maxAppLedTicks, (dividedBy * printTicks / maxAppLedTicks) + 1 });
+        em.print("... deltaSysCount should be {} - {}\n", .{ dividedBy * printTicks / maxSysLedTicks, (dividedBy * printTicks / maxSysLedTicks) + 1 });
     }
 
     fn appTickCb(_: TickerMgr.CallbackArg) void {
@@ -74,7 +78,7 @@ pub const EM__TARG = struct {
         const minDeltaSysCount = dividedBy * printTicks / maxSysLedTicks;
         const deltaAppErr = if (deltaAppCount < minDeltaAppCount or deltaAppCount > minDeltaAppCount + 1) "*" else "";
         const deltaSysErr = if (deltaSysCount < minDeltaSysCount or deltaSysCount > minDeltaSysCount + 1) "*" else "";
-        em.print("{}: Hello World: Rate={}x deltaAppCount={}{s} deltaSysCount={}{s}\n", .{ seconds, dividedBy, deltaAppCount, deltaAppErr, deltaSysCount, deltaSysErr });
+        em.print("{}.{}: Hello World: Rate={}x deltaAppCount={}{s} deltaSysCount={}{s}\n", .{ seconds, subSeconds, dividedBy, deltaAppCount, deltaAppErr, deltaSysCount, deltaSysErr });
         if (dividedBy > 0 and lastSysCount > 0 and lastSysCount == sysCount) {
             em.print("Sys ticker count did not increment\n", .{});
             em.halt();
@@ -100,8 +104,7 @@ pub const EM__TARG = struct {
             // a short press (minPressTime < press time < maxPressTime)
             dividedBy = if (dividedBy >= 8 or dividedBy < 1) 1 else dividedBy * 2;
             em.print("Short button press: Setting rate to {}x\n", .{dividedBy});
-            em.print("... deltaAppCount should be {} - {}\n", .{ dividedBy * printTicks / maxAppLedTicks, (dividedBy * printTicks / maxAppLedTicks) + 1 });
-            em.print("... deltaSysCount should be {} - {}\n", .{ dividedBy * printTicks / maxSysLedTicks, (dividedBy * printTicks / maxSysLedTicks) + 1 });
+            printStatus();
             appTicker.start(maxAppLedTicks / dividedBy, &appTickCb);
             sysTicker.start(maxSysLedTicks / dividedBy, &sysTickCb);
         }
