@@ -51,14 +51,13 @@ pub const EM__TARG = struct {
 
     var cur_alarm: ?*Alarm = null;
 
-    fn findNextAlarm(delta_ticks: u32) void {
+    fn findNextAlarm() void {
         WakeupTimer.disable();
         const alarm_tab = em__C.AlarmOF;
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
-            var a = &alarm_tab[idx];
-            a._dticks -|= delta_ticks;
+            const a = &alarm_tab[idx];
             if (a._dticks > 0 and a._dticks < max_ticks) {
                 nxt_alarm = a;
                 max_ticks = a._dticks;
@@ -66,31 +65,30 @@ pub const EM__TARG = struct {
         }
         cur_alarm = nxt_alarm;
         if (cur_alarm) |ca| {
-            em.@"%%[a:]"(1);
-            em.@"%%[>]"(ca._idx);
-            em.@"%%[>]"(ca._thresh);
+            // em.@"%%[a:]"(1);
+            // em.@"%%[>]"(ca._idx);
+            // em.@"%%[>]"(ca._thresh);
             WakeupTimer.enable(ca._thresh, &wakeupHandler);
         }
     }
 
     fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
-        em.@"%%[a]"();
-        em.@"%%[>]"(cur_alarm.?._idx);
+        // em.@"%%[a]"();
+        // em.@"%%[>]"(cur_alarm.?._idx);
         const alarm_tab = em__C.AlarmOF;
-        const thresh: u32 = cur_alarm.?._thresh;
+        const dt: u32 = cur_alarm.?._dticks;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
-            if (a._dticks > 0 and thresh == a._thresh) {
-                a._dticks = 0;
-                a._fiber.post(); // ring the alarm
-            }
+            if (a._dticks == 0) continue;
+            a._dticks -|= dt;
+            if (a._dticks == 0) a._fiber.post(); // ring the alarm
         }
-        findNextAlarm(cur_alarm.?._dticks);
+        findNextAlarm();
     }
 
     pub fn Alarm_cancel(alarm: *Alarm) void {
         alarm._dticks = 0;
-        findNextAlarm(0);
+        findNextAlarm();
     }
 
     pub fn Alarm_isActive(alarm: *Alarm) bool {
@@ -104,7 +102,7 @@ pub const EM__TARG = struct {
         //em.@"%%[>]"(alarm._idx);
         //em.@"%%[>]"(alarm._dticks);
         //em.@"%%[>]"(alarm._thresh);
-        findNextAlarm(0);
+        findNextAlarm();
     }
 
     pub fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
