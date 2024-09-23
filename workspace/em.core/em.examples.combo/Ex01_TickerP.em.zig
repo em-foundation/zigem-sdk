@@ -3,9 +3,9 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    appTicker: em.Param(TickerMgr.Obj),
-    sysTicker: em.Param(TickerMgr.Obj),
-    printTicker: em.Param(TickerMgr.Obj),
+    app_ticker: em.Param(TickerMgr.Obj),
+    sys_ticker: em.Param(TickerMgr.Obj),
+    print_ticker: em.Param(TickerMgr.Obj),
 };
 
 pub const AppBut = em.import.@"em__distro/BoardC".AppBut;
@@ -17,96 +17,97 @@ pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
 pub const EM__META = struct {
     pub fn em__constructH() void {
-        em__C.appTicker.set(TickerMgr.createH());
-        em__C.sysTicker.set(TickerMgr.createH());
-        em__C.printTicker.set(TickerMgr.createH());
+        em__C.app_ticker.set(TickerMgr.createH());
+        em__C.sys_ticker.set(TickerMgr.createH());
+        em__C.print_ticker.set(TickerMgr.createH());
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const appTicker = em__C.appTicker;
-    const sysTicker = em__C.sysTicker;
-    const printTicker = em__C.printTicker;
+    const app_ticker = em__C.app_ticker;
+    const sys_ticker = em__C.sys_ticker;
+    const print_ticker = em__C.print_ticker;
 
-    const maxSysLedTicks: u32 = 384; // 1.5s
-    const maxAppLedTicks: u32 = 512; // 2s
-    const printTicks: u32 = 1280; // 5s
-    const minPressTime = 10; // 10ms
-    const maxPressTime = 2000; // 2s
-    var dividedBy: u32 = 1;
+    const max_sys_led_ticks: u32 = 384; // 1.5s
+    const max_app_led_ticks: u32 = 512; // 2s
+    const print_ticks: u32 = 1280; // 5s
+    const min_press_time = 10; // 10ms
+    const max_press_time = 2000; // 2s
+    var divided_by: u32 = 1;
 
-    var sysCount: u32 = 0;
-    var appCount: u32 = 0;
-    var lastAppCount: u32 = 0;
-    var lastSysCount: u32 = 0;
-    var printCount: u32 = 0;
+    var sys_count: u32 = 0;
+    var app_count: u32 = 0;
+    var last_app_count: u32 = 0;
+    var last_sys_count: u32 = 0;
+    var print_count: u32 = 0;
 
     pub fn em__run() void {
-        em.print("Starting at rate {}x\n", .{dividedBy});
+        em.print("Starting at rate {}x\n", .{divided_by});
         printStatus();
-        AppBut.onPressed(onButtonPressed, .{ .min = minPressTime, .max = maxPressTime });
-        appTicker.start(maxAppLedTicks, &appTickCb);
-        sysTicker.start(maxSysLedTicks, &sysTickCb);
-        printTicker.start(printTicks, &printTickCb);
+        AppBut.onPressed(onButtonPressed, .{ .min = min_press_time, .max = max_press_time });
+        app_ticker.start(max_app_led_ticks, &appTickCb);
+        sys_ticker.start(max_sys_led_ticks, &sysTickCb);
+        print_ticker.start(print_ticks, &printTickCb);
         FiberMgr.run();
     }
 
     fn printStatus() void {
-        em.print("... delta print time should be {}\n", .{printTicks / 256});
-        em.print("... deltaAppCount should be {} - {}\n", .{ dividedBy * printTicks / maxAppLedTicks, (dividedBy * printTicks / maxAppLedTicks) + 1 });
-        em.print("... deltaSysCount should be {} - {}\n", .{ dividedBy * printTicks / maxSysLedTicks, (dividedBy * printTicks / maxSysLedTicks) + 1 });
+        em.print("... delta print time should be ~{d}s\n", .{print_ticks / 256});
+        em.print("... delta_app_count should be {d}..{d}\n", .{ divided_by * print_ticks / max_app_led_ticks, (divided_by * print_ticks / max_app_led_ticks) + 1 });
+        em.print("... delta_sys_count should be {d}..{d}\n", .{ divided_by * print_ticks / max_sys_led_ticks, (divided_by * print_ticks / max_sys_led_ticks) + 1 });
     }
 
     fn appTickCb(_: TickerMgr.CallbackArg) void {
-        appCount += 1;
+        app_count += 1;
         AppLed.wink(10);
     }
 
     fn sysTickCb(_: TickerMgr.CallbackArg) void {
-        sysCount += 1;
+        sys_count += 1;
         SysLed.wink(10);
     }
 
     fn printTickCb(_: TickerMgr.CallbackArg) void {
-        printCount += 1;
-        var subSeconds: u32 = 0;
-        const seconds = EpochTime.getCurrent(&subSeconds);
-        const deltaAppCount = appCount - lastAppCount;
-        const deltaSysCount = sysCount - lastSysCount;
-        const minDeltaAppCount = dividedBy * printTicks / maxAppLedTicks;
-        const minDeltaSysCount = dividedBy * printTicks / maxSysLedTicks;
-        const deltaAppErr = if (deltaAppCount < minDeltaAppCount or deltaAppCount > minDeltaAppCount + 1) "*" else "";
-        const deltaSysErr = if (deltaSysCount < minDeltaSysCount or deltaSysCount > minDeltaSysCount + 1) "*" else "";
-        em.print("{}.{}: Hello World: Rate={}x deltaAppCount={}{s} deltaSysCount={}{s}\n", .{ seconds, subSeconds, dividedBy, deltaAppCount, deltaAppErr, deltaSysCount, deltaSysErr });
-        if (dividedBy > 0 and lastSysCount > 0 and lastSysCount == sysCount) {
+        print_count += 1;
+        var sub_seconds: u32 = 0;
+        const seconds = EpochTime.getRawTime(&sub_seconds);
+        const ms = EpochTime.msecsFromSubs(sub_seconds);
+        const delta_app_count = app_count - last_app_count;
+        const delta_sys_count = sys_count - last_sys_count;
+        const min_delta_app_count = divided_by * print_ticks / max_app_led_ticks;
+        const min_delta_sys_count = divided_by * print_ticks / max_sys_led_ticks;
+        const delta_app_err = if (delta_app_count < min_delta_app_count or delta_app_count > min_delta_app_count + 1) "*" else "";
+        const delta_sys_err = if (delta_sys_count < min_delta_sys_count or delta_sys_count > min_delta_sys_count + 1) "*" else "";
+        em.print("{d}.{d:0>3}:  Hello World:  Rate={d}x  delta_app_count={d}{s}  delta_sys_count={d}{s}\n", .{ seconds, ms, divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
+        if (divided_by > 0 and last_sys_count > 0 and last_sys_count == sys_count) {
             em.print("Sys ticker count did not increment\n", .{});
             em.halt();
         }
-        if (dividedBy > 0 and lastAppCount > 0 and lastAppCount == appCount) {
+        if (divided_by > 0 and last_app_count > 0 and last_app_count == app_count) {
             em.print("App ticker count did not increment\n", .{});
             em.halt();
         }
-        lastAppCount = appCount;
-        lastSysCount = sysCount;
+        last_app_count = app_count;
+        last_sys_count = sys_count;
     }
 
     pub fn onButtonPressed(_: AppBut.OnPressedCbArg) void {
         if (AppBut.isPressed()) {
-            // a long press (press time > maxPressTime)
+            // a long press (press time > max_press_time)
             em.print("Long button press: Stopping app/sys tickers\n", .{});
-            dividedBy = 0;
-            appTicker.stop();
-            sysTicker.stop();
-            lastAppCount = 0;
-            lastSysCount = 0;
+            divided_by = 0;
+            app_ticker.stop();
+            sys_ticker.stop();
+            last_app_count = 0;
+            last_sys_count = 0;
         } else {
-            // a short press (minPressTime < press time < maxPressTime)
-            dividedBy = if (dividedBy >= 8 or dividedBy < 1) 1 else dividedBy * 2;
-            em.print("Short button press: Setting rate to {}x\n", .{dividedBy});
+            // a short press (min_press_time < press time < max_press_time)
+            divided_by = if (divided_by >= 8 or divided_by < 1) 1 else divided_by * 2;
+            em.print("Short button press: Setting rate to {}x\n", .{divided_by});
             printStatus();
-            appTicker.start(maxAppLedTicks / dividedBy, &appTickCb);
-            sysTicker.start(maxSysLedTicks / dividedBy, &sysTickCb);
+            app_ticker.start(max_app_led_ticks / divided_by, &appTickCb);
+            sys_ticker.start(max_sys_led_ticks / divided_by, &sysTickCb);
         }
     }
 };
