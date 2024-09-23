@@ -99,7 +99,7 @@ pub const EM__TARG = struct {
 
     pub fn Alarm_wakeupAt(alarm: *Alarm, secs256: u32) void {
         var et_subs: u32 = undefined;
-        const et_secs = EpochTime.getCurrent(&et_subs);
+        const et_secs = EpochTime.getRawTime(&et_subs);
         const et_ticks = WakeupTimer.timeToTicks(et_secs, et_subs);
         const ticks = WakeupTimer.secs256ToTicks(secs256);
         const rem = et_ticks % ticks;
