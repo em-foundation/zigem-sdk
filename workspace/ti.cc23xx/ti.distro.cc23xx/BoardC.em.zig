@@ -24,6 +24,7 @@ pub const FlashCS = em__U.Generate("FlashCS", em.import.@"ti.mcu.cc23xx/GpioT");
 pub const FlashPICO = em__U.Generate("FlashPICO", em.import.@"ti.mcu.cc23xx/GpioT");
 pub const FlashPOCI = em__U.Generate("FlashPOCI", em.import.@"ti.mcu.cc23xx/GpioT");
 pub const GlobalInterrupts = em.import.@"em.arch.arm/GlobalInterrupts";
+pub const GlobalInterruptsG = em.import.@"em.mcu/GlobalInterrupts";
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const Mcu = em.import.@"ti.mcu.cc23xx/Mcu";
 pub const MsCounter = em.import.@"ti.mcu.cc23xx/MsCounterGpt3";
@@ -70,6 +71,7 @@ pub fn em__configureH() void {
     FlashCS.pin.set(6);
     FlashPICO.pin.set(13);
     FlashPOCI.pin.set(12);
+    GlobalInterruptsG.ImplX.set(GlobalInterrupts);
     Poller.OneShot.set(OneShot);
     SysLedPin.pin.set(14);
     SysLed.Pin.set(SysLedPin);
