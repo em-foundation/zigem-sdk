@@ -21,6 +21,6 @@ pub const EM__TARG = struct {
     }
 
     pub fn msecsFromSubs(subs: u32) u32 {
-        return ((subs >> 24) * 1000) / 256;
+        return ((subs >> 16) * 1000) / 65536;
     }
 };
