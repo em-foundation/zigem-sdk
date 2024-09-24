@@ -7,6 +7,7 @@ pub const EM__CONFIG = struct {
 };
 
 pub const Common = em.import.@"em.mcu/Common";
+pub const GlobalInterrupts = em.import.@"em.mcu/GlobalInterrupts";
 
 pub const EM__META = struct {
     pub const Led = em__C.Led;
@@ -37,14 +38,14 @@ pub const EM__TARG = struct {
     }
 
     pub fn em__fail() void {
-        _ = Common.GlobalInterrupts.disable();
+        _ = GlobalInterrupts.disable();
         while (true) {
             blink(2, blinkRate);
         }
     }
 
     pub fn em__halt() void {
-        _ = Common.GlobalInterrupts.disable();
+        _ = GlobalInterrupts.disable();
         Common.ConsoleUart.put(EOT_BYTE);
         Common.ConsoleUart.flush();
         Led.on();
