@@ -43,7 +43,7 @@ pub const EM__TARG = struct {
     var print_count: u32 = 0;
 
     pub fn em__run() void {
-        em.print("Starting at rate {}x\n", .{divided_by});
+        em.print("\nEx01_TickerP program startup\n\n", .{});
         printStatus();
         AppBut.onPressed(onButtonPressed, .{ .min = min_press_time, .max = max_press_time });
         app_ticker.start(max_app_led_ticks, &appTickCb);
@@ -53,9 +53,11 @@ pub const EM__TARG = struct {
     }
 
     fn printStatus() void {
-        em.print("... delta print time should be ~{d}s\n", .{print_ticks / 256});
-        em.print("... delta_app_count should be {d}..{d}\n", .{ divided_by * print_ticks / max_app_led_ticks, (divided_by * print_ticks / max_app_led_ticks) + 1 });
-        em.print("... delta_sys_count should be {d}..{d}\n", .{ divided_by * print_ticks / max_sys_led_ticks, (divided_by * print_ticks / max_sys_led_ticks) + 1 });
+        em.print("Button effects:\n... short press (>{d}ms): cycle through rates (1,2,4,8x)\n... long press (>{d}s): stop led tickers\n", .{ min_press_time, max_press_time / 1000 });
+        em.print("Current rate {}x\n", .{divided_by});
+        em.print("... should print every ~{d}s\n", .{print_ticks / 256});
+        em.print("... app ticks should be {d}..{d}\n", .{ divided_by * print_ticks / max_app_led_ticks, (divided_by * print_ticks / max_app_led_ticks) + 1 });
+        em.print("... sys ticks should be {d}..{d}\n", .{ divided_by * print_ticks / max_sys_led_ticks, (divided_by * print_ticks / max_sys_led_ticks) + 1 });
     }
 
     fn appTickCb(_: TickerMgr.CallbackArg) void {
@@ -79,13 +81,13 @@ pub const EM__TARG = struct {
         const min_delta_sys_count = divided_by * print_ticks / max_sys_led_ticks;
         const delta_app_err = if (delta_app_count < min_delta_app_count or delta_app_count > min_delta_app_count + 1) "*" else "";
         const delta_sys_err = if (delta_sys_count < min_delta_sys_count or delta_sys_count > min_delta_sys_count + 1) "*" else "";
-        em.print("{d:0>10}.{d:0>3}:  Hello World:  rate={d}x  delta_app_count={d}{s}  delta_sys_count={d}{s}\n", .{ seconds, ms, divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
+        em.print("{d:0>10}.{d:0>3}:  Hello World:  rate: {d}x  ticks(app,sys): ({d}{s},{d}{s})\n", .{ seconds, ms, divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
         if (divided_by > 0 and last_sys_count > 0 and last_sys_count == sys_count) {
-            em.print("Sys ticker count did not increment\n", .{});
+            em.print("No sys ticks detected since last print\n", .{});
             em.halt();
         }
         if (divided_by > 0 and last_app_count > 0 and last_app_count == app_count) {
-            em.print("App ticker count did not increment\n", .{});
+            em.print("No app ticks detected since last print\n", .{});
             em.halt();
         }
         last_app_count = app_count;
