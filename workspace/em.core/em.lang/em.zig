@@ -217,20 +217,18 @@ pub fn unitScope(U: type) type {
 }
 
 pub fn unitScope_H(U: type) type {
-    const S = if (@hasDecl(U, "EM__META")) U.EM__META else struct {};
+    if (!@hasDecl(U, "EM__META")) return U;
     return struct {
-        const _UID = @typeName(U) ++ "_scope";
         pub usingnamespace U;
-        pub usingnamespace S;
+        pub usingnamespace U.EM__META;
     };
 }
 
 pub fn unitScope_T(U: type) type {
-    const S = if (@hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
+    if (!@hasDecl(U, "EM__TARG")) return U;
     return struct {
-        const _UID = @typeName(U) ++ "_scope";
         pub usingnamespace U;
-        pub usingnamespace S;
+        pub usingnamespace U.EM__TARG;
     };
 }
 
