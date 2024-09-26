@@ -216,6 +216,14 @@ pub fn unitScope(U: type) type {
     return if (DOMAIN == .META) unitScope_H(U) else unitScope_T(U);
 }
 
+pub fn unitScope_A(U: type) type {
+    return struct {
+        pub usingnamespace U;
+        pub usingnamespace if (@hasDecl(U, "EM__META")) U.EM__META else struct {};
+        pub usingnamespace if (@hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
+    };
+}
+
 pub fn unitScope_H(U: type) type {
     if (!@hasDecl(U, "EM__META")) return U;
     return struct {
