@@ -6,6 +6,18 @@ pub const DOMAIN = domain_desc.DOMAIN;
 
 pub const IS_META = (DOMAIN == .META);
 
+pub fn declare_META() void {
+    comptime {
+        if (!IS_META) unreachable;
+    }
+}
+
+pub fn declare_TARG() void {
+    comptime {
+        if (IS_META) unreachable;
+    }
+}
+
 const @"// -------- UNIT SPEC -------- //" = {};
 
 pub const UnitName = @import("../../zigem/unit_names.zig").UnitName;
@@ -437,6 +449,7 @@ pub fn Param_S(T: type) type {
         }
 
         pub fn set(self: *Self, v: T) void {
+            declare_META();
             self._val = v;
         }
 
