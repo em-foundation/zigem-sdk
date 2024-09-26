@@ -3,10 +3,10 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    DbgA: em.Proxy(GpioI),
-    DbgB: em.Proxy(GpioI),
-    DbgC: em.Proxy(GpioI),
-    DbgD: em.Proxy(GpioI),
+    DbgA: em.Proxy2(GpioI),
+    DbgB: em.Proxy2(GpioI),
+    DbgC: em.Proxy2(GpioI),
+    DbgD: em.Proxy2(GpioI),
 };
 
 const Common = em.import.@"em.mcu/Common";
@@ -21,10 +21,10 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const DbgA = em__C.DbgA.scope();
-    const DbgB = em__C.DbgB.scope();
-    const DbgC = em__C.DbgC.scope();
-    const DbgD = em__C.DbgD.scope();
+    const DbgA = em__C.DbgA.get();
+    const DbgB = em__C.DbgB.get();
+    const DbgC = em__C.DbgC.get();
+    const DbgD = em__C.DbgD.get();
 
     fn delay() void {
         Common.BusyWait.wait(1);
@@ -47,13 +47,13 @@ pub const EM__TARG = struct {
         getDbg(id).set();
     }
 
-    fn getDbg(comptime id: u8) type {
+    fn getDbg(comptime id: u8) GpioI.EM__SPEC {
         switch (id) {
             'A' => return DbgA,
             'B' => return DbgB,
             'C' => return DbgC,
             'D' => return DbgD,
-            else => return GpioI,
+            else => return GpioI.EM__SPEC,
         }
     }
 
