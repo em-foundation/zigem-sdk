@@ -4,6 +4,14 @@ pub const em__U = em.interface(@This(), .{});
 pub const HandlerFxn = em.Fxn(HandlerArg);
 pub const HandlerArg = struct {};
 
+pub const EM__SPEC = struct {
+    disable: *const @TypeOf(EM__TARG.disable) = &EM__TARG.disable,
+    enable: *const @TypeOf(EM__TARG.enable) = &EM__TARG.enable,
+    secs256ToTicks: *const @TypeOf(EM__TARG.secs256ToTicks) = &EM__TARG.secs256ToTicks,
+    ticksToThresh: *const @TypeOf(EM__TARG.ticksToThresh) = &EM__TARG.ticksToThresh,
+    timeToTicks: *const @TypeOf(EM__TARG.timeToTicks) = &EM__TARG.timeToTicks,
+};
+
 pub const EM__TARG = struct {
     pub fn disable() void {
         return;

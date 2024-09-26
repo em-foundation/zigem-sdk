@@ -4,11 +4,12 @@ pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
     AlarmOF: em.Factory(Alarm),
-    WakeupTimer: em.Proxy(em.import.@"em.hal/WakeupTimerI"),
+    WakeupTimer: em.Proxy2(WakeupTimerI),
 };
 
 pub const EpochTime = em.import.@"em.utils/EpochTime";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 
 pub const Obj = em.Obj(Alarm);
 
@@ -43,7 +44,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const WakeupTimer = em__C.WakeupTimer.scope();
+    const WakeupTimer = em__C.WakeupTimer.get();
 
     var cur_alarm: ?*Alarm = null;
 
@@ -66,7 +67,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn wakeupHandler(_: WakeupTimer.HandlerArg) void {
+    fn wakeupHandler(_: WakeupTimerI.HandlerArg) void {
         const alarm_tab = em__C.AlarmOF;
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {

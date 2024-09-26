@@ -3,13 +3,13 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    BusyWait: em.Proxy(em.import.@"em.hal/BusyWaitI"),
-    ConsoleUart: em.Proxy(em.import.@"em.hal/ConsoleUartI"),
+    BusyWait: em.Proxy2(em.import.@"em.hal/BusyWaitI"),
+    ConsoleUart: em.Proxy2(em.import.@"em.hal/ConsoleUartI"),
     GlobalInterrupts: em.Proxy2(em.import.@"em.hal/GlobalInterruptsI"),
-    Idle: em.Proxy(em.import.@"em.hal/IdleI"),
-    Mcu: em.Proxy(em.import.@"em.hal/McuI"),
-    MsCounter: em.Proxy(em.import.@"em.hal/MsCounterI"),
-    UsCounter: em.Proxy(em.import.@"em.hal/UsCounterI"),
+    Idle: em.Proxy2(em.import.@"em.hal/IdleI"),
+    Mcu: em.Proxy2(em.import.@"em.hal/McuI"),
+    MsCounter: em.Proxy2(em.import.@"em.hal/MsCounterI"),
+    UsCounter: em.Proxy2(em.import.@"em.hal/UsCounterI"),
 };
 
 pub const EM__META = struct {
@@ -23,11 +23,11 @@ pub const EM__META = struct {
 };
 
 pub const EM__TARG = struct {
-    pub const BusyWait = em__C.BusyWait.scope();
-    pub const ConsoleUart = em__C.ConsoleUart.scope();
+    pub const BusyWait = em__C.BusyWait.get();
+    pub const ConsoleUart = em__C.ConsoleUart.get();
     pub const GlobalInterrupts = em__C.GlobalInterrupts.get();
-    pub const Idle = em__C.Idle.scope();
-    pub const Mcu = em__C.Mcu.scope();
-    pub const MsCounter = em__C.MsCounter.scope();
-    pub const UsCounter = em__C.UsCounter.scope();
+    pub const Idle = em__C.Idle.get();
+    pub const Mcu = em__C.Mcu.get();
+    pub const MsCounter = em__C.MsCounter.get();
+    pub const UsCounter = em__C.UsCounter.get();
 };

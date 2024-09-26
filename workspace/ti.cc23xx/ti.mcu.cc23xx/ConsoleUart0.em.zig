@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    TxPin: em.Proxy(em.import.@"em.hal/GpioI"),
+    TxPin: em.Proxy2(em.import.@"em.hal/GpioI"),
 };
 
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
@@ -24,7 +24,7 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
     const reg = em.reg;
-    const TxPin = em__C.TxPin.scope();
+    const TxPin = em__C.TxPin.get();
 
     pub fn em__startup() void {
         sleepLeave(.{});
