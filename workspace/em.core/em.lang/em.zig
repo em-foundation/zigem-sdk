@@ -34,7 +34,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     };
 }
 
-fn ItabType(T: type) type {
+pub fn ItabType(T: type) type {
     comptime {
         const ti = @typeInfo(T);
         var fdecl_list: []const std.builtin.Type.Declaration = &.{};

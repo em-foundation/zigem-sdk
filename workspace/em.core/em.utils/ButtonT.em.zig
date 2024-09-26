@@ -2,11 +2,12 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Edge: em.Proxy(em.import.@"em.hal/GpioEdgeI"),
+    Edge: em.Proxy2(GpioEdgeI),
     debounceF: em.Param(FiberMgr.Obj),
 };
 
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
 
 pub fn em__generateS(comptime name: []const u8) type {
     //
@@ -29,7 +30,6 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__META = struct {
             //
             pub const Edge = em__C.Edge;
-            const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
 
             pub fn em__constructH() void {
                 const debounceF = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
@@ -41,7 +41,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__TARG = struct {
             //
             const debounceF = em__C.debounceF.get();
-            const Edge = em__C.Edge.scope();
+            const Edge = em__C.Edge.get();
 
             var cur_cb: OnPressedCbFxn = null;
             var cur_dur: u16 = 0;
@@ -54,7 +54,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 Edge.setDetectFallingEdge();
             }
 
-            pub fn buttonHandler(_: Edge.HandlerArg) void {
+            pub fn buttonHandler(_: GpioEdgeI.HandlerArg) void {
                 Edge.clearDetect();
                 if (cur_cb != null) debounceF.post();
             }

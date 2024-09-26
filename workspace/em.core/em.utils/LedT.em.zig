@@ -3,7 +3,7 @@ pub const em__T = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Pin: em.Proxy(em.import.@"em.hal/GpioI"),
+    Pin: em.Proxy2(em.import.@"em.hal/GpioI"),
     active_low: em.Param(bool),
 };
 
@@ -32,7 +32,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__TARG = struct {
             //
             const active_low = em__C.active_low.get();
-            const Pin = em__C.Pin.scope();
+            const Pin = em__C.Pin.get();
 
             pub fn em__startup() void {
                 Pin.makeOutput();
