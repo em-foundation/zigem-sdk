@@ -18,15 +18,12 @@ pub const CallbackTab = em.Table(SleepCbFxn, .RO);
 
 pub const EM__META = struct {
     //
-    var sleep_enter_cb_tab = em__C.sleep_enter_fxn_tab;
-    var sleep_leave_cb_tab = em__C.sleep_leave_fxn_tab;
-
     pub fn addSleepEnterCbH(cb: SleepCbFxn) void {
-        sleep_enter_cb_tab.add(cb);
+        em__C.sleep_enter_fxn_tab.add(cb);
     }
 
     pub fn addSleepLeaveCbH(cb: SleepCbFxn) void {
-        sleep_leave_cb_tab.add(cb);
+        em__C.sleep_leave_fxn_tab.add(cb);
     }
 
     pub fn setWaitOnly(_: bool) void {} // TODO why????
@@ -37,8 +34,8 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    const sleep_enter_fxn_tab = em__C.sleep_enter_fxn_tab;
-    const sleep_leave_fxn_tab = em__C.sleep_leave_fxn_tab;
+    const sleep_enter_fxn_tab = em__C.sleep_enter_fxn_tab.items();
+    const sleep_leave_fxn_tab = em__C.sleep_leave_fxn_tab.items();
 
     var wait_only: u8 = 0;
 

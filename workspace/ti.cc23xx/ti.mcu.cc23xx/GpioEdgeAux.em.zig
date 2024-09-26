@@ -4,7 +4,7 @@ pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    handler_info_tab: em.Table2(HandlerInfo, .RO),
+    handler_info_tab: em.Table(HandlerInfo, .RO),
 };
 
 pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";

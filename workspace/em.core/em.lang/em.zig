@@ -512,7 +512,7 @@ pub fn Proxy_S(I: type) type {
 
 pub const TableAccess = enum { RO, RW };
 
-pub fn Table2(T: type, acc: TableAccess) type {
+pub fn Table(T: type, acc: TableAccess) type {
     return *Table_S(T, acc);
 }
 
@@ -587,70 +587,6 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
         }
     };
-}
-
-pub fn Table(comptime T: type, acc: TableAccess) type {
-    return if (DOMAIN == .META) Table_H(T, acc) else Table_T(T, acc);
-}
-
-pub fn Table_H(comptime T: type, acc: TableAccess) type {
-    return *struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-
-        em__cfgid: ?*const CfgId,
-
-        _dname: []const u8,
-        _is_virgin: bool = true,
-        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
-
-        pub fn add(self: *Self, item: T) void {
-            self._list.append(item) catch fail();
-            self._is_virgin = false;
-        }
-
-        pub fn items(self: *Self) []T {
-            self._is_virgin = false;
-            return self._list.items;
-        }
-
-        pub fn setLen(self: *Self, len: usize) void {
-            const sav = self._is_virgin;
-            const l = self._list.items.len;
-            if (len > l) {
-                for (l..len) |_| {
-                    self.add(std.mem.zeroes(T));
-                }
-            }
-            self._is_virgin = sav;
-        }
-
-        pub fn toString(self: *const Self) []const u8 {
-            return sprint("@constCast(&@\"{s}\")", .{self._dname});
-        }
-
-        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
-            self._dname = upath ++ ".em__C." ++ cname;
-            const tn = mkTypeName(T);
-            var sb = StringH{};
-            if (self._is_virgin) {
-                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
-            } else {
-                sb.add(sprint("[_]{s}{{", .{tn}));
-                for (self._list.items) |e| {
-                    sb.add(sprint("    {s},\n", .{toStringAux(e)}));
-                }
-                sb.add("}");
-            }
-            const ks = if (acc == .RO) "const" else "var";
-            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
-        }
-    };
-}
-
-pub fn Table_T(T: type, acc: TableAccess) type {
-    return if (acc == .RO) []const T else []T;
 }
 
 const @"// -------- BUILTIN FXNS -------- //" = {};
