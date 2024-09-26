@@ -454,10 +454,12 @@ pub fn Param_S(T: type) type {
         }
 
         pub fn toString(self: *const Self) []const u8 {
+            declare_META();
             return sprint("@constCast(&em.Param_S({s}){{._val = {s}}})", .{ mkTypeName(T), toStringAux(self._val) });
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            declare_META();
             return "";
         }
     };
@@ -482,15 +484,18 @@ pub fn Proxy_S(I: type) type {
         }
 
         pub fn set(self: *Self, Mod: anytype) void {
+            declare_META();
             self._upath = Mod.em__U.upath;
             self._iobj = asI(I, Mod);
         }
 
         pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            declare_META();
             return "";
         }
 
         pub fn toString(self: *const Self) []const u8 {
+            declare_META();
             var it = std.mem.splitSequence(u8, self._upath, "__");
             var sb = StringH{};
             sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
@@ -507,7 +512,84 @@ pub fn Proxy_S(I: type) type {
 
 pub const TableAccess = enum { RO, RW };
 
-pub fn Table(T: type, acc: TableAccess) type {
+pub fn Table2(T: type, acc: TableAccess) type {
+    return *Table_S(T, acc);
+}
+
+pub fn Table_S(T: type, acc: TableAccess) type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+
+        const _ItemsType = if (IS_META or acc == .RW) []T else []const T;
+        const _ListType = if (IS_META) std.ArrayList(T) else _ItemsType;
+
+        const _LIST_INIT = if (IS_META) _ListType.init(arena.allocator()) else &[_]T{};
+
+        em__cfgid: ?*const CfgId = null,
+
+        _dname: []const u8 = "",
+        _is_virgin: bool = true,
+        _list: _ListType = _LIST_INIT,
+
+        pub fn add(self: *Self, item: T) void {
+            declare_META();
+            self._list.append(item) catch fail();
+            self._is_virgin = false;
+        }
+
+        pub fn items(self: *Self) _ItemsType {
+            if (IS_META) {
+                self._is_virgin = false;
+                return self._list.items;
+            } else {
+                return self._list;
+            }
+        }
+
+        pub fn setLen(self: *Self, len: usize) void {
+            declare_META();
+            const sav = self._is_virgin;
+            const l = self._list.items.len;
+            if (len > l) {
+                for (l..len) |_| {
+                    self.add(std.mem.zeroes(T));
+                }
+            }
+            self._is_virgin = sav;
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
+            declare_META();
+            return sprint("@constCast(&em.Table_S({s}, .{s}){{._list = &@\"{s}\"}})", .{
+                mkTypeName(T),
+                @tagName(acc),
+                self._dname,
+            });
+        }
+
+        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+            declare_META();
+            self._dname = upath ++ ".em__C." ++ cname;
+            const tn = mkTypeName(T);
+            var sb = StringH{};
+            if (self._is_virgin) {
+                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
+            } else {
+                sb.add(sprint("[_]{s}{{", .{tn}));
+                for (self._list.items) |e| {
+                    sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+                }
+                sb.add("}");
+            }
+            const ks = if (acc == .RO) "const" else "var";
+            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
+        }
+    };
+}
+
+pub fn Table(comptime T: type, acc: TableAccess) type {
     return if (DOMAIN == .META) Table_H(T, acc) else Table_T(T, acc);
 }
 

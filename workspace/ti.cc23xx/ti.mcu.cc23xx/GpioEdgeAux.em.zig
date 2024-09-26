@@ -4,7 +4,7 @@ pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    handler_info_tab: em.Table(HandlerInfo, .RO),
+    handler_info_tab: em.Table2(HandlerInfo, .RO),
 };
 
 pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
@@ -17,14 +17,12 @@ pub const HandlerInfo = struct {
 
 pub const EM__META = struct {
     //
-    var handler_info_tab = em__C.handler_info_tab;
-
     pub fn em__constructH() void {
         IntrVec.useIntrH("GPIO_COMB");
     }
 
     pub fn addHandlerInfoH(hi: HandlerInfo) void {
-        handler_info_tab.add(hi);
+        em__C.handler_info_tab.add(hi);
     }
 };
 
@@ -33,7 +31,7 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    const handler_info_tab = em__C.handler_info_tab;
+    const handler_info_tab = em__C.handler_info_tab.items();
 
     pub fn em__startup() void {
         hal.NVIC_EnableIRQ(hal.GPIO_COMB_IRQn);
