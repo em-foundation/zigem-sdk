@@ -451,62 +451,10 @@ pub fn Param_S(T: type) type {
 }
 
 pub fn Proxy(I: type) type {
-    return if (DOMAIN == .META) Proxy_H(I) else Proxy_T(I);
+    return *Proxy_S(I);
 }
 
-pub fn Proxy_H(I: type) type {
-    return *struct {
-        const Self = @This();
-        pub const _em__builtin = {};
-
-        const Iobj = I.em__U.Itab;
-
-        em__cfgid: ?*const CfgId,
-
-        _upath: []const u8 = I.em__U.upath,
-        _iobj: Iobj = mkIobj(I.em__U.Itab, I.em__U.scope()),
-
-        pub fn get(self: *const Self) Iobj {
-            return self._iobj;
-        }
-
-        pub fn set(self: *Self, mod: anytype) void {
-            const unit: Unit = mod.em__U;
-            std.debug.assert(unit.hasInterface(I.em__U));
-            if (!unit.hasInterface(I.em__U)) {
-                std.log.err("unit {s} does not implement {s}", .{ unit.upath, I.em__U.upath });
-                fail();
-            }
-            self._upath = unit.upath;
-            self._iobj = mkIobj(I.em__U.Itab, unit.scope());
-        }
-
-        pub fn toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
-            return "";
-        }
-
-        pub fn toString(self: *const Self) []const u8 {
-            var it = std.mem.splitSequence(u8, self._upath, "__");
-            var sb = StringH{};
-            sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
-            while (it.next()) |seg| {
-                sb.add(sprint(".{s}", .{seg}));
-            }
-            sb.add(".em__U");
-            return sb.get();
-        }
-    };
-}
-
-pub fn Proxy_T(_: type) type {
-    return Unit;
-}
-
-pub fn Proxy2(I: type) type {
-    return *Proxy2_S(I);
-}
-
-pub fn Proxy2_S(I: type) type {
+pub fn Proxy_S(I: type) type {
     return struct {
         const Self = @This();
         pub const _em__builtin = {};
@@ -539,7 +487,7 @@ pub fn Proxy2_S(I: type) type {
             const IMod = mkUnitImport(I.em__U.upath);
             const XMod = mkUnitImport(self._upath);
             const iobj = sprint("em.asI({s}, {s})", .{ IMod, XMod });
-            return sprint("@constCast(&em.Proxy2_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
+            return sprint("@constCast(&em.Proxy_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
         }
     };
 }

@@ -3,10 +3,10 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    DbgA: em.Proxy2(GpioI),
-    DbgB: em.Proxy2(GpioI),
-    DbgC: em.Proxy2(GpioI),
-    DbgD: em.Proxy2(GpioI),
+    DbgA: em.Proxy(GpioI),
+    DbgB: em.Proxy(GpioI),
+    DbgC: em.Proxy(GpioI),
+    DbgD: em.Proxy(GpioI),
 };
 
 const Common = em.import.@"em.mcu/Common";

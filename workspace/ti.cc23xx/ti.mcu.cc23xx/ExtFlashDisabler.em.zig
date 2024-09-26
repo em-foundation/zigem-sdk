@@ -3,10 +3,10 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    CS: em.Proxy2(em.import.@"em.hal/GpioI"),
-    CLK: em.Proxy2(em.import.@"em.hal/GpioI"),
-    PICO: em.Proxy2(em.import.@"em.hal/GpioI"),
-    POCI: em.Proxy2(em.import.@"em.hal/GpioI"),
+    CS: em.Proxy(em.import.@"em.hal/GpioI"),
+    CLK: em.Proxy(em.import.@"em.hal/GpioI"),
+    PICO: em.Proxy(em.import.@"em.hal/GpioI"),
+    POCI: em.Proxy(em.import.@"em.hal/GpioI"),
 };
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";

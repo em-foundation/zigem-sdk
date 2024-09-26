@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    OneShot: em.Proxy2(OneShotI),
+    OneShot: em.Proxy(OneShotI),
 };
 
 pub const Common = em.import.@"em.mcu/Common";

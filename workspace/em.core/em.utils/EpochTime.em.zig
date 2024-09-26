@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    Uptimer: em.Proxy2(em.import.@"em.hal/UptimerI"),
+    Uptimer: em.Proxy(em.import.@"em.hal/UptimerI"),
 };
 
 pub const EM__META = struct {

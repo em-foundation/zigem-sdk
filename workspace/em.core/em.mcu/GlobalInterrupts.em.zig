@@ -5,7 +5,7 @@ pub const em__C = em__U.config(EM__CONFIG);
 pub const GlobalInterruptsI = em.import.@"em.hal/GlobalInterruptsI";
 
 pub const EM__CONFIG = struct {
-    Impl: em.Proxy2(GlobalInterruptsI),
+    Impl: em.Proxy(GlobalInterruptsI),
 };
 
 pub const EM__META = struct {

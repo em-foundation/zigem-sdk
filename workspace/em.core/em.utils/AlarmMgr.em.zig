@@ -4,7 +4,7 @@ pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
     AlarmOF: em.Factory(Alarm),
-    WakeupTimer: em.Proxy2(WakeupTimerI),
+    WakeupTimer: em.Proxy(WakeupTimerI),
 };
 
 pub const EpochTime = em.import.@"em.utils/EpochTime";

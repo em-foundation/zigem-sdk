@@ -2,7 +2,7 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Edge: em.Proxy2(GpioEdgeI),
+    Edge: em.Proxy(GpioEdgeI),
     debounceF: em.Param(FiberMgr.Obj),
 };
 

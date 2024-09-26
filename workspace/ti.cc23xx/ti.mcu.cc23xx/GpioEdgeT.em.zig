@@ -3,7 +3,7 @@ pub const em__T = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Pin: em.Proxy2(em.import.@"em.hal/GpioI"),
+    Pin: em.Proxy(em.import.@"em.hal/GpioI"),
     pin: em.Param(i16),
 };
 
