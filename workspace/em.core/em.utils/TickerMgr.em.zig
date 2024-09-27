@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    TickerOF: em.Factory(Ticker),
+    TickerOF: em.Factory2(Ticker),
 };
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
@@ -12,7 +12,7 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const CallbackFxn = em.Fxn(CallbackArg);
 pub const CallbackArg = struct {};
 
-pub const Obj = em.Obj(Ticker);
+pub const Obj = em.Obj2(Ticker);
 
 pub const Ticker = struct {
     const Self = @This();
@@ -42,7 +42,7 @@ pub const EM__META = struct {
 pub const EM__TARG = struct {
     //
     pub fn alarmFB(a: FiberMgr.BodyArg) void {
-        var ticker = em__C.TickerOF[a.arg];
+        var ticker = em__C.TickerOF.items()[a.arg];
         if (ticker._tick_cb == null) return;
         ticker._tick_cb.?(.{});
         ticker._alarm.wakeupAt(ticker._rate256);

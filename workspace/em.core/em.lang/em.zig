@@ -496,7 +496,7 @@ pub fn Obj_S(T: type) type {
             return self._idx;
         }
         pub fn O(self: *const Self) *T {
-            return self._fty.?.objGet(self._idx);
+            return @constCast(&self._fty.?.items()[self._idx]);
         }
         pub fn toString(self: *const Self) []const u8 {
             return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
