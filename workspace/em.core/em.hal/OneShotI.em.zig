@@ -7,25 +7,25 @@ pub const HandlerArg = struct {
 };
 
 pub const EM__SPEC = struct {
-    disable: *const @TypeOf(EM__TARG.disable) = &EM__TARG.disable,
-    enable: *const @TypeOf(EM__TARG.enable) = &EM__TARG.enable,
-    uenable: *const @TypeOf(EM__TARG.uenable) = &EM__TARG.uenable,
+    disable: *const @TypeOf(disable) = &disable,
+    enable: *const @TypeOf(enable) = &enable,
+    uenable: *const @TypeOf(uenable) = &uenable,
 };
 
-pub const EM__TARG = struct {
-    pub fn disable() void {
-        return;
-    }
-    pub fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
-        _ = msecs;
-        _ = handler;
-        _ = arg;
-        return;
-    }
-    pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
-        _ = usecs;
-        _ = handler;
-        _ = arg;
-        return;
-    }
-};
+pub fn disable() void {
+    return;
+}
+
+pub fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    _ = msecs;
+    _ = handler;
+    _ = arg;
+    return;
+}
+
+pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    _ = usecs;
+    _ = handler;
+    _ = arg;
+    return;
+}

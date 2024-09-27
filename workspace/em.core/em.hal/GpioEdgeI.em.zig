@@ -8,48 +8,48 @@ pub const HandlerArg = struct {};
 
 pub const EM__SPEC = struct {
     // GpioI
-    clear: *const @TypeOf(GpioI.EM__TARG.clear) = &GpioI.EM__TARG.clear,
-    functionSelect: *const @TypeOf(GpioI.EM__TARG.functionSelect) = &GpioI.EM__TARG.functionSelect,
-    get: *const @TypeOf(GpioI.EM__TARG.get) = &GpioI.EM__TARG.get,
-    isInput: *const @TypeOf(GpioI.EM__TARG.isInput) = &GpioI.EM__TARG.isInput,
-    isOutput: *const @TypeOf(GpioI.EM__TARG.isOutput) = &GpioI.EM__TARG.isOutput,
-    makeInput: *const @TypeOf(GpioI.EM__TARG.makeInput) = &GpioI.EM__TARG.makeInput,
-    makeOutput: *const @TypeOf(GpioI.EM__TARG.makeOutput) = &GpioI.EM__TARG.makeOutput,
-    pinId: *const @TypeOf(GpioI.EM__TARG.pinId) = &GpioI.EM__TARG.pinId,
-    reset: *const @TypeOf(GpioI.EM__TARG.reset) = &GpioI.EM__TARG.reset,
-    set: *const @TypeOf(GpioI.EM__TARG.set) = &GpioI.EM__TARG.set,
-    setInternalPullup: *const @TypeOf(GpioI.EM__TARG.setInternalPullup) = &GpioI.EM__TARG.setInternalPullup,
-    toggle: *const @TypeOf(GpioI.EM__TARG.toggle) = &GpioI.EM__TARG.toggle,
+    clear: *const @TypeOf(GpioI.clear) = &GpioI.clear,
+    functionSelect: *const @TypeOf(GpioI.functionSelect) = &GpioI.functionSelect,
+    get: *const @TypeOf(GpioI.get) = &GpioI.get,
+    isInput: *const @TypeOf(GpioI.isInput) = &GpioI.isInput,
+    isOutput: *const @TypeOf(GpioI.isOutput) = &GpioI.isOutput,
+    makeInput: *const @TypeOf(GpioI.makeInput) = &GpioI.makeInput,
+    makeOutput: *const @TypeOf(GpioI.makeOutput) = &GpioI.makeOutput,
+    pinId: *const @TypeOf(GpioI.pinId) = &GpioI.pinId,
+    reset: *const @TypeOf(GpioI.reset) = &GpioI.reset,
+    set: *const @TypeOf(GpioI.set) = &GpioI.set,
+    setInternalPullup: *const @TypeOf(GpioI.setInternalPullup) = &GpioI.setInternalPullup,
+    toggle: *const @TypeOf(GpioI.toggle) = &GpioI.toggle,
     //
-    setDetectHandlerH: *const @TypeOf(EM__META.setDetectHandlerH) = &EM__META.setDetectHandlerH,
-    clearDetect: *const @TypeOf(EM__TARG.clearDetect) = &EM__TARG.clearDetect,
-    disableDetect: *const @TypeOf(EM__TARG.disableDetect) = &EM__TARG.disableDetect,
-    enableDetect: *const @TypeOf(EM__TARG.enableDetect) = &EM__TARG.enableDetect,
-    setDetectFallingEdge: *const @TypeOf(EM__TARG.setDetectFallingEdge) = &EM__TARG.setDetectFallingEdge,
-    setDetectRisingEdge: *const @TypeOf(EM__TARG.setDetectRisingEdge) = &EM__TARG.setDetectRisingEdge,
+    setDetectHandlerH: *const @TypeOf(setDetectHandlerH) = &setDetectHandlerH,
+    clearDetect: *const @TypeOf(clearDetect) = &clearDetect,
+    disableDetect: *const @TypeOf(disableDetect) = &disableDetect,
+    enableDetect: *const @TypeOf(enableDetect) = &enableDetect,
+    setDetectFallingEdge: *const @TypeOf(setDetectFallingEdge) = &setDetectFallingEdge,
+    setDetectRisingEdge: *const @TypeOf(setDetectRisingEdge) = &setDetectRisingEdge,
 };
 
-pub const EM__META = struct {
-    pub fn setDetectHandlerH(h: HandlerFxn) void {
-        _ = h;
-        return;
-    }
-};
+pub fn setDetectHandlerH(h: HandlerFxn) void {
+    _ = h;
+    return;
+}
 
-pub const EM__TARG = struct {
-    pub fn clearDetect() void {
-        return;
-    }
-    pub fn disableDetect() void {
-        return;
-    }
-    pub fn enableDetect() void {
-        return;
-    }
-    pub fn setDetectFallingEdge() void {
-        return;
-    }
-    pub fn setDetectRisingEdge() void {
-        return;
-    }
-};
+pub fn clearDetect() void {
+    return;
+}
+
+pub fn disableDetect() void {
+    return;
+}
+
+pub fn enableDetect() void {
+    return;
+}
+
+pub fn setDetectFallingEdge() void {
+    return;
+}
+
+pub fn setDetectRisingEdge() void {
+    return;
+}
