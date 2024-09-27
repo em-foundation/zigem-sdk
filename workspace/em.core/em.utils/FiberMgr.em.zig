@@ -3,12 +3,12 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    FiberOF: em.Factory(Fiber),
+    FiberOF: em.Factory2(Fiber),
 };
 
 pub const Common = em.import.@"em.mcu/Common";
 
-pub const Obj = em.Obj(Fiber);
+pub const Obj = em.Obj2(Fiber);
 pub const BodyFxn = em.Fxn(BodyArg);
 pub const BodyArg = struct {
     arg: usize,

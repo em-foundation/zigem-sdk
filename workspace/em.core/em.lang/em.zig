@@ -301,6 +301,85 @@ pub fn Factory(T: type) type {
     return if (DOMAIN == .META) Factory_H(T) else Factory_T(T);
 }
 
+pub fn Factory2(T: type) type {
+    return if (DOMAIN == .META) *Factory_S(T) else *T;
+}
+
+pub fn Factory_S(T: type) type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+
+        const _ItemsType = [](T);
+        const _ListType = if (IS_META) std.ArrayList(T) else _ItemsType;
+
+        const _LIST_INIT = if (IS_META) _ListType.init(arena.allocator()) else undefined;
+
+        em__cfgid: ?*const CfgId = null,
+
+        _dname: []const u8 = undefined,
+        _list: _ListType = _LIST_INIT,
+
+        pub fn createH(self: *Self, init: anytype) Obj2(T) {
+            declare_META();
+            const l = self._list.items.len;
+            self._list.append(std.mem.zeroInit(T, init)) catch fail();
+            const o = Obj2(T){ ._fty = self, ._idx = l };
+            return o;
+        }
+
+        pub fn items(self: *Self) _ItemsType {
+            if (IS_META) {
+                return self._list.items;
+            } else {
+                return self._list;
+            }
+        }
+
+        pub fn toString(self: *const Self) []const u8 {
+            declare_META();
+            return sprint("@constCast(&em.Factory_S({s}){{._list = &@\"{s}__OBJARR\"}})", .{
+                mkTypeName(T),
+                self._dname,
+            });
+        }
+
+        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+            declare_META();
+            self._dname = upath ++ "_em__C_" ++ cname;
+            var sb = StringH{};
+            const tn = mkTypeName(T);
+            sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self._dname, tn }));
+            for (self._list.items) |e| {
+                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
+            }
+            sb.add("};\n");
+            const size_txt =
+                \\export const @"{0s}__BASE" = &@"{0s}__OBJARR";
+                \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
+                \\
+                \\
+            ;
+            sb.add(sprint(size_txt, .{ self._dname, tn }));
+            for (0..self.items().len) |i| {
+                const abs_txt =
+                    \\comptime {{
+                    \\    asm (".globl \"{0s}${1d}\"");
+                    \\    asm ("\"{0s}${1d}\" = \"zigem.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
+                    \\}}
+                    \\extern const @"{0s}${1d}": usize;
+                    \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
+                    \\
+                    \\
+                ;
+                sb.add(sprint(abs_txt, .{ self._dname, i, tn }));
+            }
+            return sb.get();
+        }
+    };
+}
+
 pub fn Factory_H(T: type) type {
     return *struct {
         const Self = @This();
@@ -401,6 +480,31 @@ pub fn Fxn(PT: type) type {
 
 pub fn Obj(T: type) type {
     return if (DOMAIN == .META) Obj_H(T) else Obj_T(T);
+}
+
+pub fn Obj2(T: type) type {
+    return if (DOMAIN == .META) Obj_S(T) else Obj_T(T);
+}
+
+pub fn Obj_S(T: type) type {
+    return struct {
+        const Self = @This();
+        pub const _em__builtin = {};
+        _fty: ?Factory2(T) = undefined,
+        _idx: usize,
+        pub fn getIdx(self: *const Self) usize {
+            return self._idx;
+        }
+        pub fn O(self: *const Self) *T {
+            return self._fty.?.objGet(self._idx);
+        }
+        pub fn toString(self: *const Self) []const u8 {
+            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
+        }
+        pub fn typeName() []const u8 {
+            return sprint("*{s}", .{mkTypeName(T)});
+        }
+    };
 }
 
 pub fn Obj_H(T: type) type {
@@ -525,7 +629,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
         const _ItemsType = if (IS_META or acc == .RW) []T else []const T;
         const _ListType = if (IS_META) std.ArrayList(T) else _ItemsType;
 
-        const _LIST_INIT = if (IS_META) _ListType.init(arena.allocator()) else &[_]T{};
+        const _LIST_INIT = if (IS_META) _ListType.init(arena.allocator()) else undefined;
 
         em__cfgid: ?*const CfgId = null,
 
