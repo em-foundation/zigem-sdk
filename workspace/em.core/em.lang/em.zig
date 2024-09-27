@@ -224,7 +224,6 @@ pub const Unit = struct {
 };
 
 pub fn unitScope(U: type) type {
-    // TODO eliminate
     return if (DOMAIN == .META) unitScope_H(U) else unitScope_T(U);
 }
 
@@ -872,6 +871,7 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
 }
 
 pub const import = @import("../../zigem/imports.zig");
+pub const import2 = @import("../../zigem/imports2.zig");
 
 pub fn isBuiltin(name: []const u8) bool {
     return std.mem.eql(u8, name, "em") or std.mem.startsWith(u8, name, "em__") or std.mem.startsWith(u8, name, "EM__");
