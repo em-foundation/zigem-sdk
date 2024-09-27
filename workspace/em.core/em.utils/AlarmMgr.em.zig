@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    AlarmOF: em.Factory2(Alarm),
+    AlarmOF: em.Factory(Alarm),
     WakeupTimer: em.Proxy(WakeupTimerI),
 };
 
@@ -11,7 +11,7 @@ pub const EpochTime = em.import.@"em.utils/EpochTime";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 
-pub const Obj = em.Obj2(Alarm);
+pub const Obj = em.Obj(Alarm);
 
 pub const Alarm = struct {
     const Self = @This();

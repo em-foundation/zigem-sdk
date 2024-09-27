@@ -298,10 +298,6 @@ const CfgId = struct {
 };
 
 pub fn Factory(T: type) type {
-    return if (DOMAIN == .META) Factory_H(T) else Factory_T(T);
-}
-
-pub fn Factory2(T: type) type {
     return *Factory_S(T);
 }
 
@@ -321,11 +317,11 @@ pub fn Factory_S(T: type) type {
         _dname: []const u8 = undefined,
         _list: _ListType = _LIST_INIT,
 
-        pub fn createH(self: *Self, init: anytype) Obj2(T) {
+        pub fn createH(self: *Self, init: anytype) Obj(T) {
             declare_META();
             const l = self._list.items.len;
             self._list.append(std.mem.zeroInit(T, init)) catch fail();
-            const o = Obj2(T){ ._fty = self, ._idx = l };
+            const o = Obj(T){ ._fty = self, ._idx = l };
             return o;
         }
 
@@ -380,78 +376,6 @@ pub fn Factory_S(T: type) type {
     };
 }
 
-pub fn Factory_H(T: type) type {
-    return *struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-
-        em__cfgid: ?*const CfgId,
-
-        _dname: []const u8,
-        _list: std.ArrayList(T) = std.ArrayList(T).init(arena.allocator()),
-
-        pub fn createH(self: *Self, init: anytype) Obj(T) {
-            const l = self._list.items.len;
-            self._list.append(std.mem.zeroInit(T, init)) catch fail();
-            const o = Obj(T){ ._fty = self, ._idx = l };
-            return o;
-        }
-
-        pub fn objCount(self: *const Self) usize {
-            return self._list.items.len;
-        }
-
-        pub fn objGet(self: *const Self, idx: usize) *T {
-            return @constCast(&self._list.items[idx]);
-        }
-
-        pub fn objTypeName(_: Self) []const u8 {
-            return mkTypeName(T);
-        }
-
-        pub fn toString(self: *const Self) []const u8 {
-            return sprint("@constCast(&@\"{s}__OBJARR\")", .{self._dname});
-        }
-
-        pub fn toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
-            self._dname = upath ++ "_em__C_" ++ cname;
-            var sb = StringH{};
-            const tn = mkTypeName(T);
-            sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self._dname, tn }));
-            for (self._list.items) |e| {
-                sb.add(sprint("    {s},\n", .{toStringAux(e)}));
-            }
-            sb.add("};\n");
-            const size_txt =
-                \\export const @"{0s}__BASE" = &@"{0s}__OBJARR";
-                \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
-                \\
-                \\
-            ;
-            sb.add(sprint(size_txt, .{ self._dname, tn }));
-            for (0..self.objCount()) |i| {
-                const abs_txt =
-                    \\comptime {{
-                    \\    asm (".globl \"{0s}${1d}\"");
-                    \\    asm ("\"{0s}${1d}\" = \"zigem.targ.{0s}__OBJARR\" + {1d} * " ++ @"{0s}__SIZE");
-                    \\}}
-                    \\extern const @"{0s}${1d}": usize;
-                    \\const @"{0s}__{1d}": *{2s} = @constCast(@ptrCast(&@"{0s}${1d}"));
-                    \\
-                    \\
-                ;
-                sb.add(sprint(abs_txt, .{ self._dname, i, tn }));
-            }
-            return sb.get();
-        }
-    };
-}
-
-pub fn Factory_T(T: type) type {
-    return []T;
-}
-
 pub fn Fxn(PT: type) type {
     switch (DOMAIN) {
         .META => {
@@ -479,18 +403,14 @@ pub fn Fxn(PT: type) type {
 }
 
 pub fn Obj(T: type) type {
-    return if (DOMAIN == .META) Obj_H(T) else Obj_T(T);
-}
-
-pub fn Obj2(T: type) type {
-    return if (DOMAIN == .META) Obj_S(T) else Obj_T(T);
+    return if (DOMAIN == .META) Obj_S(T) else *T;
 }
 
 pub fn Obj_S(T: type) type {
     return struct {
         const Self = @This();
         pub const _em__builtin = {};
-        _fty: ?Factory2(T) = undefined,
+        _fty: ?Factory(T) = undefined,
         _idx: usize,
         pub fn getIdx(self: *const Self) usize {
             return self._idx;
@@ -505,33 +425,6 @@ pub fn Obj_S(T: type) type {
             return sprint("*{s}", .{mkTypeName(T)});
         }
     };
-}
-
-pub fn Obj_H(T: type) type {
-    return struct {
-        const Self = @This();
-
-        pub const _em__builtin = {};
-
-        _fty: ?Factory_H(T) = undefined,
-        _idx: usize,
-        pub fn getIdx(self: *const Self) usize {
-            return self._idx;
-        }
-        pub fn O(self: *const Self) *T {
-            return self._fty.?.objGet(self._idx);
-        }
-        pub fn toString(self: *const Self) []const u8 {
-            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
-        }
-        pub fn typeName() []const u8 {
-            return sprint("*{s}", .{mkTypeName(T)});
-        }
-    };
-}
-
-pub fn Obj_T(T: type) type {
-    return *T;
 }
 
 pub fn Param(T: type) type {

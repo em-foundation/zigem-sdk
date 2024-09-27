@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    TickerOF: em.Factory2(Ticker),
+    TickerOF: em.Factory(Ticker),
 };
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
@@ -12,7 +12,7 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const CallbackFxn = em.Fxn(CallbackArg);
 pub const CallbackArg = struct {};
 
-pub const Obj = em.Obj2(Ticker);
+pub const Obj = em.Obj(Ticker);
 
 pub const Ticker = struct {
     const Self = @This();
