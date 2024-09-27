@@ -302,7 +302,7 @@ pub fn Factory(T: type) type {
 }
 
 pub fn Factory2(T: type) type {
-    return if (DOMAIN == .META) *Factory_S(T) else *T;
+    return *Factory_S(T);
 }
 
 pub fn Factory_S(T: type) type {

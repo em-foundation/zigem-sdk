@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    AlarmOF: em.Factory(Alarm),
+    AlarmOF: em.Factory2(Alarm),
     WakeupTimer: em.Proxy(WakeupTimerI),
 };
 
@@ -11,7 +11,7 @@ pub const EpochTime = em.import.@"em.utils/EpochTime";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 
-pub const Obj = em.Obj(Alarm);
+pub const Obj = em.Obj2(Alarm);
 
 pub const Alarm = struct {
     const Self = @This();
@@ -50,7 +50,7 @@ pub const EM__TARG = struct {
 
     fn findNextAlarm(delta_ticks: u32) void {
         WakeupTimer.disable();
-        const alarm_tab = em__C.AlarmOF;
+        const alarm_tab = em__C.AlarmOF.items();
         var nxt_alarm: ?*Alarm = null;
         var max_ticks = ~@as(u32, 0); // largest u32
         for (0..alarm_tab.len) |idx| {
@@ -68,7 +68,7 @@ pub const EM__TARG = struct {
     }
 
     fn wakeupHandler(_: WakeupTimerI.HandlerArg) void {
-        const alarm_tab = em__C.AlarmOF;
+        const alarm_tab = em__C.AlarmOF.items();
         const thresh: u32 = cur_alarm.?._thresh;
         for (0..alarm_tab.len) |idx| {
             var a = &alarm_tab[idx];
