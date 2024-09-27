@@ -6,17 +6,20 @@ pub const DOMAIN = domain_desc.DOMAIN;
 
 pub const IS_META = (DOMAIN == .META);
 
-pub fn declare_META() void {
+fn declare_META() void {
     comptime {
         if (!IS_META) unreachable;
     }
 }
 
-pub fn declare_TARG() void {
+fn declare_TARG() void {
     comptime {
         if (IS_META) unreachable;
     }
 }
+
+pub const @" ---- META ---- " = declare_META;
+pub const @" ---- TARG ---- " = declare_TARG;
 
 const @"// -------- UNIT SPEC -------- //" = {};
 
