@@ -52,6 +52,17 @@ pub const EM__TARG = struct {
         FiberMgr.run();
     }
 
+    fn printTime() void {
+        var sub_seconds: u32 = 0;
+        const epochTimeS = EpochTime.getRawTime(&sub_seconds);
+        const epochTimeMs = EpochTime.msecsFromSubs(sub_seconds);
+        const days: u32 = epochTimeS / (24 * 3600);
+        const hours: u32 = (epochTimeS % (24 * 3600)) / 3600;
+        const minutes: u32 = (epochTimeS % 3600) / 60;
+        const seconds: u32 = (epochTimeS % 60);
+        em.print("{d}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}", .{ days, hours, minutes, seconds, epochTimeMs });
+    }
+
     fn printStatus() void {
         em.print("Button effects:\n... short press (>{d}ms): cycle through rates (1,2,4,8x)\n... long press (>{d}s): stop led tickers\n", .{ min_press_time, max_press_time / 1000 });
         em.print("Current rate {}x\n", .{divided_by});
@@ -72,16 +83,14 @@ pub const EM__TARG = struct {
 
     fn printTickCb(_: TickerMgr.CallbackArg) void {
         print_count += 1;
-        var sub_seconds: u32 = 0;
-        const seconds = EpochTime.getRawTime(&sub_seconds);
-        const ms = EpochTime.msecsFromSubs(sub_seconds);
         const delta_app_count = app_count - last_app_count;
         const delta_sys_count = sys_count - last_sys_count;
         const min_delta_app_count = divided_by * print_ticks / max_app_led_ticks;
         const min_delta_sys_count = divided_by * print_ticks / max_sys_led_ticks;
         const delta_app_err = if (delta_app_count < min_delta_app_count or delta_app_count > min_delta_app_count + 1) "*" else "";
         const delta_sys_err = if (delta_sys_count < min_delta_sys_count or delta_sys_count > min_delta_sys_count + 1) "*" else "";
-        em.print("{d:0>10}.{d:0>3}:  Hello World:  rate: {d}x  ticks(app,sys): ({d}{s},{d}{s})\n", .{ seconds, ms, divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
+        printTime();
+        em.print(":  Hello World:  rate: {d}x  ticks(app,sys): ({d}{s},{d}{s})\n", .{ divided_by, delta_app_count, delta_app_err, delta_sys_count, delta_sys_err });
         if (divided_by > 0 and last_sys_count > 0 and last_sys_count == sys_count) {
             em.print("No sys ticks detected since last print\n", .{});
             em.halt();
