@@ -6,7 +6,6 @@ pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 pub const OneShotI = em.import2.@"em.hal/OneShotI";
 
 pub const HandlerArg = OneShotI.HandlerArg;
-pub const HandlerFxn = OneShotI.HandlerFxn;
 
 // -------- META --------
 
@@ -16,11 +15,13 @@ pub fn em__constructH() void {
 
 // -------- TARG --------
 
+const HandlerFxn = OneShotI.HandlerFxn;
+
 const hal = em.hal;
 const reg = em.reg;
 
 var cur_arg: em.ptr_t = null;
-var cur_fxn: ?HandlerFxn = null;
+var cur_fxn: em.Fxn_T(HandlerArg) = null;
 
 pub fn disable() void {
     cur_fxn = null;
@@ -38,6 +39,7 @@ pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
 }
 
 fn ustart(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    if (em.IS_META) return;
     cur_fxn = handler;
     cur_arg = arg;
     Idle.waitOnly(.SET);
@@ -51,6 +53,7 @@ fn ustart(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
 
 export fn LGPT3_COMB_isr() void {
     if (em.IS_META) return;
+    const fxn = cur_fxn;
     disable();
-    if (cur_fxn) |fxn| fxn.?(.{ .arg = cur_arg });
+    if (fxn != null) fxn.?(.{ .arg = cur_arg });
 }
