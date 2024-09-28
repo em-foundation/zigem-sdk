@@ -3,13 +3,14 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    CS: em.Proxy(em.import.@"em.hal/GpioI"),
-    CLK: em.Proxy(em.import.@"em.hal/GpioI"),
-    PICO: em.Proxy(em.import.@"em.hal/GpioI"),
-    POCI: em.Proxy(em.import.@"em.hal/GpioI"),
+    CS: em.Proxy(GpioI),
+    CLK: em.Proxy(GpioI),
+    PICO: em.Proxy(GpioI),
+    POCI: em.Proxy(GpioI),
 };
 
 pub const BusyWait = em.import2.@"ti.mcu.cc23xx/BusyWait";
+pub const GpioI = em.import2.@"em.hal/GpioI";
 
 // -------- META --------
 

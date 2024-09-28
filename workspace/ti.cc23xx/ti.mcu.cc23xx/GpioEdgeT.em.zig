@@ -3,9 +3,11 @@ pub const em__T = em.template(@This(), .{});
 
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Pin: em.Proxy(em.import.@"em.hal/GpioI"),
+    Pin: em.Proxy(GpioI),
     pin: em.Param(i16),
 };
+
+pub const GpioI = em.import2.@"em.hal/GpioI";
 
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
@@ -21,7 +23,9 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const Aux = em.import2.@"ti.mcu.cc23xx/GpioEdgeAux";
         pub const GpioEdgeI = em.import2.@"em.hal/GpioEdgeI";
-        pub const Pin = em__U.Generate("Pin", em.import2.@"ti.mcu.cc23xx/GpioT");
+        pub const GpioT = em.import2.@"ti.mcu.cc23xx/GpioT";
+
+        pub const Pin = em__U.Generate("Pin", GpioT);
 
         pub const HandlerArg = GpioEdgeI.HandlerArg;
         pub const HandlerFxn = GpioEdgeI.HandlerFxn;

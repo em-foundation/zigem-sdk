@@ -398,10 +398,12 @@ pub fn Fxn(PT: type) type {
                 }
             };
         },
-        .TARG => {
-            return ?*const fn (params: PT) void;
-        },
+        .TARG => return Fxn_T(PT),
     }
+}
+
+pub fn Fxn_T(PT: type) type {
+    return ?*const fn (params: PT) void;
 }
 
 pub fn Obj(T: type) type {
