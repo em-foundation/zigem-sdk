@@ -9,7 +9,7 @@ pub const EM__CONFIG = struct {
     POCI: em.Proxy(em.import.@"em.hal/GpioI"),
 };
 
-pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
+pub const BusyWait = em.import2.@"ti.mcu.cc23xx/BusyWait";
 
 pub const EM__META = struct {
     pub const CS = em__C.CS;

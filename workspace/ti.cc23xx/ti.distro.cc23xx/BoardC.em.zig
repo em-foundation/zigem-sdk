@@ -7,7 +7,7 @@ pub const AppButEdge = em__U.Generate("AppButEdge", em.import.@"ti.mcu.cc23xx/Gp
 pub const AppLed = em__U.Generate("AppLed", em.import.@"em.utils/LedT");
 pub const AppLedPin = em__U.Generate("AppLedPin", em.import.@"ti.mcu.cc23xx/GpioT");
 pub const AppOutPin = em__U.Generate("AppOutPin", em.import.@"ti.mcu.cc23xx/GpioT");
-pub const AppOutUart = em.import.@"ti.mcu.cc23xx/ConsoleUart0";
+pub const AppOutUart = em.import2.@"ti.mcu.cc23xx/ConsoleUart0";
 pub const BoardController = em.import.@"em.utils/BoardController";
 pub const BusyWait = em.import2.@"ti.mcu.cc23xx/BusyWait";
 pub const Console = em.import.@"em.lang/Console";
@@ -39,11 +39,11 @@ pub const WakeupTimer = em.import.@"ti.mcu.cc23xx/WakeupRtc";
 pub fn em__configureH() void {
     AlarmMgr.WakeupTimer.set(WakeupTimer);
     AppBut.Edge.set(AppButEdge);
-    AppButEdge.pin.set(9);
-    AppLedPin.pin.set(15);
+    AppButEdge.c_pin.set(9);
+    AppLedPin.c_pin.set(15);
     AppLed.Pin.set(AppLedPin);
-    AppOutPin.pin.set(20);
-    AppOutUart.TxPin.set(AppOutPin);
+    AppOutPin.c_pin.set(20);
+    AppOutUart.x_TxPin.set(AppOutPin);
     BoardController.Led.set(SysLed);
     Common.x_BusyWait.set(BusyWait);
     Common.x_ConsoleUart.set(AppOutUart);
@@ -52,10 +52,10 @@ pub fn em__configureH() void {
     Common.x_Mcu.set(Mcu);
     Common.x_MsCounter.set(MsCounter);
     Common.x_UsCounter.set(UsCounter);
-    DbgA.pin.set(23);
-    DbgB.pin.set(25);
-    DbgC.pin.set(1);
-    DbgD.pin.set(2);
+    DbgA.c_pin.set(23);
+    DbgB.c_pin.set(25);
+    DbgC.c_pin.set(1);
+    DbgD.c_pin.set(2);
     Debug.DbgA.set(DbgA);
     Debug.DbgB.set(DbgB);
     Debug.DbgC.set(DbgC);
@@ -65,12 +65,12 @@ pub fn em__configureH() void {
     ExtFlashDisabler.CS.set(FlashCS);
     ExtFlashDisabler.PICO.set(FlashPICO);
     ExtFlashDisabler.POCI.set(FlashPOCI);
-    FlashCLK.pin.set(18);
-    FlashCS.pin.set(6);
-    FlashPICO.pin.set(13);
-    FlashPOCI.pin.set(12);
+    FlashCLK.c_pin.set(18);
+    FlashCS.c_pin.set(6);
+    FlashPICO.c_pin.set(13);
+    FlashPOCI.c_pin.set(12);
     GlobalInterruptsG.x_Impl.set(GlobalInterrupts);
     Poller.OneShot.set(OneShot);
-    SysLedPin.pin.set(14);
+    SysLedPin.c_pin.set(14);
     SysLed.Pin.set(SysLedPin);
 }

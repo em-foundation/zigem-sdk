@@ -444,7 +444,7 @@ pub fn Param_S(T: type) type {
         _val: T,
 
         pub fn get(self: *Self) T {
-            return self._val;
+            return if (IS_META) std.mem.zeroes(T) else self._val;
         }
 
         pub fn set(self: *Self, v: T) void {
@@ -533,7 +533,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
         _list: _ListType = _LIST_INIT,
 
         pub fn add(self: *Self, item: T) void {
-            declare_META();
+            if (!IS_META) return;
             self._list.append(item) catch fail();
             self._is_virgin = false;
         }
@@ -630,60 +630,77 @@ const @"// -------- DEBUG OPERATORS -------- //" = {};
 const Console = unitScope(@import("Console.em.zig"));
 
 pub fn @"%%[>]"(v: anytype) void {
+    if (IS_META) return;
     Console.wrN(v);
 }
 
 const Debug = unitScope(@import("Debug.em.zig"));
 
 pub fn @"%%[a]"() void {
+    if (IS_META) return;
     Debug.pulse('A');
 }
 pub fn @"%%[a+]"() void {
+    if (IS_META) return;
     Debug.plus('A');
 }
 pub fn @"%%[a-]"() void {
+    if (IS_META) return;
     Debug.minus('A');
 }
 pub fn @"%%[a:]"(e: anytype) void {
+    if (IS_META) return;
     Debug.mark('A', e);
 }
 
 pub fn @"%%[b]"() void {
+    if (IS_META) return;
     Debug.pulse('B');
 }
 pub fn @"%%[b+]"() void {
+    if (IS_META) return;
     Debug.plus('B');
 }
 pub fn @"%%[b-]"() void {
+    if (IS_META) return;
     Debug.minus('B');
 }
 pub fn @"%%[b:]"(e: anytype) void {
+    if (IS_META) return;
     Debug.mark('B', e);
 }
 
 pub fn @"%%[c]"() void {
+    if (IS_META) return;
     Debug.pulse('C');
 }
 pub fn @"%%[c+]"() void {
+    if (IS_META) return;
     Debug.plus('C');
 }
 pub fn @"%%[c-]"() void {
+    if (IS_META) return;
     Debug.minus('C');
 }
 pub fn @"%%[c:]"(e: anytype) void {
+    if (IS_META) return;
     Debug.mark('C', e);
 }
 
 pub fn @"%%[d]"() void {
+    if (IS_META) return;
     Debug.pulse('D');
 }
 pub fn @"%%[d+]"() void {
+    if (IS_META) return;
     Debug.plus('D');
 }
 pub fn @"%%[d-]"() void {
+    if (IS_META) return;
     Debug.minus('D');
 }
 pub fn @"%%[d:]"(e: anytype) void {
+    if (IS_META) return;
     Debug.mark('D', e);
 }
 

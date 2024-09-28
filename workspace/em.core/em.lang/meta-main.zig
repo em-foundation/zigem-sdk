@@ -33,7 +33,7 @@ pub fn exec(top: em.Unit) !void {
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
         const U = u.resolve();
-        if (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname)) {
+        if (@hasDecl(U, fname) or (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname))) {
             try out.print("    ", .{});
             try genImport(u.upath, out);
             try out.print(".{s}();\n", .{fname});
