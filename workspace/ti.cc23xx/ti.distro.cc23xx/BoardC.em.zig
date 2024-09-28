@@ -15,7 +15,7 @@ pub const Idle = em.import2.@"ti.mcu.cc23xx/Idle";
 pub const Mcu = em.import2.@"ti.mcu.cc23xx/Mcu";
 pub const MsCounter = em.import2.@"ti.mcu.cc23xx/MsCounterGpt3";
 pub const OneShot = em.import2.@"ti.mcu.cc23xx/OneShotGpt3";
-pub const Poller = em.import.@"em.mcu/Poller";
+pub const Poller = em.import2.@"em.mcu/Poller";
 pub const Uptimer = em.import2.@"ti.mcu.cc23xx/UptimerRtc";
 pub const UsCounter = em.import2.@"ti.mcu.cc23xx/UsCounterSystick";
 pub const WakeupTimer = em.import2.@"ti.mcu.cc23xx/WakeupRtc";
@@ -75,7 +75,7 @@ pub fn em__configureH() void {
     FlashPICO.c_pin.set(13);
     FlashPOCI.c_pin.set(12);
     GlobalInterruptsG.x_Impl.set(GlobalInterrupts);
-    Poller.OneShot.set(OneShot);
+    Poller.x_OneShot.set(OneShot);
     SysLedPin.c_pin.set(14);
     SysLed.Pin.set(SysLedPin);
 }

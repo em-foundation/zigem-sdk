@@ -6,9 +6,9 @@ pub const EM__CONFIG = struct {
     blinkF: em.Param(FiberMgr.Obj),
 };
 
-pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const Common = em.import.@"em.mcu/Common";
-pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const AppLed = em.import2.@"em__distro/BoardC".AppLed;
+pub const Common = em.import2.@"em.mcu/Common";
+pub const FiberMgr = em.import2.@"em.utils/FiberMgr";
 
 pub const EM__META = struct {
     //
