@@ -57,9 +57,9 @@ pub const EM__TARG = struct {
         const epochTimeS = EpochTime.getRawTime(&sub_seconds);
         const epochTimeMs = EpochTime.msecsFromSubs(sub_seconds);
         const days: u32 = epochTimeS / (24 * 3600);
-        const hours: u32 = (epochTimeS % (24 * 3600)) / 3600;
-        const minutes: u32 = (epochTimeS % 3600) / 60;
-        const seconds: u32 = (epochTimeS % 60);
+        const hours: u8 = @truncate((epochTimeS % (24 * 3600)) / 3600);
+        const minutes: u8 = @truncate((epochTimeS % 3600) / 60);
+        const seconds: u8 = @truncate(epochTimeS % 60);
         em.print("{d}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}", .{ days, hours, minutes, seconds, epochTimeMs });
     }
 
