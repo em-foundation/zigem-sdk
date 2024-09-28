@@ -2,8 +2,8 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = IdleI });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const Debug = em.import.@"em.lang/Debug";
-pub const Hapi = em.import.@"ti.mcu.cc23xx/Hapi";
+pub const Debug = em.import2.@"em.lang/Debug";
+pub const Hapi = em.import2.@"ti.mcu.cc23xx/Hapi";
 pub const IdleI = em.import2.@"em.hal/IdleI";
 
 pub const EM__CONFIG = struct {
