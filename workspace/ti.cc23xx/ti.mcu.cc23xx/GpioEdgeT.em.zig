@@ -45,11 +45,11 @@ pub fn em__generateS(comptime name: []const u8) type {
         }
 
         pub fn em__constructH() void {
-            Pin.c_pin.set(em__C.pin.get());
+            Pin.c_pin.set(em__C.pin.getH());
         }
 
         pub fn setDetectHandlerH(h: HandlerFxn) void {
-            Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.get()) });
+            Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
         }
 
         // -------- TARG --------

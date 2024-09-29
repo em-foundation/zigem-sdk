@@ -200,7 +200,7 @@ pub const Unit = struct {
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
-        return unitScope(Template_Unit.em__generateS(self.extendPath(as_name)));
+        return Template_Unit.em__generateS(self.extendPath(as_name));
     }
 
     pub fn hasInterface(self: Self, inter: Unit) bool {
@@ -449,6 +449,10 @@ pub fn Param_S(T: type) type {
             return if (IS_META) std.mem.zeroes(T) else self._val;
         }
 
+        pub fn getH(self: *Self) T {
+            return self._val;
+        }
+
         pub fn set(self: *Self, v: T) void {
             declare_META();
             self._val = v;
@@ -499,7 +503,7 @@ pub fn Proxy_S(I: type) type {
             declare_META();
             var it = std.mem.splitSequence(u8, self._upath, "__");
             var sb = StringH{};
-            sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+            sb.add(sprint("em.import2.@\"{s}\"", .{it.first()}));
             while (it.next()) |seg| {
                 sb.add(sprint(".{s}", .{seg}));
             }
@@ -629,14 +633,14 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
 
 const @"// -------- DEBUG OPERATORS -------- //" = {};
 
-const Console = unitScope(@import("Console.em.zig"));
+const Console = @import("Console.em.zig");
 
 pub fn @"%%[>]"(v: anytype) void {
     if (IS_META) return;
     Console.wrN(v);
 }
 
-const Debug = unitScope(@import("Debug.em.zig"));
+const Debug = @import("Debug.em.zig");
 
 pub fn @"%%[a]"() void {
     if (IS_META) return;
@@ -742,13 +746,13 @@ fn mkTypeName(T: type) []const u8 {
 fn mkTypeImport(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
     const tun = comptime tn[0..idx];
-    return "em.import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
+    return "em.import2.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
 }
 
 fn mkUnitImport(upath: []const u8) []const u8 {
     var it = std.mem.splitSequence(u8, upath, "__");
     var sb = StringH{};
-    sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+    sb.add(sprint("em.import2.@\"{s}\"", .{it.first()}));
     while (it.next()) |seg| {
         sb.add(sprint(".{s}", .{seg}));
     }
