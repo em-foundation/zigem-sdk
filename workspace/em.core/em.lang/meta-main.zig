@@ -33,13 +33,12 @@ pub fn exec(top: em.Unit) !void {
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
         const U = u.resolve();
-        comptime var k = 0;
-        k += @intFromBool(@hasDecl(U, fname));
-        k += @intFromBool(@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname));
-        if (k > 0) {
+        comptime var pre_o: ?[]const u8 = null;
+        if (@hasDecl(U, fname)) pre_o = "";
+        if (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname)) pre_o = "EM__TARG.";
+        if (pre_o) |pre| {
             try out.print("    ", .{});
             try genImport(u.upath, out);
-            const pre = if (k == 2) "EM__TARG." else "";
             try out.print(".{s}{s}();\n", .{ pre, fname });
             if (mode == .first) break;
         }
