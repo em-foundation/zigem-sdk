@@ -19,25 +19,26 @@ pub fn em__initH() void {
     em__C.max_cnt.set(1020);
 }
 
-pub const EM__TARG = struct {};
+pub const EM__TARG = struct {
+    //
+    const dbg_flag = em__C.dbg_flag.get();
+    const min_cnt = em__C.min_cnt.get();
+    const max_cnt = em__C.max_cnt.get();
 
-const dbg_flag = em__C.dbg_flag.get();
-const min_cnt = em__C.min_cnt.get();
-const max_cnt = em__C.max_cnt.get();
-
-pub fn em__run() void {
-    AppLed.on();
-    for (min_cnt..max_cnt) |cnt| {
-        em.@"%%[d+]"();
-        Common.BusyWait.wait(250_000);
-        em.@"%%[d-]"();
-        AppLed.toggle();
-        if (!dbg_flag) continue;
-        //if (cnt > ((min_cnt + max_cnt) / 2)) em.fail();
-        const bits11: u8 = @intCast(cnt & 0b0011);
-        em.@"%%[c:]"(bits11);
-        em.@"%%[>]"(bits11);
-        em.print("cnt = {d} (0x{x:0>4}), bits11 = {d}", .{ cnt, cnt, bits11 });
+    pub fn em__run() void {
+        AppLed.on();
+        for (min_cnt..max_cnt) |cnt| {
+            em.@"%%[d+]"();
+            Common.BusyWait.wait(250_000);
+            em.@"%%[d-]"();
+            AppLed.toggle();
+            if (!dbg_flag) continue;
+            //if (cnt > ((min_cnt + max_cnt) / 2)) em.fail();
+            const bits11: u8 = @intCast(cnt & 0b0011);
+            em.@"%%[c:]"(bits11);
+            em.@"%%[>]"(bits11);
+            em.print("cnt = {d} (0x{x:0>4}), bits11 = {d}", .{ cnt, cnt, bits11 });
+        }
+        AppLed.off();
     }
-    AppLed.off();
-}
+};

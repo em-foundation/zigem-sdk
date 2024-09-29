@@ -19,23 +19,24 @@ pub fn em__constructH() void {
     em__C.sysTicker.set(TickerMgr.createH());
 }
 
-pub const EM__TARG = struct {};
+pub const EM__TARG = struct {
+    //
+    const appTicker = em__C.appTicker.get();
+    const sysTicker = em__C.sysTicker.get();
 
-const appTicker = em__C.appTicker.get();
-const sysTicker = em__C.sysTicker.get();
+    pub fn em__run() void {
+        appTicker.start(256, &appTickCb);
+        sysTicker.start(384, &sysTickCb);
+        FiberMgr.run();
+    }
 
-pub fn em__run() void {
-    appTicker.start(256, &appTickCb);
-    sysTicker.start(384, &sysTickCb);
-    FiberMgr.run();
-}
+    fn appTickCb(_: TickerMgr.CallbackArg) void {
+        em.@"%%[c]"();
+        AppLed.wink(100);
+    }
 
-fn appTickCb(_: TickerMgr.CallbackArg) void {
-    em.@"%%[c]"();
-    AppLed.wink(100);
-}
-
-fn sysTickCb(_: TickerMgr.CallbackArg) void {
-    em.@"%%[d]"();
-    SysLed.wink(100);
-}
+    fn sysTickCb(_: TickerMgr.CallbackArg) void {
+        em.@"%%[d]"();
+        SysLed.wink(100);
+    }
+};

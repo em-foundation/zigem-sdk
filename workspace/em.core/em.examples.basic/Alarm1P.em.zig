@@ -20,22 +20,27 @@ pub fn em__constructH() void {
     em__C.blinkF.set(blinkF);
 }
 
-pub const EM__TARG = struct {};
-
-var counter: u32 = 0;
-
-pub fn em__run() void {
-    em__C.blinkF.get().post();
-    FiberMgr.run();
+pub fn blinkFB(a: FiberMgr.BodyArg) void {
+    EM__TARG.blinkFB(a);
 }
 
-pub fn blinkFB(_: FiberMgr.BodyArg) void {
-    em.@"%%[c]"();
-    AppLed.wink(100); // 100 ms
-    counter += 1;
-    if ((counter & 0x1) != 0) {
-        em__C.alarm.get().wakeup(512); // 2s
-    } else {
-        em__C.alarm.get().wakeup(192); // 750ms
+pub const EM__TARG = struct {
+    //
+    var counter: u32 = 0;
+
+    pub fn em__run() void {
+        em__C.blinkF.get().post();
+        FiberMgr.run();
     }
-}
+
+    pub fn blinkFB(_: FiberMgr.BodyArg) void {
+        em.@"%%[c]"();
+        AppLed.wink(100); // 100 ms
+        counter += 1;
+        if ((counter & 0x1) != 0) {
+            em__C.alarm.get().wakeup(512); // 2s
+        } else {
+            em__C.alarm.get().wakeup(192); // 750ms
+        }
+    }
+};

@@ -16,26 +16,31 @@ pub fn em__constructH() void {
     AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
 }
 
-pub const EM__TARG = struct {};
-
-pub fn em__startup() void {
-    AppButEdge.makeInput();
-    AppButEdge.setInternalPullup(true);
-    AppButEdge.setDetectFallingEdge();
+pub fn handler(a: AppButEdge.HandlerArg) void {
+    EM__TARG.handler(a);
 }
 
-pub fn em__run() void {
-    Common.GlobalInterrupts.enable();
-    while (true) {
-        AppButEdge.enableDetect();
-        Common.Idle.exec();
+pub const EM__TARG = struct {
+    //
+    pub fn em__startup() void {
+        AppButEdge.makeInput();
+        AppButEdge.setInternalPullup(true);
+        AppButEdge.setDetectFallingEdge();
     }
-}
 
-pub fn handler(_: AppButEdge.HandlerArg) void {
-    em.@"%%[c]"();
-    AppButEdge.clearDetect();
-    AppLed.on();
-    Common.BusyWait.wait(5000);
-    AppLed.off();
-}
+    pub fn em__run() void {
+        Common.GlobalInterrupts.enable();
+        while (true) {
+            AppButEdge.enableDetect();
+            Common.Idle.exec();
+        }
+    }
+
+    pub fn handler(_: AppButEdge.HandlerArg) void {
+        em.@"%%[c]"();
+        AppButEdge.clearDetect();
+        AppLed.on();
+        Common.BusyWait.wait(5000);
+        AppLed.off();
+    }
+};

@@ -17,27 +17,32 @@ pub fn em__constructH() void {
     em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
 }
 
-pub const EM__TARG = struct {};
-
-const blinkF = em__C.blinkF.get();
-var count: u8 = 5;
-
-pub fn em__run() void {
-    blinkF.post();
-    FiberMgr.run();
+pub fn blinkFB(a: FiberMgr.BodyArg) void {
+    EM__TARG.blinkFB(a);
 }
 
-pub fn blinkFB(_: FiberMgr.BodyArg) void {
-    em.@"%%[d]"();
-    count -= 1;
-    if (count == 0) em.halt();
-    AppLed.on();
-    Common.BusyWait.wait(5000);
-    AppLed.off();
-    OneShot.enable(100, &handler, null);
-}
+pub const EM__TARG = struct {
+    //
+    const blinkF = em__C.blinkF.get();
+    var count: u8 = 5;
 
-fn handler(_: OneShot.HandlerArg) void {
-    em.@"%%[c]"();
-    blinkF.post();
-}
+    pub fn em__run() void {
+        blinkF.post();
+        FiberMgr.run();
+    }
+
+    pub fn blinkFB(_: FiberMgr.BodyArg) void {
+        em.@"%%[d]"();
+        count -= 1;
+        if (count == 0) em.halt();
+        AppLed.on();
+        Common.BusyWait.wait(5000);
+        AppLed.off();
+        OneShot.enable(100, &handler, null);
+    }
+
+    fn handler(_: OneShot.HandlerArg) void {
+        em.@"%%[c]"();
+        blinkF.post();
+    }
+};

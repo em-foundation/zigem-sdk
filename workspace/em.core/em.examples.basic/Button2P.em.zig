@@ -19,29 +19,38 @@ pub fn em__constructH() void {
     em__C.blinkF.set(blinkF);
 }
 
-pub const EM__TARG = struct {};
-
-pub fn em__startup() void {
-    AppButEdge.makeInput();
-    AppButEdge.setInternalPullup(true);
-    AppButEdge.setDetectFallingEdge();
+pub fn blinkFB(a: FiberMgr.BodyArg) void {
+    EM__TARG.blinkFB(a);
 }
 
-pub fn em__run() void {
-    AppButEdge.enableDetect();
-    FiberMgr.run();
+pub fn handler(a: AppButEdge.HandlerArg) void {
+    EM__TARG.handler(a);
 }
 
-pub fn blinkFB(_: FiberMgr.BodyArg) void {
-    em.@"%%[d]"();
-    AppLed.on();
-    Common.BusyWait.wait(5000);
-    AppLed.off();
-    AppButEdge.enableDetect();
-}
+pub const EM__TARG = struct {
+    //
+    pub fn em__startup() void {
+        AppButEdge.makeInput();
+        AppButEdge.setInternalPullup(true);
+        AppButEdge.setDetectFallingEdge();
+    }
 
-pub fn handler(_: AppButEdge.HandlerArg) void {
-    em.@"%%[c]"();
-    AppButEdge.clearDetect();
-    em__C.blinkF.get().post();
-}
+    pub fn em__run() void {
+        AppButEdge.enableDetect();
+        FiberMgr.run();
+    }
+
+    pub fn blinkFB(_: FiberMgr.BodyArg) void {
+        em.@"%%[d]"();
+        AppLed.on();
+        Common.BusyWait.wait(5000);
+        AppLed.off();
+        AppButEdge.enableDetect();
+    }
+
+    pub fn handler(_: AppButEdge.HandlerArg) void {
+        em.@"%%[c]"();
+        AppButEdge.clearDetect();
+        em__C.blinkF.get().post();
+    }
+};
