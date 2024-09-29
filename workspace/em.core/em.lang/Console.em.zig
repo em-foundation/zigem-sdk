@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{});
 
 pub const Common = em.import.@"em.mcu/Common";
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 pub const Error = error{};
 

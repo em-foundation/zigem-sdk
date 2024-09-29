@@ -11,7 +11,7 @@ pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__constructH() void {
     const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
@@ -20,7 +20,7 @@ pub fn em__constructH() void {
     em__C.blinkF.set(blinkF);
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 var counter: u32 = 0;
 

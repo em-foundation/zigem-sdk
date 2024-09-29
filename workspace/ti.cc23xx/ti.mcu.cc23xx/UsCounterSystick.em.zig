@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 
 pub const UsCounterI = em.import.@"em.hal/UsCounterI";
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 

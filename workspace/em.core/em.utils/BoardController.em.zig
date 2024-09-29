@@ -10,7 +10,7 @@ pub const x_Led = em__C.Led;
 pub const Common = em.import.@"em.mcu/Common";
 pub const LedI = em.import.@"em.hal/LedI";
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const blinkRate = 50000;
 const EOT_BYTE = 0x4;

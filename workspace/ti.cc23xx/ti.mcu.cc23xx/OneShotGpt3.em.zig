@@ -7,13 +7,13 @@ pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const HandlerArg = OneShotI.HandlerArg;
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__constructH() void {
     IntrVec.useIntrH("LGPT3_COMB");
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const HandlerFxn = OneShotI.HandlerFxn;
 

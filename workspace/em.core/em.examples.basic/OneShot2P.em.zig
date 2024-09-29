@@ -11,13 +11,13 @@ pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__constructH() void {
     em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const blinkF = em__C.blinkF.get();
 var count: u8 = 5;

@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .meta_only = true,
 });
 
-// -------- META --------
+pub const EM__META = struct {};
 
 const flash_txt =
     \\MEMORY {

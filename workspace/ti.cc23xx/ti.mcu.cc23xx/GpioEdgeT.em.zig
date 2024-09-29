@@ -36,7 +36,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             return m;
         }
 
-        // -------- META --------
+        pub const EM__META = struct {};
 
         pub const c_pin = em__C.pin;
 
@@ -52,7 +52,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
         }
 
-        // -------- TARG --------
+        pub const EM__TARG = struct {};
 
         const pin = em__C.pin.get();
         const is_def = (pin >= 0);

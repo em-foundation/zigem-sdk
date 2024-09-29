@@ -25,13 +25,13 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const LedI = em.import.@"em.hal/LedI";
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        // -------- META --------
+        pub const EM__META = struct {};
 
         pub fn em__initH() void {
             em__C.active_low.set(false);
         }
 
-        // -------- TARG --------
+        pub const EM__TARG = struct {};
 
         const active_low = em__C.active_low.get();
         const Pin = if (em.IS_META) .{} else em__C.Pin.get(); // TODO Pin.default()

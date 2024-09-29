@@ -12,14 +12,14 @@ pub const EM__CONFIG = struct {
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const GpioI = em.import.@"em.hal/GpioI";
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub const x_CS = em__C.CS;
 pub const x_CLK = em__C.CLK;
 pub const x_PICO = em__C.PICO;
 pub const x_POCI = em__C.POCI;
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const CS = em__C.CS.get();
 const CLK = em__C.CLK.get();

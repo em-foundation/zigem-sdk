@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{ .inherits = MsCounterI });
 
 pub const MsCounterI = em.import.@"em.hal/MsCounterI";
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

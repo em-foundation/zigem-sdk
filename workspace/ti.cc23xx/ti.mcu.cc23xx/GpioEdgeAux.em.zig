@@ -14,7 +14,7 @@ pub const HandlerInfo = struct {
     handler: GpioEdgeI.HandlerFxn,
 };
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__constructH() void {
     IntrVec.useIntrH("GPIO_COMB");
@@ -24,7 +24,7 @@ pub fn addHandlerInfoH(hi: HandlerInfo) void {
     em__C.handler_info_tab.add(hi);
 }
 
-// -------- META --------
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

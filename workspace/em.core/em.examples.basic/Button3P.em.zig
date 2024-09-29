@@ -12,7 +12,7 @@ pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 pub fn em__run() void {
     AppBut.onPressed(onPressedCb, .{});

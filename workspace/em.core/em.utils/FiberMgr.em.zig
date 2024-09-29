@@ -27,14 +27,14 @@ pub const Fiber = struct {
     }
 };
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn createH(body: BodyFxn) Obj {
     const fiber = em__C.FiberOF.createH(.{ .body = body });
     return fiber;
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 var ready_list = struct {
     const Self = @This();

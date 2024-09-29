@@ -6,7 +6,7 @@ pub const em__U = em.module(@This(), .{
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Debug = em.import.@"em.lang/Debug";
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

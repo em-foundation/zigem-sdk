@@ -12,14 +12,14 @@ pub const EM__CONFIG = struct {
 const Common = em.import.@"em.mcu/Common";
 const GpioI = em.import.@"em.hal/GpioI";
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub const x_DbgA = em__C.DbgA;
 pub const x_DbgB = em__C.DbgB;
 pub const x_DbgC = em__C.DbgC;
 pub const x_DbgD = em__C.DbgD;
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const DbgA = em__C.DbgA.get();
 const DbgB = em__C.DbgB.get();

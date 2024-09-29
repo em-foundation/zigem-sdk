@@ -14,7 +14,7 @@ pub const EM__CONFIG = struct {
 pub const SleepCbFxn = em.Fxn(SleepCbArg);
 pub const SleepCbArg = struct {};
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn addSleepEnterCbH(cb: SleepCbFxn) void {
     em__C.sleep_enter_fxn_tab.add(cb);
@@ -26,7 +26,7 @@ pub fn addSleepLeaveCbH(cb: SleepCbFxn) void {
 
 pub fn setWaitOnly(_: bool) void {} // TODO why????
 
-// -------- META --------
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 const reg = em.reg;

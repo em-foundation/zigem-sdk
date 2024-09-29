@@ -32,14 +32,14 @@ pub const Alarm = struct {
     }
 };
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn createH(fiber: FiberMgr.Obj) Obj {
     const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
     return alarm;
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const WakeupTimer = em__C.WakeupTimer.get();
 

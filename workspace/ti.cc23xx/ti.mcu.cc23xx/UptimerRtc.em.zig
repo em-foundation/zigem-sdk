@@ -6,7 +6,7 @@ pub const em__U = em.module(@This(), .{
 pub const Rtc = em.import.@"ti.mcu.cc23xx/Rtc";
 pub const UptimerI = em.import.@"em.hal/UptimerI";
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const Time = UptimerI.Time;
 

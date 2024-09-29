@@ -3,13 +3,13 @@ pub const em__U = em.module(@This(), .{});
 
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__constructH() void {
     IntrVec.useIntrH("CPUIRQ0");
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const Handler = struct {};
 

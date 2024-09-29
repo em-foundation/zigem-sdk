@@ -9,7 +9,7 @@ pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 pub const HandlerFxn = WakeupTimerI.HandlerFxn;
 pub const HandlerArg = WakeupTimerI.HandlerArg;
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 pub fn disable() void {
     Rtc.disable();

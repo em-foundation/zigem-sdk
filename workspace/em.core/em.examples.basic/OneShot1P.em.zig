@@ -5,7 +5,7 @@ pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 var active_flag = false;
 

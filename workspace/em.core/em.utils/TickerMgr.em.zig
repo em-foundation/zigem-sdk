@@ -27,7 +27,7 @@ pub const Ticker = struct {
     }
 };
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn createH() Obj {
     const fiber = FiberMgr.createH(em__U.fxn("alarmFB", FiberMgr.BodyArg));
@@ -37,7 +37,7 @@ pub fn createH() Obj {
     return ticker;
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 pub fn alarmFB(a: FiberMgr.BodyArg) void {
     var ticker = em__C.TickerOF.items()[a.arg];

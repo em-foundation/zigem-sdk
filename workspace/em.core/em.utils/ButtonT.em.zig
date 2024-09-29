@@ -29,7 +29,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const OnPressedCbFxn = ButtonI.OnPressedCbFxn;
         pub const OnPressedCbArg = ButtonI.OnPressedCbArg;
 
-        // -------- META --------
+        pub const EM__META = struct {};
 
         pub fn em__constructH() void {
             const fiber = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
@@ -37,7 +37,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             em__C.Edge.get().setDetectHandlerH(em__U.fxn("buttonHandler", GpioEdgeI.HandlerArg));
         }
 
-        // -------- TARG --------
+        pub const EM__TARG = struct {};
 
         const Edge = em__C.Edge.get();
 

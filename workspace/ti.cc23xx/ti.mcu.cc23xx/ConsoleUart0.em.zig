@@ -11,14 +11,14 @@ pub const EM__CONFIG = struct {
 };
 pub const x_TxPin = em__C.TxPin;
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__configureH() void {
     Idle.addSleepEnterCbH(em__U.fxn("sleepEnter", Idle.SleepCbArg));
     Idle.addSleepLeaveCbH(em__U.fxn("sleepLeave", Idle.SleepCbArg));
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const TxPin = em__C.TxPin.get();
 

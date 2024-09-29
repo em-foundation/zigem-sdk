@@ -12,7 +12,7 @@ pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const PollFxn = *const fn () bool;
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const OneShot = em__C.OneShot.get();
 

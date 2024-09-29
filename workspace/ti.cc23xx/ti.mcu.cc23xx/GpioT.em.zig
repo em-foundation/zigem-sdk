@@ -19,13 +19,13 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const em__C = em__U.config(EM__CONFIG);
         pub const c_pin = em__C.pin;
 
-        // -------- META --------
+        pub const EM__META = struct {};
 
         pub fn em__initH() void {
             em__C.pin.set(-1);
         }
 
-        // -------- TARG --------
+        pub const EM__TARG = struct {};
 
         const pin = em__C.pin.get();
         const is_def = (pin >= 0);

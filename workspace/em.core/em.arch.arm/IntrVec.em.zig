@@ -12,7 +12,7 @@ export fn DEFAULT_isr() void {
     em__U.scope().defaultIsr();
 }
 
-// -------- META --------
+pub const EM__META = struct {};
 
 var name_tab = em__C.name_tab;
 var used_tab = em__C.used_tab;
@@ -100,7 +100,7 @@ pub fn em__generateH() void {
     em.writeFile(em.out_root, "intr.c", sbuf.get());
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const hal = em.hal;
 extern var __vector_table: u32;

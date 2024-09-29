@@ -12,14 +12,14 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
-// -------- META --------
+pub const EM__META = struct {};
 
 pub fn em__constructH() void {
     em__C.appTicker.set(TickerMgr.createH());
     em__C.sysTicker.set(TickerMgr.createH());
 }
 
-// -------- TARG --------
+pub const EM__TARG = struct {};
 
 const appTicker = em__C.appTicker.get();
 const sysTicker = em__C.sysTicker.get();
