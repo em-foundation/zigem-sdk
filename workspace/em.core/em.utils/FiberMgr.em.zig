@@ -19,12 +19,11 @@ pub const FiberBody = struct {
 };
 
 pub const Fiber = struct {
-    const Self = @This();
     link: ?Obj,
     body: BodyFxn,
     arg: usize = 0,
-    pub fn post(self: *Self) void {
-        em__U.scope().Fiber_post(self);
+    pub fn post(self: *Fiber) void {
+        Fiber_post(self);
     }
 };
 

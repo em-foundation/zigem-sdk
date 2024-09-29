@@ -1,13 +1,13 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.composite(@This(), .{});
 
-pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
+pub const AlarmMgr = em.import2.@"em.utils/AlarmMgr";
 pub const AppOutUart = em.import2.@"ti.mcu.cc23xx/ConsoleUart0";
 pub const BoardController = em.import2.@"em.utils/BoardController";
 pub const BusyWait = em.import2.@"ti.mcu.cc23xx/BusyWait";
 pub const Common = em.import2.@"em.mcu/Common";
 pub const Debug = em.import2.@"em.lang/Debug";
-pub const EpochTime = em.import.@"em.utils/EpochTime";
+pub const EpochTime = em.import2.@"em.utils/EpochTime";
 pub const ExtFlashDisabler = em.import2.@"ti.mcu.cc23xx/ExtFlashDisabler";
 pub const GlobalInterrupts = em.import2.@"em.arch.arm/GlobalInterrupts";
 pub const GlobalInterruptsG = em.import2.@"em.mcu/GlobalInterruptsG";
@@ -20,10 +20,10 @@ pub const Uptimer = em.import2.@"ti.mcu.cc23xx/UptimerRtc";
 pub const UsCounter = em.import2.@"ti.mcu.cc23xx/UsCounterSystick";
 pub const WakeupTimer = em.import2.@"ti.mcu.cc23xx/WakeupRtc";
 
-const ButtonT = em.import.@"em.utils/ButtonT";
+const ButtonT = em.import2.@"em.utils/ButtonT";
 const GpioEdgeT = em.import2.@"ti.mcu.cc23xx/GpioEdgeT";
 const GpioT = em.import2.@"ti.mcu.cc23xx/GpioT";
-const LedT = em.import.@"em.utils/LedT";
+const LedT = em.import2.@"em.utils/LedT";
 
 pub const AppBut = em__U.Generate("AppBut", ButtonT);
 pub const AppButEdge = em__U.Generate("AppButEdge", GpioEdgeT);
@@ -42,11 +42,11 @@ pub const SysLed = em__U.Generate("SysLed", LedT);
 pub const SysLedPin = em__U.Generate("SysLedPin", GpioT);
 
 pub fn em__configureH() void {
-    AlarmMgr.WakeupTimer.set(WakeupTimer);
-    AppBut.Edge.set(AppButEdge);
+    AlarmMgr.x_WakeupTimer.set(WakeupTimer);
+    AppBut.x_Edge.set(AppButEdge);
     AppButEdge.c_pin.set(9);
     AppLedPin.c_pin.set(15);
-    AppLed.Pin.set(AppLedPin);
+    AppLed.x_Pin.set(AppLedPin);
     AppOutPin.c_pin.set(20);
     AppOutUart.x_TxPin.set(AppOutPin);
     BoardController.x_Led.set(SysLed);
@@ -65,7 +65,7 @@ pub fn em__configureH() void {
     Debug.x_DbgB.set(DbgB);
     Debug.x_DbgC.set(DbgC);
     Debug.x_DbgD.set(DbgD);
-    EpochTime.Uptimer.set(Uptimer);
+    EpochTime.x_Uptimer.set(Uptimer);
     ExtFlashDisabler.x_CLK.set(FlashCLK);
     ExtFlashDisabler.x_CS.set(FlashCS);
     ExtFlashDisabler.x_PICO.set(FlashPICO);
@@ -77,5 +77,5 @@ pub fn em__configureH() void {
     GlobalInterruptsG.x_Impl.set(GlobalInterrupts);
     Poller.x_OneShot.set(OneShot);
     SysLedPin.c_pin.set(14);
-    SysLed.Pin.set(SysLedPin);
+    SysLed.x_Pin.set(SysLedPin);
 }
