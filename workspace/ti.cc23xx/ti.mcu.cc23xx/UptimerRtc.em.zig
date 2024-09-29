@@ -3,8 +3,8 @@ pub const em__U = em.module(@This(), .{
     .inherits = UptimerI,
 });
 
-pub const Rtc = em.import2.@"ti.mcu.cc23xx/Rtc";
-pub const UptimerI = em.import2.@"em.hal/UptimerI";
+pub const Rtc = em.import.@"ti.mcu.cc23xx/Rtc";
+pub const UptimerI = em.import.@"em.hal/UptimerI";
 
 // -------- TARG --------
 

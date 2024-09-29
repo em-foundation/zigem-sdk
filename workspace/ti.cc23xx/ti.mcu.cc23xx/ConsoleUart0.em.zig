@@ -2,9 +2,9 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = ConsoleUartI });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const ConsoleUartI = em.import2.@"em.hal/ConsoleUartI";
-pub const Idle = em.import2.@"ti.mcu.cc23xx/Idle";
-pub const GpioI = em.import2.@"em.hal/GpioI";
+pub const ConsoleUartI = em.import.@"em.hal/ConsoleUartI";
+pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
+pub const GpioI = em.import.@"em.hal/GpioI";
 
 pub const EM__CONFIG = struct {
     TxPin: em.Proxy(GpioI),

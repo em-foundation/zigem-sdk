@@ -6,9 +6,9 @@ pub const EM__CONFIG = struct {
     em__upath: []const u8,
 };
 
-pub const AppButEdge = em.import2.@"em__distro/BoardC".AppButEdge;
-pub const AppLed = em.import2.@"em__distro/BoardC".AppLed;
-pub const Common = em.import2.@"em.mcu/Common";
+pub const AppButEdge = em.import.@"em__distro/BoardC".AppButEdge;
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const Common = em.import.@"em.mcu/Common";
 
 // -------- META --------
 

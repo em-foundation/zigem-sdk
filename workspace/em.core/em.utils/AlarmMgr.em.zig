@@ -8,9 +8,9 @@ pub const EM__CONFIG = struct {
 };
 pub const x_WakeupTimer = em__C.WakeupTimer;
 
-pub const EpochTime = em.import2.@"em.utils/EpochTime";
-pub const FiberMgr = em.import2.@"em.utils/FiberMgr";
-pub const WakeupTimerI = em.import2.@"em.hal/WakeupTimerI";
+pub const EpochTime = em.import.@"em.utils/EpochTime";
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 
 pub const Obj = em.Obj(Alarm);
 

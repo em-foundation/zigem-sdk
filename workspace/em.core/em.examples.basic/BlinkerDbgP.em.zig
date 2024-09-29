@@ -8,8 +8,8 @@ pub const EM__CONFIG = struct {
     max_cnt: em.Param(u16),
 };
 
-pub const AppLed = em.import2.@"em__distro/BoardC".AppLed;
-pub const Common = em.import2.@"em.mcu/Common";
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const Common = em.import.@"em.mcu/Common";
 
 // -------- META --------
 

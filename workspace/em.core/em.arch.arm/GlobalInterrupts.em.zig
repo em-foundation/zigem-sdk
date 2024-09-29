@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = GlobalInterruptsI });
 
-pub const GlobalInterruptsI = em.import2.@"em.hal/GlobalInterruptsI";
+pub const GlobalInterruptsI = em.import.@"em.hal/GlobalInterruptsI";
 
 pub fn disable() u32 {
     if (em.IS_META) return 0;

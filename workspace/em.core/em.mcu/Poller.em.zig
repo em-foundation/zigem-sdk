@@ -7,8 +7,8 @@ pub const EM__CONFIG = struct {
 };
 pub const x_OneShot = em__C.OneShot;
 
-pub const Common = em.import2.@"em.mcu/Common";
-pub const OneShotI = em.import2.@"em.hal/OneShotI";
+pub const Common = em.import.@"em.mcu/Common";
+pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const PollFxn = *const fn () bool;
 

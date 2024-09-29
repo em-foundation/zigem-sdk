@@ -7,7 +7,7 @@ pub const EM__CONFIG = struct {
     active_low: em.Param(bool),
 };
 
-pub const GpioI = em.import2.@"em.hal/GpioI";
+pub const GpioI = em.import.@"em.hal/GpioI";
 
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
@@ -22,8 +22,8 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const c_active_low = em__C.active_low;
         pub const x_Pin = em__C.Pin;
 
-        pub const LedI = em.import2.@"em.hal/LedI";
-        pub const Poller = em.import2.@"em.mcu/Poller";
+        pub const LedI = em.import.@"em.hal/LedI";
+        pub const Poller = em.import.@"em.mcu/Poller";
 
         // -------- META --------
 

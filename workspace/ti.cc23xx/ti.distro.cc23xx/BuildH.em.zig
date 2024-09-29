@@ -3,10 +3,10 @@ pub const em__U = em.module(@This(), .{
     .meta_only = true,
 });
 
-pub const BoardC = em.import2.@"em__distro/BoardC";
-pub const IntrVec = em.import2.@"em.arch.arm/IntrVec";
-pub const LinkerH = em.import2.@"em.build.misc/LinkerH";
-pub const StartupH = em.import2.@"em.arch.arm/StartupH";
+pub const BoardC = em.import.@"em__distro/BoardC";
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const LinkerH = em.import.@"em.build.misc/LinkerH";
+pub const StartupH = em.import.@"em.arch.arm/StartupH";
 
 // -------- META --------
 

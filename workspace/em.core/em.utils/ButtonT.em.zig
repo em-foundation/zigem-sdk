@@ -6,8 +6,8 @@ pub const EM__CONFIG = struct {
     debounceF: em.Param(FiberMgr.Obj),
 };
 
-pub const FiberMgr = em.import2.@"em.utils/FiberMgr";
-pub const GpioEdgeI = em.import2.@"em.hal/GpioEdgeI";
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
 
 pub fn em__generateS(comptime name: []const u8) type {
     //
@@ -20,8 +20,8 @@ pub fn em__generateS(comptime name: []const u8) type {
         });
         pub const em__C = em__U.config(EM__CONFIG);
 
-        pub const ButtonI = em.import2.@"em.hal/ButtonI";
-        pub const Poller = em.import2.@"em.mcu/Poller";
+        pub const ButtonI = em.import.@"em.hal/ButtonI";
+        pub const Poller = em.import.@"em.mcu/Poller";
 
         pub const x_Edge = em__C.Edge;
 

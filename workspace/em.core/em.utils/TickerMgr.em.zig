@@ -6,8 +6,8 @@ pub const EM__CONFIG = struct {
     TickerOF: em.Factory(Ticker),
 };
 
-pub const AlarmMgr = em.import2.@"em.utils/AlarmMgr";
-pub const FiberMgr = em.import2.@"em.utils/FiberMgr";
+pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const CallbackFxn = em.Fxn(CallbackArg);
 pub const CallbackArg = struct {};

@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
-pub const Common = em.import2.@"em.mcu/Common";
+pub const Common = em.import.@"em.mcu/Common";
 
 // -------- TARG --------
 

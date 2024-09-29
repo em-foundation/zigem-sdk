@@ -214,7 +214,7 @@ pub const Unit = struct {
 
     pub fn resolve(self: Self) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
-        var U = @field(import2, it.first());
+        var U = @field(import, it.first());
         inline while (it.next()) |seg| {
             U = @field(U, seg);
         }
@@ -475,7 +475,7 @@ pub fn Proxy_S(I: type) type {
             declare_META();
             var it = std.mem.splitSequence(u8, self._upath, "__");
             var sb = StringH{};
-            sb.add(sprint("em.import2.@\"{s}\"", .{it.first()}));
+            sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
             while (it.next()) |seg| {
                 sb.add(sprint(".{s}", .{seg}));
             }
@@ -718,13 +718,13 @@ fn mkTypeName(T: type) []const u8 {
 fn mkTypeImport(comptime tn: []const u8) []const u8 {
     const idx = comptime std.mem.lastIndexOf(u8, tn, ".").?;
     const tun = comptime tn[0..idx];
-    return "em.import2.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
+    return "em.import.@\"" ++ @as([]const u8, @field(type_map, tun)) ++ "\"." ++ tn[idx + 1 ..];
 }
 
 fn mkUnitImport(upath: []const u8) []const u8 {
     var it = std.mem.splitSequence(u8, upath, "__");
     var sb = StringH{};
-    sb.add(sprint("em.import2.@\"{s}\"", .{it.first()}));
+    sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
     while (it.next()) |seg| {
         sb.add(sprint(".{s}", .{seg}));
     }
@@ -868,8 +868,7 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
     @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
 }
 
-// pub const import = @import("../../zigem/imports.zig");
-pub const import2 = @import("../../zigem/imports2.zig");
+pub const import = @import("../../zigem/imports.zig");
 
 pub fn isBuiltin(name: []const u8) bool {
     return std.mem.eql(u8, name, "em") or std.mem.startsWith(u8, name, "em__") or std.mem.startsWith(u8, name, "EM__");

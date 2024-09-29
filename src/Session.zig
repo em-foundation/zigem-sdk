@@ -148,7 +148,7 @@ fn genStub(kind: []const u8, uname: []const u8) !void {
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
-        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import2.@"{1s}".em__U) catch em.fail();
+        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
         \\}}
     ;
     file.print(fmt, .{ kind, uname });
@@ -159,7 +159,7 @@ fn genUnits() !void {
     const distro_buck = getDistroBuck();
     var buck_set = std.StringArrayHashMap(void).init(Heap.get());
     var type_map = std.StringArrayHashMap([]const u8).init(Heap.get());
-    var file = try Out.open(Fs.join(&.{ gen_root, "imports2.zig" }));
+    var file = try Out.open(Fs.join(&.{ gen_root, "imports.zig" }));
     const pre =
         \\const em = @import("./em.zig");
         \\

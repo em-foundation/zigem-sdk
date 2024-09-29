@@ -1,10 +1,10 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
-    .inherits = em.import2.@"em.hal/McuI",
+    .inherits = em.import.@"em.hal/McuI",
 });
 
-pub const BusyWait = em.import2.@"ti.mcu.cc23xx/BusyWait";
-pub const Debug = em.import2.@"em.lang/Debug";
+pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
+pub const Debug = em.import.@"em.lang/Debug";
 
 // -------- TARG --------
 

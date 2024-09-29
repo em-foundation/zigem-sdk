@@ -9,8 +9,8 @@ pub const EM__CONFIG = struct {
     DbgD: em.Proxy(GpioI),
 };
 
-const Common = em.import2.@"em.mcu/Common";
-const GpioI = em.import2.@"em.hal/GpioI";
+const Common = em.import.@"em.mcu/Common";
+const GpioI = em.import.@"em.hal/GpioI";
 
 // -------- META --------
 

@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .inherits = UsCounterI,
 });
 
-pub const UsCounterI = em.import2.@"em.hal/UsCounterI";
+pub const UsCounterI = em.import.@"em.hal/UsCounterI";
 
 // -------- TARG --------
 

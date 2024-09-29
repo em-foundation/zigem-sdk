@@ -7,7 +7,7 @@ pub const EM__CONFIG = struct {
     pin: em.Param(i16),
 };
 
-pub const GpioI = em.import2.@"em.hal/GpioI";
+pub const GpioI = em.import.@"em.hal/GpioI";
 
 pub fn em__generateS(comptime name: []const u8) type {
     return struct {
@@ -21,9 +21,9 @@ pub fn em__generateS(comptime name: []const u8) type {
         );
         pub const em__C = em__U.config(EM__CONFIG);
 
-        pub const Aux = em.import2.@"ti.mcu.cc23xx/GpioEdgeAux";
-        pub const GpioEdgeI = em.import2.@"em.hal/GpioEdgeI";
-        pub const GpioT = em.import2.@"ti.mcu.cc23xx/GpioT";
+        pub const Aux = em.import.@"ti.mcu.cc23xx/GpioEdgeAux";
+        pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
+        pub const GpioT = em.import.@"ti.mcu.cc23xx/GpioT";
 
         pub const Pin = em__U.Generate("Pin", GpioT);
 

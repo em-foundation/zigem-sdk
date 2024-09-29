@@ -7,10 +7,10 @@ pub const EM__CONFIG = struct {
     sysTicker: em.Param(TickerMgr.Obj),
 };
 
-pub const AppLed = em.import2.@"em__distro/BoardC".AppLed;
-pub const FiberMgr = em.import2.@"em.utils/FiberMgr";
-pub const TickerMgr = em.import2.@"em.utils/TickerMgr";
-pub const SysLed = em.import2.@"em__distro/BoardC".SysLed;
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const TickerMgr = em.import.@"em.utils/TickerMgr";
+pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
 // -------- META --------
 

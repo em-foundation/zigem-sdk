@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = MsCounterI });
 
-pub const MsCounterI = em.import2.@"em.hal/MsCounterI";
+pub const MsCounterI = em.import.@"em.hal/MsCounterI";
 
 // -------- TARG --------
 

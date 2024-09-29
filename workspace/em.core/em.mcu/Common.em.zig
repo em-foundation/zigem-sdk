@@ -2,13 +2,13 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const BusyWaitI = em.import2.@"em.hal/BusyWaitI";
-pub const ConsoleUartI = em.import2.@"em.hal/ConsoleUartI";
-pub const GlobalInterruptsI = em.import2.@"em.hal/GlobalInterruptsI";
-pub const IdleI = em.import2.@"em.hal/IdleI";
-pub const McuI = em.import2.@"em.hal/McuI";
-pub const MsCounterI = em.import2.@"em.hal/MsCounterI";
-pub const UsCounterI = em.import2.@"em.hal/UsCounterI";
+pub const BusyWaitI = em.import.@"em.hal/BusyWaitI";
+pub const ConsoleUartI = em.import.@"em.hal/ConsoleUartI";
+pub const GlobalInterruptsI = em.import.@"em.hal/GlobalInterruptsI";
+pub const IdleI = em.import.@"em.hal/IdleI";
+pub const McuI = em.import.@"em.hal/McuI";
+pub const MsCounterI = em.import.@"em.hal/MsCounterI";
+pub const UsCounterI = em.import.@"em.hal/UsCounterI";
 
 pub const EM__CONFIG = struct {
     BusyWait: em.Proxy(BusyWaitI),

@@ -1,9 +1,9 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
-pub const AppLed = em.import2.@"em__distro/BoardC".AppLed;
-pub const Common = em.import2.@"em.mcu/Common";
-pub const OneShot = em.import2.@"em__distro/BoardC".OneShot;
+pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
+pub const Common = em.import.@"em.mcu/Common";
+pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 
 // -------- TARG --------
 

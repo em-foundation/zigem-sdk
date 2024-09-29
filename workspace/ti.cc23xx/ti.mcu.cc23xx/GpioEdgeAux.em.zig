@@ -6,8 +6,8 @@ pub const EM__CONFIG = struct {
     handler_info_tab: em.Table(HandlerInfo, .RO),
 };
 
-pub const GpioEdgeI = em.import2.@"em.hal/GpioEdgeI";
-pub const IntrVec = em.import2.@"em.arch.arm/IntrVec";
+pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
+pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 
 pub const HandlerInfo = struct {
     mask: u32,

@@ -7,8 +7,8 @@ pub const EM__CONFIG = struct {
 };
 pub const x_Led = em__C.Led;
 
-pub const Common = em.import2.@"em.mcu/Common";
-pub const LedI = em.import2.@"em.hal/LedI";
+pub const Common = em.import.@"em.mcu/Common";
+pub const LedI = em.import.@"em.hal/LedI";
 
 // -------- TARG --------
 

@@ -2,7 +2,7 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = BusyWaitI });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const BusyWaitI = em.import2.@"em.hal/BusyWaitI";
+pub const BusyWaitI = em.import.@"em.hal/BusyWaitI";
 
 pub const EM__CONFIG = struct {
     scalar: em.Param(u8),
