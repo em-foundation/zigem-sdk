@@ -149,7 +149,7 @@ fn genStub(kind: []const u8, uname: []const u8) !void {
         \\const em = @import("./em.zig");
         \\
         \\pub fn exec() void {{
-        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import.@"{1s}".em__U) catch em.fail();
+        \\    @import("../em.core/em.lang/{0s}-main.zig").exec(em.import2.@"{1s}".em__U) catch em.fail();
         \\}}
     ;
     file.print(fmt, .{ kind, uname });
