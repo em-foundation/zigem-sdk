@@ -7,39 +7,35 @@ pub const EM__CONFIG = struct {
     blinkF: em.Param(FiberMgr.Obj),
 };
 
-pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
-pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const AlarmMgr = em.import2.@"em.utils/AlarmMgr";
+pub const AppLed = em.import2.@"em__distro/BoardC".AppLed;
+pub const FiberMgr = em.import2.@"em.utils/FiberMgr";
 
-pub const EM__META = struct {
-    //
-    pub fn em__constructH() void {
-        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
-        const alarm = AlarmMgr.createH(blinkF);
-        em__C.alarm.set(alarm);
-        em__C.blinkF.set(blinkF);
+// -------- META --------
+
+pub fn em__constructH() void {
+    const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
+    const alarm = AlarmMgr.createH(blinkF);
+    em__C.alarm.set(alarm);
+    em__C.blinkF.set(blinkF);
+}
+
+// -------- TARG --------
+
+var counter: u32 = 0;
+
+pub fn em__run() void {
+    em__C.blinkF.get().post();
+    FiberMgr.run();
+}
+
+pub fn blinkFB(_: FiberMgr.BodyArg) void {
+    em.@"%%[c]"();
+    AppLed.wink(100); // 100 ms
+    counter += 1;
+    if ((counter & 0x1) != 0) {
+        em__C.alarm.get().wakeup(512); // 2s
+    } else {
+        em__C.alarm.get().wakeup(192); // 750ms
     }
-};
-
-pub const EM__TARG = struct {
-    //
-    const alarm = em__C.alarm.get();
-    const blinkF = em__C.blinkF.get();
-    var counter: u32 = 0;
-
-    pub fn em__run() void {
-        blinkF.post();
-        FiberMgr.run();
-    }
-
-    pub fn blinkFB(_: FiberMgr.BodyArg) void {
-        em.@"%%[c]"();
-        AppLed.wink(100); // 100 ms
-        counter += 1;
-        if ((counter & 0x1) != 0) {
-            alarm.wakeup(512); // 2s
-        } else {
-            alarm.wakeup(192); // 750ms
-        }
-    }
-};
+}
