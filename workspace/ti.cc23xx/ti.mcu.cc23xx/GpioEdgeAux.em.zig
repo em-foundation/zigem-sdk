@@ -7,7 +7,7 @@ pub const EM__CONFIG = struct {
 };
 
 pub const GpioEdgeI = em.import2.@"em.hal/GpioEdgeI";
-pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const IntrVec = em.import2.@"em.arch.arm/IntrVec";
 
 pub const HandlerInfo = struct {
     mask: u32,

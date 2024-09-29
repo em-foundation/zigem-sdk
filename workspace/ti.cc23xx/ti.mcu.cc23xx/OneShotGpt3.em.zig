@@ -2,7 +2,7 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = OneShotI });
 
 pub const Idle = em.import2.@"ti.mcu.cc23xx/Idle";
-pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const IntrVec = em.import2.@"em.arch.arm/IntrVec";
 pub const OneShotI = em.import2.@"em.hal/OneShotI";
 
 pub const HandlerArg = OneShotI.HandlerArg;

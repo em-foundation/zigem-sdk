@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
-pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const IntrVec = em.import2.@"em.arch.arm/IntrVec";
 
 // -------- META --------
 
