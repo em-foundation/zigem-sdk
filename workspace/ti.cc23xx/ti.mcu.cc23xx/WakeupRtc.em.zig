@@ -3,8 +3,8 @@ pub const em__U = em.module(@This(), .{
     .inherits = WakeupTimerI,
 });
 
-pub const Rtc = em.import.@"ti.mcu.cc23xx/Rtc";
-pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
+pub const Rtc = em.import2.@"ti.mcu.cc23xx/Rtc";
+pub const WakeupTimerI = em.import2.@"em.hal/WakeupTimerI";
 
 pub const HandlerFxn = WakeupTimerI.HandlerFxn;
 pub const HandlerArg = WakeupTimerI.HandlerArg;

@@ -6,7 +6,7 @@ pub const EM__CONFIG = struct {
     FiberOF: em.Factory(Fiber),
 };
 
-pub const Common = em.import.@"em.mcu/Common";
+pub const Common = em.import2.@"em.mcu/Common";
 
 pub const Obj = em.Obj(Fiber);
 pub const BodyFxn = em.Fxn(BodyArg);

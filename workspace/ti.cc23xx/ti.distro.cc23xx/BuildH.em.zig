@@ -5,7 +5,7 @@ pub const em__U = em.module(@This(), .{
 
 pub const BoardC = em.import2.@"em__distro/BoardC";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
-pub const LinkerH = em.import.@"em.build.misc/LinkerH";
+pub const LinkerH = em.import2.@"em.build.misc/LinkerH";
 pub const StartupH = em.import2.@"em.arch.arm/StartupH";
 
 // -------- META --------

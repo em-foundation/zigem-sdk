@@ -2,7 +2,7 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = GlobalInterruptsI });
 pub const em__C = em__U.config(EM__CONFIG);
 
-pub const GlobalInterruptsI = em.import.@"em.hal/GlobalInterruptsI";
+pub const GlobalInterruptsI = em.import2.@"em.hal/GlobalInterruptsI";
 
 pub const EM__CONFIG = struct {
     Impl: em.Proxy(GlobalInterruptsI),

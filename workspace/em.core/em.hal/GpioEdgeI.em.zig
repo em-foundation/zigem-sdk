@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{ .inherits = GpioI });
 
-pub const GpioI = em.import.@"em.hal/GpioI";
+pub const GpioI = em.import2.@"em.hal/GpioI";
 
 pub const HandlerFxn = em.Fxn(HandlerArg);
 pub const HandlerArg = struct {};
