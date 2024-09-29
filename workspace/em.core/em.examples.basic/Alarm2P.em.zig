@@ -11,14 +11,15 @@ pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
-pub const EM__META = struct {};
-
-pub fn em__constructH() void {
-    const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
-    const alarm = AlarmMgr.createH(blinkF);
-    em__C.alarm.set(alarm);
-    em__C.blinkF.set(blinkF);
-}
+pub const EM__META = struct {
+    //
+    pub fn em__constructH() void {
+        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
+        const alarm = AlarmMgr.createH(blinkF);
+        em__C.alarm.set(alarm);
+        em__C.blinkF.set(blinkF);
+    }
+};
 
 pub fn blinkFB(a: FiberMgr.BodyArg) void {
     EM__TARG.blinkFB(a);

@@ -11,13 +11,14 @@ pub const EM__CONFIG = struct {
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 
-pub const EM__META = struct {};
-
-pub fn em__initH() void {
-    em__C.dbg_flag.set(true);
-    em__C.min_cnt.set(1000);
-    em__C.max_cnt.set(1020);
-}
+pub const EM__META = struct {
+    //
+    pub fn em__initH() void {
+        em__C.dbg_flag.set(true);
+        em__C.min_cnt.set(1000);
+        em__C.max_cnt.set(1020);
+    }
+};
 
 pub const EM__TARG = struct {
     //
