@@ -41,7 +41,7 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
         .generated = opts.generated,
         .meta_only = opts.meta_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
-        .Itab = if (kind == .interface) ItabType(unitScope(This)) else void,
+        .Itab = if (kind == .interface) ItabType(This) else void,
         .IT = if (@hasDecl(This, "em__I")) This.em__I else void,
         .kind = kind,
         .legacy = opts.legacy,
@@ -214,7 +214,7 @@ pub const Unit = struct {
 
     pub fn resolve(self: Self) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
-        var U = @field(import, it.first());
+        var U = @field(import2, it.first());
         inline while (it.next()) |seg| {
             U = @field(U, seg);
         }
@@ -225,34 +225,6 @@ pub const Unit = struct {
         return self.resolve();
     }
 };
-
-pub fn unitScope(U: type) type {
-    return if (DOMAIN == .META) unitScope_H(U) else unitScope_T(U);
-}
-
-pub fn unitScope_A(U: type) type {
-    return struct {
-        pub usingnamespace U;
-        pub usingnamespace if (@hasDecl(U, "EM__META")) U.EM__META else struct {};
-        pub usingnamespace if (@hasDecl(U, "EM__TARG")) U.EM__TARG else struct {};
-    };
-}
-
-pub fn unitScope_H(U: type) type {
-    if (!@hasDecl(U, "EM__META")) return U;
-    return struct {
-        pub usingnamespace U;
-        pub usingnamespace U.EM__META;
-    };
-}
-
-pub fn unitScope_T(U: type) type {
-    if (!@hasDecl(U, "EM__TARG")) return U;
-    return struct {
-        pub usingnamespace U;
-        pub usingnamespace U.EM__TARG;
-    };
-}
 
 fn unitTypeName(unit: type) []const u8 {
     const tn: []const u8 = @typeName(unit);
@@ -896,7 +868,7 @@ pub fn complog(comptime fmt: []const u8, args: anytype) void {
     @compileLog(std.fmt.comptimePrint(" |{s}| {s}", .{ mode, msg }));
 }
 
-pub const import = @import("../../zigem/imports.zig");
+// pub const import = @import("../../zigem/imports.zig");
 pub const import2 = @import("../../zigem/imports2.zig");
 
 pub fn isBuiltin(name: []const u8) bool {

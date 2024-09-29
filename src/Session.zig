@@ -66,8 +66,7 @@ pub fn doRefresh() !void {
     try genProps();
     try genMain();
     try genDomain();
-    try genUnits(false);
-    try genUnits(true);
+    try genUnits();
 }
 
 fn genDomain() !void {
@@ -156,11 +155,11 @@ fn genStub(kind: []const u8, uname: []const u8) !void {
     file.close();
 }
 
-fn genUnits(xtra: bool) !void {
+fn genUnits() !void {
     const distro_buck = getDistroBuck();
     var buck_set = std.StringArrayHashMap(void).init(Heap.get());
     var type_map = std.StringArrayHashMap([]const u8).init(Heap.get());
-    var file = try Out.open(Fs.join(&.{ gen_root, if (xtra) "imports2.zig" else "imports.zig" }));
+    var file = try Out.open(Fs.join(&.{ gen_root, "imports2.zig" }));
     const pre =
         \\const em = @import("./em.zig");
         \\
@@ -181,25 +180,16 @@ fn genUnits(xtra: bool) !void {
                 if (ent2.kind != .file) continue;
                 const idx = std.mem.indexOf(u8, ent2.name, ".em.zig");
                 if (idx == null) continue;
-                if (xtra) {
-                    file.print("pub const @\"{0s}/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
-                } else {
-                    file.print("pub const @\"{0s}/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
-                }
+                file.print("pub const @\"{0s}/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
                 const tn = try sprint("{s}.{s}.{s}.em", .{ pkgname, buckname, ent2.name[0..idx.?] });
                 const un = try sprint("{s}/{s}", .{ buckname, ent2.name[0..idx.?] });
                 try type_map.put(tn, un);
                 if (!is_distro) continue;
-                if (xtra) {
-                    file.print("pub const @\"em__distro/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
-                } else {
-                    file.print("pub const @\"em__distro/{1s}\" = em.unitScope(@import(\"../{2s}/{0s}/{3s}\"));\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
-                }
+                file.print("pub const @\"em__distro/{1s}\" = @import(\"../{2s}/{0s}/{3s}\");\n", .{ buckname, ent2.name[0..idx.?], pkgname, ent2.name });
             }
         }
     }
     file.close();
-    if (xtra) return;
     //
     file = try Out.open(Fs.join(&.{ gen_root, "type_map.zig" }));
     for (type_map.keys()) |tn| {
