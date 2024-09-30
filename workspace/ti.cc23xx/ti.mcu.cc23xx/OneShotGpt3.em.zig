@@ -7,21 +7,16 @@ pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const HandlerArg = OneShotI.HandlerArg;
 
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const uenable = EM__TARG.uenable;
+
 pub const EM__META = struct {
     //
     pub fn em__constructH() void {
         IntrVec.useIntrH("LGPT3_COMB");
     }
 };
-
-pub const disable = EM__TARG.disable;
-pub const enable = EM__TARG.enable;
-pub const uenable = EM__TARG.uenable;
-
-export fn LGPT3_COMB_isr() void {
-    if (em.IS_META) return;
-    EM__TARG.LGPT3_COMB_isr();
-}
 
 pub const EM__TARG = struct {
     //
@@ -67,3 +62,8 @@ pub const EM__TARG = struct {
         if (fxn != null) fxn.?(.{ .arg = cur_arg });
     }
 };
+
+export fn LGPT3_COMB_isr() void {
+    if (em.IS_META) return;
+    EM__TARG.LGPT3_COMB_isr();
+}

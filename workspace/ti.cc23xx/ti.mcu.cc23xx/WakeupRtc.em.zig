@@ -9,25 +9,32 @@ pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 pub const HandlerFxn = WakeupTimerI.HandlerFxn;
 pub const HandlerArg = WakeupTimerI.HandlerArg;
 
-pub const EM__TARG = struct {};
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const secs256ToTicks = EM__TARG.secs256ToTicks;
+pub const ticksToThresh = EM__TARG.ticksToThresh;
+pub const timeToTicks = EM__TARG.timeToTicks;
 
-pub fn disable() void {
-    Rtc.disable();
-}
+pub const EM__TARG = struct {
+    //
+    pub fn disable() void {
+        Rtc.disable();
+    }
 
-pub fn enable(secs256: u32, handler: HandlerFxn) void {
-    if (em.IS_META) return;
-    Rtc.enable(secs256, @ptrCast(handler));
-}
+    pub fn enable(secs256: u32, handler: HandlerFxn) void {
+        if (em.IS_META) return;
+        Rtc.enable(secs256, @ptrCast(handler));
+    }
 
-pub fn secs256ToTicks(secs256: u32) u32 {
-    return secs256 << 8;
-}
+    pub fn secs256ToTicks(secs256: u32) u32 {
+        return secs256 << 8;
+    }
 
-pub fn ticksToThresh(ticks: u32) u32 {
-    return Rtc.toThresh(ticks);
-}
+    pub fn ticksToThresh(ticks: u32) u32 {
+        return Rtc.toThresh(ticks);
+    }
 
-pub fn timeToTicks(secs: u32, subs: u32) u32 {
-    return (secs << 16) | (subs >> 16);
-}
+    pub fn timeToTicks(secs: u32, subs: u32) u32 {
+        return (secs << 16) | (subs >> 16);
+    }
+};
