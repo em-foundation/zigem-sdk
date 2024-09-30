@@ -362,7 +362,7 @@ pub fn Fxn(PT: type) type {
                     if (self._fname.len == 0) {
                         return "null";
                     } else {
-                        return sprint("{s}.{s}", .{ mkUnitImport(self._upath), self._fname });
+                        return sprint("{s}.EM__TARG.{s}", .{ mkUnitImport(self._upath), self._fname });
                     }
                 }
                 pub fn typeName() []const u8 {

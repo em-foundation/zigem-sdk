@@ -20,6 +20,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             },
         );
         pub const em__C = em__U.config(EM__CONFIG);
+        pub const c_pin = em__C.pin;
 
         pub const Aux = em.import.@"ti.mcu.cc23xx/GpioEdgeAux";
         pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
@@ -30,27 +31,27 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const HandlerArg = GpioEdgeI.HandlerArg;
         pub const HandlerFxn = GpioEdgeI.HandlerFxn;
 
+        pub const setDetectHandlerH = EM__META.setDetectHandlerH;
+
         fn mkMask(p16: i16) u32 {
             const p5 = @as(u5, @bitCast(@as(i5, @truncate(p16))));
             const m: u32 = @as(u32, 1) << p5;
             return m;
         }
+        pub const EM__META = struct {
+            //
+            pub fn em__initH() void {
+                em__C.pin.set(-1);
+            }
 
-        pub const EM__META = struct {};
+            pub fn em__constructH() void {
+                Pin.c_pin.set(em__C.pin.getH());
+            }
 
-        pub const c_pin = em__C.pin;
-
-        pub fn em__initH() void {
-            em__C.pin.set(-1);
-        }
-
-        pub fn em__constructH() void {
-            Pin.c_pin.set(em__C.pin.getH());
-        }
-
-        pub fn setDetectHandlerH(h: HandlerFxn) void {
-            Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
-        }
+            pub fn setDetectHandlerH(h: HandlerFxn) void {
+                Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
+            }
+        };
 
         pub const EM__TARG = struct {};
 

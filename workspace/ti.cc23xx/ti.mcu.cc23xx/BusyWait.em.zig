@@ -10,15 +10,23 @@ pub const EM__CONFIG = struct {
 
 pub const c_scalar = em__C.scalar;
 
-pub fn em__initH() void {
-    em__C.scalar.set(6);
-}
+pub const wait = EM__TARG.wait;
 
-pub fn wait(usecs: u32) void {
-    if (usecs == 0) return;
-    var dummy: u32 = undefined;
-    const p: *volatile u32 = &dummy;
-    for (0..(usecs * em__C.scalar.get())) |_| {
-        p.* = 0;
+pub const EM__META = struct {
+    //
+    pub fn em__initH() void {
+        em__C.scalar.set(6);
     }
-}
+};
+
+pub const EM__TARG = struct {
+    //
+    pub fn wait(usecs: u32) void {
+        if (usecs == 0) return;
+        var dummy: u32 = undefined;
+        const p: *volatile u32 = &dummy;
+        for (0..(usecs * em__C.scalar.get())) |_| {
+            p.* = 0;
+        }
+    }
+};

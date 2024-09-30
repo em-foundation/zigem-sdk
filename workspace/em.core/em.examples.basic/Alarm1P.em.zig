@@ -21,10 +21,6 @@ pub const EM__META = struct {
     }
 };
 
-pub fn blinkFB(a: FiberMgr.BodyArg) void {
-    EM__TARG.blinkFB(a);
-}
-
 pub const EM__TARG = struct {
     //
     var counter: u32 = 0;

@@ -17,10 +17,6 @@ pub const EM__META = struct {
     }
 };
 
-pub fn handler(a: AppButEdge.HandlerArg) void {
-    EM__TARG.handler(a);
-}
-
 pub const EM__TARG = struct {
     //
     pub fn em__startup() void {

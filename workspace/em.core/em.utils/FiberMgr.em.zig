@@ -23,68 +23,72 @@ pub const Fiber = struct {
     body: BodyFxn,
     arg: usize = 0,
     pub fn post(self: *Fiber) void {
-        Fiber_post(self);
+        EM__TARG.Fiber_post(self);
     }
 };
 
-pub const EM__META = struct {};
-
-pub fn createH(body: BodyFxn) Obj {
-    const fiber = em__C.FiberOF.createH(.{ .body = body });
-    return fiber;
-}
-
-pub const EM__TARG = struct {};
-
-var ready_list = struct {
-    const Self = @This();
-    const END: *Fiber = @ptrFromInt(4);
-    head: *Fiber = END,
-    tail: *Fiber = END,
-    count: u8 = 0,
-    fn empty(self: *Self) bool {
-        return self.head == END;
+pub const EM__META = struct {
+    //
+    pub fn createH(body: BodyFxn) Obj {
+        const fiber = em__C.FiberOF.createH(.{ .body = body });
+        return fiber;
     }
-    fn give(self: *Self, elem: *Fiber) void {
-        if (self.empty()) {
-            self.head = elem;
-        } else {
-            self.tail.link = elem;
+};
+pub const createH = EM__META.createH;
+
+pub const EM__TARG = struct {
+    //
+    var ready_list = struct {
+        const Self = @This();
+        const END: *Fiber = @ptrFromInt(4);
+        head: *Fiber = END,
+        tail: *Fiber = END,
+        count: u8 = 0,
+        fn empty(self: *Self) bool {
+            return self.head == END;
         }
-        self.tail = elem;
-        elem.link = END;
-    }
-    fn take(self: *Self) *Fiber {
-        const e = self.head;
-        self.head = e.link.?;
-        e.link = null;
-        if (self.head == END) self.tail = END;
-        return e;
-    }
-}{};
+        fn give(self: *Self, elem: *Fiber) void {
+            if (self.empty()) {
+                self.head = elem;
+            } else {
+                self.tail.link = elem;
+            }
+            self.tail = elem;
+            elem.link = END;
+        }
+        fn take(self: *Self) *Fiber {
+            const e = self.head;
+            self.head = e.link.?;
+            e.link = null;
+            if (self.head == END) self.tail = END;
+            return e;
+        }
+    }{};
 
-pub fn dispatch() void {
-    while (!ready_list.empty()) {
-        const fiber = ready_list.take();
-        const body = fiber.body;
+    pub fn dispatch() void {
+        while (!ready_list.empty()) {
+            const fiber = ready_list.take();
+            const body = fiber.body;
+            Common.GlobalInterrupts.enable();
+            body.?(.{ .arg = fiber.arg });
+            _ = Common.GlobalInterrupts.disable();
+        }
+    }
+
+    pub fn run() void {
+        Common.Idle.wakeup();
         Common.GlobalInterrupts.enable();
-        body.?(.{ .arg = fiber.arg });
-        _ = Common.GlobalInterrupts.disable();
+        while (true) {
+            _ = Common.GlobalInterrupts.disable();
+            dispatch();
+            Common.Idle.exec();
+        }
     }
-}
 
-pub fn run() void {
-    Common.Idle.wakeup();
-    Common.GlobalInterrupts.enable();
-    while (true) {
-        _ = Common.GlobalInterrupts.disable();
-        dispatch();
-        Common.Idle.exec();
+    pub fn Fiber_post(self: *Fiber) void {
+        const key = Common.GlobalInterrupts.disable();
+        if (self.link == null) ready_list.give(self);
+        Common.GlobalInterrupts.restore(key);
     }
-}
-
-pub fn Fiber_post(self: *Fiber) void {
-    const key = Common.GlobalInterrupts.disable();
-    if (self.link == null) ready_list.give(self);
-    Common.GlobalInterrupts.restore(key);
-}
+};
+pub const run = EM__TARG.run;
