@@ -17,6 +17,8 @@ pub const SleepCbArg = struct {};
 pub const addSleepEnterCbH = EM__META.addSleepEnterCbH;
 pub const addSleepLeaveCbH = EM__META.addSleepLeaveCbH;
 
+pub const exec = EM__TARG.exec;
+pub const pause = EM__TARG.pause;
 pub const waitOnly = EM__TARG.waitOnly;
 
 pub const EM__META = struct {

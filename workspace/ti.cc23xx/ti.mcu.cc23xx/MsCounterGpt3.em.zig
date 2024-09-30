@@ -3,6 +3,9 @@ pub const em__U = em.module(@This(), .{ .inherits = MsCounterI });
 
 pub const MsCounterI = em.import.@"em.hal/MsCounterI";
 
+pub const start = EM__TARG.start;
+pub const stop = EM__TARG.stop;
+
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
