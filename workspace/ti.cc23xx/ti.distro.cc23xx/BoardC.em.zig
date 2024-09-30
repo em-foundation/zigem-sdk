@@ -10,7 +10,6 @@ pub const Debug = em.import.@"em.lang/Debug";
 pub const EpochTime = em.import.@"em.utils/EpochTime";
 pub const ExtFlashDisabler = em.import.@"ti.mcu.cc23xx/ExtFlashDisabler";
 pub const GlobalInterrupts = em.import.@"em.arch.arm/GlobalInterrupts";
-pub const GlobalInterruptsG = em.import.@"em.mcu/GlobalInterruptsG";
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 pub const Mcu = em.import.@"ti.mcu.cc23xx/Mcu";
 pub const MsCounter = em.import.@"ti.mcu.cc23xx/MsCounterGpt3";
@@ -74,7 +73,6 @@ pub fn em__configureH() void {
     FlashCS.c_pin.set(6);
     FlashPICO.c_pin.set(13);
     FlashPOCI.c_pin.set(12);
-    GlobalInterruptsG.x_Impl.set(GlobalInterrupts);
     Poller.x_OneShot.set(OneShot);
     SysLedPin.c_pin.set(14);
     SysLed.x_Pin.set(SysLedPin);
