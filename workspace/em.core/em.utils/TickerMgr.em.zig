@@ -27,6 +27,8 @@ pub const Ticker = struct {
     }
 };
 
+pub const createH = EM__META.createH;
+
 pub const EM__META = struct {
     //
     pub fn createH() Obj {
@@ -37,7 +39,6 @@ pub const EM__META = struct {
         return ticker;
     }
 };
-pub const createH = EM__META.createH;
 
 pub const EM__TARG = struct {
     //

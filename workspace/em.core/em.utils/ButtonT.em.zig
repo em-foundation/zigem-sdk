@@ -29,6 +29,9 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const OnPressedCbFxn = ButtonI.OnPressedCbFxn;
         pub const OnPressedCbArg = ButtonI.OnPressedCbArg;
 
+        pub const isPressed = EM__TARG.isPressed;
+        pub const onPressed = EM__TARG.onPressed;
+
         pub const EM__META = struct {
             //
             pub fn em__constructH() void {
@@ -84,7 +87,5 @@ pub fn em__generateS(comptime name: []const u8) type {
                 }
             }
         };
-        pub const isPressed = EM__TARG.isPressed;
-        pub const onPressed = EM__TARG.onPressed;
     };
 }

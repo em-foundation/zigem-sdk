@@ -25,43 +25,50 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const LedI = em.import.@"em.hal/LedI";
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const EM__META = struct {};
+        pub const off = EM__TARG.off;
+        pub const on = EM__TARG.on;
+        pub const toggle = EM__TARG.toggle;
+        pub const wink = EM__TARG.wink;
 
-        pub fn em__initH() void {
-            em__C.active_low.set(false);
-        }
+        pub const EM__META = struct {
+            //
+            pub fn em__initH() void {
+                em__C.active_low.set(false);
+            }
+        };
 
-        pub const EM__TARG = struct {};
+        pub const EM__TARG = struct {
+            //
+            const active_low = em__C.active_low.get();
+            const Pin = if (em.IS_META) .{} else em__C.Pin.get(); // TODO Pin.default()
 
-        const active_low = em__C.active_low.get();
-        const Pin = if (em.IS_META) .{} else em__C.Pin.get(); // TODO Pin.default()
+            pub fn em__startup() void {
+                if (em.IS_META) return;
+                Pin.makeOutput();
+                EM__TARG.off();
+            }
 
-        pub fn em__startup() void {
-            if (em.IS_META) return;
-            Pin.makeOutput();
-            off();
-        }
+            pub fn off() void {
+                if (em.IS_META) return;
+                if (active_low) Pin.set() else Pin.clear();
+            }
 
-        pub fn off() void {
-            if (em.IS_META) return;
-            if (active_low) Pin.set() else Pin.clear();
-        }
+            pub fn on() void {
+                if (em.IS_META) return;
+                if (active_low) Pin.clear() else Pin.set();
+            }
 
-        pub fn on() void {
-            if (em.IS_META) return;
-            if (active_low) Pin.clear() else Pin.set();
-        }
+            pub fn toggle() void {
+                if (em.IS_META) return;
+                Pin.toggle();
+            }
 
-        pub fn toggle() void {
-            if (em.IS_META) return;
-            Pin.toggle();
-        }
-
-        pub fn wink(msecs: u32) void {
-            if (em.IS_META) return;
-            on();
-            Poller.pause(msecs);
-            off();
-        }
+            pub fn wink(msecs: u32) void {
+                if (em.IS_META) return;
+                EM__TARG.on();
+                Poller.pause(msecs);
+                EM__TARG.off();
+            }
+        };
     };
 }

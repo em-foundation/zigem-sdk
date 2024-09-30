@@ -27,6 +27,9 @@ pub const Fiber = struct {
     }
 };
 
+pub const createH = EM__META.createH;
+pub const run = EM__TARG.run;
+
 pub const EM__META = struct {
     //
     pub fn createH(body: BodyFxn) Obj {
@@ -34,7 +37,6 @@ pub const EM__META = struct {
         return fiber;
     }
 };
-pub const createH = EM__META.createH;
 
 pub const EM__TARG = struct {
     //
@@ -91,4 +93,3 @@ pub const EM__TARG = struct {
         Common.GlobalInterrupts.restore(key);
     }
 };
-pub const run = EM__TARG.run;

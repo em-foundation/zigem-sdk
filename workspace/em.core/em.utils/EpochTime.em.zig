@@ -7,12 +7,15 @@ pub const EM__CONFIG = struct {
 };
 pub const x_Uptimer = em__C.Uptimer;
 
-pub const EM__TARG = struct {};
+pub const getCurrent = EM__TARG.getCurrent;
 
-const Uptimer = em__C.Uptimer.get();
+pub const EM__TARG = struct {
+    //
+    const Uptimer = em__C.Uptimer.get();
 
-pub fn getCurrent(o_subs: *u32) u32 {
-    const time = Uptimer.read();
-    o_subs.* = time.subs;
-    return time.secs;
-}
+    pub fn getCurrent(o_subs: *u32) u32 {
+        const time = Uptimer.read();
+        o_subs.* = time.subs;
+        return time.secs;
+    }
+};
