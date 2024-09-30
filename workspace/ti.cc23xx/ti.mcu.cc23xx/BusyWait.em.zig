@@ -7,7 +7,6 @@ pub const BusyWaitI = em.import.@"em.hal/BusyWaitI";
 pub const EM__CONFIG = struct {
     scalar: em.Param(u8),
 };
-
 pub const c_scalar = em__C.scalar;
 
 pub const wait = EM__TARG.wait;

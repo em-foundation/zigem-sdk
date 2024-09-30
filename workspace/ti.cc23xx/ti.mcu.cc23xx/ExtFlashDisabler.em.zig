@@ -8,14 +8,13 @@ pub const EM__CONFIG = struct {
     PICO: em.Proxy(GpioI),
     POCI: em.Proxy(GpioI),
 };
-
-pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
-pub const GpioI = em.import.@"em.hal/GpioI";
-
 pub const x_CS = em__C.CS;
 pub const x_CLK = em__C.CLK;
 pub const x_PICO = em__C.PICO;
 pub const x_POCI = em__C.POCI;
+
+pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
+pub const GpioI = em.import.@"em.hal/GpioI";
 
 pub const EM__TARG = struct {
     //

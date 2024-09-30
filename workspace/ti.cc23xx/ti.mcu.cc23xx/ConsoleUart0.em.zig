@@ -9,7 +9,6 @@ pub const GpioI = em.import.@"em.hal/GpioI";
 pub const EM__CONFIG = struct {
     TxPin: em.Proxy(GpioI),
 };
-
 pub const x_TxPin = em__C.TxPin;
 
 pub const flush = EM__TARG.flush;
