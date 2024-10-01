@@ -34,7 +34,7 @@ pub const EM__TARG = struct {
         Common.BusyWait.wait(1);
     }
 
-    pub fn mark(comptime id: u8, e: anytype) void {
+    fn mark(comptime id: u8, e: anytype) void {
         const ti = @typeInfo(@TypeOf(e));
         const k: u8 = switch (ti) {
             .Bool => @intFromBool(e),
@@ -47,7 +47,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn minus(comptime id: u8) void {
+    fn minus(comptime id: u8) void {
         getDbg(id).set();
     }
 
@@ -61,11 +61,11 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn plus(comptime id: u8) void {
+    fn plus(comptime id: u8) void {
         getDbg(id).clear();
     }
 
-    pub fn pulse(comptime id: u8) void {
+    fn pulse(comptime id: u8) void {
         const Dbg = getDbg(id);
         Dbg.toggle();
         delay();
@@ -73,7 +73,7 @@ pub const EM__TARG = struct {
         delay();
     }
 
-    pub fn reset() void {
+    fn reset() void {
         resetDbg('A');
         resetDbg('B');
         resetDbg('C');
@@ -85,7 +85,7 @@ pub const EM__TARG = struct {
         Dbg.reset();
     }
 
-    pub fn startup() void {
+    fn startup() void {
         startDbg('A');
         startDbg('B');
         startDbg('C');

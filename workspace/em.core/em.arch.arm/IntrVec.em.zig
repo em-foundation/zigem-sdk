@@ -22,14 +22,6 @@ pub const EM__META = struct {
 
     const NO_VEC = "<NA>";
 
-    pub fn addIntrH(name: []const u8) void {
-        name_tab.add(name);
-    }
-
-    pub fn useIntrH(name: []const u8) void {
-        used_tab.add(name);
-    }
-
     pub fn em__initH() void {
         const core_intrs = [_][]const u8{
             "NMI",
@@ -102,6 +94,14 @@ pub const EM__META = struct {
         sbuf.add("};\n");
         em.writeFile(em.out_root, "intr.c", sbuf.get());
     }
+
+    fn addIntrH(name: []const u8) void {
+        name_tab.add(name);
+    }
+
+    fn useIntrH(name: []const u8) void {
+        used_tab.add(name);
+    }
 };
 
 pub const EM__TARG = struct {
@@ -113,7 +113,7 @@ pub const EM__TARG = struct {
         hal.SCB.*.VTOR = @intFromPtr(&__vector_table);
     }
 
-    pub fn defaultIsr() void {
+    fn defaultIsr() void {
         const vnum: u8 = @intCast(get_IPSR());
         em.@"%%[b:]"(3);
         em.@"%%[>]"(vnum);

@@ -32,7 +32,7 @@ pub const run = EM__TARG.run;
 
 pub const EM__META = struct {
     //
-    pub fn createH(body: BodyFxn) Obj {
+    fn createH(body: BodyFxn) Obj {
         const fiber = em__C.FiberOF.createH(.{ .body = body });
         return fiber;
     }
@@ -67,7 +67,7 @@ pub const EM__TARG = struct {
         }
     }{};
 
-    pub fn dispatch() void {
+    fn dispatch() void {
         while (!ready_list.empty()) {
             const fiber = ready_list.take();
             const body = fiber.body;
@@ -77,7 +77,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn run() void {
+    fn run() void {
         Common.Idle.wakeup();
         Common.GlobalInterrupts.enable();
         while (true) {
@@ -87,7 +87,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn Fiber_post(self: *Fiber) void {
+    fn Fiber_post(self: *Fiber) void {
         const key = Common.GlobalInterrupts.disable();
         if (self.link == null) ready_list.give(self);
         Common.GlobalInterrupts.restore(key);

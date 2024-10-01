@@ -48,22 +48,22 @@ pub fn em__generateS(comptime name: []const u8) type {
                 EM__TARG.off();
             }
 
-            pub fn off() void {
+            fn off() void {
                 if (em.IS_META) return;
                 if (active_low) Pin.set() else Pin.clear();
             }
 
-            pub fn on() void {
+            fn on() void {
                 if (em.IS_META) return;
                 if (active_low) Pin.clear() else Pin.set();
             }
 
-            pub fn toggle() void {
+            fn toggle() void {
                 if (em.IS_META) return;
                 Pin.toggle();
             }
 
-            pub fn wink(msecs: u32) void {
+            fn wink(msecs: u32) void {
                 if (em.IS_META) return;
                 EM__TARG.on();
                 Poller.pause(msecs);

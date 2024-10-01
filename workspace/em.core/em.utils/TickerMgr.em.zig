@@ -31,7 +31,7 @@ pub const createH = EM__META.createH;
 
 pub const EM__META = struct {
     //
-    pub fn createH() Obj {
+    fn createH() Obj {
         const fiber = FiberMgr.createH(em__U.fxn("alarmFB", FiberMgr.BodyArg));
         const alarm = AlarmMgr.createH(fiber);
         const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
@@ -49,13 +49,13 @@ pub const EM__TARG = struct {
         ticker._alarm.wakeupAt(ticker._rate256);
     }
 
-    pub fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: CallbackFxn) void {
+    fn Ticker_start(ticker: *Ticker, rate256: u32, tick_cb: CallbackFxn) void {
         ticker._rate256 = rate256;
         ticker._tick_cb = tick_cb;
         ticker._alarm.wakeupAt(rate256);
     }
 
-    pub fn Ticker_stop(ticker: *Ticker) void {
+    fn Ticker_stop(ticker: *Ticker) void {
         ticker._alarm.cancel();
         ticker._tick_cb = null;
     }

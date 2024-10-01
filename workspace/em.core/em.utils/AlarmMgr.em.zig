@@ -36,7 +36,7 @@ pub const createH = EM__META.createH;
 
 pub const EM__META = struct {
     //
-    pub fn createH(fiber: FiberMgr.Obj) Obj {
+    fn createH(fiber: FiberMgr.Obj) Obj {
         const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
         return alarm;
     }
@@ -80,12 +80,12 @@ pub const EM__TARG = struct {
         findNextAlarm(cur_alarm.?._ticks);
     }
 
-    pub fn Alarm_cancel(alarm: *Alarm) void {
+    fn Alarm_cancel(alarm: *Alarm) void {
         alarm._ticks = 0;
         findNextAlarm(0);
     }
 
-    pub fn Alarm_isActive(alarm: *Alarm) bool {
+    fn Alarm_isActive(alarm: *Alarm) bool {
         return alarm.ticks != 0;
     }
 
@@ -95,12 +95,12 @@ pub const EM__TARG = struct {
         findNextAlarm(0);
     }
 
-    pub fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
+    fn Alarm_wakeup(alarm: *Alarm, secs256: u32) void {
         const ticks = WakeupTimer.secs256ToTicks(secs256);
         Alarm_setup(alarm, ticks);
     }
 
-    pub fn Alarm_wakeupAt(alarm: *Alarm, secs256: u32) void {
+    fn Alarm_wakeupAt(alarm: *Alarm, secs256: u32) void {
         var et_subs: u32 = undefined;
         const et_secs = EpochTime.getCurrent(&et_subs);
         const et_ticks = WakeupTimer.timeToTicks(et_secs, et_subs);

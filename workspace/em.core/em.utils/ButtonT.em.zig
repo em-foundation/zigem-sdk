@@ -72,11 +72,11 @@ pub fn em__generateS(comptime name: []const u8) type {
                 cur_cb.?(.{});
             }
 
-            pub fn isPressed() bool {
+            fn isPressed() bool {
                 return !Edge.get();
             }
 
-            pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
+            fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
                 cur_cb = cb;
                 max_dur = dur.max;
                 min_dur = dur.min;
