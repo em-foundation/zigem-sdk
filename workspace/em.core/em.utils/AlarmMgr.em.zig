@@ -17,7 +17,7 @@ pub const Obj = em.Obj(Alarm);
 pub const Alarm = struct {
     _fiber: FiberMgr.Obj,
     _thresh: u32 = 0, // time of alarm
-    _ticks: u32 = 0, // ticks remaining until alarm (0 == alarm inactive)
+    _dticks: u32 = 0, // ticks remaining until alarm (0 == alarm inactive)
     pub fn cancel(self: *Alarm) void {
         EM__TARG.Alarm_cancel(self);
     }
@@ -73,21 +73,12 @@ pub const EM__TARG = struct {
     }
 
     fn wakeupHandler(_: WakeupTimerI.HandlerArg) void {
-        const alarm_tab = em__C.AlarmOF.items();
-        const thresh: u32 = cur_alarm.?._thresh;
-        for (0..alarm_tab.len) |idx| {
-            var a = &alarm_tab[idx];
-            if (a._ticks > 0 and thresh == a._thresh) {
-                a._ticks = 0;
-                a._fiber.post(); // ring the alarm
-            }
-        }
-        findNextAlarm(cur_alarm.?._ticks);
+        dispatch(cur_alarm.?._dticks);
     }
 
     fn Alarm_cancel(alarm: *Alarm) void {
         alarm._ticks = 0;
-        findNextAlarm(0);
+        dispatch(0);
     }
 
     fn Alarm_isActive(alarm: *Alarm) bool {
