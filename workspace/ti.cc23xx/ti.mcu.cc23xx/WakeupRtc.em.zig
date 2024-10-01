@@ -17,24 +17,24 @@ pub const timeToTicks = EM__TARG.timeToTicks;
 
 pub const EM__TARG = struct {
     //
-    pub fn disable() void {
+    fn disable() void {
         Rtc.disable();
     }
 
-    pub fn enable(secs256: u32, handler: HandlerFxn) void {
+    fn enable(secs256: u32, handler: HandlerFxn) void {
         if (em.IS_META) return;
         Rtc.enable(secs256, @ptrCast(handler));
     }
 
-    pub fn secs256ToTicks(secs256: u32) u32 {
+    fn secs256ToTicks(secs256: u32) u32 {
         return secs256 << 8;
     }
 
-    pub fn ticksToThresh(ticks: u32) u32 {
+    fn ticksToThresh(ticks: u32) u32 {
         return Rtc.toThresh(ticks);
     }
 
-    pub fn timeToTicks(secs: u32, subs: u32) u32 {
+    fn timeToTicks(secs: u32, subs: u32) u32 {
         return (secs << 16) | (subs >> 16);
     }
 };

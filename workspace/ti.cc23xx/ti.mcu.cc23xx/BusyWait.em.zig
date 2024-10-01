@@ -20,7 +20,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    pub fn wait(usecs: u32) void {
+    fn wait(usecs: u32) void {
         if (usecs == 0) return;
         var dummy: u32 = undefined;
         const p: *volatile u32 = &dummy;

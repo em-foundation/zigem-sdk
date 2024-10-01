@@ -22,7 +22,7 @@ pub const EM__META = struct {
         IntrVec.useIntrH("GPIO_COMB");
     }
 
-    pub fn addHandlerInfoH(hi: HandlerInfo) void {
+    fn addHandlerInfoH(hi: HandlerInfo) void {
         em__C.handler_info_tab.add(hi);
     }
 };

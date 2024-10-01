@@ -36,23 +36,23 @@ pub const EM__TARG = struct {
         hal.NVIC_EnableIRQ(hal.CPUIRQ0_IRQn);
     }
 
-    pub fn disable() void {
+    fn disable() void {
         cur_handler = null;
         reg(hal.RTC_BASE + hal.RTC_O_IMCLR).* = hal.RTC_IMCLR_EV0;
     }
 
-    pub fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
+    fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
         cur_handler = handler;
         reg(hal.RTC_BASE + hal.RTC_O_CH0CC8U).* = thresh;
         reg(hal.RTC_BASE + hal.RTC_O_IMSET).* = hal.RTC_IMSET_EV0;
     }
 
-    pub fn getMsecs() u32 {
+    fn getMsecs() u32 {
         const ticks = reg(hal.RTC_BASE + hal.RTC_O_TIME8U).*;
         return (ticks * MSECS_SCALAR) >> (RES_BITS - 7);
     }
 
-    pub fn getRaw(o_subs: *u32) u32 {
+    fn getRaw(o_subs: *u32) u32 {
         var lo: u32 = undefined;
         var hi: u32 = undefined;
         while (true) {
@@ -64,15 +64,15 @@ pub const EM__TARG = struct {
         return hi;
     }
 
-    pub fn toThresh(ticks: u32) u32 {
+    fn toThresh(ticks: u32) u32 {
         return reg(hal.RTC_BASE + hal.RTC_O_TIME8U).* + ticks;
     }
 
-    pub fn toTicks(secs256: u32) u32 {
+    fn toTicks(secs256: u32) u32 {
         return secs256 << 8;
     }
 
-    pub fn CPUIRQ0_isr() void {
+    fn CPUIRQ0_isr() void {
         em.reg(hal.RTC_BASE + hal.RTC_O_ICLR).* = hal.RTC_ICLR_EV0;
         if (cur_handler != null) cur_handler.?(Handler{});
     }

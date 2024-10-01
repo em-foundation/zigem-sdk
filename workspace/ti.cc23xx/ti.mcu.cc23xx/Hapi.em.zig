@@ -11,7 +11,7 @@ pub const EM__TARG = struct {
 
     const ROM_TABLE: *const ROM_T = @ptrFromInt(0x0F00004C);
 
-    pub fn enterStandby(addr: u32) void {
+    fn enterStandby(addr: u32) void {
         ROM_TABLE.enterStandby.?(addr);
     }
 };

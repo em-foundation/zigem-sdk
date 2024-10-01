@@ -12,13 +12,13 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
 
-    pub fn start() void {
+    fn start() void {
         hal.SysTick.*.CTRL = (1 << hal.SysTick_CTRL_CLKSOURCE_Pos) | (1 << hal.SysTick_CTRL_ENABLE_Pos);
         hal.SysTick.*.LOAD = 0xFFFFFF;
         hal.SysTick.*.VAL = 0;
     }
 
-    pub fn stop(o_raw: ?*u32) u32 {
+    fn stop(o_raw: ?*u32) u32 {
         const lr = hal.SysTick.*.LOAD;
         const vr = hal.SysTick.*.VAL;
         const raw = lr - vr;

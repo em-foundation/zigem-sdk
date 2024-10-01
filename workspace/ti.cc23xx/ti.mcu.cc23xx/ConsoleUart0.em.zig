@@ -35,11 +35,11 @@ pub const EM__TARG = struct {
         EM__TARG.sleepLeave(.{});
     }
 
-    pub fn flush() void {
+    fn flush() void {
         while ((reg(hal.UART0_BASE + hal.UART_O_FR).* & hal.UART_FR_BUSY) != 0) {}
     }
 
-    pub fn put(data: u8) void {
+    fn put(data: u8) void {
         reg(hal.UART0_BASE + hal.UART_O_DR).* = data;
         EM__TARG.flush();
     }

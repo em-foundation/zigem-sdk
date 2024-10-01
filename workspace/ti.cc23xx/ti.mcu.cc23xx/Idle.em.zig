@@ -23,11 +23,11 @@ pub const waitOnly = EM__TARG.waitOnly;
 
 pub const EM__META = struct {
     //
-    pub fn addSleepEnterCbH(cb: SleepCbFxn) void {
+    fn addSleepEnterCbH(cb: SleepCbFxn) void {
         em__C.sleep_enter_fxn_tab.add(cb);
     }
 
-    pub fn addSleepLeaveCbH(cb: SleepCbFxn) void {
+    fn addSleepLeaveCbH(cb: SleepCbFxn) void {
         em__C.sleep_leave_fxn_tab.add(cb);
     }
 };
@@ -77,7 +77,7 @@ pub const EM__TARG = struct {
         set_PRIMASK(0);
     }
 
-    pub fn exec() void {
+    fn exec() void {
         if (wait_only > 0) {
             doWait();
         } else {
@@ -85,7 +85,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn pause() void {
+    fn pause() void {
         doWait();
     }
 
@@ -98,14 +98,14 @@ pub const EM__TARG = struct {
         );
     }
 
-    pub fn waitOnly(comptime op: enum { CLR, SET }) void {
+    fn waitOnly(comptime op: enum { CLR, SET }) void {
         switch (op) {
             .CLR => wait_only -= 1,
             .SET => wait_only += 1,
         }
     }
 
-    pub fn wakeup() void {
+    fn wakeup() void {
         // TODO
     }
 };
