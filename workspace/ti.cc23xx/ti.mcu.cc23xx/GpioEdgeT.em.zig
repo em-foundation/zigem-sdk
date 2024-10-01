@@ -33,11 +33,12 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const setDetectHandlerH = EM__META.setDetectHandlerH;
 
-        fn mkMask(p16: i16) u32 {
-            const p5 = @as(u5, @bitCast(@as(i5, @truncate(p16))));
-            const m: u32 = @as(u32, 1) << p5;
-            return m;
-        }
+        pub const clearDetect = EM__TARG.clearDetect;
+        pub const disableDetect = EM__TARG.disableDetect;
+        pub const enableDetect = EM__TARG.enableDetect;
+        pub const setDetectFallingEdge = EM__TARG.setDetectFallingEdge;
+        pub const setDetectRisingEdge = EM__TARG.setDetectRisingEdge;
+
         pub const EM__META = struct {
             //
             pub fn em__initH() void {
@@ -48,43 +49,50 @@ pub fn em__generateS(comptime name: []const u8) type {
                 Pin.c_pin.set(em__C.pin.getH());
             }
 
-            pub fn setDetectHandlerH(h: HandlerFxn) void {
+            fn setDetectHandlerH(h: HandlerFxn) void {
                 Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
             }
         };
 
-        pub const EM__TARG = struct {};
+        pub const EM__TARG = struct {
+            //
+            const pin = em__C.pin.get();
+            const is_def = (pin >= 0);
+            const mask = mkMask(pin);
+            const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
 
-        const pin = em__C.pin.get();
-        const is_def = (pin >= 0);
-        const mask = mkMask(pin);
-        const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
+            const hal = em.hal;
+            const reg = em.reg;
 
-        const hal = em.hal;
-        const reg = em.reg;
+            fn clearDetect() void {
+                if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_ICLR).* = mask;
+            }
 
-        pub fn clearDetect() void {
-            if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_ICLR).* = mask;
-        }
+            fn disableDetect() void {
+                if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_IMCLR).* = mask;
+                if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_WUENSB;
+            }
 
-        pub fn disableDetect() void {
-            if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_IMCLR).* = mask;
-            if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_WUENSB;
-        }
+            fn enableDetect() void {
+                if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_IMSET).* = mask;
+                if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_WUENSB;
+            }
 
-        pub fn enableDetect() void {
-            if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_IMSET).* = mask;
-            if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_WUENSB;
-        }
+            fn setDetectFallingEdge() void {
+                if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
+                if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_NEG;
+            }
 
-        pub fn setDetectFallingEdge() void {
-            if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
-            if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_NEG;
-        }
+            fn setDetectRisingEdge() void {
+                if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
+                if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_POS;
+            }
+        };
 
-        pub fn setDetectRisingEdge() void {
-            if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
-            if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_POS;
+        fn mkMask(p16: i16) u32 {
+            const p5 = @as(u5, @bitCast(@as(i5, @truncate(p16))));
+            const m: u32 = @as(u32, 1) << p5;
+            return m;
         }
 
         // GpioI delegates
@@ -118,7 +126,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         }
 
         pub fn pinId() i16 {
-            return pin;
+            return Pin.pinId();
         }
 
         pub fn reset() void {
