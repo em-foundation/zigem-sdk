@@ -5,10 +5,6 @@ pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const Common = em.import.@"em.mcu/Common";
 pub const Poller = em.import.@"em.mcu/Poller";
 
-pub const EM__META = struct {
-    //
-};
-
 pub const EM__TARG = struct {
     //
     pub fn em__run() void {

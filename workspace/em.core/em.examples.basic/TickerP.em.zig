@@ -13,6 +13,7 @@ pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
 pub const EM__META = struct {
+    //
     pub fn em__constructH() void {
         em__C.appTicker.set(TickerMgr.createH());
         em__C.sysTicker.set(TickerMgr.createH());
@@ -21,8 +22,8 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const appTicker = em__C.appTicker;
-    const sysTicker = em__C.sysTicker;
+    const appTicker = em__C.appTicker.get();
+    const sysTicker = em__C.sysTicker.get();
 
     pub fn em__run() void {
         appTicker.start(256, &appTickCb);

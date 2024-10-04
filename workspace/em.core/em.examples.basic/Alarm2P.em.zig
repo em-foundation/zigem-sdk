@@ -23,12 +23,10 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const alarm = em__C.alarm;
-    const blinkF = em__C.blinkF;
     var counter: u32 = 0;
 
     pub fn em__run() void {
-        blinkF.post();
+        em__C.blinkF.get().post();
         FiberMgr.run();
     }
 
@@ -40,6 +38,6 @@ pub const EM__TARG = struct {
         } else {
             AppLed.wink(5); // 5ms
         }
-        alarm.wakeupAt(384); // 1.5s window
+        em__C.alarm.get().wakeupAt(384); // 1.5s window
     }
 };
