@@ -4,36 +4,32 @@ pub const em__U = em.interface(@This(), .{});
 pub const HandlerFxn = em.Fxn(HandlerArg);
 pub const HandlerArg = struct {};
 
+pub const Seconds_24p8 = u32;
+pub const Thresh = u32;
+
 pub const EM__SPEC = struct {
     disable: *const @TypeOf(disable) = &disable,
     enable: *const @TypeOf(enable) = &enable,
-    secs256ToTicks: *const @TypeOf(secs256ToTicks) = &secs256ToTicks,
-    ticksToThresh: *const @TypeOf(ticksToThresh) = &ticksToThresh,
-    timeToTicks: *const @TypeOf(timeToTicks) = &timeToTicks,
+    secsAligned: *const @TypeOf(secsAligned) = &secsAligned,
+    secsToThresh: *const @TypeOf(secsToThresh) = &secsToThresh,
 };
 
 pub fn disable() void {
     return;
 }
 
-pub fn enable(thresh: u32, handler: HandlerFxn) void {
+pub fn enable(thresh: Thresh, handler: HandlerFxn) void {
     _ = thresh;
     _ = handler;
     return;
 }
 
-pub fn secs256ToTicks(secs256: u32) u32 {
-    _ = secs256;
-    return 0;
-}
-
-pub fn ticksToThresh(ticks: u32) u32 {
-    _ = ticks;
-    return 0;
-}
-
-pub fn timeToTicks(secs: u32, subs: u32) u32 {
+pub fn secsAligned(secs: Seconds_24p8) Seconds_24p8 {
     _ = secs;
-    _ = subs;
+    return 0;
+}
+
+pub fn secsToThresh(secs: Seconds_24p8) Thresh {
+    _ = secs;
     return 0;
 }

@@ -25,7 +25,9 @@ pub const EM__TARG = struct {
     }
 
     fn read() *const Time {
-        cur_time.secs = Rtc.getRaw(&cur_time.subs);
+        const raw = Rtc.getRawTime();
+        cur_time.secs = raw.secs;
+        cur_time.subs = raw.subs;
         return &cur_time;
     }
 

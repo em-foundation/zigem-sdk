@@ -38,6 +38,6 @@ pub const EM__TARG = struct {
         } else {
             AppLed.wink(5); // 5ms
         }
-        em__C.alarm.get().wakeupAt(384); // 1.5s window
+        em__C.alarm.get().wakeupAligned(384); // 1.5s window
     }
 };

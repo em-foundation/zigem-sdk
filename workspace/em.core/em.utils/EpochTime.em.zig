@@ -8,6 +8,7 @@ pub const EM__CONFIG = struct {
 pub const x_Uptimer = em__C.Uptimer;
 
 pub const getRawTime = EM__TARG.getRawTime;
+pub const msecsFromSubs = EM__TARG.msecsFromSubs;
 
 pub const EM__TARG = struct {
     //

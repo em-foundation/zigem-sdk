@@ -11,9 +11,11 @@ pub const HandlerArg = WakeupTimerI.HandlerArg;
 
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
-pub const secs256ToTicks = EM__TARG.secs256ToTicks;
-pub const ticksToThresh = EM__TARG.ticksToThresh;
-pub const timeToTicks = EM__TARG.timeToTicks;
+pub const secsAligned = EM__TARG.secsAligned;
+pub const secsToThresh = EM__TARG.secsToThresh;
+
+const Seconds_24p8 = WakeupTimerI.Seconds_24p8;
+const Thresh = WakeupTimerI.Thresh;
 
 pub const EM__TARG = struct {
     //
@@ -26,15 +28,14 @@ pub const EM__TARG = struct {
         Rtc.enable(secs256, @ptrCast(handler));
     }
 
-    fn secs256ToTicks(secs256: u32) u32 {
-        return secs256 << 8;
+    pub fn secsAligned(secs: Seconds_24p8) Seconds_24p8 {
+        const raw_time = Rtc.getRawTime();
+        const raw_secs = em.@"<>"(Seconds_24p8, raw_time.secs << 8 | raw_time.subs >> 24);
+        const rem = raw_secs % secs;
+        return secs - rem;
     }
 
-    fn ticksToThresh(ticks: u32) u32 {
-        return Rtc.toThresh(ticks);
-    }
-
-    fn timeToTicks(secs: u32, subs: u32) u32 {
-        return (secs << 16) | (subs >> 16);
+    pub fn secsToThresh(secs: Seconds_24p8) Thresh {
+        return Rtc.toThresh(secs << 8);
     }
 };

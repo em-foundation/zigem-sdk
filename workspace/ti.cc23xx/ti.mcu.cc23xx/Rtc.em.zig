@@ -6,9 +6,14 @@ pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
 pub const getMsecs = EM__TARG.getMsecs;
-pub const getRaw = EM__TARG.getRaw;
+pub const getRawTime = EM__TARG.getRawTime;
 pub const toThresh = EM__TARG.toThresh;
 pub const toTicks = EM__TARG.toTicks;
+
+pub const RawTime = struct {
+    secs: u32,
+    subs: u32,
+};
 
 pub const EM__META = struct {
     //
@@ -52,7 +57,7 @@ pub const EM__TARG = struct {
         return (ticks * MSECS_SCALAR) >> (RES_BITS - 7);
     }
 
-    fn getRaw(o_subs: *u32) u32 {
+    fn getRawTime() RawTime {
         var lo: u32 = undefined;
         var hi: u32 = undefined;
         while (true) {
@@ -60,8 +65,7 @@ pub const EM__TARG = struct {
             hi = reg(hal.RTC_BASE + hal.RTC_O_TIME524M).*;
             if (lo == reg(hal.RTC_BASE + hal.RTC_O_TIME8U).*) break;
         }
-        o_subs.* = lo << 16;
-        return hi;
+        return RawTime{ .secs = hi, .subs = lo << 16 };
     }
 
     fn toThresh(ticks: u32) u32 {
