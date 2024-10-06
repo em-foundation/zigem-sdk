@@ -1,10 +1,12 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
+pub const TimeTypes = em.import.@"em.utils/TimeTypes";
+
 pub const HandlerFxn = em.Fxn(HandlerArg);
 pub const HandlerArg = struct {};
 
-pub const Seconds_24p8 = u32;
+pub const Secs24p8 = TimeTypes.Secs24p8;
 pub const Thresh = u32;
 
 pub const EM__SPEC = struct {
@@ -24,12 +26,12 @@ pub fn enable(thresh: Thresh, handler: HandlerFxn) void {
     return;
 }
 
-pub fn secsAligned(secs: Seconds_24p8) Seconds_24p8 {
+pub fn secsAligned(secs: Secs24p8) Secs24p8 {
     _ = secs;
-    return 0;
+    return TimeTypes.Secs24p8_ZERO();
 }
 
-pub fn secsToThresh(secs: Seconds_24p8) Thresh {
+pub fn secsToThresh(secs: Secs24p8) Thresh {
     _ = secs;
     return 0;
 }
