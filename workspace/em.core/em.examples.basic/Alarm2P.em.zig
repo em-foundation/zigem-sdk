@@ -10,6 +10,7 @@ pub const EM__CONFIG = struct {
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
+pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
@@ -38,6 +39,6 @@ pub const EM__TARG = struct {
         } else {
             AppLed.wink(5); // 5ms
         }
-        em__C.alarm.get().wakeupAligned(384); // 1.5s window
+        em__C.alarm.get().wakeupAligned(TimeTypes.Secs24p8_initMsecs(1_500)); // 1.5s window
     }
 };
