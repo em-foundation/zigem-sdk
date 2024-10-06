@@ -76,6 +76,12 @@ pub const EM__TARG = struct {
         }
     }
 
+    fn setup(alarm: *Alarm, delta: Secs24p8) void {
+        alarm._thresh = WakeupTimer.secsToThresh(delta);
+        alarm._dt_secs = delta;
+        dispatch(0);
+    }
+
     fn wakeupHandler(_: WakeupTimerI.HandlerArg) void {
         dispatch(cur_alarm.?._dt_secs);
     }
@@ -89,17 +95,11 @@ pub const EM__TARG = struct {
         return alarm._dt_secs != 0;
     }
 
-    fn Alarm_setup(alarm: *Alarm, delta: Secs24p8) void {
-        alarm._thresh = WakeupTimer.secsToThresh(delta);
-        alarm._dt_secs = delta;
-        dispatch(0);
-    }
-
     fn Alarm_wakeup(alarm: *Alarm, delta: Secs24p8) void {
-        Alarm_setup(alarm, delta);
+        setup(alarm, delta);
     }
 
     fn Alarm_wakeupAligned(alarm: *Alarm, delta: Secs24p8) void {
-        Alarm_setup(alarm, WakeupTimer.secsAligned(delta));
+        setup(alarm, WakeupTimer.secsAligned(delta));
     }
 };
