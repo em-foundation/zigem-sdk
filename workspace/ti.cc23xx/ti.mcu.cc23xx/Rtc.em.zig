@@ -2,18 +2,12 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
+pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
-pub const getMsecs = EM__TARG.getMsecs;
 pub const getRawTime = EM__TARG.getRawTime;
 pub const toThresh = EM__TARG.toThresh;
-pub const toTicks = EM__TARG.toTicks;
-
-pub const RawTime = struct {
-    secs: u32,
-    subs: u32,
-};
 
 pub const EM__META = struct {
     //
@@ -52,12 +46,7 @@ pub const EM__TARG = struct {
         reg(hal.RTC_BASE + hal.RTC_O_IMSET).* = hal.RTC_IMSET_EV0;
     }
 
-    fn getMsecs() u32 {
-        const ticks = reg(hal.RTC_BASE + hal.RTC_O_TIME8U).*;
-        return (ticks * MSECS_SCALAR) >> (RES_BITS - 7);
-    }
-
-    fn getRawTime() RawTime {
+    fn getRawTime() TimeTypes.RawTime {
         var lo: u32 = undefined;
         var hi: u32 = undefined;
         while (true) {
@@ -65,15 +54,11 @@ pub const EM__TARG = struct {
             hi = reg(hal.RTC_BASE + hal.RTC_O_TIME524M).*;
             if (lo == reg(hal.RTC_BASE + hal.RTC_O_TIME8U).*) break;
         }
-        return RawTime{ .secs = hi, .subs = lo << 16 };
+        return .{ .secs = hi, .subs = lo << 16 };
     }
 
     fn toThresh(ticks: u32) u32 {
         return reg(hal.RTC_BASE + hal.RTC_O_TIME8U).* + ticks;
-    }
-
-    fn toTicks(secs256: u32) u32 {
-        return secs256 << 8;
     }
 
     fn CPUIRQ0_isr() void {

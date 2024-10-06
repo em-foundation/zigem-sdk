@@ -10,7 +10,7 @@ pub const EM__CONFIG = struct {
 
 pub const AppBut = em.import.@"em__distro/BoardC".AppBut;
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const EpochTime = em.import.@"em.utils/EpochTime";
+pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 pub const TickerMgr = em.import.@"em.utils/TickerMgr";
@@ -55,14 +55,14 @@ pub const EM__TARG = struct {
     }
 
     fn printTime() void {
-        var sub_seconds: u32 = 0;
-        const epochTimeS = EpochTime.getRawTime(&sub_seconds);
-        const epochTimeMs = EpochTime.msecsFromSubs(sub_seconds);
-        const days: u32 = epochTimeS / (24 * 3600);
-        const hours: u8 = @truncate((epochTimeS % (24 * 3600)) / 3600);
-        const minutes: u8 = @truncate((epochTimeS % 3600) / 60);
-        const seconds: u8 = @truncate(epochTimeS % 60);
-        em.print("{d}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}", .{ days, hours, minutes, seconds, epochTimeMs });
+        const raw_time = Common.Uptimer.read();
+        const raw_secs = raw_time.secs;
+        const raw_msecs = TimeTypes.RawSubsToMsecs(raw_time.subs);
+        const days: u32 = raw_secs / (24 * 3600);
+        const hours: u8 = @truncate((raw_secs % (24 * 3600)) / 3600);
+        const minutes: u8 = @truncate((raw_secs % 3600) / 60);
+        const seconds: u8 = @truncate(raw_secs % 60);
+        em.print("{d}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}", .{ days, hours, minutes, seconds, raw_msecs });
     }
 
     fn printStatus() void {
