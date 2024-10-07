@@ -7,7 +7,6 @@ pub const BoardController = em.import.@"em.utils/BoardController";
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Common = em.import.@"em.mcu/Common";
 pub const Debug = em.import.@"em.lang/Debug";
-pub const EpochTime = em.import.@"em.utils/EpochTime";
 pub const ExtFlashDisabler = em.import.@"ti.mcu.cc23xx/ExtFlashDisabler";
 pub const GlobalInterrupts = em.import.@"em.arch.arm/GlobalInterrupts";
 pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
@@ -55,6 +54,7 @@ pub fn em__configureH() void {
     Common.x_Idle.set(Idle);
     Common.x_Mcu.set(Mcu);
     Common.x_MsCounter.set(MsCounter);
+    Common.x_Uptimer.set(Uptimer);
     Common.x_UsCounter.set(UsCounter);
     DbgA.c_pin.set(23);
     DbgB.c_pin.set(25);
@@ -64,7 +64,6 @@ pub fn em__configureH() void {
     Debug.x_DbgB.set(DbgB);
     Debug.x_DbgC.set(DbgC);
     Debug.x_DbgD.set(DbgD);
-    EpochTime.x_Uptimer.set(Uptimer);
     ExtFlashDisabler.x_CLK.set(FlashCLK);
     ExtFlashDisabler.x_CS.set(FlashCS);
     ExtFlashDisabler.x_PICO.set(FlashPICO);

@@ -10,10 +10,11 @@ pub const EM__CONFIG = struct {
 
 pub const AppBut = em.import.@"em__distro/BoardC".AppBut;
 pub const AppLed = em.import.@"em__distro/BoardC".AppLed;
-pub const EpochTime = em.import.@"em.utils/EpochTime";
+pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-pub const TickerMgr = em.import.@"em.utils/TickerMgr";
 pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
+pub const TickerMgr = em.import.@"em.utils/TickerMgr";
+pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
@@ -26,13 +27,13 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const app_ticker = em__C.app_ticker;
-    const sys_ticker = em__C.sys_ticker;
-    const print_ticker = em__C.print_ticker;
+    const app_ticker = em__C.app_ticker.get();
+    const sys_ticker = em__C.sys_ticker.get();
+    const print_ticker = em__C.print_ticker.get();
 
-    const max_sys_led_ticks: u32 = 384; // 1.5s
-    const max_app_led_ticks: u32 = 512; // 2s
-    const print_ticks: u32 = 1280; // 5s
+    const max_sys_led_ticks = TimeTypes.Secs24p8_initMsecs(1_500); // 1.5s
+    const max_app_led_ticks = TimeTypes.Secs24p8_initMsecs(2_000); // 2s
+    const print_ticks = TimeTypes.Secs24p8_initMsecs(5_000); // 5s
     const min_press_time = 10; // 10ms
     const max_press_time = 2000; // 2s
     var divided_by: u32 = 1;
@@ -54,14 +55,14 @@ pub const EM__TARG = struct {
     }
 
     fn printTime() void {
-        var sub_seconds: u32 = 0;
-        const epochTimeS = EpochTime.getRawTime(&sub_seconds);
-        const epochTimeMs = EpochTime.msecsFromSubs(sub_seconds);
-        const days: u32 = epochTimeS / (24 * 3600);
-        const hours: u8 = @truncate((epochTimeS % (24 * 3600)) / 3600);
-        const minutes: u8 = @truncate((epochTimeS % 3600) / 60);
-        const seconds: u8 = @truncate(epochTimeS % 60);
-        em.print("{d}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}", .{ days, hours, minutes, seconds, epochTimeMs });
+        const raw_time = Common.Uptimer.read();
+        const raw_secs = raw_time.secs;
+        const raw_msecs = TimeTypes.RawSubsToMsecs(raw_time.subs);
+        const days: u32 = raw_secs / (24 * 3600);
+        const hours: u8 = @truncate((raw_secs % (24 * 3600)) / 3600);
+        const minutes: u8 = @truncate((raw_secs % 3600) / 60);
+        const seconds: u8 = @truncate(raw_secs % 60);
+        em.print("{d}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}", .{ days, hours, minutes, seconds, raw_msecs });
     }
 
     fn printStatus() void {
