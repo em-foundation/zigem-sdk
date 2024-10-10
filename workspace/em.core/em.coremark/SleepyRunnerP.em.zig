@@ -37,7 +37,7 @@ pub const EM__TARG = struct {
         em.@"%%[d+]"();
         const crc = CoreBench.run(0);
         em.@"%%[d-]"();
-        em.print("crc = {x}\n", .{crc});
+        em.print("crc = {x:0>4}\n", .{crc});
         count -= 1;
         if (count > 0) return;
         ticker.stop();
