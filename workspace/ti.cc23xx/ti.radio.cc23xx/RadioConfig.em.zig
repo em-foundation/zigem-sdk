@@ -3,11 +3,9 @@ pub const em__U = em.module(@This(), .{});
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const EM__CONFIG = struct {
-    em__upath: []const u8,
     phy: em.Param(Phy),
 };
-
-pub const phy = em__C.phy;
+pub const c_phy = em__C.phy;
 
 pub const Phy = enum {
     NONE,
@@ -18,8 +16,6 @@ pub const Phy = enum {
 pub const EM__META = struct {
     //
     pub fn em__constructH() void {
-        em__U.failif(phy.get() == .NONE, "phy set to NONE");
+        em__U.failif(em__C.phy.getH() == .NONE, "phy set to NONE");
     }
 };
-
-pub const EM__TARG = struct {};

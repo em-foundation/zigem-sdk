@@ -23,6 +23,16 @@ pub const Handler = struct {};
 
 pub const State = enum { IDLE, SETUP, READY, CW, RX, TX };
 
+pub const bindHandlerH = EM__META.bindHandlerH;
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const putWords = EM__TARG.putWords;
+pub const readRssi = EM__TARG.readRssi;
+pub const startCw = EM__TARG.startCw;
+pub const startRx = EM__TARG.startRx;
+pub const startTx = EM__TARG.startTx;
+pub const waitReady = EM__TARG.waitReady;
+
 pub const EM__META = struct {
     //
     pub fn em__constructH() void {
