@@ -46,7 +46,7 @@ pub const EM__META = struct {
 
     pub fn em__generateM() void {
         var sbuf = em.StringH{};
-        for (name_tab.items()) |n| {
+        for (name_tab.itemsM()) |n| {
             if (em.std.mem.eql(u8, n, NO_VEC)) continue;
             sbuf.add(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n}));
         }
@@ -60,7 +60,7 @@ pub const EM__META = struct {
             \\
         );
         sbuf.add("// used\n");
-        for (used_tab.items()) |n| {
+        for (used_tab.itemsM()) |n| {
             if (em.std.mem.eql(u8, n, NO_VEC)) continue;
             sbuf.add(em.sprint(
                 \\#undef __{s}_isr
@@ -87,7 +87,7 @@ pub const EM__META = struct {
             \\    { .fxn = em__start },
             \\
         );
-        for (name_tab.items()) |n| {
+        for (name_tab.itemsM()) |n| {
             const s = if (em.std.mem.eql(u8, n, NO_VEC)) "0" else em.sprint("__{s}_isr", .{n});
             sbuf.add(em.sprint("    {s},\n", .{s}));
         }

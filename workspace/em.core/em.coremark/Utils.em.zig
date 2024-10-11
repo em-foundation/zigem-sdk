@@ -29,7 +29,7 @@ pub const EM__META = struct {
     }
 
     pub fn bindSeedM(idx: u8, val: seed_t) void {
-        em__C.seed_tab.items()[idx - 1] = val;
+        em__C.seed_tab.itemsM()[idx - 1] = val;
     }
 };
 

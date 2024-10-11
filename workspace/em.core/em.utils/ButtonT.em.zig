@@ -36,7 +36,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             //
             pub fn em__constructM() void {
                 const fiber = FiberMgr.createM(em__U.fxn("debounceFB", FiberMgr.BodyArg));
-                em__C.debounceF.set(fiber);
+                em__C.debounceF.setM(fiber);
                 em__C.Edge.getM().setDetectHandlerM(em__U.fxn("buttonHandler", GpioEdgeI.HandlerArg));
             }
         };

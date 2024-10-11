@@ -14,9 +14,9 @@ pub const Common = em.import.@"em.mcu/Common";
 pub const EM__META = struct {
     //
     pub fn em__initM() void {
-        em__C.dbg_flag.set(true);
-        em__C.min_cnt.set(1000);
-        em__C.max_cnt.set(1020);
+        em__C.dbg_flag.setM(true);
+        em__C.min_cnt.setM(1000);
+        em__C.max_cnt.setM(1020);
     }
 };
 

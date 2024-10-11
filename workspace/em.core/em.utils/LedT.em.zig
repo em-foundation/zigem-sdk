@@ -33,7 +33,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EM__META = struct {
             //
             pub fn em__initM() void {
-                em__C.active_low.set(false);
+                em__C.active_low.setM(false);
             }
         };
 
@@ -50,7 +50,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
             pub fn off() void {
                 if (em.IS_META) return;
-                if (active_low) Pin.set() else Pin.clear();
+                if (active_low) Pin.setM() else Pin.clear();
             }
 
             pub fn on() void {

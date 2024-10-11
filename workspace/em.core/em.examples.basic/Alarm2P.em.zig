@@ -17,8 +17,8 @@ pub const EM__META = struct {
     pub fn em__constructM() void {
         const blinkF = FiberMgr.createM(em__U.fxn("blinkFB", FiberMgr.BodyArg));
         const alarm = AlarmMgr.createM(blinkF);
-        em__C.alarm.set(alarm);
-        em__C.blinkF.set(blinkF);
+        em__C.alarm.setM(alarm);
+        em__C.blinkF.setM(blinkF);
     }
 };
 

@@ -16,7 +16,7 @@ pub const EM__META = struct {
     pub fn em__constructM() void {
         AppButEdge.setDetectHandlerM(em__U.fxn("handler", AppButEdge.HandlerArg));
         const blinkF = FiberMgr.createM(em__U.fxn("blinkFB", FiberMgr.BodyArg));
-        em__C.blinkF.set(blinkF);
+        em__C.blinkF.setM(blinkF);
     }
 };
 

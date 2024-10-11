@@ -297,11 +297,12 @@ pub fn Factory_S(T: type) type {
         }
 
         pub fn items(self: *Self) _ItemsType {
-            if (IS_META) {
-                return self.em__list.items;
-            } else {
-                return self.em__list;
-            }
+            return self.em__list;
+        }
+
+        pub fn itemsM(self: *Self) _ItemsType {
+            declare_META();
+            return self.em__list.items;
         }
 
         pub fn em__F_toString(self: *const Self) []const u8 {
@@ -329,7 +330,7 @@ pub fn Factory_S(T: type) type {
                 \\
             ;
             sb.add(sprint(size_txt, .{ self.em__dname, tn }));
-            for (0..self.items().len) |i| {
+            for (0..self.itemsM().len) |i| {
                 const abs_txt =
                     \\comptime {{
                     \\    asm (".globl \"{0s}${1d}\"");
@@ -389,7 +390,7 @@ pub fn Obj_S(T: type) type {
             return self.em__idx;
         }
         pub fn O(self: *const Self) *T {
-            return @constCast(&self.em__fty.?.items()[self.em__idx]);
+            return @constCast(&self.em__fty.?.itemsM()[self.em__idx]);
         }
         pub fn em__F_toString(self: *const Self) []const u8 {
             return if (self.em__fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self.em__fty.?.em__dname, self.em__idx });
@@ -417,7 +418,7 @@ pub fn Param_S(T: type) type {
             return self.em__val;
         }
 
-        pub fn set(self: *Self, v: T) void {
+        pub fn setM(self: *Self, v: T) void {
             declare_META();
             self.em__val = v;
         }
@@ -455,7 +456,7 @@ pub fn Proxy_S(I: type) type {
             return self.em__iobj;
         }
 
-        pub fn set(self: *Self, Mod: anytype) void {
+        pub fn setM(self: *Self, Mod: anytype) void {
             declare_META();
             self.em__upath = Mod.em__U.upath;
             self.em__iobj = asI(I, Mod);
@@ -515,12 +516,14 @@ pub fn Table_S(T: type, acc: TableAccess) type {
         }
 
         pub fn items(self: *Self) _ItemsType {
-            if (IS_META) {
-                self.em__is_virgin = false;
-                return self.em__list.items;
-            } else {
-                return self.em__list;
-            }
+            declare_TARG();
+            return self.em__list;
+        }
+
+        pub fn itemsM(self: *Self) _ItemsType {
+            declare_META();
+            self.em__is_virgin = false;
+            return self.em__list.items;
         }
 
         pub fn setLen(self: *Self, len: usize) void {

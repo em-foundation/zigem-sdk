@@ -55,8 +55,8 @@ pub const EM__META = struct {
             p = q;
         }
         p.O().next = null;
-        em__C.cur_head.set(head);
-        em__C.max_elems.set(max);
+        em__C.cur_head.setM(head);
+        em__C.max_elems.setM(max);
     }
 };
 

@@ -16,8 +16,8 @@ pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
-        em__C.appTicker.set(TickerMgr.createM());
-        em__C.sysTicker.set(TickerMgr.createM());
+        em__C.appTicker.setM(TickerMgr.createM());
+        em__C.sysTicker.setM(TickerMgr.createM());
     }
 };
 

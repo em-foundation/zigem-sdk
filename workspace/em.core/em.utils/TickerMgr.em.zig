@@ -36,7 +36,7 @@ pub const EM__META = struct {
         const fiber = FiberMgr.createM(em__U.fxn("alarmFB", FiberMgr.BodyArg));
         const alarm = AlarmMgr.createM(fiber);
         const ticker = em__C.TickerOF.createM(.{ ._alarm = alarm, ._fiber = fiber });
-        fiber.O().arg = ticker.getIdx();
+        fiber.O()._arg = ticker.getIdx();
         return ticker;
     }
 };

@@ -34,7 +34,7 @@ pub const run = EM__TARG.run;
 pub const EM__META = struct {
     //
     pub fn createM(body: BodyFxn) Obj {
-        const fiber = em__C.FiberOF.createM(.{ .body = body });
+        const fiber = em__C.FiberOF.createM(.{ ._body = body });
         return fiber;
     }
 };

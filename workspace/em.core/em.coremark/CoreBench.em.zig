@@ -22,9 +22,9 @@ pub const EM__META = struct {
     //
     pub fn em__configureM() void {
         const memsize = TOTAL_DATA_SIZE / NUM_ALGS;
-        ListBench.c_memsize.set(memsize);
-        MatrixBench.c_memsize.set(memsize);
-        StateBench.c_memsize.set(memsize);
+        ListBench.c_memsize.setM(memsize);
+        MatrixBench.c_memsize.setM(memsize);
+        StateBench.c_memsize.setM(memsize);
     }
 
     pub fn em__constructM() void {
