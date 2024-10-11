@@ -292,7 +292,7 @@ pub fn Factory_S(T: type) type {
             declare_META();
             const l = self.em__list.items.len;
             self.em__list.append(std.mem.zeroInit(T, init)) catch fail();
-            const o = Obj(T){ ._fty = self, ._idx = l };
+            const o = Obj(T){ .em__fty = self, .em__idx = l };
             return o;
         }
 
@@ -383,16 +383,16 @@ pub fn Obj_S(T: type) type {
     return struct {
         const Self = @This();
         pub const _em__builtin = {};
-        _fty: ?Factory(T) = undefined,
-        _idx: usize,
+        em__fty: ?Factory(T) = undefined,
+        em__idx: usize,
         pub fn getIdx(self: *const Self) usize {
-            return self._idx;
+            return self.em__idx;
         }
         pub fn O(self: *const Self) *T {
-            return @constCast(&self._fty.?.items()[self._idx]);
+            return @constCast(&self.em__fty.?.items()[self.em__idx]);
         }
         pub fn em__F_toString(self: *const Self) []const u8 {
-            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?.em__dname, self._idx });
+            return if (self.em__fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self.em__fty.?.em__dname, self.em__idx });
         }
         pub fn em__F_typeName() []const u8 {
             return sprint("*{s}", .{mkTypeName(T)});
@@ -411,21 +411,20 @@ pub fn Param_S(T: type) type {
         pub const _em__builtin = {};
 
         em__cfgid: ?*const CfgId = null,
-
-        _val: T,
+        em__val: T,
 
         pub fn getH(self: *Self) T {
-            return self._val;
+            return self.em__val;
         }
 
         pub fn set(self: *Self, v: T) void {
             declare_META();
-            self._val = v;
+            self.em__val = v;
         }
 
         pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
-            return sprint("@constCast(&em.Param_S({s}){{._val = {s}}})", .{ mkTypeName(T), em__F_toStringAux(self._val) });
+            return sprint("@constCast(&em.Param_S({s}){{.em__val = {s}}})", .{ mkTypeName(T), em__F_toStringAux(self.em__val) });
         }
 
         pub fn em__F_toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
@@ -434,7 +433,7 @@ pub fn Param_S(T: type) type {
         }
 
         pub fn unwrap(self: *Self) T {
-            return if (IS_META) std.mem.zeroes(T) else self._val;
+            return if (IS_META) std.mem.zeroes(T) else self.em__val;
         }
     };
 }
@@ -449,18 +448,17 @@ pub fn Proxy_S(I: type) type {
         pub const _em__builtin = {};
 
         em__cfgid: ?*const CfgId = null,
-
+        em__iobj: I.EM__SPEC = asI(I, I),
         em__upath: []const u8 = I.em__U.upath,
-        _iobj: I.EM__SPEC = asI(I, I),
 
         pub fn getH(self: *const Self) I.EM__SPEC {
-            return self._iobj;
+            return self.em__iobj;
         }
 
         pub fn set(self: *Self, Mod: anytype) void {
             declare_META();
             self.em__upath = Mod.em__U.upath;
-            self._iobj = asI(I, Mod);
+            self.em__iobj = asI(I, Mod);
         }
 
         pub fn em__F_toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
@@ -479,11 +477,11 @@ pub fn Proxy_S(I: type) type {
             const IMod = mkUnitImport(I.em__U.upath);
             const XMod = mkUnitImport(self.em__upath);
             const iobj = sprint("em.asI({s}, {s})", .{ IMod, XMod });
-            return sprint("@constCast(&em.Proxy_S({s}){{.em__upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self.em__upath, iobj });
+            return sprint("@constCast(&em.Proxy_S({s}){{.em__upath = \"{s}\", .em__iobj = {s},}})", .{ IMod, self.em__upath, iobj });
         }
 
         pub fn unwrap(self: *const Self) I.EM__SPEC {
-            return self._iobj;
+            return self.em__iobj;
         }
     };
 }
@@ -506,20 +504,19 @@ pub fn Table_S(T: type, acc: TableAccess) type {
         const _LIST_INIT = if (IS_META) _ListType.init(arena.allocator()) else undefined;
 
         em__cfgid: ?*const CfgId = null,
-
         em__dname: []const u8 = "",
-        _is_virgin: bool = true,
+        em__is_virgin: bool = true,
         em__list: _ListType = _LIST_INIT,
 
         pub fn add(self: *Self, item: T) void {
             if (!IS_META) return;
             self.em__list.append(item) catch fail();
-            self._is_virgin = false;
+            self.em__is_virgin = false;
         }
 
         pub fn items(self: *Self) _ItemsType {
             if (IS_META) {
-                self._is_virgin = false;
+                self.em__is_virgin = false;
                 return self.em__list.items;
             } else {
                 return self.em__list;
@@ -528,14 +525,14 @@ pub fn Table_S(T: type, acc: TableAccess) type {
 
         pub fn setLen(self: *Self, len: usize) void {
             declare_META();
-            const sav = self._is_virgin;
+            const sav = self.em__is_virgin;
             const l = self.em__list.items.len;
             if (len > l) {
                 for (l..len) |_| {
                     self.add(std.mem.zeroes(T));
                 }
             }
-            self._is_virgin = sav;
+            self.em__is_virgin = sav;
         }
 
         pub fn em__F_toString(self: *const Self) []const u8 {
@@ -552,7 +549,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             self.em__dname = upath ++ ".em__C." ++ cname;
             const tn = mkTypeName(T);
             var sb = StringH{};
-            if (self._is_virgin) {
+            if (self.em__is_virgin) {
                 sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self.em__list.items.len, tn }));
             } else {
                 sb.add(sprint("[_]{s}{{", .{tn}));
@@ -904,12 +901,12 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
 
 pub const StringH = struct {
     const Self = @This();
-    _txt: []const u8 = "",
+    em__txt: []const u8 = "",
     pub fn add(self: *Self, txt: []const u8) void {
-        self._txt = sprint("{s}{s}", .{ self._txt, txt });
+        self.em__txt = sprint("{s}{s}", .{ self.em__txt, txt });
     }
     pub fn get(self: Self) []const u8 {
-        return self._txt;
+        return self.em__txt;
     }
 };
 
