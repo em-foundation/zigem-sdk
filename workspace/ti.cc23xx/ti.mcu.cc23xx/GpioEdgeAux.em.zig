@@ -23,7 +23,7 @@ pub const EM__META = struct {
     }
 
     pub fn addHandlerInfoM(hi: HandlerInfo) void {
-        em__C.handler_info_tab.add(hi);
+        em__C.handler_info_tab.addM(hi);
     }
 };
 

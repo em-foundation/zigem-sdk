@@ -24,11 +24,11 @@ pub const waitOnly = EM__TARG.waitOnly;
 pub const EM__META = struct {
     //
     pub fn addSleepEnterCbM(cb: SleepCbFxn) void {
-        em__C.sleep_enter_fxn_tab.add(cb);
+        em__C.sleep_enter_fxn_tab.addM(cb);
     }
 
     pub fn addSleepLeaveCbM(cb: SleepCbFxn) void {
-        em__C.sleep_leave_fxn_tab.add(cb);
+        em__C.sleep_leave_fxn_tab.addM(cb);
     }
 };
 

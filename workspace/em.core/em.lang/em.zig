@@ -316,20 +316,20 @@ pub fn Factory_S(T: type) type {
         pub fn em__F_toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
             declare_META();
             self.em__dname = upath ++ "_em__C_" ++ cname;
-            var sb = StringH{};
+            var sb = StringM{};
             const tn = mkTypeName(T);
-            sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self.em__dname, tn }));
+            sb.addM(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self.em__dname, tn }));
             for (self.em__list.items) |e| {
-                sb.add(sprint("    {s},\n", .{em__F_toStringAux(e)}));
+                sb.addM(sprint("    {s},\n", .{em__F_toStringAux(e)}));
             }
-            sb.add("};\n");
+            sb.addM("};\n");
             const size_txt =
                 \\export const @"{0s}__BASE" = &@"{0s}__OBJARR";
                 \\const @"{0s}__SIZE" = std.fmt.comptimePrint("{{d}}", .{{@sizeOf({1s})}});
                 \\
                 \\
             ;
-            sb.add(sprint(size_txt, .{ self.em__dname, tn }));
+            sb.addM(sprint(size_txt, .{ self.em__dname, tn }));
             for (0..self.itemsM().len) |i| {
                 const abs_txt =
                     \\comptime {{
@@ -341,9 +341,9 @@ pub fn Factory_S(T: type) type {
                     \\
                     \\
                 ;
-                sb.add(sprint(abs_txt, .{ self.em__dname, i, tn }));
+                sb.addM(sprint(abs_txt, .{ self.em__dname, i, tn }));
             }
-            return sb.get();
+            return sb.getM();
         }
     };
 }
@@ -386,10 +386,10 @@ pub fn Obj_S(T: type) type {
         pub const _em__builtin = {};
         em__fty: ?Factory(T) = undefined,
         em__idx: usize,
-        pub fn getIdx(self: *const Self) usize {
+        pub fn getIdxM(self: *const Self) usize {
             return self.em__idx;
         }
-        pub fn O(self: *const Self) *T {
+        pub fn objM(self: *const Self) *T {
             return @constCast(&self.em__fty.?.itemsM()[self.em__idx]);
         }
         pub fn em__F_toString(self: *const Self) []const u8 {
@@ -470,10 +470,10 @@ pub fn Proxy_S(I: type) type {
         pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
             var it = std.mem.splitSequence(u8, self.em__upath, "__");
-            var sb = StringH{};
-            sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+            var sb = StringM{};
+            sb.addM(sprint("em.import.@\"{s}\"", .{it.first()}));
             while (it.next()) |seg| {
-                sb.add(sprint(".{s}", .{seg}));
+                sb.addM(sprint(".{s}", .{seg}));
             }
             const IMod = mkUnitImport(I.em__U.upath);
             const XMod = mkUnitImport(self.em__upath);
@@ -509,7 +509,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
         em__is_virgin: bool = true,
         em__list: _ListType = _LIST_INIT,
 
-        pub fn add(self: *Self, item: T) void {
+        pub fn addM(self: *Self, item: T) void {
             if (!IS_META) return;
             self.em__list.append(item) catch fail();
             self.em__is_virgin = false;
@@ -526,13 +526,13 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             return self.em__list.items;
         }
 
-        pub fn setLen(self: *Self, len: usize) void {
+        pub fn setLenM(self: *Self, len: usize) void {
             declare_META();
             const sav = self.em__is_virgin;
             const l = self.em__list.items.len;
             if (len > l) {
                 for (l..len) |_| {
-                    self.add(std.mem.zeroes(T));
+                    self.addM(std.mem.zeroes(T));
                 }
             }
             self.em__is_virgin = sav;
@@ -551,18 +551,18 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             declare_META();
             self.em__dname = upath ++ ".em__C." ++ cname;
             const tn = mkTypeName(T);
-            var sb = StringH{};
+            var sb = StringM{};
             if (self.em__is_virgin) {
-                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self.em__list.items.len, tn }));
+                sb.addM(sprint("std.mem.zeroes([{d}]{s})", .{ self.em__list.items.len, tn }));
             } else {
-                sb.add(sprint("[_]{s}{{", .{tn}));
+                sb.addM(sprint("[_]{s}{{", .{tn}));
                 for (self.em__list.items) |e| {
-                    sb.add(sprint("    {s},\n", .{em__F_toStringAux(e)}));
+                    sb.addM(sprint("    {s},\n", .{em__F_toStringAux(e)}));
                 }
-                sb.add("}");
+                sb.addM("}");
             }
             const ks = if (acc == .RO) "const" else "var";
-            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self.em__dname, sb.get() });
+            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self.em__dname, sb.getM() });
         }
     };
 }
@@ -724,12 +724,12 @@ fn mkTypeImport(comptime tn: []const u8) []const u8 {
 
 fn mkUnitImport(upath: []const u8) []const u8 {
     var it = std.mem.splitSequence(u8, upath, "__");
-    var sb = StringH{};
-    sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
+    var sb = StringM{};
+    sb.addM(sprint("em.import.@\"{s}\"", .{it.first()}));
     while (it.next()) |seg| {
-        sb.add(sprint(".{s}", .{seg}));
+        sb.addM(sprint(".{s}", .{seg}));
     }
-    return sb.get();
+    return sb.getM();
 }
 
 pub fn em__F_toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
@@ -902,13 +902,13 @@ pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
     return std.fmt.allocPrint(getHeap(), fmt, args) catch unreachable;
 }
 
-pub const StringH = struct {
+pub const StringM = struct {
     const Self = @This();
     em__txt: []const u8 = "",
-    pub fn add(self: *Self, txt: []const u8) void {
+    pub fn addM(self: *Self, txt: []const u8) void {
         self.em__txt = sprint("{s}{s}", .{ self.em__txt, txt });
     }
-    pub fn get(self: Self) []const u8 {
+    pub fn getM(self: Self) []const u8 {
         return self.em__txt;
     }
 };

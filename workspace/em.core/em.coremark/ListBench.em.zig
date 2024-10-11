@@ -46,15 +46,15 @@ pub const EM__META = struct {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.getM())) / @as(f32, @floatFromInt(item_size))))) - 3;
         const head = em__C.ElemOF.createM(.{});
-        head.O().data = em__C.DataOF.createM(.{});
+        head.objM().data = em__C.DataOF.createM(.{});
         var p = head;
         for (0..max - 1) |_| {
             const q = em__C.ElemOF.createM(.{});
-            q.O().data = em__C.DataOF.createM(.{});
-            p.O().next = q;
+            q.objM().data = em__C.DataOF.createM(.{});
+            p.objM().next = q;
             p = q;
         }
-        p.O().next = null;
+        p.objM().next = null;
         em__C.cur_head.setM(head);
         em__C.max_elems.setM(max);
     }

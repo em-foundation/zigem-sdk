@@ -24,8 +24,8 @@ pub const setCrc = EM__TARG.setCrc;
 pub const EM__META = struct {
     //
     pub fn em__initM() void {
-        em__C.crc_tab.setLen(@intFromEnum(Kind.ZZZ_));
-        em__C.seed_tab.setLen(NUM_SEEDS);
+        em__C.crc_tab.setLenM(@intFromEnum(Kind.ZZZ_));
+        em__C.seed_tab.setLenM(NUM_SEEDS);
     }
 
     pub fn bindSeedM(idx: u8, val: seed_t) void {

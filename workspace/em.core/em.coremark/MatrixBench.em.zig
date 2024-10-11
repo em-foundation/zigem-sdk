@@ -36,9 +36,9 @@ pub const EM__META = struct {
         }
         const d = i - 1;
         em__C.dimN.setM(d);
-        em__C.matA.setLen(d * d);
-        em__C.matB.setLen(d * d);
-        em__C.matC.setLen(d * d);
+        em__C.matA.setLenM(d * d);
+        em__C.matB.setLenM(d * d);
+        em__C.matC.setLenM(d * d);
         em__C.matA.itemsM()[0] = 10; // TODO: make matA unique
         em__C.matB.itemsM()[0] = 20; // TODO  make matB unique
     }
