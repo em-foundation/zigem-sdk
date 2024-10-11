@@ -32,7 +32,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__META = struct {
             //
-            pub fn em__initH() void {
+            pub fn em__initM() void {
                 em__C.active_low.set(false);
             }
         };

@@ -13,7 +13,7 @@ pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
     }
 

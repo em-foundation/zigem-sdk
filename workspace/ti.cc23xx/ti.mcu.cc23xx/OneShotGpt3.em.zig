@@ -13,7 +13,7 @@ pub const uenable = EM__TARG.uenable;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         IntrVec.useIntrH("LGPT3_COMB");
     }
 };

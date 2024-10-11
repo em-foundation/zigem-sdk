@@ -23,12 +23,12 @@ pub fn exec(top: em.Unit) !void {
     @setEvalBranchQuota(100_000);
     const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
-    callAll("em__initH", ulist_bot, false);
-    callAll("em__configureH", ulist_top, false);
+    callAll("em__initM", ulist_bot, false);
+    callAll("em__configureM", ulist_top, false);
     try mkUsedSet(top);
     try mkUsedSet(BuildH.em__U);
-    callAll("em__constructH", ulist_top, false);
-    callAll("em__generateH", ulist_top, false);
+    callAll("em__constructM", ulist_top, false);
+    callAll("em__generateM", ulist_top, false);
     try genDomain();
     try genTarg(top, ulist_bot, ulist_top);
     std.process.exit(0);

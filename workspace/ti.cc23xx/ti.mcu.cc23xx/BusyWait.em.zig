@@ -13,7 +13,7 @@ pub const wait = EM__TARG.wait;
 
 pub const EM__META = struct {
     //
-    pub fn em__initH() void {
+    pub fn em__initM() void {
         em__C.scalar.set(6);
     }
 };

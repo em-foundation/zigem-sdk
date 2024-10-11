@@ -18,7 +18,7 @@ pub const addHandlerInfoH = EM__META.addHandlerInfoH;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         IntrVec.useIntrH("GPIO_COMB");
     }
 

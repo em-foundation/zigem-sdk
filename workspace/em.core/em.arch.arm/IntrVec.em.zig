@@ -22,7 +22,7 @@ pub const EM__META = struct {
 
     const NO_VEC = "<NA>";
 
-    pub fn em__initH() void {
+    pub fn em__initM() void {
         const core_intrs = [_][]const u8{
             "NMI",
             "HardFault",
@@ -44,7 +44,7 @@ pub const EM__META = struct {
         }
     }
 
-    pub fn em__generateH() void {
+    pub fn em__generateM() void {
         var sbuf = em.StringH{};
         for (name_tab.items()) |n| {
             if (em.std.mem.eql(u8, n, NO_VEC)) continue;

@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .meta_only = true,
 });
 
-pub fn em__generateH() void {
+pub fn em__generateM() void {
     genArmStartup();
     genStartup();
 }

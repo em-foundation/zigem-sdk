@@ -39,7 +39,7 @@ pub const FlashPOCI = em__U.Generate("FlashPOCI", GpioT);
 pub const SysLed = em__U.Generate("SysLed", LedT);
 pub const SysLedPin = em__U.Generate("SysLedPin", GpioT);
 
-pub fn em__configureH() void {
+pub fn em__configureM() void {
     AlarmMgr.x_WakeupTimer.set(WakeupTimer);
     AppBut.x_Edge.set(AppButEdge);
     AppButEdge.c_pin.set(9);

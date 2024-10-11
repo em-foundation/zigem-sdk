@@ -20,14 +20,14 @@ pub const setup = EM__TARG.setup;
 
 pub const EM__META = struct {
     //
-    pub fn em__configureH() void {
+    pub fn em__configureM() void {
         const memsize = TOTAL_DATA_SIZE / NUM_ALGS;
         ListBench.c_memsize.set(memsize);
         MatrixBench.c_memsize.set(memsize);
         StateBench.c_memsize.set(memsize);
     }
 
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         Utils.bindSeedH(1, 0x0);
         Utils.bindSeedH(2, 0x0);
         Utils.bindSeedH(3, 0x66);

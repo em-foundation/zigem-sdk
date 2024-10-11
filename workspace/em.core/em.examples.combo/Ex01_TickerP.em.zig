@@ -18,7 +18,7 @@ pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         em__C.app_ticker.set(TickerMgr.createH());
         em__C.sys_ticker.set(TickerMgr.createH());
         em__C.print_ticker.set(TickerMgr.createH());

@@ -42,7 +42,7 @@ pub const setup = EM__TARG.setup;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.getH())) / @as(f32, @floatFromInt(item_size))))) - 3;
         const head = em__C.ElemOF.createH(.{});

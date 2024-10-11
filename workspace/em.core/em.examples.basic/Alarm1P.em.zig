@@ -14,7 +14,7 @@ pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
         const alarm = AlarmMgr.createH(blinkF);
         em__C.alarm.set(alarm);

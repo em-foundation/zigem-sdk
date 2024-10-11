@@ -120,7 +120,7 @@ const sram_txt =
     \\}
 ;
 
-pub fn em__generateH() void {
+pub fn em__generateM() void {
     const txt = if (em.property("em.build.BootFlash", bool, false)) sram_txt else flash_txt;
     em.writeFile(em.out_root, "linkcmd.ld", txt);
 }

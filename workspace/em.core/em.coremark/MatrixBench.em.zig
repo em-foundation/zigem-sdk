@@ -27,7 +27,7 @@ pub const setup = EM__TARG.setup;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         var i: usize = 0;
         var j: usize = 0;
         while (j < em__C.memsize.getH()) {

@@ -11,7 +11,7 @@ pub const toThresh = EM__TARG.toThresh;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         IntrVec.useIntrH("CPUIRQ0");
     }
 };
