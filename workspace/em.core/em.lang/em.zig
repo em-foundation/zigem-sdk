@@ -307,7 +307,7 @@ pub fn Factory_S(T: type) type {
             }
         }
 
-        pub fn em__toString(self: *const Self) []const u8 {
+        pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
             return sprint("@constCast(&em.Factory_S({s}){{._list = &@\"{s}__OBJARR\"}})", .{
                 mkTypeName(T),
@@ -315,14 +315,14 @@ pub fn Factory_S(T: type) type {
             });
         }
 
-        pub fn em__toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+        pub fn em__F_toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
             declare_META();
             self._dname = upath ++ "_em__C_" ++ cname;
             var sb = StringH{};
             const tn = mkTypeName(T);
             sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self._dname, tn }));
             for (self._list.items) |e| {
-                sb.add(sprint("    {s},\n", .{em__toStringAux(e)}));
+                sb.add(sprint("    {s},\n", .{em__F_toStringAux(e)}));
             }
             sb.add("};\n");
             const size_txt =
@@ -358,7 +358,7 @@ pub fn Fxn(PT: type) type {
                 pub const _em__builtin = {};
                 _upath: []const u8,
                 _fname: []const u8,
-                pub fn em__toString(self: Self) []const u8 {
+                pub fn em__F_toString(self: Self) []const u8 {
                     if (self._fname.len == 0) {
                         return "null";
                     } else {
@@ -394,7 +394,7 @@ pub fn Obj_S(T: type) type {
         pub fn O(self: *const Self) *T {
             return @constCast(&self._fty.?.items()[self._idx]);
         }
-        pub fn em__toString(self: *const Self) []const u8 {
+        pub fn em__F_toString(self: *const Self) []const u8 {
             return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
         }
         pub fn typeName() []const u8 {
@@ -426,12 +426,12 @@ pub fn Param_S(T: type) type {
             self._val = v;
         }
 
-        pub fn em__toString(self: *const Self) []const u8 {
+        pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
-            return sprint("@constCast(&em.Param_S({s}){{._val = {s}}})", .{ mkTypeName(T), em__toStringAux(self._val) });
+            return sprint("@constCast(&em.Param_S({s}){{._val = {s}}})", .{ mkTypeName(T), em__F_toStringAux(self._val) });
         }
 
-        pub fn em__toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+        pub fn em__F_toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
             declare_META();
             return "";
         }
@@ -466,12 +466,12 @@ pub fn Proxy_S(I: type) type {
             self._iobj = asI(I, Mod);
         }
 
-        pub fn em__toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+        pub fn em__F_toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
             declare_META();
             return "";
         }
 
-        pub fn em__toString(self: *const Self) []const u8 {
+        pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
             var it = std.mem.splitSequence(u8, self._upath, "__");
             var sb = StringH{};
@@ -541,7 +541,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             self._is_virgin = sav;
         }
 
-        pub fn em__toString(self: *const Self) []const u8 {
+        pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
             return sprint("@constCast(&em.Table_S({s}, .{s}){{._list = &@\"{s}\"}})", .{
                 mkTypeName(T),
@@ -550,7 +550,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             });
         }
 
-        pub fn em__toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+        pub fn em__F_toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
             declare_META();
             self._dname = upath ++ ".em__C." ++ cname;
             const tn = mkTypeName(T);
@@ -560,7 +560,7 @@ pub fn Table_S(T: type, acc: TableAccess) type {
             } else {
                 sb.add(sprint("[_]{s}{{", .{tn}));
                 for (self._list.items) |e| {
-                    sb.add(sprint("    {s},\n", .{em__toStringAux(e)}));
+                    sb.add(sprint("    {s},\n", .{em__F_toStringAux(e)}));
                 }
                 sb.add("}");
             }
@@ -735,7 +735,7 @@ fn mkUnitImport(upath: []const u8) []const u8 {
     return sb.get();
 }
 
-pub fn em__toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
+pub fn em__F_toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
     const T = @TypeOf(v);
     const ti = @typeInfo(T);
     const tn = @typeName(T);
@@ -745,7 +745,7 @@ pub fn em__toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
         },
         .Optional => {
             if (v) |val| {
-                return em__toStringAux(val);
+                return em__F_toStringAux(val);
             } else {
                 return "null";
             }
@@ -771,11 +771,11 @@ pub fn em__toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
         },
         .Struct => {
             if (@hasDecl(T, "_em__builtin")) {
-                return v.em__toString();
+                return v.em__F_toString();
             } else {
                 var res: []const u8 = sprint("{s}{{\n", .{mkTypeImport(tn)});
                 inline for (ti.Struct.fields) |fld| {
-                    res = sprint("    {s} .{s} = {s},\n", .{ res, fld.name, em__toStringAux(@field(v, fld.name)) });
+                    res = sprint("    {s} .{s} = {s},\n", .{ res, fld.name, em__F_toStringAux(@field(v, fld.name)) });
                 }
                 return sprint("{s}}}\n", .{res});
             }
@@ -783,7 +783,7 @@ pub fn em__toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
         .Array => {
             var res: []const u8 = ".{";
             inline for (0..v.len) |i| {
-                res = sprint("{s} {s},", .{ res, em__toStringAux(v[i]) });
+                res = sprint("{s} {s},", .{ res, em__F_toStringAux(v[i]) });
             }
             return sprint("{s} }}", .{res});
         },
@@ -791,7 +791,7 @@ pub fn em__toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
             if (ptr_info.size == .Slice and ptr_info.child == u8) {
                 return sprint("\"{s}\"", .{v});
             } else if (ptr_info.size == .One) {
-                return em__toStringAux(v.*);
+                return em__F_toStringAux(v.*);
             } else {
                 return "<<ptr>>";
             }
@@ -802,7 +802,7 @@ pub fn em__toStringAux(v: anytype) []const u8 { // use zig fmt after meta build
     }
 }
 
-pub fn em__toStringPre(v: anytype, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
+pub fn em__F_toStringPre(v: anytype, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
     const T = @TypeOf(v);
     const ti = @typeInfo(T);
     switch (ti) {
@@ -810,7 +810,7 @@ pub fn em__toStringPre(v: anytype, comptime upath: []const u8, comptime cname: [
             if (ptr_info.size == .Slice and ptr_info.child == u8) {
                 return "";
             } else if (ptr_info.size == .One) {
-                return v.em__toStringDecls(upath, cname);
+                return v.em__F_toStringDecls(upath, cname);
             } else {
                 return "<<ptr>>";
             }
