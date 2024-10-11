@@ -9,7 +9,7 @@ pub const add32 = EM__TARG.add32;
 
 pub const EM__TARG = struct {
     //
-    fn add16(val: i16, old_crc: sum_t) sum_t {
+    pub fn add16(val: i16, old_crc: sum_t) sum_t {
         const v: u16 = @bitCast(val);
         var crc = old_crc;
         crc = update(@intCast(v), crc);
@@ -17,7 +17,7 @@ pub const EM__TARG = struct {
         return crc;
     }
 
-    fn add32(val: u32, old_crc: sum_t) sum_t {
+    pub fn add32(val: u32, old_crc: sum_t) sum_t {
         var crc = old_crc;
         crc = EM__TARG.add16(@intCast(@as(i32, @bitCast(val))), crc);
         crc = EM__TARG.add16(@intCast(@as(i32, @bitCast(val >> 16))), crc);

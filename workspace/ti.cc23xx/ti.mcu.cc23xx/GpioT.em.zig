@@ -54,51 +54,51 @@ pub fn em__generateS(comptime name: []const u8) type {
             const hal = em.hal;
             const reg = em.reg;
 
-            fn clear() void {
+            pub fn clear() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTCLR31_0).* = mask;
             }
 
-            fn functionSelect(select: u8) void {
+            pub fn functionSelect(select: u8) void {
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* = select;
             }
 
-            fn get() bool {
+            pub fn get() bool {
                 if (!is_def) return false;
                 return if (EM__TARG.isInput()) (reg(hal.GPIO_BASE + hal.GPIO_O_DIN31_0).* & mask) != 0 else (reg(hal.GPIO_BASE + hal.GPIO_O_DOUT31_0).* & mask) != 0;
             }
 
-            fn isInput() bool {
+            pub fn isInput() bool {
                 return is_def and (reg(hal.GPIO_BASE + hal.GPIO_O_DOE31_0).* & mask) == 0;
             }
 
-            fn isOutput() bool {
+            pub fn isOutput() bool {
                 return is_def and (reg(hal.GPIO_BASE + hal.GPIO_O_DOE31_0).* & mask) != 0;
             }
 
-            fn makeInput() void {
+            pub fn makeInput() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* |= hal.IOC_IOC0_INPEN;
             }
 
-            fn makeOutput() void {
+            pub fn makeOutput() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOESET31_0).* = mask;
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* &= ~hal.IOC_IOC0_INPEN;
             }
 
-            fn pinId() i16 {
+            pub fn pinId() i16 {
                 return pin;
             }
 
-            fn reset() void {
+            pub fn reset() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOECLR31_0).* = mask;
                 if (is_def) reg(@as(u32, hal.IOC_BASE) + off).* = 0;
             }
 
-            fn set() void {
+            pub fn set() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTSET31_0).* = mask;
             }
 
-            fn setInternalPulldown(enable: bool) void {
+            pub fn setInternalPulldown(enable: bool) void {
                 if (is_def) {
                     if (enable) {
                         reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_PULLCTL_PULL_DOWN;
@@ -108,7 +108,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 }
             }
 
-            fn setInternalPullup(enable: bool) void {
+            pub fn setInternalPullup(enable: bool) void {
                 if (is_def) {
                     if (enable) {
                         reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_PULLCTL_PULL_UP;
@@ -118,7 +118,7 @@ pub fn em__generateS(comptime name: []const u8) type {
                 }
             }
 
-            fn toggle() void {
+            pub fn toggle() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTTGL31_0).* = mask;
             }
         };

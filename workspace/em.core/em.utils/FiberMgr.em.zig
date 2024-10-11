@@ -32,7 +32,7 @@ pub const run = EM__TARG.run;
 
 pub const EM__META = struct {
     //
-    fn createH(body: BodyFxn) Obj {
+    pub fn createH(body: BodyFxn) Obj {
         const fiber = em__C.FiberOF.createH(.{ .body = body });
         return fiber;
     }
@@ -77,7 +77,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn run() void {
+    pub fn run() void {
         Common.Idle.wakeup();
         Common.GlobalInterrupts.enable();
         while (true) {

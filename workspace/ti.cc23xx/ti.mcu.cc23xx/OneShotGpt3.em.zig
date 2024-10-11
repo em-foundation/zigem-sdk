@@ -28,18 +28,18 @@ pub const EM__TARG = struct {
     var cur_arg: em.ptr_t = null;
     var cur_fxn: em.Fxn_T(HandlerArg) = null;
 
-    fn disable() void {
+    pub fn disable() void {
         cur_fxn = null;
         Idle.waitOnly(.CLR);
         hal.NVIC_DisableIRQ(hal.LGPT3_COMB_IRQn);
         reg(hal.LGPT3_BASE + hal.LGPT_O_ICLR).* = hal.LGPT_ICLR_TGT;
     }
 
-    fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    pub fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
         ustart(msecs * 1000, handler, arg);
     }
 
-    fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
         ustart(usecs, handler, arg);
     }
 

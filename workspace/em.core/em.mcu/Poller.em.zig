@@ -27,18 +27,18 @@ pub const EM__TARG = struct {
         active_flag_VP.* = false;
     }
 
-    fn pause(time_ms: u32) void {
+    pub fn pause(time_ms: u32) void {
         EM__TARG.upause(time_ms * 1000);
     }
 
-    fn poll(rate_ms: u32, count: usize, fxn: PollFxn) usize {
+    pub fn poll(rate_ms: u32, count: usize, fxn: PollFxn) usize {
         _ = rate_ms;
         _ = count;
         _ = fxn;
         return 0;
     }
 
-    fn upause(time_us: u32) void {
+    pub fn upause(time_us: u32) void {
         if (time_us == 0) return;
         active_flag_VP.* = true;
         OneShot.uenable(time_us, handler, null);

@@ -95,11 +95,11 @@ pub const EM__META = struct {
         em.writeFile(em.out_root, "intr.c", sbuf.get());
     }
 
-    fn addIntrH(name: []const u8) void {
+    pub fn addIntrH(name: []const u8) void {
         name_tab.add(name);
     }
 
-    fn useIntrH(name: []const u8) void {
+    pub fn useIntrH(name: []const u8) void {
         used_tab.add(name);
     }
 };

@@ -35,18 +35,18 @@ pub const EM__TARG = struct {
         hal.NVIC_EnableIRQ(hal.CPUIRQ0_IRQn);
     }
 
-    fn disable() void {
+    pub fn disable() void {
         cur_handler = null;
         reg(hal.RTC_BASE + hal.RTC_O_IMCLR).* = hal.RTC_IMCLR_EV0;
     }
 
-    fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
+    pub fn enable(thresh: u32, handler: em.Fxn(Handler)) void {
         cur_handler = handler;
         reg(hal.RTC_BASE + hal.RTC_O_CH0CC8U).* = thresh;
         reg(hal.RTC_BASE + hal.RTC_O_IMSET).* = hal.RTC_IMSET_EV0;
     }
 
-    fn getRawTime() TimeTypes.RawTime {
+    pub fn getRawTime() TimeTypes.RawTime {
         var lo: u32 = undefined;
         var hi: u32 = undefined;
         while (true) {
@@ -57,7 +57,7 @@ pub const EM__TARG = struct {
         return .{ .secs = hi, .subs = lo << 16 };
     }
 
-    fn toThresh(ticks: u32) u32 {
+    pub fn toThresh(ticks: u32) u32 {
         return reg(hal.RTC_BASE + hal.RTC_O_TIME8U).* + ticks;
     }
 

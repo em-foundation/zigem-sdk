@@ -39,7 +39,7 @@ const Thresh = WakeupTimerI.Thresh;
 
 pub const EM__META = struct {
     //
-    fn createH(fiber: FiberMgr.Obj) Obj {
+    pub fn createH(fiber: FiberMgr.Obj) Obj {
         const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
         return alarm;
     }

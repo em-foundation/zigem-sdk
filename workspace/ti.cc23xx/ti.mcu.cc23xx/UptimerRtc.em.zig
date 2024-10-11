@@ -11,7 +11,7 @@ pub const read = EM__TARG.read;
 
 pub const EM__TARG = struct {
     //
-    fn read() TimeTypes.RawTime {
+    pub fn read() TimeTypes.RawTime {
         return Rtc.getRawTime();
     }
 };

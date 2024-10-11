@@ -32,7 +32,7 @@ pub const createH = EM__META.createH;
 
 pub const EM__META = struct {
     //
-    fn createH() Obj {
+    pub fn createH() Obj {
         const fiber = FiberMgr.createH(em__U.fxn("alarmFB", FiberMgr.BodyArg));
         const alarm = AlarmMgr.createH(fiber);
         const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });

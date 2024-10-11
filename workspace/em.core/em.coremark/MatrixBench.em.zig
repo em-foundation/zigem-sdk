@@ -72,7 +72,7 @@ pub const EM__TARG = struct {
         return @bitCast(x & (if (b) @as(u16, 0x0ff) else @as(u16, 0x0ffff)));
     }
 
-    fn dump() void {
+    pub fn dump() void {
         // TODO
         return;
     }
@@ -81,7 +81,7 @@ pub const EM__TARG = struct {
         return @bitCast(@as(u16, 0xf000) | @as(u16, @bitCast(val)));
     }
 
-    fn kind() Utils.Kind {
+    pub fn kind() Utils.Kind {
         return .MATRIX;
     }
 
@@ -125,7 +125,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn print() void {
+    pub fn print() void {
         prDat("A", matA);
         prDat("B", matB);
     }
@@ -142,7 +142,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn run(arg: i16) Utils.sum_t {
+    pub fn run(arg: i16) Utils.sum_t {
         var crc: Crc.sum_t = 0;
         const val: matdat_t = arg;
         const clipval = enlarge(val);
@@ -164,7 +164,7 @@ pub const EM__TARG = struct {
         return Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL));
     }
 
-    fn setup() void {
+    pub fn setup() void {
         const s32 = @as(u32, Utils.getSeed(1)) | (@as(u32, Utils.getSeed(2)) << 16);
         var sd: matdat_t = @intCast(@as(i32, @bitCast(s32)));
         if (sd == 0) sd = 1;
