@@ -56,7 +56,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__TARG = struct {
             //
-            const pin = em__C.pin.get();
+            const pin = em__C.pin.unwrap();
             const is_def = (pin >= 0);
             const mask = mkMask(pin);
             const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);

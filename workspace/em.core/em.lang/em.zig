@@ -417,10 +417,6 @@ pub fn Param_S(T: type) type {
 
         _val: T,
 
-        pub fn get(self: *Self) T {
-            return if (IS_META) std.mem.zeroes(T) else self._val;
-        }
-
         pub fn getH(self: *Self) T {
             return self._val;
         }
@@ -439,6 +435,10 @@ pub fn Param_S(T: type) type {
             declare_META();
             return "";
         }
+
+        pub fn unwrap(self: *Self) T {
+            return if (IS_META) std.mem.zeroes(T) else self._val;
+        }
     };
 }
 
@@ -456,7 +456,7 @@ pub fn Proxy_S(I: type) type {
         _upath: []const u8 = I.em__U.upath,
         _iobj: I.EM__SPEC = asI(I, I),
 
-        pub fn get(self: *const Self) I.EM__SPEC {
+        pub fn getH(self: *const Self) I.EM__SPEC {
             return self._iobj;
         }
 
@@ -483,6 +483,10 @@ pub fn Proxy_S(I: type) type {
             const XMod = mkUnitImport(self._upath);
             const iobj = sprint("em.asI({s}, {s})", .{ IMod, XMod });
             return sprint("@constCast(&em.Proxy_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
+        }
+
+        pub fn unwrap(self: *const Self) I.EM__SPEC {
+            return self._iobj;
         }
     };
 }

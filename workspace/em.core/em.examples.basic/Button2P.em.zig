@@ -44,6 +44,6 @@ pub const EM__TARG = struct {
     pub fn handler(_: AppButEdge.HandlerArg) void {
         em.@"%%[c]"();
         AppButEdge.clearDetect();
-        em__C.blinkF.get().post();
+        em__C.blinkF.unwrap().post();
     }
 };

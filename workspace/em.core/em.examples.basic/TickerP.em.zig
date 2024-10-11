@@ -23,8 +23,8 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const appTicker = em__C.appTicker.get();
-    const sysTicker = em__C.sysTicker.get();
+    const appTicker = em__C.appTicker.unwrap();
+    const sysTicker = em__C.sysTicker.unwrap();
 
     pub fn em__run() void {
         appTicker.start(TimeTypes.Secs24p8_initMsecs(1_000), &appTickCb);

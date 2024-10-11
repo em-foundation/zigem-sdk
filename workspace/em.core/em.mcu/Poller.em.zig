@@ -18,7 +18,7 @@ pub const upause = EM__TARG.upause;
 
 pub const EM__TARG = struct {
     //
-    const OneShot = em__C.OneShot.get();
+    const OneShot = em__C.OneShot.unwrap();
 
     var active_flag: bool = false;
     const active_flag_VP: *volatile bool = &active_flag;

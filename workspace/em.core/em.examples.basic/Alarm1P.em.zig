@@ -27,7 +27,7 @@ pub const EM__TARG = struct {
     var counter: u32 = 0;
 
     pub fn em__run() void {
-        em__C.blinkF.get().post();
+        em__C.blinkF.unwrap().post();
         FiberMgr.run();
     }
 
@@ -36,9 +36,9 @@ pub const EM__TARG = struct {
         AppLed.wink(100); // 100 ms
         counter += 1;
         if ((counter & 0x1) != 0) {
-            em__C.alarm.get().wakeup(TimeTypes.Secs24p8_initMsecs(2_000)); // 2s
+            em__C.alarm.unwrap().wakeup(TimeTypes.Secs24p8_initMsecs(2_000)); // 2s
         } else {
-            em__C.alarm.get().wakeup(TimeTypes.Secs24p8_initMsecs(750)); // 750ms
+            em__C.alarm.unwrap().wakeup(TimeTypes.Secs24p8_initMsecs(750)); // 750ms
         }
     }
 };

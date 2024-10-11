@@ -47,7 +47,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const WakeupTimer = em__C.WakeupTimer.get();
+    const WakeupTimer = em__C.WakeupTimer.unwrap();
 
     var cur_alarm: ?*Alarm = null;
 

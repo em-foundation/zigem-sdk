@@ -26,7 +26,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const TxPin = em__C.TxPin.get();
+    const TxPin = em__C.TxPin.unwrap();
 
     const hal = em.hal;
     const reg = em.reg;

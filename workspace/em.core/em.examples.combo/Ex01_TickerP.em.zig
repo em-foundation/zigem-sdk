@@ -27,9 +27,9 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const app_ticker = em__C.app_ticker.get();
-    const sys_ticker = em__C.sys_ticker.get();
-    const print_ticker = em__C.print_ticker.get();
+    const app_ticker = em__C.app_ticker.unwrap();
+    const sys_ticker = em__C.sys_ticker.unwrap();
+    const print_ticker = em__C.print_ticker.unwrap();
 
     const max_sys_led_ticks = TimeTypes.Secs24p8_initMsecs(1_500); // 1.5s
     const max_app_led_ticks = TimeTypes.Secs24p8_initMsecs(2_000); // 2s

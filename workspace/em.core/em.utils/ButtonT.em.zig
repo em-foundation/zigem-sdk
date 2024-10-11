@@ -37,13 +37,13 @@ pub fn em__generateS(comptime name: []const u8) type {
             pub fn em__constructH() void {
                 const fiber = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
                 em__C.debounceF.set(fiber);
-                em__C.Edge.get().setDetectHandlerH(em__U.fxn("buttonHandler", GpioEdgeI.HandlerArg));
+                em__C.Edge.getH().setDetectHandlerH(em__U.fxn("buttonHandler", GpioEdgeI.HandlerArg));
             }
         };
 
         pub const EM__TARG = struct {
             //
-            const Edge = em__C.Edge.get();
+            const Edge = em__C.Edge.unwrap();
 
             var cur_cb: OnPressedCbFxn = null;
             var cur_dur: u16 = 0;
@@ -58,7 +58,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
             pub fn buttonHandler(_: GpioEdgeI.HandlerArg) void {
                 Edge.clearDetect();
-                if (cur_cb != null) em__C.debounceF.get().post();
+                if (cur_cb != null) em__C.debounceF.unwrap().post();
             }
 
             pub fn debounceFB(_: FiberMgr.BodyArg) void {

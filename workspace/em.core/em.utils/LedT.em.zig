@@ -39,8 +39,8 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__TARG = struct {
             //
-            const active_low = em__C.active_low.get();
-            const Pin = if (em.IS_META) .{} else em__C.Pin.get(); // TODO Pin.default()
+            const active_low = em__C.active_low.unwrap();
+            const Pin = if (em.IS_META) .{} else em__C.Pin.unwrap(); // TODO Pin.default()
 
             pub fn em__startup() void {
                 if (em.IS_META) return;

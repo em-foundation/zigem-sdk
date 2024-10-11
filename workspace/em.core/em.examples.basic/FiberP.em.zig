@@ -20,7 +20,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = em__C.blinkF.get();
+    const blinkF = em__C.blinkF.unwrap();
 
     pub fn em__run() void {
         blinkF.post();

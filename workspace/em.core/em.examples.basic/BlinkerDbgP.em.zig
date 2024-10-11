@@ -22,9 +22,9 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const dbg_flag = em__C.dbg_flag.get();
-    const min_cnt = em__C.min_cnt.get();
-    const max_cnt = em__C.max_cnt.get();
+    const dbg_flag = em__C.dbg_flag.unwrap();
+    const min_cnt = em__C.min_cnt.unwrap();
+    const max_cnt = em__C.max_cnt.unwrap();
 
     pub fn em__run() void {
         AppLed.on();

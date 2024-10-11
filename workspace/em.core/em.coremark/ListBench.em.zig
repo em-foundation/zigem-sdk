@@ -62,8 +62,8 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    var cur_head = em__C.cur_head.get();
-    const max_elems = em__C.max_elems.get();
+    var cur_head = em__C.cur_head.unwrap();
+    const max_elems = em__C.max_elems.unwrap();
 
     pub fn dump() void {
         // TODO

@@ -14,7 +14,7 @@ pub const EM__TARG = struct {
     //
     const blinkRate = 50000;
     const EOT_BYTE = 0x4;
-    const Led = em__C.Led.get();
+    const Led = em__C.Led.unwrap();
     const SOT_BYTE = 0x3;
     const SOT_COUNT = 13;
 

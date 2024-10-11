@@ -24,7 +24,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const blinkF = em__C.blinkF.get();
+    const blinkF = em__C.blinkF.unwrap();
     var count: u8 = 5;
 
     pub fn em__run() void {

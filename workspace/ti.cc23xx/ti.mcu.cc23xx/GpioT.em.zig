@@ -42,7 +42,7 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__TARG = struct {
             //
-            const pin = em__C.pin.get();
+            const pin = em__C.pin.unwrap();
             const is_def = (pin >= 0);
             const mask = init: {
                 const p5 = @as(u5, @bitCast(@as(i5, @truncate(pin))));

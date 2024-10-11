@@ -25,10 +25,10 @@ pub const startup = EM__TARG.startup;
 
 pub const EM__TARG = struct {
     //
-    const DbgA = em__C.DbgA.get();
-    const DbgB = em__C.DbgB.get();
-    const DbgC = em__C.DbgC.get();
-    const DbgD = em__C.DbgD.get();
+    const DbgA = em__C.DbgA.unwrap();
+    const DbgB = em__C.DbgB.unwrap();
+    const DbgC = em__C.DbgC.unwrap();
+    const DbgD = em__C.DbgD.unwrap();
 
     fn delay() void {
         Common.BusyWait.wait(1);

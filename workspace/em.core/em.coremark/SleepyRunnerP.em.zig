@@ -20,7 +20,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const ticker = em__C.ticker.get();
+    const ticker = em__C.ticker.unwrap();
 
     var count: u8 = 10;
 

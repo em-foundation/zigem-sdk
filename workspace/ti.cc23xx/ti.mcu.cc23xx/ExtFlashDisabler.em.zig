@@ -18,10 +18,10 @@ pub const GpioI = em.import.@"em.hal/GpioI";
 
 pub const EM__TARG = struct {
     //
-    const CS = em__C.CS.get();
-    const CLK = em__C.CLK.get();
-    const PICO = em__C.PICO.get();
-    const POCI = em__C.POCI.get();
+    const CS = em__C.CS.unwrap();
+    const CLK = em__C.CLK.unwrap();
+    const PICO = em__C.PICO.unwrap();
+    const POCI = em__C.POCI.unwrap();
 
     const SD_CMD: u8 = 0xb9;
 

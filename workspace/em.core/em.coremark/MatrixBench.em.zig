@@ -46,7 +46,7 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const dimN = em__C.dimN.get();
+    const dimN = em__C.dimN.unwrap();
 
     var matA = em__C.matA.items();
     var matB = em__C.matB.items();

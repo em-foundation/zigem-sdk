@@ -24,7 +24,7 @@ pub const EM__TARG = struct {
         if (usecs == 0) return;
         var dummy: u32 = undefined;
         const p: *volatile u32 = &dummy;
-        for (0..(usecs * em__C.scalar.get())) |_| {
+        for (0..(usecs * em__C.scalar.unwrap())) |_| {
             p.* = 0;
         }
     }
