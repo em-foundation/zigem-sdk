@@ -58,16 +58,6 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
         const cfld = @field(C, fld.name);
         try out.print("{s}", .{em.em__F_toStringPre(cfld, unit.upath, fld.name)});
     }
-    //inline for (cti.Struct.fields) |fld| {
-    //    // const fti = @typeInfo(@TypeOf(fld.type));
-    //    if (!em.std.mem.eql(u8, fld.name, "em__upath")) {
-    //        const cfld = @field(C, fld.name);
-    //        em.print("{s} {x}", .{ fld.name, (@intFromPtr(cfld)) });
-    //        //if (@typeInfo(@TypeOf(cfld.*)) == .Struct and @hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
-    //        //    try out.print("{s}", .{cfld.toStringDecls(unit.upath, fld.name)});
-    //        //}
-    //    }
-    //}
     const cfgpath = if (!unit.generated) unit.upath else mkConfigPath(@typeName(@TypeOf(C)));
     try out.print("pub const @\"{s}__config\" = em.import.@\"{s}\".EM__CONFIG{{\n", .{ unit.upath, cfgpath });
     inline for (cti.Struct.fields) |fld| {

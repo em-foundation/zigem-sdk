@@ -365,7 +365,7 @@ pub fn Fxn(PT: type) type {
                         return sprint("{s}.EM__TARG.{s}", .{ mkUnitImport(self._upath), self._fname });
                     }
                 }
-                pub fn typeName() []const u8 {
+                pub fn em__F_typeName() []const u8 {
                     return sprint("em.Fxn({s})", .{mkTypeName(PT)});
                 }
             };
@@ -397,7 +397,7 @@ pub fn Obj_S(T: type) type {
         pub fn em__F_toString(self: *const Self) []const u8 {
             return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
         }
-        pub fn typeName() []const u8 {
+        pub fn em__F_typeName() []const u8 {
             return sprint("*{s}", .{mkTypeName(T)});
         }
     };
@@ -707,8 +707,8 @@ fn mkTypeName(T: type) []const u8 {
             return mkTypeImport(tn);
         },
         .Struct => {
-            if (@hasDecl(T, "_em__builtin") and @hasDecl(T, "typeName")) {
-                return @call(.auto, @field(T, "typeName"), .{});
+            if (@hasDecl(T, "_em__builtin") and @hasDecl(T, "em__F_typeName")) {
+                return @call(.auto, @field(T, "em__F_typeName"), .{});
             } else {
                 return mkTypeImport(tn);
             }
