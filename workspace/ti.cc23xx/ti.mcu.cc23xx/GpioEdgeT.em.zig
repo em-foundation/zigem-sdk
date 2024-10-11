@@ -31,7 +31,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const HandlerArg = GpioEdgeI.HandlerArg;
         pub const HandlerFxn = GpioEdgeI.HandlerFxn;
 
-        pub const setDetectHandlerH = EM__META.setDetectHandlerH;
+        pub const setDetectHandlerM = EM__META.setDetectHandlerM;
 
         pub const clearDetect = EM__TARG.clearDetect;
         pub const disableDetect = EM__TARG.disableDetect;
@@ -46,11 +46,11 @@ pub fn em__generateS(comptime name: []const u8) type {
             }
 
             pub fn em__constructM() void {
-                Pin.c_pin.set(em__C.pin.getH());
+                Pin.c_pin.set(em__C.pin.getM());
             }
 
-            pub fn setDetectHandlerH(h: HandlerFxn) void {
-                Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
+            pub fn setDetectHandlerM(h: HandlerFxn) void {
+                Aux.addHandlerInfoM(.{ .handler = h, .mask = mkMask(em__C.pin.getM()) });
             }
         };
 

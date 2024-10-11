@@ -13,7 +13,7 @@ pub const Common = em.import.@"em.mcu/Common";
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
-        AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
+        AppButEdge.setDetectHandlerM(em__U.fxn("handler", AppButEdge.HandlerArg));
     }
 };
 

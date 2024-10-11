@@ -14,8 +14,9 @@ pub const Kind = enum { FINAL, LIST, MATRIX, STATE, ZZZ_ };
 pub const seed_t = u16;
 pub const sum_t = u16;
 
+pub const bindSeedM = EM__META.bindSeedM;
+
 pub const bindCrc = EM__TARG.bindCrc;
-pub const bindSeedH = EM__META.bindSeedH;
 pub const getCrc = EM__TARG.getCrc;
 pub const getSeed = EM__TARG.getSeed;
 pub const setCrc = EM__TARG.setCrc;
@@ -27,7 +28,7 @@ pub const EM__META = struct {
         em__C.seed_tab.setLen(NUM_SEEDS);
     }
 
-    pub fn bindSeedH(idx: u8, val: seed_t) void {
+    pub fn bindSeedM(idx: u8, val: seed_t) void {
         em__C.seed_tab.items()[idx - 1] = val;
     }
 };

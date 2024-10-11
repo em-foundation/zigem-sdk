@@ -30,7 +30,7 @@ pub const EM__META = struct {
     pub fn em__constructM() void {
         var i: usize = 0;
         var j: usize = 0;
-        while (j < em__C.memsize.getH()) {
+        while (j < em__C.memsize.getM()) {
             i += 1;
             j = i * i * 2 * 4;
         }

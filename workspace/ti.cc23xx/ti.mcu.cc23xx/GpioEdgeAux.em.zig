@@ -14,15 +14,15 @@ pub const HandlerInfo = struct {
     handler: GpioEdgeI.HandlerFxn,
 };
 
-pub const addHandlerInfoH = EM__META.addHandlerInfoH;
+pub const addHandlerInfoM = EM__META.addHandlerInfoM;
 
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
-        IntrVec.useIntrH("GPIO_COMB");
+        IntrVec.useIntrM("GPIO_COMB");
     }
 
-    pub fn addHandlerInfoH(hi: HandlerInfo) void {
+    pub fn addHandlerInfoM(hi: HandlerInfo) void {
         em__C.handler_info_tab.add(hi);
     }
 };

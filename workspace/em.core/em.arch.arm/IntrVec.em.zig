@@ -12,8 +12,8 @@ export fn DEFAULT_isr() void {
     EM__TARG.defaultIsr();
 }
 
-pub const addIntrH = EM__META.addIntrH;
-pub const useIntrH = EM__META.useIntrH;
+pub const addIntrM = EM__META.addIntrM;
+pub const useIntrM = EM__META.useIntrM;
 
 pub const EM__META = struct {
     //
@@ -40,7 +40,7 @@ pub const EM__META = struct {
             "SysTick",
         };
         for (core_intrs) |n| {
-            EM__META.addIntrH(n);
+            EM__META.addIntrM(n);
         }
     }
 
@@ -95,11 +95,11 @@ pub const EM__META = struct {
         em.writeFile(em.out_root, "intr.c", sbuf.get());
     }
 
-    pub fn addIntrH(name: []const u8) void {
+    pub fn addIntrM(name: []const u8) void {
         name_tab.add(name);
     }
 
-    pub fn useIntrH(name: []const u8) void {
+    pub fn useIntrM(name: []const u8) void {
         used_tab.add(name);
     }
 };

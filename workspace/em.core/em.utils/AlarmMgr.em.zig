@@ -32,15 +32,15 @@ pub const Alarm = struct {
     }
 };
 
-pub const createH = EM__META.createH;
+pub const createM = EM__META.createM;
 
 const Secs24p8 = TimeTypes.Secs24p8;
 const Thresh = WakeupTimerI.Thresh;
 
 pub const EM__META = struct {
     //
-    pub fn createH(fiber: FiberMgr.Obj) Obj {
-        const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
+    pub fn createM(fiber: FiberMgr.Obj) Obj {
+        const alarm = em__C.AlarmOF.createM(.{ ._fiber = fiber });
         return alarm;
     }
 };

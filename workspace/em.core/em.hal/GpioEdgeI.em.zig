@@ -21,7 +21,7 @@ pub const EM__SPEC = struct {
     setInternalPullup: *const @TypeOf(GpioI.setInternalPullup) = &GpioI.setInternalPullup,
     toggle: *const @TypeOf(GpioI.toggle) = &GpioI.toggle,
     //
-    setDetectHandlerH: *const @TypeOf(setDetectHandlerH) = &setDetectHandlerH,
+    setDetectHandlerM: *const @TypeOf(setDetectHandlerM) = &setDetectHandlerM,
     clearDetect: *const @TypeOf(clearDetect) = &clearDetect,
     disableDetect: *const @TypeOf(disableDetect) = &disableDetect,
     enableDetect: *const @TypeOf(enableDetect) = &enableDetect,
@@ -29,7 +29,7 @@ pub const EM__SPEC = struct {
     setDetectRisingEdge: *const @TypeOf(setDetectRisingEdge) = &setDetectRisingEdge,
 };
 
-pub fn setDetectHandlerH(h: HandlerFxn) void {
+pub fn setDetectHandlerM(h: HandlerFxn) void {
     _ = h;
     return;
 }

@@ -19,8 +19,8 @@ pub const sleepLeave = EM__TARG.sleepLeave;
 pub const EM__META = struct {
     //
     pub fn em__configureM() void {
-        Idle.addSleepEnterCbH(em__U.fxn("sleepEnter", Idle.SleepCbArg));
-        Idle.addSleepLeaveCbH(em__U.fxn("sleepLeave", Idle.SleepCbArg));
+        Idle.addSleepEnterCbM(em__U.fxn("sleepEnter", Idle.SleepCbArg));
+        Idle.addSleepLeaveCbM(em__U.fxn("sleepLeave", Idle.SleepCbArg));
     }
 };
 

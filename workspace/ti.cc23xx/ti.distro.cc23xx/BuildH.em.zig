@@ -31,6 +31,6 @@ pub fn em__configureM() void {
         "LGPT3_COMB",
     };
     for (nvic_intrs) |n| {
-        IntrVec.addIntrH(n);
+        IntrVec.addIntrM(n);
     }
 }

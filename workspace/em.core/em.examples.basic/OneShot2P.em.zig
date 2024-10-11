@@ -14,7 +14,7 @@ pub const OneShot = em.import.@"em__distro/BoardC".OneShot;
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
-        em__C.blinkF.set(FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
+        em__C.blinkF.set(FiberMgr.createM(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
     }
 
     pub fn blinkFB(a: FiberMgr.BodyArg) void {

@@ -14,8 +14,8 @@ pub const EM__CONFIG = struct {
 pub const SleepCbFxn = em.Fxn(SleepCbArg);
 pub const SleepCbArg = struct {};
 
-pub const addSleepEnterCbH = EM__META.addSleepEnterCbH;
-pub const addSleepLeaveCbH = EM__META.addSleepLeaveCbH;
+pub const addSleepEnterCbM = EM__META.addSleepEnterCbM;
+pub const addSleepLeaveCbM = EM__META.addSleepLeaveCbM;
 
 pub const exec = EM__TARG.exec;
 pub const pause = EM__TARG.pause;
@@ -23,11 +23,11 @@ pub const waitOnly = EM__TARG.waitOnly;
 
 pub const EM__META = struct {
     //
-    pub fn addSleepEnterCbH(cb: SleepCbFxn) void {
+    pub fn addSleepEnterCbM(cb: SleepCbFxn) void {
         em__C.sleep_enter_fxn_tab.add(cb);
     }
 
-    pub fn addSleepLeaveCbH(cb: SleepCbFxn) void {
+    pub fn addSleepLeaveCbM(cb: SleepCbFxn) void {
         em__C.sleep_leave_fxn_tab.add(cb);
     }
 };

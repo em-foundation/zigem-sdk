@@ -28,9 +28,9 @@ pub const EM__META = struct {
     }
 
     pub fn em__constructM() void {
-        Utils.bindSeedH(1, 0x0);
-        Utils.bindSeedH(2, 0x0);
-        Utils.bindSeedH(3, 0x66);
+        Utils.bindSeedM(1, 0x0);
+        Utils.bindSeedM(2, 0x0);
+        Utils.bindSeedM(3, 0x66);
     }
 };
 

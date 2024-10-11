@@ -288,7 +288,7 @@ pub fn Factory_S(T: type) type {
         em__dname: []const u8 = undefined,
         em__list: _ListType = _LIST_INIT,
 
-        pub fn createH(self: *Self, init: anytype) Obj(T) {
+        pub fn createM(self: *Self, init: anytype) Obj(T) {
             declare_META();
             const l = self.em__list.items.len;
             self.em__list.append(std.mem.zeroInit(T, init)) catch fail();
@@ -413,7 +413,7 @@ pub fn Param_S(T: type) type {
         em__cfgid: ?*const CfgId = null,
         em__val: T,
 
-        pub fn getH(self: *Self) T {
+        pub fn getM(self: *Self) T {
             return self.em__val;
         }
 
@@ -451,7 +451,7 @@ pub fn Proxy_S(I: type) type {
         em__iobj: I.EM__SPEC = asI(I, I),
         em__upath: []const u8 = I.em__U.upath,
 
-        pub fn getH(self: *const Self) I.EM__SPEC {
+        pub fn getM(self: *const Self) I.EM__SPEC {
             return self.em__iobj;
         }
 

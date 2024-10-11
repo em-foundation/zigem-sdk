@@ -27,13 +27,14 @@ pub const Fiber = struct {
     }
 };
 
-pub const createH = EM__META.createH;
+pub const createM = EM__META.createM;
+
 pub const run = EM__TARG.run;
 
 pub const EM__META = struct {
     //
-    pub fn createH(body: BodyFxn) Obj {
-        const fiber = em__C.FiberOF.createH(.{ .body = body });
+    pub fn createM(body: BodyFxn) Obj {
+        const fiber = em__C.FiberOF.createM(.{ .body = body });
         return fiber;
     }
 };
