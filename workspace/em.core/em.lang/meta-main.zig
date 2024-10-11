@@ -56,7 +56,7 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
     const cti = @typeInfo(@TypeOf(C));
     inline for (cti.Struct.fields) |fld| {
         const cfld = @field(C, fld.name);
-        try out.print("{s}", .{em.toStringPre(cfld, unit.upath, fld.name)});
+        try out.print("{s}", .{em.em__toStringPre(cfld, unit.upath, fld.name)});
     }
     //inline for (cti.Struct.fields) |fld| {
     //    // const fti = @typeInfo(@TypeOf(fld.type));
@@ -72,7 +72,7 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
     try out.print("pub const @\"{s}__config\" = em.import.@\"{s}\".EM__CONFIG{{\n", .{ unit.upath, cfgpath });
     inline for (cti.Struct.fields) |fld| {
         const cfld = @field(C, fld.name);
-        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(cfld) });
+        try out.print("    .{s} = {s},\n", .{ fld.name, em.em__toStringAux(cfld) });
     }
     try out.print("}};\n", .{});
 }
