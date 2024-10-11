@@ -36,19 +36,3 @@ pub fn setup() void {
     // TODO
     return;
 }
-
-//package em.coremark
-//
-//import Utils
-//
-//interface BenchAlgI
-//
-//    config memSize: uint16
-//
-//    function dump()
-//    function kind(): Utils.Kind
-//    function print()
-//    function run(arg: uarg_t = 0): Utils.sum_t
-//    function setup()
-//
-//end
