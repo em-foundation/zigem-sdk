@@ -52,19 +52,19 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
 pub fn ItabType(T: type) type {
     comptime {
         const ti = @typeInfo(T);
-        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        var fdeclem__list: []const std.builtin.Type.Declaration = &.{};
         for (ti.Struct.decls) |decl| {
             if (!isBuiltin(decl.name)) {
                 const dval = @field(T, decl.name);
                 const dti = @typeInfo(@TypeOf(dval));
-                if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+                if (dti == .Fn) fdeclem__list = fdeclem__list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
             }
         }
-        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
-        for (fdecl_list, 0..) |fdecl, i| {
+        var fldem__list: [fdeclem__list.len]std.builtin.Type.StructField = undefined;
+        for (fdeclem__list, 0..) |fdecl, i| {
             const func = @field(T, fdecl.name);
             const func_ptr = &func;
-            fld_list[i] = std.builtin.Type.StructField{
+            fldem__list[i] = std.builtin.Type.StructField{
                 .name = fdecl.name,
                 .type = *const @TypeOf(func),
                 .default_value = @ptrCast(&func_ptr),
@@ -72,10 +72,10 @@ pub fn ItabType(T: type) type {
                 .alignment = 0,
             };
         }
-        const fld_list_freeze = fld_list;
+        const fldem__list_freeze = fldem__list;
         return @Type(.{ .Struct = .{
             .layout = .auto,
-            .fields = fld_list_freeze[0..],
+            .fields = fldem__list_freeze[0..],
             .decls = &.{},
             .is_tuple = false,
             .backing_integer = null,
@@ -98,17 +98,17 @@ pub fn mkIobj(Itab: type, U: type) Itab {
 fn mkItab(U: type, I: type) *const anyopaque {
     comptime {
         const ti = @typeInfo(I);
-        var fdecl_list: []const std.builtin.Type.Declaration = &.{};
+        var fdeclem__list: []const std.builtin.Type.Declaration = &.{};
         for (ti.Struct.decls) |decl| {
             const dval = @field(I, decl.name);
             const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) fdecl_list = fdecl_list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
+            if (dti == .Fn) fdeclem__list = fdeclem__list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
         }
-        var fld_list: [fdecl_list.len]std.builtin.Type.StructField = undefined;
-        for (fdecl_list, 0..) |fdecl, i| {
+        var fldem__list: [fdeclem__list.len]std.builtin.Type.StructField = undefined;
+        for (fdeclem__list, 0..) |fdecl, i| {
             const func = @field(U, fdecl.name);
             const func_ptr = &func;
-            fld_list[i] = std.builtin.Type.StructField{
+            fldem__list[i] = std.builtin.Type.StructField{
                 .name = fdecl.name,
                 .type = *const @TypeOf(func),
                 .default_value = @ptrCast(&func_ptr),
@@ -116,7 +116,7 @@ fn mkItab(U: type, I: type) *const anyopaque {
                 .alignment = 0,
             };
         }
-        const freeze = fld_list;
+        const freeze = fldem__list;
         const ITab = @Type(.{ .Struct = .{
             .layout = .auto,
             .fields = freeze[0..],
@@ -176,8 +176,6 @@ pub const Unit = struct {
         switch (DOMAIN) {
             .META => {
                 return initConfig(CT, self.upath);
-                //const init = if (@hasField(CT, "em__upath")) .{ .em__upath = self.upath } else .{};
-                //return @constCast(&std.mem.zeroInit(CT, init));
             },
             .TARG => {
                 return @field(targ, self.extendPath("config"));
@@ -196,7 +194,7 @@ pub const Unit = struct {
     }
 
     pub fn fxn(self: Self, name: []const u8, FT: type) Fxn(FT) {
-        return Fxn(FT){ ._upath = self.upath, ._fname = name };
+        return Fxn(FT){ .em__upath = self.upath, .em__fname = name };
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
@@ -287,41 +285,40 @@ pub fn Factory_S(T: type) type {
         const _LIST_INIT = if (IS_META) _ListType.init(arena.allocator()) else undefined;
 
         em__cfgid: ?*const CfgId = null,
-
-        _dname: []const u8 = undefined,
-        _list: _ListType = _LIST_INIT,
+        em__dname: []const u8 = undefined,
+        em__list: _ListType = _LIST_INIT,
 
         pub fn createH(self: *Self, init: anytype) Obj(T) {
             declare_META();
-            const l = self._list.items.len;
-            self._list.append(std.mem.zeroInit(T, init)) catch fail();
+            const l = self.em__list.items.len;
+            self.em__list.append(std.mem.zeroInit(T, init)) catch fail();
             const o = Obj(T){ ._fty = self, ._idx = l };
             return o;
         }
 
         pub fn items(self: *Self) _ItemsType {
             if (IS_META) {
-                return self._list.items;
+                return self.em__list.items;
             } else {
-                return self._list;
+                return self.em__list;
             }
         }
 
         pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
-            return sprint("@constCast(&em.Factory_S({s}){{._list = &@\"{s}__OBJARR\"}})", .{
+            return sprint("@constCast(&em.Factory_S({s}){{.em__list = &@\"{s}__OBJARR\"}})", .{
                 mkTypeName(T),
-                self._dname,
+                self.em__dname,
             });
         }
 
         pub fn em__F_toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
             declare_META();
-            self._dname = upath ++ "_em__C_" ++ cname;
+            self.em__dname = upath ++ "_em__C_" ++ cname;
             var sb = StringH{};
             const tn = mkTypeName(T);
-            sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self._dname, tn }));
-            for (self._list.items) |e| {
+            sb.add(sprint("pub var @\"{s}__OBJARR\" = [_]{s}{{\n", .{ self.em__dname, tn }));
+            for (self.em__list.items) |e| {
                 sb.add(sprint("    {s},\n", .{em__F_toStringAux(e)}));
             }
             sb.add("};\n");
@@ -331,7 +328,7 @@ pub fn Factory_S(T: type) type {
                 \\
                 \\
             ;
-            sb.add(sprint(size_txt, .{ self._dname, tn }));
+            sb.add(sprint(size_txt, .{ self.em__dname, tn }));
             for (0..self.items().len) |i| {
                 const abs_txt =
                     \\comptime {{
@@ -343,7 +340,7 @@ pub fn Factory_S(T: type) type {
                     \\
                     \\
                 ;
-                sb.add(sprint(abs_txt, .{ self._dname, i, tn }));
+                sb.add(sprint(abs_txt, .{ self.em__dname, i, tn }));
             }
             return sb.get();
         }
@@ -356,13 +353,13 @@ pub fn Fxn(PT: type) type {
             return struct {
                 const Self = @This();
                 pub const _em__builtin = {};
-                _upath: []const u8,
-                _fname: []const u8,
+                em__upath: []const u8,
+                em__fname: []const u8,
                 pub fn em__F_toString(self: Self) []const u8 {
-                    if (self._fname.len == 0) {
+                    if (self.em__fname.len == 0) {
                         return "null";
                     } else {
-                        return sprint("{s}.EM__TARG.{s}", .{ mkUnitImport(self._upath), self._fname });
+                        return sprint("{s}.EM__TARG.{s}", .{ mkUnitImport(self.em__upath), self.em__fname });
                     }
                 }
                 pub fn em__F_typeName() []const u8 {
@@ -395,7 +392,7 @@ pub fn Obj_S(T: type) type {
             return @constCast(&self._fty.?.items()[self._idx]);
         }
         pub fn em__F_toString(self: *const Self) []const u8 {
-            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?._dname, self._idx });
+            return if (self._fty == null) "null" else sprint("@\"{s}__{d}\"", .{ self._fty.?.em__dname, self._idx });
         }
         pub fn em__F_typeName() []const u8 {
             return sprint("*{s}", .{mkTypeName(T)});
@@ -453,7 +450,7 @@ pub fn Proxy_S(I: type) type {
 
         em__cfgid: ?*const CfgId = null,
 
-        _upath: []const u8 = I.em__U.upath,
+        em__upath: []const u8 = I.em__U.upath,
         _iobj: I.EM__SPEC = asI(I, I),
 
         pub fn getH(self: *const Self) I.EM__SPEC {
@@ -462,7 +459,7 @@ pub fn Proxy_S(I: type) type {
 
         pub fn set(self: *Self, Mod: anytype) void {
             declare_META();
-            self._upath = Mod.em__U.upath;
+            self.em__upath = Mod.em__U.upath;
             self._iobj = asI(I, Mod);
         }
 
@@ -473,16 +470,16 @@ pub fn Proxy_S(I: type) type {
 
         pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
-            var it = std.mem.splitSequence(u8, self._upath, "__");
+            var it = std.mem.splitSequence(u8, self.em__upath, "__");
             var sb = StringH{};
             sb.add(sprint("em.import.@\"{s}\"", .{it.first()}));
             while (it.next()) |seg| {
                 sb.add(sprint(".{s}", .{seg}));
             }
             const IMod = mkUnitImport(I.em__U.upath);
-            const XMod = mkUnitImport(self._upath);
+            const XMod = mkUnitImport(self.em__upath);
             const iobj = sprint("em.asI({s}, {s})", .{ IMod, XMod });
-            return sprint("@constCast(&em.Proxy_S({s}){{._upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self._upath, iobj });
+            return sprint("@constCast(&em.Proxy_S({s}){{.em__upath = \"{s}\", ._iobj = {s},}})", .{ IMod, self.em__upath, iobj });
         }
 
         pub fn unwrap(self: *const Self) I.EM__SPEC {
@@ -510,29 +507,29 @@ pub fn Table_S(T: type, acc: TableAccess) type {
 
         em__cfgid: ?*const CfgId = null,
 
-        _dname: []const u8 = "",
+        em__dname: []const u8 = "",
         _is_virgin: bool = true,
-        _list: _ListType = _LIST_INIT,
+        em__list: _ListType = _LIST_INIT,
 
         pub fn add(self: *Self, item: T) void {
             if (!IS_META) return;
-            self._list.append(item) catch fail();
+            self.em__list.append(item) catch fail();
             self._is_virgin = false;
         }
 
         pub fn items(self: *Self) _ItemsType {
             if (IS_META) {
                 self._is_virgin = false;
-                return self._list.items;
+                return self.em__list.items;
             } else {
-                return self._list;
+                return self.em__list;
             }
         }
 
         pub fn setLen(self: *Self, len: usize) void {
             declare_META();
             const sav = self._is_virgin;
-            const l = self._list.items.len;
+            const l = self.em__list.items.len;
             if (len > l) {
                 for (l..len) |_| {
                     self.add(std.mem.zeroes(T));
@@ -543,29 +540,29 @@ pub fn Table_S(T: type, acc: TableAccess) type {
 
         pub fn em__F_toString(self: *const Self) []const u8 {
             declare_META();
-            return sprint("@constCast(&em.Table_S({s}, .{s}){{._list = &@\"{s}\"}})", .{
+            return sprint("@constCast(&em.Table_S({s}, .{s}){{.em__list = &@\"{s}\"}})", .{
                 mkTypeName(T),
                 @tagName(acc),
-                self._dname,
+                self.em__dname,
             });
         }
 
         pub fn em__F_toStringDecls(self: *Self, comptime upath: []const u8, comptime cname: []const u8) []const u8 {
             declare_META();
-            self._dname = upath ++ ".em__C." ++ cname;
+            self.em__dname = upath ++ ".em__C." ++ cname;
             const tn = mkTypeName(T);
             var sb = StringH{};
             if (self._is_virgin) {
-                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self._list.items.len, tn }));
+                sb.add(sprint("std.mem.zeroes([{d}]{s})", .{ self.em__list.items.len, tn }));
             } else {
                 sb.add(sprint("[_]{s}{{", .{tn}));
-                for (self._list.items) |e| {
+                for (self.em__list.items) |e| {
                     sb.add(sprint("    {s},\n", .{em__F_toStringAux(e)}));
                 }
                 sb.add("}");
             }
             const ks = if (acc == .RO) "const" else "var";
-            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self._dname, sb.get() });
+            return sprint("pub {s} @\"{s}\" = {s};\n", .{ ks, self.em__dname, sb.get() });
         }
     };
 }
