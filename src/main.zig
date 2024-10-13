@@ -6,6 +6,7 @@ const cli = @import("zig-cli");
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
 const Props = @import("./Props.zig");
+const Renderer = @import("./Renderer.zig");
 const Session = @import("./Session.zig");
 
 var t0: f80 = 0.0;
@@ -67,6 +68,10 @@ fn doProperties() !void {
 fn doRefresh() !void {
     try Session.activate(.{ .work = params.work, .mode = .REFRESH });
     try Session.doRefresh();
+}
+
+fn doRender() !void {
+    try Renderer.exec(params.unit);
 }
 
 fn execMake(goal: []const u8) ![]const u8 {
@@ -207,6 +212,18 @@ pub fn main() !void {
         },
     };
 
+    const render_cmd = cli.Command{
+        .name = "render",
+        .description = cli.Description{ .one_line = "*** WIP ***" },
+        .options = &.{
+            file_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doRender },
+        },
+    };
+
     const app = &cli.App{
         .command = cli.Command{
             .name = "zigem",
@@ -216,6 +233,7 @@ pub fn main() !void {
                     compile_cmd,
                     properties_cmd,
                     refresh_cmd,
+                    render_cmd,
                 },
             },
         },
@@ -225,4 +243,23 @@ pub fn main() !void {
     };
 
     return runner.run(app);
+}
+
+pub const std_options = .{
+    .logFn = log,
+};
+
+pub fn log(
+    comptime message_level: std.log.Level,
+    comptime scope: @Type(.EnumLiteral),
+    comptime format: []const u8,
+    args: anytype,
+) void {
+    if (message_level != .err) {
+        if (message_level == .debug and std.mem.startsWith(u8, format, "***")) return;
+        if (std.mem.startsWith(u8, @tagName(scope), "zls_config")) return;
+        if (std.mem.startsWith(u8, @tagName(scope), "zls_server")) return;
+        if (std.mem.startsWith(u8, @tagName(scope), "zls_store")) return;
+    }
+    std.log.defaultLog(message_level, scope, format, args);
 }
