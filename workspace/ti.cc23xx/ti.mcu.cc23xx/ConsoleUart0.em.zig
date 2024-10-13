@@ -18,15 +18,15 @@ pub const sleepLeave = EM__TARG.sleepLeave;
 
 pub const EM__META = struct {
     //
-    pub fn em__configureH() void {
-        Idle.addSleepEnterCbH(em__U.fxn("sleepEnter", Idle.SleepCbArg));
-        Idle.addSleepLeaveCbH(em__U.fxn("sleepLeave", Idle.SleepCbArg));
+    pub fn em__configureM() void {
+        Idle.addSleepEnterCbM(em__U.fxn("sleepEnter", Idle.SleepCbArg));
+        Idle.addSleepLeaveCbM(em__U.fxn("sleepLeave", Idle.SleepCbArg));
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const TxPin = em__C.TxPin.get();
+    const TxPin = em__C.TxPin.unwrap();
 
     const hal = em.hal;
     const reg = em.reg;
@@ -35,11 +35,11 @@ pub const EM__TARG = struct {
         EM__TARG.sleepLeave(.{});
     }
 
-    fn flush() void {
+    pub fn flush() void {
         while ((reg(hal.UART0_BASE + hal.UART_O_FR).* & hal.UART_FR_BUSY) != 0) {}
     }
 
-    fn put(data: u8) void {
+    pub fn put(data: u8) void {
         reg(hal.UART0_BASE + hal.UART_O_DR).* = data;
         EM__TARG.flush();
     }

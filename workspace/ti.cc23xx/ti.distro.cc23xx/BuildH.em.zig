@@ -8,7 +8,7 @@ pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 pub const LinkerH = em.import.@"em.build.misc/LinkerH";
 pub const StartupH = em.import.@"em.arch.arm/StartupH";
 
-pub fn em__configureH() void {
+pub fn em__configureM() void {
     const nvic_intrs = [_][]const u8{
         "CPUIRQ0",
         "CPUIRQ1",
@@ -31,6 +31,6 @@ pub fn em__configureH() void {
         "LGPT3_COMB",
     };
     for (nvic_intrs) |n| {
-        IntrVec.addIntrH(n);
+        IntrVec.addIntrM(n);
     }
 }

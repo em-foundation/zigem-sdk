@@ -10,24 +10,24 @@ pub const restore = EM__TARG.restore;
 
 pub const EM__TARG = struct {
     //
-    fn disable() u32 {
+    pub fn disable() u32 {
         if (em.IS_META) return 0;
         const key = get_PRIMASK();
         asm volatile ("cpsid i" ::: "memory");
         return key;
     }
 
-    fn enable() void {
+    pub fn enable() void {
         if (em.IS_META) return;
         asm volatile ("cpsie i" ::: "memory");
     }
 
-    fn isEnabled() bool {
+    pub fn isEnabled() bool {
         if (em.IS_META) return false;
         return get_PRIMASK() == 0;
     }
 
-    fn restore(key: u32) void {
+    pub fn restore(key: u32) void {
         if (em.IS_META) return;
         if (key == 0) EM__TARG.enable();
     }

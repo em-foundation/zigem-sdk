@@ -15,16 +15,16 @@ pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        em__C.appTicker.set(TickerMgr.createH());
-        em__C.sysTicker.set(TickerMgr.createH());
+    pub fn em__constructM() void {
+        em__C.appTicker.setM(TickerMgr.createM());
+        em__C.sysTicker.setM(TickerMgr.createM());
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const appTicker = em__C.appTicker.get();
-    const sysTicker = em__C.sysTicker.get();
+    const appTicker = em__C.appTicker.unwrap();
+    const sysTicker = em__C.sysTicker.unwrap();
 
     pub fn em__run() void {
         appTicker.start(TimeTypes.Secs24p8_initMsecs(1_000), &appTickCb);

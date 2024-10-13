@@ -28,15 +28,15 @@ pub const Ticker = struct {
     }
 };
 
-pub const createH = EM__META.createH;
+pub const createM = EM__META.createM;
 
 pub const EM__META = struct {
     //
-    fn createH() Obj {
-        const fiber = FiberMgr.createH(em__U.fxn("alarmFB", FiberMgr.BodyArg));
-        const alarm = AlarmMgr.createH(fiber);
-        const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
-        fiber.O().arg = ticker.getIdx();
+    pub fn createM() Obj {
+        const fiber = FiberMgr.createM(em__U.fxn("alarmFB", FiberMgr.BodyArg));
+        const alarm = AlarmMgr.createM(fiber);
+        const ticker = em__C.TickerOF.createM(.{ ._alarm = alarm, ._fiber = fiber });
+        fiber.objM()._arg = ticker.getIdxM();
         return ticker;
     }
 };

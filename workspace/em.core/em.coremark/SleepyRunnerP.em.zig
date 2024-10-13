@@ -13,14 +13,14 @@ pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        em__C.ticker.set(TickerMgr.createH());
+    pub fn em__constructM() void {
+        em__C.ticker.setM(TickerMgr.createM());
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const ticker = em__C.ticker.get();
+    const ticker = em__C.ticker.unwrap();
 
     var count: u8 = 10;
 

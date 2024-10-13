@@ -27,26 +27,26 @@ pub const setup = EM__TARG.setup;
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         var i: usize = 0;
         var j: usize = 0;
-        while (j < em__C.memsize.getH()) {
+        while (j < em__C.memsize.getM()) {
             i += 1;
             j = i * i * 2 * 4;
         }
         const d = i - 1;
-        em__C.dimN.set(d);
-        em__C.matA.setLen(d * d);
-        em__C.matB.setLen(d * d);
-        em__C.matC.setLen(d * d);
-        em__C.matA.items()[0] = 10; // TODO: make matA unique
-        em__C.matB.items()[0] = 20; // TODO  make matB unique
+        em__C.dimN.setM(d);
+        em__C.matA.setLenM(d * d);
+        em__C.matB.setLenM(d * d);
+        em__C.matC.setLenM(d * d);
+        em__C.matA.itemsM()[0] = 10; // TODO: make matA unique
+        em__C.matB.itemsM()[0] = 20; // TODO  make matB unique
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const dimN = em__C.dimN.get();
+    const dimN = em__C.dimN.unwrap();
 
     var matA = em__C.matA.items();
     var matB = em__C.matB.items();
@@ -72,7 +72,7 @@ pub const EM__TARG = struct {
         return @bitCast(x & (if (b) @as(u16, 0x0ff) else @as(u16, 0x0ffff)));
     }
 
-    fn dump() void {
+    pub fn dump() void {
         // TODO
         return;
     }
@@ -81,7 +81,7 @@ pub const EM__TARG = struct {
         return @bitCast(@as(u16, 0xf000) | @as(u16, @bitCast(val)));
     }
 
-    fn kind() Utils.Kind {
+    pub fn kind() Utils.Kind {
         return .MATRIX;
     }
 
@@ -125,7 +125,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn print() void {
+    pub fn print() void {
         prDat("A", matA);
         prDat("B", matB);
     }
@@ -142,7 +142,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn run(arg: i16) Utils.sum_t {
+    pub fn run(arg: i16) Utils.sum_t {
         var crc: Crc.sum_t = 0;
         const val: matdat_t = arg;
         const clipval = enlarge(val);
@@ -164,7 +164,7 @@ pub const EM__TARG = struct {
         return Crc.add16(@bitCast(crc), Utils.getCrc(.FINAL));
     }
 
-    fn setup() void {
+    pub fn setup() void {
         const s32 = @as(u32, Utils.getSeed(1)) | (@as(u32, Utils.getSeed(2)) << 16);
         var sd: matdat_t = @intCast(@as(i32, @bitCast(s32)));
         if (sd == 0) sd = 1;

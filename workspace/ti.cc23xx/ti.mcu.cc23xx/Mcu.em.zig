@@ -13,7 +13,7 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
-    fn startup() void {
+    pub fn startup() void {
         if (em.IS_META) return;
         Debug.startup();
         em.@"%%[a:]"(3);

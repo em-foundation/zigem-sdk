@@ -14,11 +14,11 @@ pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
-        const alarm = AlarmMgr.createH(blinkF);
-        em__C.alarm.set(alarm);
-        em__C.blinkF.set(blinkF);
+    pub fn em__constructM() void {
+        const blinkF = FiberMgr.createM(em__U.fxn("blinkFB", FiberMgr.BodyArg));
+        const alarm = AlarmMgr.createM(blinkF);
+        em__C.alarm.setM(alarm);
+        em__C.blinkF.setM(blinkF);
     }
 };
 
@@ -27,7 +27,7 @@ pub const EM__TARG = struct {
     var counter: u32 = 0;
 
     pub fn em__run() void {
-        em__C.blinkF.get().post();
+        em__C.blinkF.unwrap().post();
         FiberMgr.run();
     }
 
@@ -39,6 +39,6 @@ pub const EM__TARG = struct {
         } else {
             AppLed.wink(5); // 5ms
         }
-        em__C.alarm.get().wakeupAligned(TimeTypes.Secs24p8_initMsecs(1_500)); // 1.5s window
+        em__C.alarm.unwrap().wakeupAligned(TimeTypes.Secs24p8_initMsecs(1_500)); // 1.5s window
     }
 };

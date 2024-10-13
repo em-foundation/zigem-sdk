@@ -12,8 +12,8 @@ export fn DEFAULT_isr() void {
     EM__TARG.defaultIsr();
 }
 
-pub const addIntrH = EM__META.addIntrH;
-pub const useIntrH = EM__META.useIntrH;
+pub const addIntrM = EM__META.addIntrM;
+pub const useIntrM = EM__META.useIntrM;
 
 pub const EM__META = struct {
     //
@@ -22,7 +22,7 @@ pub const EM__META = struct {
 
     const NO_VEC = "<NA>";
 
-    pub fn em__initH() void {
+    pub fn em__initM() void {
         const core_intrs = [_][]const u8{
             "NMI",
             "HardFault",
@@ -40,17 +40,17 @@ pub const EM__META = struct {
             "SysTick",
         };
         for (core_intrs) |n| {
-            EM__META.addIntrH(n);
+            EM__META.addIntrM(n);
         }
     }
 
-    pub fn em__generateH() void {
-        var sbuf = em.StringH{};
-        for (name_tab.items()) |n| {
+    pub fn em__generateM() void {
+        var sbuf = em.StringM{};
+        for (name_tab.itemsM()) |n| {
             if (em.std.mem.eql(u8, n, NO_VEC)) continue;
-            sbuf.add(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n}));
+            sbuf.addM(em.sprint("#define __{s}_isr _DEFAULT_isr\n", .{n}));
         }
-        sbuf.add(
+        sbuf.addM(
             \\
             \\extern void DEFAULT_isr( void );
             \\void _DEFAULT_isr( void ) {
@@ -59,17 +59,17 @@ pub const EM__META = struct {
             \\
             \\
         );
-        sbuf.add("// used\n");
-        for (used_tab.items()) |n| {
+        sbuf.addM("// used\n");
+        for (used_tab.itemsM()) |n| {
             if (em.std.mem.eql(u8, n, NO_VEC)) continue;
-            sbuf.add(em.sprint(
+            sbuf.addM(em.sprint(
                 \\#undef __{s}_isr
                 \\#define __{0s}_isr {0s}_isr
                 \\void {0s}_isr( void ) __attribute__((weak, alias("_DEFAULT_isr")));
                 \\
             , .{n}));
         }
-        sbuf.add(
+        sbuf.addM(
             \\
             \\#include <stdbool.h>
             \\#include <stdint.h>
@@ -87,20 +87,20 @@ pub const EM__META = struct {
             \\    { .fxn = em__start },
             \\
         );
-        for (name_tab.items()) |n| {
+        for (name_tab.itemsM()) |n| {
             const s = if (em.std.mem.eql(u8, n, NO_VEC)) "0" else em.sprint("__{s}_isr", .{n});
-            sbuf.add(em.sprint("    {s},\n", .{s}));
+            sbuf.addM(em.sprint("    {s},\n", .{s}));
         }
-        sbuf.add("};\n");
-        em.writeFile(em.out_root, "intr.c", sbuf.get());
+        sbuf.addM("};\n");
+        em.writeFile(em.out_root, "intr.c", sbuf.getM());
     }
 
-    fn addIntrH(name: []const u8) void {
-        name_tab.add(name);
+    pub fn addIntrM(name: []const u8) void {
+        name_tab.addM(name);
     }
 
-    fn useIntrH(name: []const u8) void {
-        used_tab.add(name);
+    pub fn useIntrM(name: []const u8) void {
+        used_tab.addM(name);
     }
 };
 

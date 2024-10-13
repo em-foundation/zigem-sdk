@@ -20,11 +20,11 @@ const Thresh = WakeupTimerI.Thresh;
 
 pub const EM__TARG = struct {
     //
-    fn disable() void {
+    pub fn disable() void {
         Rtc.disable();
     }
 
-    fn enable(secs256: Secs24p8, handler: HandlerFxn) void {
+    pub fn enable(secs256: Secs24p8, handler: HandlerFxn) void {
         if (em.IS_META) return;
         Rtc.enable(secs256, @ptrCast(handler));
     }

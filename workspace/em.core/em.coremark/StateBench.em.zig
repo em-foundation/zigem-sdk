@@ -35,7 +35,7 @@ pub const EM__TARG = struct {
 
     const NUM_STATES = @typeInfo(State).Enum.fields.len;
 
-    const memsize = em__C.memsize.get();
+    const memsize = em__C.memsize.unwrap();
 
     const errpat = [_][]const u8{ "T0.3e-1F", "-T.T++Tq", "1T3.4e4z", "34.0e-T^" };
     const fltpat = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400" };
@@ -44,7 +44,7 @@ pub const EM__TARG = struct {
 
     var membuf = em.std.mem.zeroes([memsize]u8);
 
-    fn dump() void {
+    pub fn dump() void {
         // TODO
         return;
     }
@@ -53,7 +53,7 @@ pub const EM__TARG = struct {
         return ch >= '0' and ch <= '9';
     }
 
-    fn kind() Utils.Kind {
+    pub fn kind() Utils.Kind {
         return .STATE;
     }
 
@@ -153,7 +153,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn print() void {
+    pub fn print() void {
         var idx: usize = 0;
         var cnt: usize = 0;
         em.print("\n\"", .{});
@@ -173,7 +173,7 @@ pub const EM__TARG = struct {
         em.print("\n\", count = {d}\n", .{cnt});
     }
 
-    fn run(arg: i16) Utils.sum_t {
+    pub fn run(arg: i16) Utils.sum_t {
         var uarg: usize = @intCast(@as(u16, @bitCast(arg)));
         if (arg < 0x22) uarg = 0x22;
         var finalcnt: [NUM_STATES]u32 = undefined;
@@ -209,7 +209,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn setup() void {
+    pub fn setup() void {
         var seed = Utils.getSeed(1);
         var idx = @as(usize, 0);
         var total = @as(usize, 0);

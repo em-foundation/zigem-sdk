@@ -13,18 +13,18 @@ pub const Common = em.import.@"em.mcu/Common";
 
 pub const EM__META = struct {
     //
-    pub fn em__initH() void {
-        em__C.dbg_flag.set(true);
-        em__C.min_cnt.set(1000);
-        em__C.max_cnt.set(1020);
+    pub fn em__initM() void {
+        em__C.dbg_flag.setM(true);
+        em__C.min_cnt.setM(1000);
+        em__C.max_cnt.setM(1020);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const dbg_flag = em__C.dbg_flag.get();
-    const min_cnt = em__C.min_cnt.get();
-    const max_cnt = em__C.max_cnt.get();
+    const dbg_flag = em__C.dbg_flag.unwrap();
+    const min_cnt = em__C.min_cnt.unwrap();
+    const max_cnt = em__C.max_cnt.unwrap();
 
     pub fn em__run() void {
         AppLed.on();

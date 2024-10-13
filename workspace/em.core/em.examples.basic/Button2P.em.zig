@@ -13,10 +13,10 @@ pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        AppButEdge.setDetectHandlerH(em__U.fxn("handler", AppButEdge.HandlerArg));
-        const blinkF = FiberMgr.createH(em__U.fxn("blinkFB", FiberMgr.BodyArg));
-        em__C.blinkF.set(blinkF);
+    pub fn em__constructM() void {
+        AppButEdge.setDetectHandlerM(em__U.fxn("handler", AppButEdge.HandlerArg));
+        const blinkF = FiberMgr.createM(em__U.fxn("blinkFB", FiberMgr.BodyArg));
+        em__C.blinkF.setM(blinkF);
     }
 };
 
@@ -44,6 +44,6 @@ pub const EM__TARG = struct {
     pub fn handler(_: AppButEdge.HandlerArg) void {
         em.@"%%[c]"();
         AppButEdge.clearDetect();
-        em__C.blinkF.get().post();
+        em__C.blinkF.unwrap().post();
     }
 };

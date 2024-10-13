@@ -13,18 +13,18 @@ pub const wait = EM__TARG.wait;
 
 pub const EM__META = struct {
     //
-    pub fn em__initH() void {
-        em__C.scalar.set(6);
+    pub fn em__initM() void {
+        em__C.scalar.setM(6);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    fn wait(usecs: u32) void {
+    pub fn wait(usecs: u32) void {
         if (usecs == 0) return;
         var dummy: u32 = undefined;
         const p: *volatile u32 = &dummy;
-        for (0..(usecs * em__C.scalar.get())) |_| {
+        for (0..(usecs * em__C.scalar.unwrap())) |_| {
             p.* = 0;
         }
     }

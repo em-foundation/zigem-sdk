@@ -31,7 +31,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const HandlerArg = GpioEdgeI.HandlerArg;
         pub const HandlerFxn = GpioEdgeI.HandlerFxn;
 
-        pub const setDetectHandlerH = EM__META.setDetectHandlerH;
+        pub const setDetectHandlerM = EM__META.setDetectHandlerM;
 
         pub const clearDetect = EM__TARG.clearDetect;
         pub const disableDetect = EM__TARG.disableDetect;
@@ -41,22 +41,22 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__META = struct {
             //
-            pub fn em__initH() void {
-                em__C.pin.set(-1);
+            pub fn em__initM() void {
+                em__C.pin.setM(-1);
             }
 
-            pub fn em__constructH() void {
-                Pin.c_pin.set(em__C.pin.getH());
+            pub fn em__constructM() void {
+                Pin.c_pin.setM(em__C.pin.getM());
             }
 
-            fn setDetectHandlerH(h: HandlerFxn) void {
-                Aux.addHandlerInfoH(.{ .handler = h, .mask = mkMask(em__C.pin.getH()) });
+            pub fn setDetectHandlerM(h: HandlerFxn) void {
+                Aux.addHandlerInfoM(.{ .handler = h, .mask = mkMask(em__C.pin.getM()) });
             }
         };
 
         pub const EM__TARG = struct {
             //
-            const pin = em__C.pin.get();
+            const pin = em__C.pin.unwrap();
             const is_def = (pin >= 0);
             const mask = mkMask(pin);
             const off = @as(u32, hal.IOC_O_IOC0 + @as(u16, @bitCast(pin)) * 4);
@@ -64,26 +64,26 @@ pub fn em__generateS(comptime name: []const u8) type {
             const hal = em.hal;
             const reg = em.reg;
 
-            fn clearDetect() void {
+            pub fn clearDetect() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_ICLR).* = mask;
             }
 
-            fn disableDetect() void {
+            pub fn disableDetect() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_IMCLR).* = mask;
                 if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_WUENSB;
             }
 
-            fn enableDetect() void {
+            pub fn enableDetect() void {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_IMSET).* = mask;
                 if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_WUENSB;
             }
 
-            fn setDetectFallingEdge() void {
+            pub fn setDetectFallingEdge() void {
                 if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
                 if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_NEG;
             }
 
-            fn setDetectRisingEdge() void {
+            pub fn setDetectRisingEdge() void {
                 if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
                 if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_POS;
             }

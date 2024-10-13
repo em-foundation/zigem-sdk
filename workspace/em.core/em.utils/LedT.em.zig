@@ -32,15 +32,15 @@ pub fn em__generateS(comptime name: []const u8) type {
 
         pub const EM__META = struct {
             //
-            pub fn em__initH() void {
-                em__C.active_low.set(false);
+            pub fn em__initM() void {
+                em__C.active_low.setM(false);
             }
         };
 
         pub const EM__TARG = struct {
             //
-            const active_low = em__C.active_low.get();
-            const Pin = if (em.IS_META) .{} else em__C.Pin.get(); // TODO Pin.default()
+            const active_low = em__C.active_low.unwrap();
+            const Pin = if (em.IS_META) .{} else em__C.Pin.unwrap(); // TODO Pin.default()
 
             pub fn em__startup() void {
                 if (em.IS_META) return;
@@ -48,22 +48,22 @@ pub fn em__generateS(comptime name: []const u8) type {
                 EM__TARG.off();
             }
 
-            fn off() void {
+            pub fn off() void {
                 if (em.IS_META) return;
-                if (active_low) Pin.set() else Pin.clear();
+                if (active_low) Pin.setM() else Pin.clear();
             }
 
-            fn on() void {
+            pub fn on() void {
                 if (em.IS_META) return;
                 if (active_low) Pin.clear() else Pin.set();
             }
 
-            fn toggle() void {
+            pub fn toggle() void {
                 if (em.IS_META) return;
                 Pin.toggle();
             }
 
-            fn wink(msecs: u32) void {
+            pub fn wink(msecs: u32) void {
                 if (em.IS_META) return;
                 EM__TARG.on();
                 Poller.pause(msecs);

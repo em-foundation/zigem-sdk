@@ -14,8 +14,8 @@ pub const EM__CONFIG = struct {
 pub const SleepCbFxn = em.Fxn(SleepCbArg);
 pub const SleepCbArg = struct {};
 
-pub const addSleepEnterCbH = EM__META.addSleepEnterCbH;
-pub const addSleepLeaveCbH = EM__META.addSleepLeaveCbH;
+pub const addSleepEnterCbM = EM__META.addSleepEnterCbM;
+pub const addSleepLeaveCbM = EM__META.addSleepLeaveCbM;
 
 pub const exec = EM__TARG.exec;
 pub const pause = EM__TARG.pause;
@@ -23,12 +23,12 @@ pub const waitOnly = EM__TARG.waitOnly;
 
 pub const EM__META = struct {
     //
-    fn addSleepEnterCbH(cb: SleepCbFxn) void {
-        em__C.sleep_enter_fxn_tab.add(cb);
+    pub fn addSleepEnterCbM(cb: SleepCbFxn) void {
+        em__C.sleep_enter_fxn_tab.addM(cb);
     }
 
-    fn addSleepLeaveCbH(cb: SleepCbFxn) void {
-        em__C.sleep_leave_fxn_tab.add(cb);
+    pub fn addSleepLeaveCbM(cb: SleepCbFxn) void {
+        em__C.sleep_leave_fxn_tab.addM(cb);
     }
 };
 
@@ -77,7 +77,7 @@ pub const EM__TARG = struct {
         set_PRIMASK(0);
     }
 
-    fn exec() void {
+    pub fn exec() void {
         if (wait_only > 0) {
             doWait();
         } else {
@@ -85,7 +85,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn pause() void {
+    pub fn pause() void {
         doWait();
     }
 
@@ -98,7 +98,7 @@ pub const EM__TARG = struct {
         );
     }
 
-    fn waitOnly(comptime op: enum { CLR, SET }) void {
+    pub fn waitOnly(comptime op: enum { CLR, SET }) void {
         switch (op) {
             .CLR => wait_only -= 1,
             .SET => wait_only += 1,
