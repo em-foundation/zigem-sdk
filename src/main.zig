@@ -5,6 +5,7 @@ const cli = @import("zig-cli");
 
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
+const Parser = @import("Parser.zig");
 const Props = @import("./Props.zig");
 const Renderer = @import("./Renderer.zig");
 const Session = @import("./Session.zig");
@@ -55,6 +56,10 @@ fn doCompile() !void {
     stdout = try execMake("load");
     // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     try writer.print("done.\n", .{});
+}
+
+fn doParse() !void {
+    try Parser.exec(params.unit);
 }
 
 fn doProperties() !void {
@@ -191,6 +196,18 @@ pub fn main() !void {
         },
     };
 
+    const parse_cmd = cli.Command{
+        .name = "parse",
+        .description = cli.Description{ .one_line = "*** WIP ***" },
+        .options = &.{
+            file_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doParse },
+        },
+    };
+
     const properties_cmd = cli.Command{
         .name = "properties",
         .options = &.{
@@ -231,6 +248,7 @@ pub fn main() !void {
                 .subcommands = &.{
                     clean_cmd,
                     compile_cmd,
+                    parse_cmd,
                     properties_cmd,
                     refresh_cmd,
                     render_cmd,

@@ -1,7 +1,6 @@
 const std = @import("std");
 const zls = @import("zls");
 
-const Ast = std.zig.Ast;
 const Fs = @import("Fs.zig");
 const Heap = @import("Heap.zig");
 
