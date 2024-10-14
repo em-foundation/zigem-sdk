@@ -70,10 +70,18 @@ pub fn doRefresh() !void {
 }
 
 fn genDomain() !void {
-    var file = try Out.open(Fs.join(&.{ gen_root, "domain.zig" }));
+    var file = try Out.open(Fs.join(&.{ gen_root, "domain-meta.zig" }));
     file.print(
         \\pub const Domain = enum {{META, TARG}};
         \\pub const DOMAIN: Domain = .META;
+        \\
+    , .{});
+    file.close();
+    //
+    file = try Out.open(Fs.join(&.{ gen_root, "domain-targ.zig" }));
+    file.print(
+        \\pub const Domain = enum {{META, TARG}};
+        \\pub const DOMAIN: Domain = .TARG;
         \\
     , .{});
     file.close();

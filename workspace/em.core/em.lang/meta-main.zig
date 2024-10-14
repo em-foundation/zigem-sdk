@@ -29,7 +29,6 @@ pub fn exec(top: em.Unit) !void {
     try mkUsedSet(BuildH.em__U);
     callAll("em__constructM", ulist_top, false);
     callAll("em__generateM", ulist_top, false);
-    try genDomain();
     try genTarg(top, ulist_bot, ulist_top);
     std.process.exit(0);
 }
@@ -65,17 +64,6 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
         try out.print("    .{s} = {s},\n", .{ fld.name, em.em__F_toStringAux(cfld) });
     }
     try out.print("}};\n", .{});
-}
-
-fn genDomain() !void {
-    const file = try std.fs.createFileAbsolute(em._domain_file, .{});
-    const out = file.writer();
-    try out.print(
-        \\pub const Domain = enum {{META, TARG}};
-        \\pub const DOMAIN: Domain = .TARG;
-        \\
-    , .{});
-    file.close();
 }
 
 fn genImport(path: []const u8, out: std.fs.File.Writer) !void {
