@@ -6,6 +6,9 @@ OUT=$(BLD)/out
 
 MAIN=.zigem-main.zig
 
+check:
+	@zig build-exe -I. -fno-emit-bin $(MAIN)
+
 meta:
 	@rm -f $(GEN)/targ.zig
 	@touch $(GEN)/targ.zig
