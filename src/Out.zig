@@ -13,6 +13,20 @@ const File = struct {
     }
 };
 
+pub fn sprint(comptime fmt: []const u8, args: anytype) []const u8 {
+    return std.fmt.allocPrint(Heap.get(), fmt, args) catch unreachable;
+}
+
+pub const StringBuf = struct {
+    txt: []const u8 = "",
+    pub fn add(self: *StringBuf, txt: []const u8) void {
+        self.txt = sprint("{s}{s}", .{ self.txt, txt });
+    }
+    pub fn get(self: StringBuf) []const u8 {
+        return self.txt;
+    }
+};
+
 pub fn open(path: []const u8) !*File {
     var res = try Heap.get().create(File);
     const file = try std.fs.createFileAbsolute(path, .{});

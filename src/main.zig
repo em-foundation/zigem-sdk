@@ -7,6 +7,7 @@ const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
 const Parser = @import("Parser.zig");
 const Props = @import("./Props.zig");
+const Publisher = @import("./Publisher.zig");
 const Renderer = @import("./Renderer.zig");
 const Session = @import("./Session.zig");
 
@@ -30,8 +31,7 @@ fn doCheck() !void {
     try Session.doCheck(un);
     const stdout = try execMake("check");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
-    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
-    try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+    try printDone();
 }
 
 fn doClean() !void {
@@ -52,8 +52,7 @@ fn doCompile() !void {
     var stdout = try execMake("meta");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     if (params.meta) {
-        const t2: f80 = @floatFromInt(std.time.milliTimestamp());
-        try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+        try printDone();
         return;
     }
     try writer.print("compiling TARG ...\n", .{});
@@ -62,8 +61,7 @@ fn doCompile() !void {
     try writer.print("    image sha: {s}", .{sha32}); // contains \n
     const sz = try getSizes(stdout);
     try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
-    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
-    try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+    try printDone();
     if (!params.load) return;
     try writer.print("loading...\n", .{});
     stdout = try execMake("load");
@@ -82,13 +80,20 @@ fn doProperties() !void {
     while (ent_iter.next()) |e| try writer.print("{s} = {s}\n", .{ e.key_ptr.*, e.value_ptr.* });
 }
 
+fn doPublish() !void {
+    try Publisher.exec(params.unit);
+    try printDone();
+}
+
 fn doRefresh() !void {
     try Session.activate(.{ .work = params.work, .mode = .REFRESH });
     try Session.doRefresh();
+    try printDone();
 }
 
 fn doRender() !void {
     try Renderer.exec(params.unit);
+    try printDone();
 }
 
 fn execMake(goal: []const u8) ![]const u8 {
@@ -132,6 +137,11 @@ fn getSizes(lines: []const u8) ![4]usize {
         if (std.mem.eql(u8, s1, "bss")) bssSz += sz;
     }
     return .{ textSz, constSz, dataSz, bssSz };
+}
+
+fn printDone() !void {
+    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
+    try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
 }
 
 pub fn main() !void {
@@ -243,6 +253,18 @@ pub fn main() !void {
         },
     };
 
+    const publish_cmd = cli.Command{
+        .name = "publish",
+        .description = cli.Description{ .one_line = "*** WIP ***" },
+        .options = &.{
+            file_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doPublish },
+        },
+    };
+
     const refresh_cmd = cli.Command{
         .name = "refresh",
         .options = &.{
@@ -275,6 +297,7 @@ pub fn main() !void {
                     compile_cmd,
                     parse_cmd,
                     properties_cmd,
+                    publish_cmd,
                     refresh_cmd,
                     render_cmd,
                 },
