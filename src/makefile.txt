@@ -69,7 +69,7 @@ load:
 CHECK=.zigem-check.zig
 
 check:
-	@cp $(GEN)/domain-meta.zig $(GEN)/domain.zig
+	@cp $(GEN)/domain-META.zig $(GEN)/domain.zig
 	@zig test -I. -fno-emit-bin $(CHECK)
-	@cp $(GEN)/domain-targ.zig $(GEN)/domain.zig
+	@cp $(GEN)/domain-TARG_CHECK.zig $(GEN)/domain.zig
 	@zig test -I. $(TARG_OPTS) -fno-emit-bin $(CHECK)

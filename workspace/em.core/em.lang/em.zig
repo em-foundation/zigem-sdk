@@ -174,7 +174,7 @@ pub const Unit = struct {
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
-            .META => {
+            .META, .TARG_CHECK => {
                 return initConfig(CT, self.upath);
             },
             .TARG => {
@@ -368,7 +368,7 @@ pub fn Fxn(PT: type) type {
                 }
             };
         },
-        .TARG => return Fxn_T(PT),
+        .TARG, .TARG_CHECK => return Fxn_T(PT),
     }
 }
 
@@ -434,7 +434,10 @@ pub fn Param_S(T: type) type {
         }
 
         pub fn unwrap(self: *Self) T {
-            return if (IS_META) std.mem.zeroes(T) else self.em__val;
+            return switch (DOMAIN) {
+                .META, .TARG_CHECK => std.mem.zeroes(T),
+                .TARG => self.em__val,
+            };
         }
     };
 }
@@ -482,7 +485,7 @@ pub fn Proxy_S(I: type) type {
         }
 
         pub fn unwrap(self: *const Self) I.EM__SPEC {
-            return self.em__iobj;
+            return if (DOMAIN == .TARG_CHECK) I.EM__SPEC{} else self.em__iobj;
         }
     };
 }
@@ -575,7 +578,7 @@ pub fn fail() void {
             std.log.err("em.fail", .{});
             std.process.exit(1);
         },
-        .TARG => {
+        .TARG, .TARG_CHECK => {
             targ.em__fail();
         },
     }
@@ -587,7 +590,7 @@ pub fn halt() void {
             std.log.info("em.halt", .{});
             std.process.exit(0);
         },
-        .TARG => {
+        .TARG, .TARG_CHECK => {
             targ.em__exit();
         },
     }
@@ -598,7 +601,7 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
         .META => {
             std.log.debug(fmt, args);
         },
-        .TARG => {
+        .TARG, .TARG_CHECK => {
             std.fmt.format(Console.writer(), fmt, args) catch fail();
         },
     }

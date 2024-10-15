@@ -90,11 +90,12 @@ fn genCheckStub() !void {
         \\test "main" {
         \\    switch (domain_desc.DOMAIN) {
         \\        .META => {
-        \\            em.std.testing.refAllDecls(U.EM__META);
+        \\            if (@hasDecl(U, "EM__META")) em.std.testing.refAllDecls(U.EM__META);
         \\        },
-        \\        .TARG => {
-        \\            em.std.testing.refAllDecls(U.EM__TARG);
+        \\        .TARG_CHECK => {
+        \\            if (@hasDecl(U, "EM__TARG")) em.std.testing.refAllDecls(U.EM__TARG);
         \\        },
+        \\        .TARG => {},
         \\    }
         \\}
     ;
@@ -111,23 +112,33 @@ fn genCheckUnit(uname: []const u8) !void {
 }
 
 fn genDomain() !void {
-    var file = try Out.open(Fs.join(&.{ gen_root, "domain-meta.zig" }));
-    file.print(
-        \\pub const Domain = enum {{META, TARG}};
-        \\pub const DOMAIN: Domain = .META;
-        \\
-    , .{});
-    file.close();
+    const domains = &.{ "META", "TARG", "TARG_CHECK" };
+    inline for (domains) |dom| {
+        var file = try Out.open(Fs.join(&.{ gen_root, "domain-" ++ dom ++ ".zig" }));
+        file.print(
+            \\pub const Domain = enum {{META, TARG, TARG_CHECK}};
+            \\pub const DOMAIN: Domain = .{s};
+            \\
+        , .{dom});
+        file.close();
+    }
+    // var file = try Out.open(Fs.join(&.{ gen_root, "domain-meta.zig" }));
+    // file.print(
+    //     \\pub const Domain = enum {{META, TARG}};
+    //     \\pub const DOMAIN: Domain = .META;
+    //     \\
+    // , .{});
+    // file.close();
+    // //
+    // file = try Out.open(Fs.join(&.{ gen_root, "domain-targ.zig" }));
+    // file.print(
+    //     \\pub const Domain = enum {{META, TARG}};
+    //     \\pub const DOMAIN: Domain = .TARG;
+    //     \\
+    // , .{});
+    // file.close();
     //
-    file = try Out.open(Fs.join(&.{ gen_root, "domain-targ.zig" }));
-    file.print(
-        \\pub const Domain = enum {{META, TARG}};
-        \\pub const DOMAIN: Domain = .TARG;
-        \\
-    , .{});
-    file.close();
-    //
-    file = try Out.open(Fs.join(&.{ gen_root, "meta.zig" }));
+    var file = try Out.open(Fs.join(&.{ gen_root, "meta.zig" }));
     file.close();
     //
     file = try Out.open(Fs.join(&.{ gen_root, "targ.zig" }));
