@@ -66,8 +66,10 @@ targ:
 load:
 	@$(UNIFLASH) --mode noConnectFlash -c ti.cc23xx/ti.distro.cc23xx/CC2340R5.ccxml $(OUT)/main.out
 
+CHECK=.zigem-check.zig
+
 check:
 	@cp $(GEN)/domain-meta.zig $(GEN)/domain.zig
-	@zig build-exe -I. -fno-emit-bin $(MAIN)
+	@zig test -I. -fno-emit-bin $(CHECK)
 	@cp $(GEN)/domain-targ.zig $(GEN)/domain.zig
-	@zig build-exe -I. $(TARG_OPTS) -fno-emit-bin $(MAIN)
+	@zig test -I. $(TARG_OPTS) -fno-emit-bin $(CHECK)

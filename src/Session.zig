@@ -121,7 +121,6 @@ fn genMain() !void {
     const txt =
         \\// GENERATED FILE -- do not edit!!!
         \\
-        \\pub usingnamespace @import("zigem/em.zig");
         \\const domain_desc = @import("zigem/domain.zig");
         \\
         \\pub fn main() void {
