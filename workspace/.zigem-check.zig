@@ -1,6 +1,9 @@
+// GENERATED FILE -- do not edit!!!
+
 const em = @import("./zigem/em.zig");
 const domain_desc = @import("zigem/domain.zig");
-const U = em.import.@".junk/Mod";
+const uname = @import("zigem/check-unit.zig").uname;
+const U = @field(em.import, uname);
 
 test "main" {
     switch (domain_desc.DOMAIN) {

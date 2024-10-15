@@ -8,6 +8,7 @@ const Props = @import("./Props.zig");
 const makefile_txt = @embedFile("./makefile.txt");
 
 pub const Mode = enum {
+    CHECK,
     CLEAN,
     COMPILE,
     REFRESH,
@@ -34,6 +35,7 @@ pub fn activate(params: ActivateParams) !void {
     build_root = Fs.slashify(Fs.join(&.{ work_root, "zigem" }));
     gen_root = build_root;
     out_root = Fs.slashify(Fs.join(&.{ build_root, "out" }));
+    if (cur_mode == .CHECK) return;
     Fs.delete(build_root);
     Fs.delete(Fs.slashify(Fs.join(&.{ work_root, ZIGEM_MAIN })));
     if (cur_mode == .CLEAN) {
@@ -54,6 +56,11 @@ pub fn activate(params: ActivateParams) !void {
     try Props.addPackage(getDistroPkg());
 }
 
+pub fn doCheck(upath: []const u8) !void {
+    Fs.chdir(work_root);
+    try genCheckUnit(mkUname(upath));
+}
+
 pub fn doBuild(upath: []const u8) !void {
     const uname = mkUname(upath);
     try genStub("meta", uname);
@@ -61,12 +68,46 @@ pub fn doBuild(upath: []const u8) !void {
 }
 
 pub fn doRefresh() !void {
+    try genCheckStub();
     try genEmStub();
     try genMakefile();
     try genProps();
     try genMain();
     try genDomain();
     try genUnits();
+}
+
+fn genCheckStub() !void {
+    var file = try Out.open(Fs.join(&.{ work_root, ".zigem-check.zig" }));
+    const txt =
+        \\// GENERATED FILE -- do not edit!!!
+        \\
+        \\const em = @import("./zigem/em.zig");
+        \\const domain_desc = @import("zigem/domain.zig");
+        \\const uname = @import("zigem/check-unit.zig").uname;
+        \\const U = @field(em.import, uname);
+        \\
+        \\test "main" {
+        \\    switch (domain_desc.DOMAIN) {
+        \\        .META => {
+        \\            em.std.testing.refAllDecls(U.EM__META);
+        \\        },
+        \\        .TARG => {
+        \\            em.std.testing.refAllDecls(U.EM__TARG);
+        \\        },
+        \\    }
+        \\}
+    ;
+    file.print("{s}", .{txt});
+    file.close();
+}
+
+fn genCheckUnit(uname: []const u8) !void {
+    var file = try Out.open(Fs.join(&.{ gen_root, "check-unit.zig" }));
+    file.print(
+        \\pub const uname = "{s}";
+    , .{uname});
+    file.close();
 }
 
 fn genDomain() !void {

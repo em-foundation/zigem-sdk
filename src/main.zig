@@ -10,6 +10,8 @@ const Props = @import("./Props.zig");
 const Renderer = @import("./Renderer.zig");
 const Session = @import("./Session.zig");
 
+const writer = std.io.getStdOut().writer();
+
 var t0: f80 = 0.0;
 
 var params = struct {
@@ -20,12 +22,23 @@ var params = struct {
     work: []const u8 = ".",
 }{};
 
+fn doCheck() !void {
+    const path = params.unit;
+    const idx = std.mem.indexOf(u8, path, "/").?;
+    const un = path[idx + 1 ..];
+    try Session.activate(.{ .work = params.work, .mode = .CHECK });
+    try Session.doCheck(un);
+    const stdout = try execMake("check");
+    if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
+    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
+    try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+}
+
 fn doClean() !void {
     try Session.activate(.{ .work = params.work, .mode = .CLEAN });
 }
 
 fn doCompile() !void {
-    const writer = std.io.getStdOut().writer();
     const path = params.unit;
     const idx = std.mem.indexOf(u8, path, "/").?;
     const bn = path[0..idx];
@@ -64,7 +77,6 @@ fn doParse() !void {
 
 fn doProperties() !void {
     try Session.activate(.{ .work = params.work, .mode = .REFRESH, .setup = params.setup });
-    const writer = std.io.getStdOut().writer();
     const pm = Props.getProps();
     var ent_iter = pm.iterator();
     while (ent_iter.next()) |e| try writer.print("{s} = {s}\n", .{ e.key_ptr.*, e.value_ptr.* });
@@ -172,6 +184,18 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.work),
     };
 
+    const check_cmd = cli.Command{
+        .name = "check",
+        .description = cli.Description{ .one_line = "semantic checking" },
+        .options = &.{
+            file_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doCheck },
+        },
+    };
+
     const clean_cmd = cli.Command{
         .name = "clean",
         .options = &.{
@@ -246,6 +270,7 @@ pub fn main() !void {
             .name = "zigem",
             .target = cli.CommandTarget{
                 .subcommands = &.{
+                    check_cmd,
                     clean_cmd,
                     compile_cmd,
                     parse_cmd,
