@@ -3,7 +3,7 @@ const std = @import("std");
 const Fs = @import("Fs.zig");
 const Heap = @import("Heap.zig");
 
-const File = struct {
+pub const File = struct {
     _file: std.fs.File,
     pub fn close(this: @This()) void {
         this._file.close();

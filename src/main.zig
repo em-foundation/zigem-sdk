@@ -16,6 +16,7 @@ const writer = std.io.getStdOut().writer();
 var t0: f80 = 0.0;
 
 var params = struct {
+    force: bool = false,
     load: bool = false,
     meta: bool = false,
     setup: ?[]const u8 = null,
@@ -81,7 +82,7 @@ fn doProperties() !void {
 }
 
 fn doPublish() !void {
-    try Publisher.exec(params.unit);
+    try Publisher.exec(params.unit, params.force);
     try printDone();
 }
 
@@ -156,6 +157,14 @@ pub fn main() !void {
         .required = true,
         .value_name = "UPATH",
         .value_ref = runner.mkRef(&params.unit),
+    };
+
+    const force_opt = cli.Option{
+        .long_name = "force",
+        .help = "Force this operation",
+        .required = false,
+        .value_name = "FORCE",
+        .value_ref = runner.mkRef(&params.force),
     };
 
     const load_opt = cli.Option{
@@ -258,6 +267,7 @@ pub fn main() !void {
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
             file_opt,
+            force_opt,
             work_opt,
         },
         .target = cli.CommandTarget{
