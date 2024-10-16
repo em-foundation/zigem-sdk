@@ -47,7 +47,7 @@ pub const EM__TARG = struct {
     pub fn em__run() void {
         em.print("\nEx01_TickerP program startup\n\n", .{});
         printStatus();
-        AppBut.onPressed(onButtonPressed, .{ .min = min_press_time, .max = max_press_time });
+        AppBut.onPressed(EM__TARG.onButtonPressed, .{ .min = min_press_time, .max = max_press_time });
         app_ticker.start(max_app_led_ticks, &appTickCb);
         sys_ticker.start(max_sys_led_ticks, &sysTickCb);
         print_ticker.start(print_ticks, &printTickCb);
@@ -124,3 +124,13 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|de66dfad5f9bc8a2f5518ed2677570daa743506c24955da0f32ba78715460cb0|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const onButtonPressed = EM__TARG.onButtonPressed;

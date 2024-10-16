@@ -65,3 +65,8 @@ pub fn setInternalPullup(enable: bool) void {
 pub fn toggle() void {
     return;
 }
+
+//->> zigem publish #|ee1468bbae81a1f5d4020641b10ac54e1708e66b2edf7e46b30e8e69ac3b2097|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

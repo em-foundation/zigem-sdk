@@ -28,8 +28,6 @@ pub const Ticker = struct {
     }
 };
 
-pub const createM = EM__META.createM;
-
 pub const EM__META = struct {
     //
     pub fn createM() Obj {
@@ -61,3 +59,14 @@ pub const EM__TARG = struct {
         ticker._tick_cb = null;
     }
 };
+
+//->> zigem publish #|eb12c8987db987206875748eb0cbe2d86501850fae0ebd25092bfd6db68c6304|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const createM = EM__META.createM;
+
+//->> EM__TARG publics
+pub const alarmFB = EM__TARG.alarmFB;

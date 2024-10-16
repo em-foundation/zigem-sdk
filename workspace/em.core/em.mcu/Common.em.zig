@@ -41,3 +41,8 @@ pub const Mcu = if (em.IS_META) .{} else em__C.Mcu.unwrap();
 pub const MsCounter = if (em.IS_META) .{} else em__C.MsCounter.unwrap();
 pub const Uptimer = if (em.IS_META) .{} else em__C.Uptimer.unwrap();
 pub const UsCounter = if (em.IS_META) .{} else em__C.UsCounter.unwrap();
+
+//->> zigem publish #|c0c178829c8f2d3b29ea49b400328712ddb0372a16b862dc052a82b1f7f24808|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

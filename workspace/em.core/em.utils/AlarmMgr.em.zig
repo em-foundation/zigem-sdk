@@ -32,8 +32,6 @@ pub const Alarm = struct {
     }
 };
 
-pub const createM = EM__META.createM;
-
 const Secs24p8 = TimeTypes.Secs24p8;
 const Thresh = WakeupTimerI.Thresh;
 
@@ -102,3 +100,13 @@ pub const EM__TARG = struct {
         setup(alarm, WakeupTimer.secsAligned(delta));
     }
 };
+
+//->> zigem publish #|a7cfb7aa99a3a3a8aedc66d03d7ee21ec8b591e65b445cd16829bba5d8ca3ed4|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const createM = EM__META.createM;
+
+//->> EM__TARG publics

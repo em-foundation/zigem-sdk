@@ -16,13 +16,6 @@ pub const x_DbgD = em__C.DbgD;
 const Common = em.import.@"em.mcu/Common";
 const GpioI = em.import.@"em.hal/GpioI";
 
-pub const mark = EM__TARG.mark;
-pub const minus = EM__TARG.minus;
-pub const plus = EM__TARG.plus;
-pub const pulse = EM__TARG.pulse;
-pub const reset = EM__TARG.reset;
-pub const startup = EM__TARG.startup;
-
 pub const EM__TARG = struct {
     //
     const DbgA = em__C.DbgA.unwrap();
@@ -98,3 +91,16 @@ pub const EM__TARG = struct {
         Dbg.set();
     }
 };
+
+//->> zigem publish #|a6e0fa699233cdbfc427ae250109410cc7362cf6c9d50c7b2fd5c3ee18d8a0f8|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const mark = EM__TARG.mark;
+pub const minus = EM__TARG.minus;
+pub const plus = EM__TARG.plus;
+pub const pulse = EM__TARG.pulse;
+pub const reset = EM__TARG.reset;
+pub const startup = EM__TARG.startup;

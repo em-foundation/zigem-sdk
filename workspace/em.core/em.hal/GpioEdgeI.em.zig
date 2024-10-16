@@ -53,3 +53,8 @@ pub fn setDetectFallingEdge() void {
 pub fn setDetectRisingEdge() void {
     return;
 }
+
+//->> zigem publish #|f2f217fd35c8036d5ecb5090afd53a610ac1f0062740b6930bbefb4c25f4be67|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

@@ -67,3 +67,10 @@ fn wr4(v: u32) void {
     Uart.put(@intCast(((v >> 8) & 0xFF)));
     Uart.put(@intCast(((v >> 0) & 0xFF)));
 }
+
+//->> zigem publish #|27cc3cf97c287ab56ba260a4209a2aabcfb9d3200fd88fea90b300e79f87829b|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics

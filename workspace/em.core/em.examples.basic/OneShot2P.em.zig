@@ -16,10 +16,6 @@ pub const EM__META = struct {
     pub fn em__constructM() void {
         em__C.blinkF.setM(FiberMgr.createM(em__U.fxn("blinkFB", FiberMgr.BodyArg)));
     }
-
-    pub fn blinkFB(a: FiberMgr.BodyArg) void {
-        EM__TARG.blinkFB(a);
-    }
 };
 
 pub const EM__TARG = struct {
@@ -47,3 +43,13 @@ pub const EM__TARG = struct {
         blinkF.post();
     }
 };
+
+//->> zigem publish #|cc9fa597e73e317ae0db5b8247a21eda5e32b2175805744c156fd835e9c53359|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const blinkFB = EM__TARG.blinkFB;

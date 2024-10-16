@@ -12,10 +12,6 @@ pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const PollFxn = *const fn () bool;
 
-pub const pause = EM__TARG.pause;
-pub const poll = EM__TARG.poll;
-pub const upause = EM__TARG.upause;
-
 pub const EM__TARG = struct {
     //
     const OneShot = em__C.OneShot.unwrap();
@@ -47,3 +43,13 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|294ebdc152639dc1c09e0aa4cef63f76afdece74631f860e432ddd046b8537a4|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const pause = EM__TARG.pause;
+pub const poll = EM__TARG.poll;
+pub const upause = EM__TARG.upause;

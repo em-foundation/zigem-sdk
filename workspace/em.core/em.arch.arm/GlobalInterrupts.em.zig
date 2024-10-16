@@ -3,11 +3,6 @@ pub const em__U = em.module(@This(), .{ .inherits = GlobalInterruptsI });
 
 pub const GlobalInterruptsI = em.import.@"em.hal/GlobalInterruptsI";
 
-pub const disable = EM__TARG.disable;
-pub const enable = EM__TARG.enable;
-pub const isEnabled = EM__TARG.isEnabled;
-pub const restore = EM__TARG.restore;
-
 pub const EM__TARG = struct {
     //
     pub fn disable() u32 {
@@ -40,3 +35,14 @@ pub const EM__TARG = struct {
         );
     }
 };
+
+//->> zigem publish #|3d1539f9000dcdadbc29dcb9a3608001eb78c7259c93bafaa297cf2f86bb2597|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const isEnabled = EM__TARG.isEnabled;
+pub const restore = EM__TARG.restore;

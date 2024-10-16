@@ -14,3 +14,8 @@ pub fn stop(o_raw: ?*u32) u32 {
     _ = o_raw;
     return 0;
 }
+
+//->> zigem publish #|b6b42c9068df99baef013d599f4368558128a0532d336b2503bc88d0a976edad|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

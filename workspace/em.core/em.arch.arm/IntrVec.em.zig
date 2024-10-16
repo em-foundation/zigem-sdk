@@ -12,9 +12,6 @@ export fn DEFAULT_isr() void {
     EM__TARG.defaultIsr();
 }
 
-pub const addIntrM = EM__META.addIntrM;
-pub const useIntrM = EM__META.useIntrM;
-
 pub const EM__META = struct {
     //
     var name_tab = em__C.name_tab;
@@ -142,3 +139,14 @@ pub const EM__TARG = struct {
 //        %%[>frame[i]]
 //    end
 //    fail
+
+//->> zigem publish #|24a8465cad4c5c963349d5271cd50739e6bfe5ca3ef4f67f2a67a6d420dc2cd2|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const addIntrM = EM__META.addIntrM;
+pub const useIntrM = EM__META.useIntrM;
+
+//->> EM__TARG publics
