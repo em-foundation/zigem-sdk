@@ -11,7 +11,7 @@ const Publisher = @import("./Publisher.zig");
 const Renderer = @import("./Renderer.zig");
 const Session = @import("./Session.zig");
 
-const writer = std.io.getStdOut().writer();
+var writer: @TypeOf(std.io.getStdOut().writer()) = undefined;
 
 var t0: f80 = 0.0;
 
@@ -147,6 +147,7 @@ fn printDone() !void {
 
 pub fn main() !void {
     defer Heap.deinit();
+    writer = std.io.getStdOut().writer();
     t0 = @floatFromInt(std.time.milliTimestamp());
     var runner = try cli.AppRunner.init(Heap.get());
 
