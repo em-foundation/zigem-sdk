@@ -13,9 +13,12 @@ pub fn exec(path: []const u8, force: bool) !void {
     const norm = try Fs.normalize(path);
     const txt = Fs.readFileZ(norm);
     const mark = std.mem.indexOf(u8, txt, "//->>");
-    const src = std.mem.trimRight(u8, if (mark) |m| txt[0..m] else txt, "\r\n");
+    const src = if (mark) |m| txt[0..m] else txt;
+    const srcZ = try std.fmt.allocPrintZ(Heap.get(), "{s}", .{src});
+    ast = try std.zig.Ast.parse(Heap.get(), srcZ, .zig);
+    const ren_src = try ast.render(Heap.get());
     var digest: [32]u8 = undefined;
-    std.crypto.hash.sha2.Sha256.hash(src, &digest, .{});
+    std.crypto.hash.sha2.Sha256.hash(ren_src, &digest, .{});
     const hbuf = std.fmt.bytesToHex(digest, .lower);
     if (mark) |m| {
         const suf = txt[m + 1 ..];
@@ -25,19 +28,16 @@ pub fn exec(path: []const u8, force: bool) !void {
         const suf2 = suf1[0..idx2];
         if (!force and std.mem.eql(u8, &hbuf, suf2)) return;
     }
-    const srcZ = try std.fmt.allocPrintZ(Heap.get(), "{s}", .{src});
-    ast = try std.zig.Ast.parse(Heap.get(), srcZ, .zig);
     file = try Out.open(norm);
     const fmt =
         \\{s}
-        \\
         \\//->> zigem publish #|{s}|#
         \\
         \\//->> generated source code -- do not modify
         \\//->> all of these lines can be safely deleted
         \\
     ;
-    file.print(fmt, .{ src, hbuf });
+    file.print(fmt, .{ ren_src, hbuf });
     genDecls();
     file.close();
 }
