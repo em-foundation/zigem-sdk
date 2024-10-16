@@ -34,12 +34,6 @@ pub const Elem = struct {
 
 pub const Comparator = fn (a: Data.Obj, b: Data.Obj) i32;
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
@@ -335,3 +329,17 @@ pub const EM__TARG = struct {
         return @bitCast(ret);
     }
 };
+
+//->> zigem publish #|120119cdb3ac2e38715c255d1a6bf1d677e56e60d9368bafeec59c23e411ac7c|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

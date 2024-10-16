@@ -12,12 +12,6 @@ pub const Utils = em.import.@"em.coremark/Utils";
 pub const NUM_ALGS: u8 = 3;
 pub const TOTAL_DATA_SIZE: u16 = 2000;
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__META = struct {
     //
     pub fn em__configureM() void {
@@ -68,3 +62,17 @@ pub const EM__TARG = struct {
         StateBench.setup();
     }
 };
+
+//->> zigem publish #|2e8196303ff0f02bb7a986e20dc05613a17ffae4df0d2c2c9ba54e926922cbf0|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

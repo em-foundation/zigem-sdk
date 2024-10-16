@@ -14,13 +14,6 @@ pub const Kind = enum { FINAL, LIST, MATRIX, STATE, ZZZ_ };
 pub const seed_t = u16;
 pub const sum_t = u16;
 
-pub const bindSeedM = EM__META.bindSeedM;
-
-pub const bindCrc = EM__TARG.bindCrc;
-pub const getCrc = EM__TARG.getCrc;
-pub const getSeed = EM__TARG.getSeed;
-pub const setCrc = EM__TARG.setCrc;
-
 pub const EM__META = struct {
     //
     pub fn em__initM() void {
@@ -56,3 +49,17 @@ pub const EM__TARG = struct {
         crc_tab[@intFromEnum(kind)] = crc;
     }
 };
+
+//->> zigem publish #|aa3bb2b89d2f13697c7b6cc4bafcfcdd548c6d126977513db57437e8b7a82101|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const bindSeedM = EM__META.bindSeedM;
+
+//->> EM__TARG publics
+pub const bindCrc = EM__TARG.bindCrc;
+pub const getCrc = EM__TARG.getCrc;
+pub const getSeed = EM__TARG.getSeed;
+pub const setCrc = EM__TARG.setCrc;

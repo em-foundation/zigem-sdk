@@ -36,3 +36,8 @@ pub fn setup() void {
     // TODO
     return;
 }
+
+//->> zigem publish #|6628a9e19a3f6eaa52af8b6afbca3c8992baa8339accee9057da9abe9755ad3c|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

@@ -12,12 +12,6 @@ pub const c_memsize = em__C.memsize;
 pub const Crc = em.import.@"em.coremark/Crc";
 pub const Utils = em.import.@"em.coremark/Utils";
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__TARG = struct {
     //
     const StringBuf = [*]u8;
@@ -244,3 +238,15 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|704001cb26967e2961ce94a4fcc493ce46061be1ccb74a18542d7f37cbf19c80|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

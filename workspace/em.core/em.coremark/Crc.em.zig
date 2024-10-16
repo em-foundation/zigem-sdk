@@ -4,9 +4,6 @@ pub const em__U = em.module(@This(), .{});
 pub const Utils = em.import.@"em.coremark/Utils";
 pub const sum_t = Utils.sum_t;
 
-pub const add16 = EM__TARG.add16;
-pub const add32 = EM__TARG.add32;
-
 pub const EM__TARG = struct {
     //
     pub fn add16(val: i16, old_crc: sum_t) sum_t {
@@ -49,3 +46,12 @@ pub const EM__TARG = struct {
         return crc;
     }
 };
+
+//->> zigem publish #|ed7fcf5e75639a350d9856da8d72a86eca286d189023f1f8aa475bc2e6786e68|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const add16 = EM__TARG.add16;
+pub const add32 = EM__TARG.add32;

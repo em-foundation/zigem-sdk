@@ -19,12 +19,6 @@ pub const Utils = em.import.@"em.coremark/Utils";
 pub const matdat_t = i16;
 pub const matres_t = i32;
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
@@ -204,3 +198,17 @@ pub const EM__TARG = struct {
         return ret;
     }
 };
+
+//->> zigem publish #|e3561943ed6c9c676024a7d97bdef187fc5941609af826f2bde966571cfcb2b7|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;
