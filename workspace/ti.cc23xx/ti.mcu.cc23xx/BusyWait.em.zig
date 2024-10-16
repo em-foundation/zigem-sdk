@@ -7,10 +7,11 @@ pub const BusyWaitI = em.import.@"em.hal/BusyWaitI";
 pub const EM__CONFIG = struct {
     scalar: em.Param(u8),
 };
-pub const c_scalar = em__C.scalar;
 
 pub const EM__META = struct {
     //
+    pub const c_scalar = em__C.scalar;
+
     pub fn em__initM() void {
         em__C.scalar.setM(6);
     }
@@ -28,12 +29,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|ee82685f0ea6a00aee90e1fda5cfbde9ccce0d9b8c7edc241cb303d108cecd1c|#
+//->> zigem publish #|56fd55c8b3b195d743b156b6e20f16213fc91285b959b022a1d6cda0dacae4fc|#
 
 //->> generated source code -- do not modify
 //->> all of these lines can be safely deleted
 
 //->> EM__META publics
+pub const c_scalar = EM__META.c_scalar;
 
 //->> EM__TARG publics
 pub const wait = EM__TARG.wait;

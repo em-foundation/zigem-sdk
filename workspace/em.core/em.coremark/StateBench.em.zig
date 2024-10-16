@@ -7,10 +7,14 @@ pub const em__C = em__U.config(EM__CONFIG);
 pub const EM__CONFIG = struct {
     memsize: em.Param(u16),
 };
-pub const c_memsize = em__C.memsize;
 
 pub const Crc = em.import.@"em.coremark/Crc";
 pub const Utils = em.import.@"em.coremark/Utils";
+
+pub const EM__META = struct {
+    //
+    pub const c_memsize = em__C.memsize;
+};
 
 pub const EM__TARG = struct {
     //
@@ -239,10 +243,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|0e3507a9cfdc1f4850ce76d62a79738422c23e6b8a9f5d5c5c0268e52ee2d0d2|#
+//->> zigem publish #|10cfce28fbd971af60303e496aa54da3bdb7ade5ac581af2f1f05bef55817ab4|#
 
 //->> generated source code -- do not modify
 //->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const c_memsize = EM__META.c_memsize;
 
 //->> EM__TARG publics
 pub const dump = EM__TARG.dump;
