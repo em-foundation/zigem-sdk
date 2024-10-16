@@ -8,13 +8,17 @@ pub const EM__CONFIG = struct {
     DbgC: em.Proxy(GpioI),
     DbgD: em.Proxy(GpioI),
 };
-pub const x_DbgA = em__C.DbgA;
-pub const x_DbgB = em__C.DbgB;
-pub const x_DbgC = em__C.DbgC;
-pub const x_DbgD = em__C.DbgD;
 
 const Common = em.import.@"em.mcu/Common";
 const GpioI = em.import.@"em.hal/GpioI";
+
+pub const EM__META = struct {
+    //
+    pub const x_DbgA = em__C.DbgA;
+    pub const x_DbgB = em__C.DbgB;
+    pub const x_DbgC = em__C.DbgC;
+    pub const x_DbgD = em__C.DbgD;
+};
 
 pub const EM__TARG = struct {
     //
@@ -92,10 +96,16 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|a6e0fa699233cdbfc427ae250109410cc7362cf6c9d50c7b2fd5c3ee18d8a0f8|#
+//->> zigem publish #|e0466044edba7fbe70926aad54f46c38fd937ce9b399f863d341dc4675c5d3cd|#
 
 //->> generated source code -- do not modify
 //->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const x_DbgA = EM__META.x_DbgA;
+pub const x_DbgB = EM__META.x_DbgB;
+pub const x_DbgC = EM__META.x_DbgC;
+pub const x_DbgD = EM__META.x_DbgD;
 
 //->> EM__TARG publics
 pub const mark = EM__TARG.mark;

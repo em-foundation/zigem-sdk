@@ -9,10 +9,11 @@ pub const GpioI = em.import.@"em.hal/GpioI";
 pub const EM__CONFIG = struct {
     TxPin: em.Proxy(GpioI),
 };
-pub const x_TxPin = em__C.TxPin;
 
 pub const EM__META = struct {
     //
+    pub const x_TxPin = em__C.TxPin;
+
     pub fn em__configureM() void {
         Idle.addSleepEnterCbM(em__U.fxn("sleepEnter", Idle.SleepCbArg));
         Idle.addSleepLeaveCbM(em__U.fxn("sleepLeave", Idle.SleepCbArg));
@@ -57,12 +58,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|4c11f0f5e495e8bc58a8f7fee2e81998a7377e74e718925195b9572558053395|#
+//->> zigem publish #|23088d3ec420f88e5f8d765e10272b527e8cc26ccc99921b9682990d886ace75|#
 
 //->> generated source code -- do not modify
 //->> all of these lines can be safely deleted
 
 //->> EM__META publics
+pub const x_TxPin = EM__META.x_TxPin;
 
 //->> EM__TARG publics
 pub const flush = EM__TARG.flush;

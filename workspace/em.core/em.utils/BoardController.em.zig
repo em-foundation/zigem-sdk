@@ -5,10 +5,13 @@ pub const em__C = em__U.config(EM__CONFIG);
 pub const EM__CONFIG = struct {
     Led: em.Proxy(LedI),
 };
-pub const x_Led = em__C.Led;
-
 pub const Common = em.import.@"em.mcu/Common";
 pub const LedI = em.import.@"em.hal/LedI";
+
+pub const EM__META = struct {
+    //
+    pub const x_Led = em__C.Led;
+};
 
 pub const EM__TARG = struct {
     //
@@ -56,9 +59,12 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|e5fa3f18d2dcf099b1bc1468f3905d82448965c5d8ab05cac9df7fb2e67ecf18|#
+//->> zigem publish #|1561c4421e821d80c6feeb3e6a47c53365d4b624bdb5382a71dafcfb1ff26e55|#
 
 //->> generated source code -- do not modify
 //->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const x_Led = EM__META.x_Led;
 
 //->> EM__TARG publics
