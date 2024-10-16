@@ -124,3 +124,8 @@ pub fn em__generateS(comptime name: []const u8) type {
         };
     };
 }
+
+//->> zigem publish #|eb5ec40a5f1bbd51c8092be8747b9acd033505bb2fcfed038c53a41e6a4b4d96|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

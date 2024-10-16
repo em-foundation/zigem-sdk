@@ -14,8 +14,6 @@ pub const HandlerInfo = struct {
     handler: GpioEdgeI.HandlerFxn,
 };
 
-pub const addHandlerInfoM = EM__META.addHandlerInfoM;
-
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
@@ -47,3 +45,13 @@ pub const EM__TARG = struct {
         reg(hal.GPIO_BASE + hal.GPIO_O_ICLR).* = 0xffffffff; // TODO: use `mis`
     }
 };
+
+//->> zigem publish #|54389d74cb44aa925eb7b56ebaea77645c3e60cd34cb0e678b6d75d6c8c284d1|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const addHandlerInfoM = EM__META.addHandlerInfoM;
+
+//->> EM__TARG publics

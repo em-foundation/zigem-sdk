@@ -11,11 +11,6 @@ pub const EM__CONFIG = struct {
 };
 pub const x_TxPin = em__C.TxPin;
 
-pub const flush = EM__TARG.flush;
-pub const put = EM__TARG.put;
-pub const sleepEnter = EM__TARG.sleepEnter;
-pub const sleepLeave = EM__TARG.sleepLeave;
-
 pub const EM__META = struct {
     //
     pub fn em__configureM() void {
@@ -61,3 +56,16 @@ pub const EM__TARG = struct {
         reg(hal.UART0_BASE + hal.UART_O_CTL).* |= hal.UART_CTL_UARTEN;
     }
 };
+
+//->> zigem publish #|4c11f0f5e495e8bc58a8f7fee2e81998a7377e74e718925195b9572558053395|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const flush = EM__TARG.flush;
+pub const put = EM__TARG.put;
+pub const sleepEnter = EM__TARG.sleepEnter;
+pub const sleepLeave = EM__TARG.sleepLeave;

@@ -34,3 +34,8 @@ pub fn em__configureM() void {
         IntrVec.addIntrM(n);
     }
 }
+
+//->> zigem publish #|943e41e45af33391ef31430f8526732013cb4807be3ae021510dba1db6c3c615|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

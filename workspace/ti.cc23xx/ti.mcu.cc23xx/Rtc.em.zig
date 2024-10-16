@@ -4,11 +4,6 @@ pub const em__U = em.module(@This(), .{});
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
 pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
-pub const disable = EM__TARG.disable;
-pub const enable = EM__TARG.enable;
-pub const getRawTime = EM__TARG.getRawTime;
-pub const toThresh = EM__TARG.toThresh;
-
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
@@ -71,3 +66,16 @@ export fn CPUIRQ0_isr() void {
     if (em.IS_META) return;
     EM__TARG.CPUIRQ0_isr();
 }
+
+//->> zigem publish #|c3439747d7fd1854741f00935f4c0cbda1d0f6af598277d3db7d47b6776e99c8|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const getRawTime = EM__TARG.getRawTime;
+pub const toThresh = EM__TARG.toThresh;

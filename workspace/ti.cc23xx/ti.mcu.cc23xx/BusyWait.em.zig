@@ -9,8 +9,6 @@ pub const EM__CONFIG = struct {
 };
 pub const c_scalar = em__C.scalar;
 
-pub const wait = EM__TARG.wait;
-
 pub const EM__META = struct {
     //
     pub fn em__initM() void {
@@ -29,3 +27,13 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|ee82685f0ea6a00aee90e1fda5cfbde9ccce0d9b8c7edc241cb303d108cecd1c|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const wait = EM__TARG.wait;

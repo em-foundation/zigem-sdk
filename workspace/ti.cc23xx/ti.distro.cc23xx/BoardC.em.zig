@@ -76,3 +76,8 @@ pub fn em__configureM() void {
     SysLedPin.c_pin.setM(14);
     SysLed.x_Pin.setM(SysLedPin);
 }
+
+//->> zigem publish #|061a1864f1f7d865d5baf50fd9f1e1af065c65f9a33ac6c5de397e36c8392be5|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
