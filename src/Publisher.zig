@@ -20,25 +20,30 @@ pub fn exec(path: []const u8, force: bool) !void {
     var digest: [32]u8 = undefined;
     std.crypto.hash.sha2.Sha256.hash(ren_src, &digest, .{});
     const hbuf = std.fmt.bytesToHex(digest, .lower);
+    var done = false;
     if (mark) |m| {
-        const suf = txt[m + 1 ..];
+        const suf = txt[m..];
         const idx1 = std.mem.indexOf(u8, suf, "|").?;
         const suf1 = suf[idx1 + 1 ..];
         const idx2 = std.mem.indexOf(u8, suf1, "|").?;
         const suf2 = suf1[0..idx2];
-        if (!force and std.mem.eql(u8, &hbuf, suf2)) return;
+        done = !force and std.mem.eql(u8, &hbuf, suf2);
     }
     file = try Out.open(norm);
-    const fmt =
-        \\{s}
-        \\//->> zigem publish #|{s}|#
-        \\
-        \\//->> generated source code -- do not modify
-        \\//->> all of these lines can be safely deleted
-        \\
-    ;
-    file.print(fmt, .{ ren_src, hbuf });
-    genDecls();
+    if (done) {
+        file.print("{s}\n{s}", .{ ren_src, txt[mark.?..] });
+    } else {
+        const fmt =
+            \\{s}
+            \\//->> zigem publish #|{s}|#
+            \\
+            \\//->> generated source code -- do not modify
+            \\//->> all of these lines can be safely deleted
+            \\
+        ;
+        file.print(fmt, .{ ren_src, hbuf });
+        genDecls();
+    }
     file.close();
 }
 
