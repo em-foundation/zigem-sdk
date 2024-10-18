@@ -20,7 +20,6 @@ pub fn em__generateS(comptime name: []const u8) type {
             },
         );
         pub const em__C = em__U.config(EM__CONFIG);
-        pub const c_pin = em__C.pin;
 
         pub const Aux = em.import.@"ti.mcu.cc23xx/GpioEdgeAux";
         pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
@@ -31,16 +30,10 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const HandlerArg = GpioEdgeI.HandlerArg;
         pub const HandlerFxn = GpioEdgeI.HandlerFxn;
 
-        pub const setDetectHandlerM = EM__META.setDetectHandlerM;
-
-        pub const clearDetect = EM__TARG.clearDetect;
-        pub const disableDetect = EM__TARG.disableDetect;
-        pub const enableDetect = EM__TARG.enableDetect;
-        pub const setDetectFallingEdge = EM__TARG.setDetectFallingEdge;
-        pub const setDetectRisingEdge = EM__TARG.setDetectRisingEdge;
-
         pub const EM__META = struct {
             //
+            pub const c_pin = em__C.pin;
+
             pub fn em__initM() void {
                 em__C.pin.setM(-1);
             }
@@ -144,10 +137,20 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub fn toggle() void {
             Pin.toggle();
         }
+
+        //->> zigem publish #|84b39a3a910248630c94bfe5877016e16c6520a8886ee18000cd9b9471969542|#
+
+        //->> EM__META publics
+        pub const c_pin = EM__META.c_pin;
+        pub const setDetectHandlerM = EM__META.setDetectHandlerM;
+
+        //->> EM__TARG publics
+        pub const clearDetect = EM__TARG.clearDetect;
+        pub const disableDetect = EM__TARG.disableDetect;
+        pub const enableDetect = EM__TARG.enableDetect;
+        pub const setDetectFallingEdge = EM__TARG.setDetectFallingEdge;
+        pub const setDetectRisingEdge = EM__TARG.setDetectRisingEdge;
+
+        //->> zigem publish -- end of generated code
     };
 }
-
-//->> zigem publish #|d9c14ceb4bb5daac42d3296a4aeced745b1b2d2570a9d815dd4257507c626aab|#
-
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted

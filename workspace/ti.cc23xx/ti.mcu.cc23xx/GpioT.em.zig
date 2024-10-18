@@ -17,24 +17,10 @@ pub fn em__generateS(comptime name: []const u8) type {
             },
         );
         pub const em__C = em__U.config(EM__CONFIG);
-        pub const c_pin = em__C.pin;
-
-        pub const clear = EM__TARG.clear;
-        pub const functionSelect = EM__TARG.functionSelect;
-        pub const get = EM__TARG.get;
-        pub const isInput = EM__TARG.isInput;
-        pub const isOutput = EM__TARG.isOutput;
-        pub const makeInput = EM__TARG.makeInput;
-        pub const makeOutput = EM__TARG.makeOutput;
-        pub const pinId = EM__TARG.pinId;
-        pub const reset = EM__TARG.reset;
-        pub const set = EM__TARG.set;
-        pub const setInternalPulldown = EM__TARG.setInternalPulldown;
-        pub const setInternalPullup = EM__TARG.setInternalPullup;
-        pub const toggle = EM__TARG.toggle;
 
         pub const EM__META = struct {
             //
+            pub const c_pin = em__C.pin;
             pub fn em__initM() void {
                 em__C.pin.setM(-1);
             }
@@ -122,10 +108,27 @@ pub fn em__generateS(comptime name: []const u8) type {
                 if (is_def) reg(hal.GPIO_BASE + hal.GPIO_O_DOUTTGL31_0).* = mask;
             }
         };
+
+        //->> zigem publish #|c98f0bd34a614805555a0802c6202527bc7868d466d1c25de8f63a6d198067e0|#
+
+        //->> EM__META publics
+        pub const c_pin = EM__META.c_pin;
+
+        //->> EM__TARG publics
+        pub const clear = EM__TARG.clear;
+        pub const functionSelect = EM__TARG.functionSelect;
+        pub const get = EM__TARG.get;
+        pub const isInput = EM__TARG.isInput;
+        pub const isOutput = EM__TARG.isOutput;
+        pub const makeInput = EM__TARG.makeInput;
+        pub const makeOutput = EM__TARG.makeOutput;
+        pub const pinId = EM__TARG.pinId;
+        pub const reset = EM__TARG.reset;
+        pub const set = EM__TARG.set;
+        pub const setInternalPulldown = EM__TARG.setInternalPulldown;
+        pub const setInternalPullup = EM__TARG.setInternalPullup;
+        pub const toggle = EM__TARG.toggle;
+
+        //->> zigem publish -- end of generated code
     };
 }
-
-//->> zigem publish #|eb5ec40a5f1bbd51c8092be8747b9acd033505bb2fcfed038c53a41e6a4b4d96|#
-
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted

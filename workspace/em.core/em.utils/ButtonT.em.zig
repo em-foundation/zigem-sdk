@@ -23,17 +23,14 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const ButtonI = em.import.@"em.hal/ButtonI";
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const x_Edge = em__C.Edge;
-
         pub const DurationMs = ButtonI.DurationMs;
         pub const OnPressedCbFxn = ButtonI.OnPressedCbFxn;
         pub const OnPressedCbArg = ButtonI.OnPressedCbArg;
 
-        pub const isPressed = EM__TARG.isPressed;
-        pub const onPressed = EM__TARG.onPressed;
-
         pub const EM__META = struct {
             //
+            pub const x_Edge = em__C.Edge;
+
             pub fn em__constructM() void {
                 const fiber = FiberMgr.createM(em__U.fxn("debounceFB", FiberMgr.BodyArg));
                 em__C.debounceF.setM(fiber);
@@ -87,10 +84,18 @@ pub fn em__generateS(comptime name: []const u8) type {
                 }
             }
         };
+
+        //->> zigem publish #|a7be30f6d10980276950fa2190ceb4317f64f73431dc3927c73087968c52840b|#
+
+        //->> EM__META publics
+        pub const x_Edge = EM__META.x_Edge;
+
+        //->> EM__TARG publics
+        pub const buttonHandler = EM__TARG.buttonHandler;
+        pub const debounceFB = EM__TARG.debounceFB;
+        pub const isPressed = EM__TARG.isPressed;
+        pub const onPressed = EM__TARG.onPressed;
+
+        //->> zigem publish -- end of generated code
     };
 }
-
-//->> zigem publish #|3a04132586a1700a1db5231dc304c96254e3c5a4eff31f86ff5ea5b6d7268e51|#
-
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted

@@ -9,51 +9,57 @@ const print = std.debug.print;
 
 var ast: Ast = undefined;
 var file: *Out.File = undefined;
-var lines: std.ArrayList([]const u8) = undefined;
 var members: []const Ast.Node.Index = undefined;
 var tab: []const u8 = undefined;
 
 pub fn exec(path: []const u8, force: bool) !void {
+    //
     const norm = try Fs.normalize(path);
-    const txt = Fs.readFileZ(norm);
-    const mark = std.mem.indexOf(u8, txt, "//->>");
-    const src = if (mark) |m| txt[0..m] else txt;
-    const srcZ = try std.fmt.allocPrintZ(Heap.get(), "{s}", .{src});
-    ast = try Ast.parse(Heap.get(), srcZ, .zig);
-    const ren_src = try ast.render(Heap.get());
-    lines = try mkLines(ren_src);
+    ast = try Ast.parse(Heap.get(), Fs.readFileZ(norm), .zig);
+    const src = try ast.render(Heap.get());
+
+    const mark = std.mem.indexOf(u8, src, "//->>");
+    const src_pre = if (mark) |m| src[0..m] else src;
     var digest: [32]u8 = undefined;
-    std.crypto.hash.sha2.Sha256.hash(ren_src, &digest, .{});
+    std.crypto.hash.sha2.Sha256.hash(src_pre, &digest, .{});
     const hbuf = std.fmt.bytesToHex(digest, .lower);
     var done = false;
     if (mark) |m| {
-        const suf = txt[m..];
+        const suf = src[m..];
         const idx1 = std.mem.indexOf(u8, suf, "|").?;
         const suf1 = suf[idx1 + 1 ..];
         const idx2 = std.mem.indexOf(u8, suf1, "|").?;
         const suf2 = suf1[0..idx2];
         done = !force and std.mem.eql(u8, &hbuf, suf2);
     }
+
     file = try Out.open(norm);
+    defer file.close();
+    if (done) {
+        file.print("{s}", .{src});
+        return;
+    }
+
     const gen_idx = findDecl("em__generateS");
+    var src_hd: []const u8 = src_pre;
+    var src_tl: []const u8 = "";
     if (gen_idx > 0) {
         const gen_fn = ast.nodes.get(gen_idx);
         const gen_body = ast.nodes.get(gen_fn.data.rhs);
         const gen_blk = ast.nodes.get(gen_body.data.lhs);
         members = ast.containerDecl(gen_blk.data.lhs).ast.members;
         tab = "        ";
+        src_tl = "    };\n}\n";
+        if (mark == null) src_hd = src_hd[0 .. src_hd.len - src_tl.len];
     } else {
         members = ast.rootDecls();
         tab = "";
     }
-    if (done) {
-        file.print("{s}\n{s}", .{ ren_src, txt[mark.?..] });
-    } else {
-        file.print("{s}\n{s}//->> zigem publish #|{s}|#\n", .{ ren_src, tab, hbuf });
-        genDecls();
-        file.print("\n{s}//->> zigem publish -- end of generated code\n", .{tab});
-    }
-    file.close();
+
+    file.print("{s}\n{s}//->> zigem publish #|{s}|#\n", .{ src_hd, tab, hbuf });
+    genDecls();
+    file.print("\n{s}//->> zigem publish -- end of generated code\n", .{tab});
+    file.print("{s}", .{src_tl});
 }
 
 fn findDecl(dname: []const u8) Ast.Node.Index {
