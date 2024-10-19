@@ -7,8 +7,23 @@ const Out = @import("./Out.zig");
 const Ast = std.zig.Ast;
 const print = std.debug.print;
 
+const UnitKind = enum {
+    composite,
+    interface,
+    module,
+    template,
+};
+
+const kindMap = std.StaticStringMap(UnitKind).initComptime(.{
+    .{ "composite", UnitKind.composite },
+    .{ "interface", UnitKind.interface },
+    .{ "module", UnitKind.module },
+    .{ "template", UnitKind.template },
+});
+
 var ast: Ast = undefined;
 var file: *Out.File = undefined;
+var lines: std.ArrayList([]const u8) = undefined;
 var members: []const Ast.Node.Index = undefined;
 var tab: []const u8 = undefined;
 
@@ -32,6 +47,8 @@ pub fn exec(path: []const u8, force: bool) !void {
         const suf2 = suf1[0..idx2];
         done = !force and std.mem.eql(u8, &hbuf, suf2);
     }
+
+    zigemTest();
 
     file = try Out.open(norm);
     defer file.close();
@@ -68,6 +85,14 @@ fn findDecl(dname: []const u8) Ast.Node.Index {
         if (std.mem.eql(u8, ast.tokenSlice(decl.main_token + 1), dname)) return idx;
     }
     return 0;
+}
+
+fn findUnitKind() ?UnitKind {
+    const ud = ast.simpleVarDecl(ast.rootDecls()[1]);
+    const init = ast.callFull(ud.ast.init_node);
+    const fe = astNode(init.ast.fn_expr);
+    const id = ast.tokenSlice(fe.data.rhs);
+    return kindMap.get(id);
 }
 
 fn genDecls() void {
@@ -120,4 +145,19 @@ fn walkScope(sname: []const u8, idx: u32) void {
         if (std.mem.startsWith(u8, dname, "em__")) continue;
         file.print("{2s}pub const {0s} = {1s}.{0s};\n", .{ dname, sname, tab });
     }
+}
+
+fn astNode(idx: Ast.Node.Index) Ast.Node {
+    return ast.nodes.get(idx);
+}
+
+fn zigemTest() void {
+    print("{any}\n", .{findUnitKind()});
+
+    // print("{s}\n", .{ast.getNodeSource(init.ast.fn_expr)});
+    //const src = ast.getNodeSource(astNode(init.ast.fn_expr).data.rhs);
+    // print("{s}\n", .{ast.tokenSlice(id.main_token + 1)});
+
+    print("exit.\n", .{});
+    std.process.exit(0);
 }
