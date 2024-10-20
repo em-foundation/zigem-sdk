@@ -7,10 +7,6 @@ pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const HandlerArg = OneShotI.HandlerArg;
 
-pub const disable = EM__TARG.disable;
-pub const enable = EM__TARG.enable;
-pub const uenable = EM__TARG.uenable;
-
 pub const EM__META = struct {
     //
     pub fn em__constructM() void {
@@ -67,3 +63,15 @@ export fn LGPT3_COMB_isr() void {
     if (em.IS_META) return;
     EM__TARG.LGPT3_COMB_isr();
 }
+
+//->> zigem publish #|ab3d0b77b634fb64bfa5aeaca5fcb581947f5e702b0a8328b11ef3d10a2797c0|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const uenable = EM__TARG.uenable;

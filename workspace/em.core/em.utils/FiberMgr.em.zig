@@ -27,10 +27,6 @@ pub const Fiber = struct {
     }
 };
 
-pub const createM = EM__META.createM;
-
-pub const run = EM__TARG.run;
-
 pub const EM__META = struct {
     //
     pub fn createM(body: BodyFxn) Obj {
@@ -94,3 +90,14 @@ pub const EM__TARG = struct {
         Common.GlobalInterrupts.restore(key);
     }
 };
+
+//->> zigem publish #|d3e7d7d0d8e288d22da3f7cbda34fb49b28d792e02bac18397b778e06bbea45e|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const createM = EM__META.createM;
+
+//->> EM__TARG publics
+pub const run = EM__TARG.run;

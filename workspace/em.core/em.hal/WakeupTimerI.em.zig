@@ -35,3 +35,8 @@ pub fn secsToThresh(secs: Secs24p8) Thresh {
     _ = secs;
     return 0;
 }
+
+//->> zigem publish #|8b8cdde0c4b9e2fa5398e0e17c02ffafe287d77cb8d1201ae494fde2db01f540|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

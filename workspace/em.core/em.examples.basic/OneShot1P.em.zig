@@ -29,3 +29,10 @@ pub const EM__TARG = struct {
         active_flag = false;
     }
 };
+
+//->> zigem publish #|af5956fe16dae1e874dc5767851e8c4e1ec00977a7c8a051729e9f29f20383ed|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics

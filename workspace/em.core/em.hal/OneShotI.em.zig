@@ -29,3 +29,8 @@ pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
     _ = arg;
     return;
 }
+
+//->> zigem publish #|d07f67e01b324c6fa6c380f9e4a64fbefa475ad615178b3fe52fecfb9e62222e|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

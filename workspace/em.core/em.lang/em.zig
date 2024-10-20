@@ -95,39 +95,6 @@ pub fn mkIobj(Itab: type, U: type) Itab {
     return iobj_freeze;
 }
 
-fn mkItab(U: type, I: type) *const anyopaque {
-    comptime {
-        const ti = @typeInfo(I);
-        var fdeclem__list: []const std.builtin.Type.Declaration = &.{};
-        for (ti.Struct.decls) |decl| {
-            const dval = @field(I, decl.name);
-            const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) fdeclem__list = fdeclem__list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
-        }
-        var fldem__list: [fdeclem__list.len]std.builtin.Type.StructField = undefined;
-        for (fdeclem__list, 0..) |fdecl, i| {
-            const func = @field(U, fdecl.name);
-            const func_ptr = &func;
-            fldem__list[i] = std.builtin.Type.StructField{
-                .name = fdecl.name,
-                .type = *const @TypeOf(func),
-                .default_value = @ptrCast(&func_ptr),
-                .is_comptime = false,
-                .alignment = 0,
-            };
-        }
-        const freeze = fldem__list;
-        const ITab = @Type(.{ .Struct = .{
-            .layout = .auto,
-            .fields = freeze[0..],
-            .decls = &.{},
-            .is_tuple = false,
-            .backing_integer = null,
-        } });
-        return @as(*const anyopaque, &ITab{});
-    }
-}
-
 pub fn composite(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .composite, opts);
 }
@@ -174,7 +141,7 @@ pub const Unit = struct {
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
-            .META => {
+            .META, .TARG_CHECK => {
                 return initConfig(CT, self.upath);
             },
             .TARG => {
@@ -368,7 +335,7 @@ pub fn Fxn(PT: type) type {
                 }
             };
         },
-        .TARG => return Fxn_T(PT),
+        .TARG, .TARG_CHECK => return Fxn_T(PT),
     }
 }
 
@@ -434,7 +401,10 @@ pub fn Param_S(T: type) type {
         }
 
         pub fn unwrap(self: *Self) T {
-            return if (IS_META) std.mem.zeroes(T) else self.em__val;
+            return switch (DOMAIN) {
+                .META, .TARG_CHECK => std.mem.zeroes(T),
+                .TARG => self.em__val,
+            };
         }
     };
 }
@@ -482,7 +452,7 @@ pub fn Proxy_S(I: type) type {
         }
 
         pub fn unwrap(self: *const Self) I.EM__SPEC {
-            return self.em__iobj;
+            return if (DOMAIN == .TARG_CHECK) I.EM__SPEC{} else self.em__iobj;
         }
     };
 }
@@ -575,7 +545,7 @@ pub fn fail() void {
             std.log.err("em.fail", .{});
             std.process.exit(1);
         },
-        .TARG => {
+        .TARG, .TARG_CHECK => {
             targ.em__fail();
         },
     }
@@ -587,7 +557,7 @@ pub fn halt() void {
             std.log.info("em.halt", .{});
             std.process.exit(0);
         },
-        .TARG => {
+        .TARG, .TARG_CHECK => {
             targ.em__exit();
         },
     }
@@ -598,7 +568,7 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
         .META => {
             std.log.debug(fmt, args);
         },
-        .TARG => {
+        .TARG, .TARG_CHECK => {
             std.fmt.format(Console.writer(), fmt, args) catch fail();
         },
     }

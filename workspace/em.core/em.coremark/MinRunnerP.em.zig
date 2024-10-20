@@ -25,3 +25,10 @@ pub const EM__TARG = struct {
         em.print("raw = {d}, us = {d}\n", .{ raw, us });
     }
 };
+
+//->> zigem publish #|e352dcac0624edb99ceb42b8a47d68a887e5d4f4a5f065b18725f5c24dac378b|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics

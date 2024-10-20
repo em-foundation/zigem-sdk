@@ -229,3 +229,8 @@ fn genStartup() void {
     ;
     em.writeFile(em.out_root, "startup.c", txt);
 }
+
+//->> zigem publish #|d1b9474b4677bd7226be0c44fb9db3b9dd1f1d937dd52dac3ad7737b3fc593ac|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

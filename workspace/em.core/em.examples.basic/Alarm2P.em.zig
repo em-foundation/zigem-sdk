@@ -42,3 +42,13 @@ pub const EM__TARG = struct {
         em__C.alarm.unwrap().wakeupAligned(TimeTypes.Secs24p8_initMsecs(1_500)); // 1.5s window
     }
 };
+
+//->> zigem publish #|87c2591d6c0fc2ea3b4694b4fc0b090d4d2a77494bf782b8c9f2c5f22ea69474|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const blinkFB = EM__TARG.blinkFB;

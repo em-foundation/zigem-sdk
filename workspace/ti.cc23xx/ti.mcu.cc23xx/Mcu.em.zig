@@ -6,8 +6,6 @@ pub const em__U = em.module(@This(), .{
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const Debug = em.import.@"em.lang/Debug";
 
-pub const startup = EM__TARG.startup;
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
@@ -43,3 +41,11 @@ pub const EM__TARG = struct {
         em.@"%%[a-]"();
     }
 };
+
+//->> zigem publish #|7bba569ce6131e5ade9864b523dee82df30f2bbb3d8543376effd557bb0d4aa8|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const startup = EM__TARG.startup;

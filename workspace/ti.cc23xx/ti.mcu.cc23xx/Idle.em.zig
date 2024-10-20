@@ -14,13 +14,6 @@ pub const EM__CONFIG = struct {
 pub const SleepCbFxn = em.Fxn(SleepCbArg);
 pub const SleepCbArg = struct {};
 
-pub const addSleepEnterCbM = EM__META.addSleepEnterCbM;
-pub const addSleepLeaveCbM = EM__META.addSleepLeaveCbM;
-
-pub const exec = EM__TARG.exec;
-pub const pause = EM__TARG.pause;
-pub const waitOnly = EM__TARG.waitOnly;
-
 pub const EM__META = struct {
     //
     pub fn addSleepEnterCbM(cb: SleepCbFxn) void {
@@ -109,3 +102,17 @@ pub const EM__TARG = struct {
         // TODO
     }
 };
+
+//->> zigem publish #|dc5e3ffee8fcc9470051565da4b8e1471f50639f764cbecb4dc697bb6e0ade94|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const addSleepEnterCbM = EM__META.addSleepEnterCbM;
+pub const addSleepLeaveCbM = EM__META.addSleepLeaveCbM;
+
+//->> EM__TARG publics
+pub const exec = EM__TARG.exec;
+pub const pause = EM__TARG.pause;
+pub const waitOnly = EM__TARG.waitOnly;

@@ -3,9 +3,6 @@ pub const em__U = em.module(@This(), .{ .inherits = MsCounterI });
 
 pub const MsCounterI = em.import.@"em.hal/MsCounterI";
 
-pub const start = EM__TARG.start;
-pub const stop = EM__TARG.stop;
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
@@ -24,3 +21,12 @@ pub const EM__TARG = struct {
         return dt;
     }
 };
+
+//->> zigem publish #|f72d469222d5a6fc2659f42a47b9b7ba99190e2bf12b14302ba016fac5b6db23|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const start = EM__TARG.start;
+pub const stop = EM__TARG.stop;

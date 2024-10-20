@@ -43,3 +43,12 @@ pub const EM__TARG = struct {
         AppLed.off();
     }
 };
+
+//->> zigem publish #|d143ffc4caab9fdcbd7f779250860bdb5bed02791fd3e3ce7612cc8f7449202d|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics

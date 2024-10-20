@@ -11,7 +11,6 @@ pub const EM__CONFIG = struct {
     matB: em.Table(matdat_t, .RW),
     matC: em.Table(matres_t, .RW),
 };
-pub const c_memsize = em__C.memsize;
 
 pub const Crc = em.import.@"em.coremark/Crc";
 pub const Utils = em.import.@"em.coremark/Utils";
@@ -19,14 +18,10 @@ pub const Utils = em.import.@"em.coremark/Utils";
 pub const matdat_t = i16;
 pub const matres_t = i32;
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__META = struct {
     //
+    pub const c_memsize = em__C.memsize;
+
     pub fn em__constructM() void {
         var i: usize = 0;
         var j: usize = 0;
@@ -204,3 +199,18 @@ pub const EM__TARG = struct {
         return ret;
     }
 };
+
+//->> zigem publish #|fc37a8998b0858335d1f46ff256f3d92a740cd03842004455d02162a3ee11019|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const c_memsize = EM__META.c_memsize;
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

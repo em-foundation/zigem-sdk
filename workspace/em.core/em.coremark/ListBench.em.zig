@@ -11,7 +11,6 @@ pub const EM__CONFIG = struct {
     DataOF: em.Factory(Data),
     ElemOF: em.Factory(Elem),
 };
-pub const c_memsize = em__C.memsize;
 
 pub const Common = em.import.@"em.mcu/Common";
 pub const Crc = em.import.@"em.coremark/Crc";
@@ -34,14 +33,10 @@ pub const Elem = struct {
 
 pub const Comparator = fn (a: Data.Obj, b: Data.Obj) i32;
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__META = struct {
     //
+    pub const c_memsize = em__C.memsize;
+
     pub fn em__constructM() void {
         const item_size = 16 + @sizeOf(Data);
         const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.getM())) / @as(f32, @floatFromInt(item_size))))) - 3;
@@ -335,3 +330,18 @@ pub const EM__TARG = struct {
         return @bitCast(ret);
     }
 };
+
+//->> zigem publish #|8ec57e3325f70fa96d3c25cfa297a2459b2f343e373c9a20317bc1e757fc755c|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const c_memsize = EM__META.c_memsize;
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

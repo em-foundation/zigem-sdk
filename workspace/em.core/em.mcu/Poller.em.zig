@@ -5,16 +5,16 @@ pub const em__C = em__U.config(EM__CONFIG);
 pub const EM__CONFIG = struct {
     OneShot: em.Proxy(OneShotI),
 };
-pub const x_OneShot = em__C.OneShot;
 
 pub const Common = em.import.@"em.mcu/Common";
 pub const OneShotI = em.import.@"em.hal/OneShotI";
 
 pub const PollFxn = *const fn () bool;
 
-pub const pause = EM__TARG.pause;
-pub const poll = EM__TARG.poll;
-pub const upause = EM__TARG.upause;
+pub const EM__META = struct {
+    //
+    pub const x_OneShot = em__C.OneShot;
+};
 
 pub const EM__TARG = struct {
     //
@@ -47,3 +47,16 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|a9c7e3925ef06dedb7892a6205cdfffce7c5ea11fc8e5fe60e99eee521d6e4e0|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const x_OneShot = EM__META.x_OneShot;
+
+//->> EM__TARG publics
+pub const pause = EM__TARG.pause;
+pub const poll = EM__TARG.poll;
+pub const upause = EM__TARG.upause;

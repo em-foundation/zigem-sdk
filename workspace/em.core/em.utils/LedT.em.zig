@@ -19,19 +19,14 @@ pub fn em__generateS(comptime name: []const u8) type {
         });
         pub const em__C = em__U.config(EM__CONFIG);
 
-        pub const c_active_low = em__C.active_low;
-        pub const x_Pin = em__C.Pin;
-
         pub const LedI = em.import.@"em.hal/LedI";
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const off = EM__TARG.off;
-        pub const on = EM__TARG.on;
-        pub const toggle = EM__TARG.toggle;
-        pub const wink = EM__TARG.wink;
-
         pub const EM__META = struct {
             //
+            pub const c_active_low = em__C.active_low;
+            pub const x_Pin = em__C.Pin;
+
             pub fn em__initM() void {
                 em__C.active_low.setM(false);
             }
@@ -70,5 +65,19 @@ pub fn em__generateS(comptime name: []const u8) type {
                 EM__TARG.off();
             }
         };
+
+        //->> zigem publish #|f4d6381a6685056a9a2c4b48a5f85ba1e48bccfe30441f3a78d0146bf8acd617|#
+
+        //->> EM__META publics
+        pub const c_active_low = EM__META.c_active_low;
+        pub const x_Pin = EM__META.x_Pin;
+
+        //->> EM__TARG publics
+        pub const off = EM__TARG.off;
+        pub const on = EM__TARG.on;
+        pub const toggle = EM__TARG.toggle;
+        pub const wink = EM__TARG.wink;
+
+        //->> zigem publish -- end of generated code
     };
 }
