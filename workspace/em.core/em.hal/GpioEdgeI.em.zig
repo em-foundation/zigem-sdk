@@ -1,60 +1,70 @@
 pub const em = @import("../../zigem/em.zig");
-pub const em__U = em.interface(@This(), .{ .inherits = GpioI });
-
-pub const GpioI = em.import.@"em.hal/GpioI";
+pub const em__U = em.interface(@This());
 
 pub const HandlerFxn = em.Fxn(HandlerArg);
 pub const HandlerArg = struct {};
 
-pub const EM__SPEC = struct {
-    // GpioI
-    clear: *const @TypeOf(GpioI.clear) = &GpioI.clear,
-    functionSelect: *const @TypeOf(GpioI.functionSelect) = &GpioI.functionSelect,
-    get: *const @TypeOf(GpioI.get) = &GpioI.get,
-    isInput: *const @TypeOf(GpioI.isInput) = &GpioI.isInput,
-    isOutput: *const @TypeOf(GpioI.isOutput) = &GpioI.isOutput,
-    makeInput: *const @TypeOf(GpioI.makeInput) = &GpioI.makeInput,
-    makeOutput: *const @TypeOf(GpioI.makeOutput) = &GpioI.makeOutput,
-    pinId: *const @TypeOf(GpioI.pinId) = &GpioI.pinId,
-    reset: *const @TypeOf(GpioI.reset) = &GpioI.reset,
-    set: *const @TypeOf(GpioI.set) = &GpioI.set,
-    setInternalPullup: *const @TypeOf(GpioI.setInternalPullup) = &GpioI.setInternalPullup,
-    toggle: *const @TypeOf(GpioI.toggle) = &GpioI.toggle,
-    //
-    setDetectHandlerM: *const @TypeOf(setDetectHandlerM) = &setDetectHandlerM,
-    clearDetect: *const @TypeOf(clearDetect) = &clearDetect,
-    disableDetect: *const @TypeOf(disableDetect) = &disableDetect,
-    enableDetect: *const @TypeOf(enableDetect) = &enableDetect,
-    setDetectFallingEdge: *const @TypeOf(setDetectFallingEdge) = &setDetectFallingEdge,
-    setDetectRisingEdge: *const @TypeOf(setDetectRisingEdge) = &setDetectRisingEdge,
+pub const EM__META = struct {
+    setDetectHandlerM: fn (h: HandlerFxn) void,
 };
 
-pub fn setDetectHandlerM(h: HandlerFxn) void {
+pub const EM__TARG = struct {
+    clearDetect: fn () void,
+    disableDetect: fn () void,
+    getState: fn () bool,
+    enableDetect: fn () void,
+    setDetectFallingEdge: fn () void,
+    setDetectRisingEdge: fn () void,
+};
+
+//->> zigem publish #|d0428b25dcecca2b6f68a4b2337c6e1a8f74945d2961ca23ccb9d2fd3003f2cc|#
+
+pub fn setDetectHandlerM (h: HandlerFxn) void {
+    // TODO
     _ = h;
-    return;
+    return em.std.mem.zeroes(void);
 }
 
-pub fn clearDetect() void {
-    return;
+pub fn clearDetect () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn disableDetect() void {
-    return;
+pub fn disableDetect () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn enableDetect() void {
-    return;
+pub fn getState () bool {
+    // TODO
+    return em.std.mem.zeroes(bool);
 }
 
-pub fn setDetectFallingEdge() void {
-    return;
+pub fn enableDetect () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn setDetectRisingEdge() void {
-    return;
+pub fn setDetectFallingEdge () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-//->> zigem publish #|f2f217fd35c8036d5ecb5090afd53a610ac1f0062740b6930bbefb4c25f4be67|#
+pub fn setDetectRisingEdge () void {
+    // TODO
+    return em.std.mem.zeroes(void);
+}
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+const em__Self = @This();
+
+pub const EM__SPEC = struct {
+    setDetectHandlerM: *const @TypeOf(em__Self.setDetectHandlerM) = &em__Self.setDetectHandlerM,
+    clearDetect: *const @TypeOf(em__Self.clearDetect) = &em__Self.clearDetect,
+    disableDetect: *const @TypeOf(em__Self.disableDetect) = &em__Self.disableDetect,
+    getState: *const @TypeOf(em__Self.getState) = &em__Self.getState,
+    enableDetect: *const @TypeOf(em__Self.enableDetect) = &em__Self.enableDetect,
+    setDetectFallingEdge: *const @TypeOf(em__Self.setDetectFallingEdge) = &em__Self.setDetectFallingEdge,
+    setDetectRisingEdge: *const @TypeOf(em__Self.setDetectRisingEdge) = &em__Self.setDetectRisingEdge,
+};
+
+//->> zigem publish -- end of generated code
