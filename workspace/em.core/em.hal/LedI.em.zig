@@ -1,25 +1,35 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
-pub const EM__SPEC = struct {
-    off: *const @TypeOf(off) = &off,
-    on: *const @TypeOf(on) = &on,
-    toggle: *const @TypeOf(toggle) = &toggle,
+pub const EM__TARG = struct {
+    off: fn () void,
+    on: fn () void,
+    toggle: fn () void,
 };
 
-pub fn off() void {
-    return;
+//->> zigem publish #|1c55db3091534441c24369c70c4a2fe8ea7addca24a81ea9c3480173364e557a|#
+
+fn off () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn on() void {
-    return;
+fn on () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn toggle() void {
-    return;
+fn toggle () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-//->> zigem publish #|8e656bdabb1bbc887135f1c632a142218f77678dc4a0a941e3f60b275a79b81d|#
+const em__Self = @This();
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+pub const EM__SPEC = struct {
+    off: *const @TypeOf(em__Self.off) = &em__Self.off,
+    on: *const @TypeOf(em__Self.on) = &em__Self.on,
+    toggle: *const @TypeOf(em__Self.toggle) = &em__Self.toggle,
+};
+
+//->> zigem publish -- end of generated code

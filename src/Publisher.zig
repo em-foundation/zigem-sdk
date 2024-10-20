@@ -31,6 +31,11 @@ pub fn exec(path: []const u8, force: bool) !void {
     //
     const norm = try Fs.normalize(path);
     ast = try Ast.parse(Heap.get(), Fs.readFileZ(norm), .zig);
+    if (ast.errors.len > 0) {
+        const writer = std.io.getStdErr().writer();
+        try writer.print("*** syntax error\n", .{});
+        std.process.exit(1);
+    }
     const src = try ast.render(Heap.get());
 
     const mark = std.mem.indexOf(u8, src, "//->>");
@@ -149,7 +154,7 @@ fn genSpec() !void {
             var buf: [1]Ast.Node.Index = undefined;
             const fld = astNode(fld_idx);
             const fname = ast.tokenSlice(fld.main_token);
-            file.print("\nfn {s} (", .{fname});
+            file.print("\npub fn {s} (", .{fname});
             try fn_list.append(fname);
             const fn_proto = ast.fnProtoSimple(&buf, fld.data.lhs);
             var iter = fn_proto.iterate(&ast);
@@ -180,7 +185,7 @@ fn genSpec() !void {
         \\
     , .{});
     for (fn_list.items) |fname| {
-        file.print("{1s}pub const {0s} = em__Self.{0s};\n", .{ fname, TAB4 });
+        file.print("{1s}{0s}: *const @TypeOf(em__Self.{0s}) = &em__Self.{0s},\n", .{ fname, TAB4 });
     }
     file.print("}};\n", .{});
 }
