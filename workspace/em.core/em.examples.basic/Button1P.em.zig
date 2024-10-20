@@ -20,8 +20,7 @@ pub const EM__META = struct {
 pub const EM__TARG = struct {
     //
     pub fn em__startup() void {
-        AppButEdge.makeInput();
-        AppButEdge.setInternalPullup(true);
+        AppButEdge.init(true);
         AppButEdge.setDetectFallingEdge();
     }
 
@@ -42,12 +41,12 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|a89b3b43b85cb1629feba4f7cbf9537a9e09f247203d7756cf257d5ccb767f6c|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|d91e073f81777153e824043bf08476551c6d70086260b5f6b0e9fe335978bfb1|#
 
 //->> EM__META publics
 
 //->> EM__TARG publics
 pub const handler = EM__TARG.handler;
+
+//->> zigem publish -- end of generated code

@@ -19,12 +19,12 @@ pub const UsCounter = em.import.@"ti.mcu.cc23xx/UsCounterSystick";
 pub const WakeupTimer = em.import.@"ti.mcu.cc23xx/WakeupRtc";
 
 const ButtonT = em.import.@"em.utils/ButtonT";
-const GpioEdgeT = em.import.@"ti.mcu.cc23xx/GpioEdgeT";
+const EdgeT = em.import.@"ti.mcu.cc23xx/EdgeT";
 const GpioT = em.import.@"ti.mcu.cc23xx/GpioT";
 const LedT = em.import.@"em.utils/LedT";
 
 pub const AppBut = em__U.Generate("AppBut", ButtonT);
-pub const AppButEdge = em__U.Generate("AppButEdge", GpioEdgeT);
+pub const AppButEdge = em__U.Generate("AppButEdge", EdgeT);
 pub const AppLed = em__U.Generate("AppLed", LedT);
 pub const AppLedPin = em__U.Generate("AppLedPin", GpioT);
 pub const AppOutPin = em__U.Generate("AppOutPin", GpioT);
@@ -77,7 +77,7 @@ pub fn em__configureM() void {
     SysLed.x_Pin.setM(SysLedPin);
 }
 
-//->> zigem publish #|061a1864f1f7d865d5baf50fd9f1e1af065c65f9a33ac6c5de397e36c8392be5|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|f64a9565b02e72f4bdb4f596d2658d2576257f4f73700b23b3e7a6bb5253ac0c|#
+
+//->> zigem publish -- end of generated code

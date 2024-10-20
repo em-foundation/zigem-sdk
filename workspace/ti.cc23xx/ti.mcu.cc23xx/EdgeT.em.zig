@@ -14,21 +14,21 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const em__U = em.module(
             @This(),
             .{
-                .inherits = GpioEdgeI,
+                .inherits = EdgeI,
                 .generated = true,
                 .name = name,
             },
         );
         pub const em__C = em__U.config(EM__CONFIG);
 
-        pub const Aux = em.import.@"ti.mcu.cc23xx/GpioEdgeAux";
-        pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
+        pub const Aux = em.import.@"ti.mcu.cc23xx/EdgeAux";
+        pub const EdgeI = em.import.@"em.hal/EdgeI";
         pub const GpioT = em.import.@"ti.mcu.cc23xx/GpioT";
 
         pub const Pin = em__U.Generate("Pin", GpioT);
 
-        pub const HandlerArg = GpioEdgeI.HandlerArg;
-        pub const HandlerFxn = GpioEdgeI.HandlerFxn;
+        pub const HandlerArg = EdgeI.HandlerArg;
+        pub const HandlerFxn = EdgeI.HandlerFxn;
 
         pub const EM__META = struct {
             //
@@ -71,6 +71,14 @@ pub fn em__generateS(comptime name: []const u8) type {
                 if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_WUENSB;
             }
 
+            pub fn getState() bool {
+                return Pin.get();
+            }
+
+            pub fn init(pullup: bool) void {
+                Pin.setInternalPullup(pullup);
+            }
+
             pub fn setDetectFallingEdge() void {
                 if (is_def) reg(hal.IOC_BASE + off).* &= ~hal.IOC_IOC0_EDGEDET_M;
                 if (is_def) reg(hal.IOC_BASE + off).* |= hal.IOC_IOC0_EDGEDET_EDGE_NEG;
@@ -88,57 +96,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             return m;
         }
 
-        // GpioI delegates
-
-        pub fn clear() void {
-            Pin.clear();
-        }
-
-        pub fn functionSelect(select: u8) void {
-            Pin.functionSelect(select);
-        }
-
-        pub fn get() bool {
-            return Pin.get();
-        }
-
-        pub fn isInput() bool {
-            return Pin.isInput();
-        }
-
-        pub fn isOutput() bool {
-            return Pin.isOutput();
-        }
-
-        pub fn makeInput() void {
-            Pin.makeInput();
-        }
-
-        pub fn makeOutput() void {
-            Pin.makeOutput();
-        }
-
-        pub fn pinId() i16 {
-            return Pin.pinId();
-        }
-
-        pub fn reset() void {
-            Pin.reset();
-        }
-
-        pub fn set() void {
-            Pin.set();
-        }
-
-        pub fn setInternalPullup(enable: bool) void {
-            Pin.setInternalPullup(enable);
-        }
-
-        pub fn toggle() void {
-            Pin.toggle();
-        }
-
-        //->> zigem publish #|84b39a3a910248630c94bfe5877016e16c6520a8886ee18000cd9b9471969542|#
+        //->> zigem publish #|6cf976223e9749f950c40a1db86073c174c6cf55a53e0980381419b802eefbf4|#
 
         //->> EM__META publics
         pub const c_pin = EM__META.c_pin;
@@ -148,6 +106,8 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const clearDetect = EM__TARG.clearDetect;
         pub const disableDetect = EM__TARG.disableDetect;
         pub const enableDetect = EM__TARG.enableDetect;
+        pub const getState = EM__TARG.getState;
+        pub const init = EM__TARG.init;
         pub const setDetectFallingEdge = EM__TARG.setDetectFallingEdge;
         pub const setDetectRisingEdge = EM__TARG.setDetectRisingEdge;
 
