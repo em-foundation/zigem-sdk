@@ -76,6 +76,7 @@ pub fn em__generateS(comptime name: []const u8) type {
             }
 
             pub fn init(pullup: bool) void {
+                Pin.makeInput();
                 Pin.setInternalPullup(pullup);
             }
 
@@ -96,7 +97,8 @@ pub fn em__generateS(comptime name: []const u8) type {
             return m;
         }
 
-        //->> zigem publish #|6cf976223e9749f950c40a1db86073c174c6cf55a53e0980381419b802eefbf4|#
+        
+        //->> zigem publish #|bab45af6847c3103f58e3bbda24483b3fb1cb8323a0444d19d762eb5ab40f0df|#
 
         //->> EM__META publics
         pub const c_pin = EM__META.c_pin;
