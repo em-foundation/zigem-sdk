@@ -95,39 +95,6 @@ pub fn mkIobj(Itab: type, U: type) Itab {
     return iobj_freeze;
 }
 
-fn mkItab(U: type, I: type) *const anyopaque {
-    comptime {
-        const ti = @typeInfo(I);
-        var fdeclem__list: []const std.builtin.Type.Declaration = &.{};
-        for (ti.Struct.decls) |decl| {
-            const dval = @field(I, decl.name);
-            const dti = @typeInfo(@TypeOf(dval));
-            if (dti == .Fn) fdeclem__list = fdeclem__list ++ ([_]std.builtin.Type.Declaration{decl})[0..];
-        }
-        var fldem__list: [fdeclem__list.len]std.builtin.Type.StructField = undefined;
-        for (fdeclem__list, 0..) |fdecl, i| {
-            const func = @field(U, fdecl.name);
-            const func_ptr = &func;
-            fldem__list[i] = std.builtin.Type.StructField{
-                .name = fdecl.name,
-                .type = *const @TypeOf(func),
-                .default_value = @ptrCast(&func_ptr),
-                .is_comptime = false,
-                .alignment = 0,
-            };
-        }
-        const freeze = fldem__list;
-        const ITab = @Type(.{ .Struct = .{
-            .layout = .auto,
-            .fields = freeze[0..],
-            .decls = &.{},
-            .is_tuple = false,
-            .backing_integer = null,
-        } });
-        return @as(*const anyopaque, &ITab{});
-    }
-}
-
 pub fn composite(This: type, opts: UnitOpts) Unit {
     return mkUnit(This, .composite, opts);
 }
