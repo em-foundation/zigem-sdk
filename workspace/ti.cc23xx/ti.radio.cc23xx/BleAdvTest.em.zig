@@ -14,10 +14,10 @@ pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__META = struct {
-    pub fn em__configureH() void {
+    pub fn em__configureM() void {
         RadioConfig.phy.set(.BLE_1M);
     }
-    pub fn em__constructH() void {
+    pub fn em__constructM() void {
         em__C.txTicker.set(TickerMgr.createH());
     }
 };
@@ -45,3 +45,12 @@ pub const EM__TARG = struct {
         RadioDriver.disable();
     }
 };
+
+
+//->> zigem publish #|8f12d21e4fe86cc7c5d102d462728669eb2109b304be8d936644cc9281042ca2|#
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+
+//->> zigem publish -- end of generated code

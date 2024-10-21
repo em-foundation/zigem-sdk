@@ -3,107 +3,101 @@ pub const em__U = em.module(@This(), .{});
 
 pub const RfTemp = em.import.@"ti.radio.cc23xx/RfTemp";
 
-const TrimTempLdoRtrim = packed struct {
-    rtrimMinOffset: u2,
-    rtrimMaxOffset: u2,
-    divLdoMinOffset: u2,
-    divLdoMaxOffset: u2,
-    tdcLdoMinOffset: u2,
-    tdcLdoMaxOffset: u2,
-    tThrl: u2,
-    tThrh: u2,
-};
-
-const TrimTempRssiAgc = packed struct {
-    rssiTcomp: i4,
-    magnTcomp: i4,
-    magnOffset: i4,
-    rfu: i4,
-    agcThrTcomp: i4,
-    agcThrOffset: i4,
-    lowGainOffset: i4,
-    highGainOffset: i4,
-};
-
-const Trim0 = extern struct {
-    pa0: u16,
-    atstRefH: u16,
-};
-
-const Trim1 = extern struct {
-    lna: u16,
-    ifampRfLdo: u16,
-    divLdo: packed struct {
-        zero0: u8,
-        voutTrim: u7,
-        zero1: u1,
-    },
-    tdcLdo: packed struct {
-        zero0: u8,
-        voutTrim: u7,
-        zero1: u1,
-    },
-};
-
-const Trim2 = extern struct {
-    dcoLdo0: u16,
-    ifadcAldo: u16,
-    ifadcDldo: u16,
-    dco: packed struct {
-        zero0: u3,
-        tailresTrim: u4,
-        zero1: u9,
-    },
-};
-
-const TrimVariant = extern struct {
-    ifadcQuant: u16,
-    ifadc0: u16,
-    ifadc1: u16,
-    ifadclf: u16,
-};
-
-const Trim3 = extern struct {
-    lrfdrfeExtTrim1: extern struct {
-        tempLdoRtrim: TrimTempLdoRtrim,
-        hfxtPdError: u8,
-        res: u8,
-    },
-    lrfdrfeExtTrim0: TrimTempRssiAgc,
-};
-
-const Trim4 = extern struct {
-    rssiOffset: u8,
-    trimCompleteN: u8,
-    demIQMC0: u16,
-    res1: u16,
-    ifamprfldo: [2]u8,
-};
-
-const AppTrims = extern struct {
-    revision: u8,
-    nToolsClientOffset: u8,
-    reserved: [2]u8,
-    trim0: Trim0,
-    trim1: Trim1,
-    trim2: Trim2,
-    trimVariant: [2]TrimVariant,
-    trim3: Trim3,
-    trim4: Trim4,
-};
-
-const TRIMS: *const volatile AppTrims = @ptrFromInt(0x4E000330);
-
-pub const EM__META = struct {};
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
     const reg = em.reg;
 
-    pub fn em__run() void {
-        apply();
-    }
+    const TrimTempLdoRtrim = packed struct {
+        rtrimMinOffset: u2,
+        rtrimMaxOffset: u2,
+        divLdoMinOffset: u2,
+        divLdoMaxOffset: u2,
+        tdcLdoMinOffset: u2,
+        tdcLdoMaxOffset: u2,
+        tThrl: u2,
+        tThrh: u2,
+    };
+
+    const TrimTempRssiAgc = packed struct {
+        rssiTcomp: i4,
+        magnTcomp: i4,
+        magnOffset: i4,
+        rfu: i4,
+        agcThrTcomp: i4,
+        agcThrOffset: i4,
+        lowGainOffset: i4,
+        highGainOffset: i4,
+    };
+
+    const Trim0 = extern struct {
+        pa0: u16,
+        atstRefH: u16,
+    };
+
+    const Trim1 = extern struct {
+        lna: u16,
+        ifampRfLdo: u16,
+        divLdo: packed struct {
+            zero0: u8,
+            voutTrim: u7,
+            zero1: u1,
+        },
+        tdcLdo: packed struct {
+            zero0: u8,
+            voutTrim: u7,
+            zero1: u1,
+        },
+    };
+
+    const Trim2 = extern struct {
+        dcoLdo0: u16,
+        ifadcAldo: u16,
+        ifadcDldo: u16,
+        dco: packed struct {
+            zero0: u3,
+            tailresTrim: u4,
+            zero1: u9,
+        },
+    };
+
+    const TrimVariant = extern struct {
+        ifadcQuant: u16,
+        ifadc0: u16,
+        ifadc1: u16,
+        ifadclf: u16,
+    };
+
+    const Trim3 = extern struct {
+        lrfdrfeExtTrim1: extern struct {
+            tempLdoRtrim: TrimTempLdoRtrim,
+            hfxtPdError: u8,
+            res: u8,
+        },
+        lrfdrfeExtTrim0: TrimTempRssiAgc,
+    };
+
+    const Trim4 = extern struct {
+        rssiOffset: u8,
+        trimCompleteN: u8,
+        demIQMC0: u16,
+        res1: u16,
+        ifamprfldo: [2]u8,
+    };
+
+    const AppTrims = extern struct {
+        revision: u8,
+        nToolsClientOffset: u8,
+        reserved: [2]u8,
+        trim0: Trim0,
+        trim1: Trim1,
+        trim2: Trim2,
+        trimVariant: [2]TrimVariant,
+        trim3: Trim3,
+        trim4: Trim4,
+    };
+
+    const TRIMS: *const volatile AppTrims = @ptrFromInt(0x4E000330);
 
     const TEMPERATURE_MIN = -40;
     const TEMPERATURE_MAX = 125;
@@ -241,3 +235,11 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_SPARE1).* = @intCast(spare1Val);
     }
 };
+
+
+//->> zigem publish #|82f6092d8c2044f7f9828c3bcb1eafa06cb5413844f915eabf012432d881eecf|#
+
+//->> EM__TARG publics
+pub const apply = EM__TARG.apply;
+
+//->> zigem publish -- end of generated code

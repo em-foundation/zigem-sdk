@@ -3,8 +3,6 @@ pub const em__U = em.module(@This(), .{});
 
 pub const Common = em.import.@"em.mcu/Common";
 
-pub const EM__META = struct {};
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
@@ -59,3 +57,11 @@ pub const EM__TARG = struct {
         Common.GlobalInterrupts.restore(key);
     }
 };
+
+//->> zigem publish #|e8c5a7e3dcedb5b12c1e5a42133f82a0f86f65b8b2b3d27dbb3cfd78a2e8d150|#
+
+//->> EM__TARG publics
+pub const prepare = EM__TARG.prepare;
+pub const write = EM__TARG.write;
+
+//->> zigem publish -- end of generated code

@@ -23,20 +23,10 @@ pub const Handler = struct {};
 
 pub const State = enum { IDLE, SETUP, READY, CW, RX, TX };
 
-pub const bindHandlerH = EM__META.bindHandlerH;
-pub const disable = EM__TARG.disable;
-pub const enable = EM__TARG.enable;
-pub const putWords = EM__TARG.putWords;
-pub const readRssi = EM__TARG.readRssi;
-pub const startCw = EM__TARG.startCw;
-pub const startRx = EM__TARG.startRx;
-pub const startTx = EM__TARG.startTx;
-pub const waitReady = EM__TARG.waitReady;
-
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        IntrVec.useIntrH("LRFD_IRQ0");
+    pub fn em__constructM() void {
+        IntrVec.useIntrM("LRFD_IRQ0");
     }
 
     pub fn bindHandlerH(h: em.Fxn(Handler)) void {
@@ -266,3 +256,21 @@ pub const EM__TARG = struct {
         em.print("ris = {x}, mis = {x}\n", .{ ris, mis });
     }
 };
+
+
+//->> zigem publish #|e64a61b56aa89f5801c64e771a08851b0ed3823bac0aa07791710ba187abbe65|#
+
+//->> EM__META publics
+pub const bindHandlerH = EM__META.bindHandlerH;
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const putWords = EM__TARG.putWords;
+pub const readRssi = EM__TARG.readRssi;
+pub const startCw = EM__TARG.startCw;
+pub const startRx = EM__TARG.startRx;
+pub const startTx = EM__TARG.startTx;
+pub const waitReady = EM__TARG.waitReady;
+
+//->> zigem publish -- end of generated code

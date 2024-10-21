@@ -1,10 +1,5 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
-pub const em__C = em__U.config(EM__CONFIG);
-
-pub const EM__CONFIG = struct {
-    em__upath: []const u8,
-};
 
 pub const BusyWait = em.import.@"ti.mcu.cc23xx/BusyWait";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
@@ -12,8 +7,8 @@ pub const Idle = em.import.@"ti.mcu.cc23xx/Idle";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        IntrVec.useIntrH("CPUIRQ3");
+    pub fn em__constructM() void {
+        IntrVec.useIntrM("CPUIRQ3");
     }
 };
 
@@ -93,7 +88,7 @@ pub const EM__TARG = struct {
         em.@"%%[c-]"();
     }
 
-    export fn CPUIRQ3_isr() void {
+    fn CPUIRQ3_isr() void {
         if (em.IS_META) return;
         hal.NVIC_ClearPendingIRQ(hal.CPUIRQ3_IRQn);
         const mis = reg(hal.CKMD_BASE + hal.CKMD_O_MIS).*;
@@ -103,3 +98,20 @@ pub const EM__TARG = struct {
         BusyWait.wait(1); // TODO -- needed for SRAM execution
     }
 };
+
+export fn CPUIRQ3_isr() void {
+    if (em.IS_META) return;
+    EM__TARG.CPUIRQ3_isr();
+}
+
+
+//->> zigem publish #|f622b5be95f9ecde2986f931076809cd35f9204cd4e2281ff51dedb6f8fbeb4d|#
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const waitReady = EM__TARG.waitReady;
+
+//->> zigem publish -- end of generated code

@@ -13,7 +13,7 @@ pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__META = struct {
-    pub fn em__configureH() void {
+    pub fn em__configureM() void {
         RadioConfig.phy.set(.PROP_250K);
         const fiberF = FiberMgr.createH(em__U.fxn("fiberFB", FiberMgr.BodyArg));
         em__C.fiberF.set(fiberF);
@@ -43,3 +43,12 @@ pub const EM__TARG = struct {
         // em.halt();
     }
 };
+
+//->> zigem publish #|50ac5027a8c88531f27b1cdb1d899ee23ad470d0834d690311c37ca7a18e455f|#
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const fiberFB = EM__TARG.fiberFB;
+
+//->> zigem publish -- end of generated code

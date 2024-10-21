@@ -3,8 +3,6 @@ pub const em__U = em.module(@This(), .{});
 
 pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 
-pub const EM__META = struct {};
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
@@ -228,3 +226,10 @@ pub const EM__TARG = struct {
         return frequency;
     }
 };
+
+//->> zigem publish #|5ac34d2ceec72c5d4177571ae19511fc14024b91e81e567507af21bf74adf883|#
+
+//->> EM__TARG publics
+pub const program = EM__TARG.program;
+
+//->> zigem publish -- end of generated code

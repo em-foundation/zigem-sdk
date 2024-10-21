@@ -3,8 +3,6 @@ pub const em__U = em.module(@This(), .{});
 
 pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 
-pub const EM__META = struct {};
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
@@ -33,7 +31,7 @@ pub const EM__TARG = struct {
         @memcpy(@as([*]u32, @ptrFromInt(dst)), src);
     }
 
-    pub const LRF_MCE_binary_genfsk = [_]u32{
+    const LRF_MCE_binary_genfsk = [_]u32{
         0x7226604F, 0x7379722A, 0x72047279, 0x67687205, 0xB025C030, 0xFFC09000, 0xB0049020, 0x73077306,
         0x7000A004, 0x7312720E, 0x7313720F, 0x73147210, 0xA4D5A3AE, 0x03FF7000, 0x300517F7, 0x8080FF00,
         0x17D020EE, 0x17E017C0, 0x32211300, 0x71625043, 0x31221003, 0x72615340, 0x00100001, 0x10000100,
@@ -98,7 +96,7 @@ pub const EM__TARG = struct {
         0x72797100, 0xA0E1B121, 0x98607000, 0x22008850, 0xB84047D6, 0x00007000,
     };
 
-    pub const LRF_PBE_binary_generic = [_]u32{
+    const LRF_PBE_binary_generic = [_]u32{
         0x70006012, 0x00000000, 0x635C6347, 0x6378638C, 0x63906388, 0x603D6380, 0x000060DE, 0x07070019,
         0x00000000, 0x67BD7282, 0xB070B822, 0x72827100, 0x8A1D80C7, 0x22208CF0, 0x26EB401E, 0xC150B090,
         0x4F8C1C07, 0x78F2C071, 0x94819491, 0x94A29571, 0x318080C0, 0x1E003980, 0x1E10432B, 0x1E20403F,
@@ -194,7 +192,7 @@ pub const EM__TARG = struct {
         0x00007000,
     };
 
-    pub const LRF_RFE_binary_genfsk = [_]u32{
+    const LRF_RFE_binary_genfsk = [_]u32{
         0x00006011, 0x08000080, 0x08300810, 0x08F00870, 0x09F109F0, 0x09F709F3, 0x07FF09FF, 0x03FF05FF,
         0x721501FF, 0xB1526578, 0x7100B060, 0x81217215, 0xA060B080, 0x06F11012, 0x31323982, 0x16321412,
         0x14211101, 0x602B6C01, 0x602E602B, 0x60376033, 0x602B6043, 0x6185602B, 0x61856461, 0x644C6449,
@@ -305,7 +303,7 @@ pub const EM__TARG = struct {
         0xA07C42AE, 0xA681A05C, 0x80407000, 0x46BA2200, 0x62B57100, 0xA6A1A6A0, 0x7000A6A3,
     };
 
-    pub const LRF_MCE_binary_ble5 = [_]u32{
+    const LRF_MCE_binary_ble5 = [_]u32{
         0x7226604C, 0x7379722A, 0x72047279, 0x67D57205, 0xB025C030, 0xFFC09000, 0xB0049020, 0x73077306,
         0x7000A004, 0x7312720E, 0x7313720F, 0x73147210, 0xA4D5A3AE, 0x15EE7000, 0x0FFF01FF, 0x13F517FF,
         0x0F000240, 0x0F0F0F0F, 0x000F0F00, 0x0F0F0F0F, 0x807A000F, 0x807E807A, 0x0FF00F30, 0x00030000,
@@ -372,7 +370,7 @@ pub const EM__TARG = struct {
         0x97B043F6, 0x7100B790, 0xB1217279, 0x7000A0E1, 0x88509860, 0x47F92200, 0x7000B840,
     };
 
-    pub const LRF_PBE_binary_ble5 = [_]u32{
+    const LRF_PBE_binary_ble5 = [_]u32{
         0x7000601F, 0x636B0000, 0x6374634B, 0x63636378, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
         0x00000000, 0x00000000, 0x61120000, 0x60FD623F, 0x00000000, 0x00000000, 0x10070707, 0x72820000,
         0xB82267D1, 0x7100B070, 0xB0907282, 0x1EA080C0, 0x1E304F78, 0xC09C482B, 0xB079671B, 0x645A8957,
@@ -492,7 +490,7 @@ pub const EM__TARG = struct {
         0x6017A010,
     };
 
-    pub const LRF_RFE_binary_ble5 = [_]u32{
+    const LRF_RFE_binary_ble5 = [_]u32{
         0x00006011, 0x0E700E00, 0x0FF00EF0, 0x0FF30FF1, 0x0FFF0FF7, 0x0BFF0DFF, 0x07FF09FF, 0x03FF05FF,
         0x721501FF, 0xB1526648, 0x7100B060, 0x81217215, 0xA060B080, 0x06F11012, 0xEFF03942, 0x980297F1,
         0x16316663, 0x14101100, 0x602D6C00, 0x6032602D, 0x60436038, 0x602D6049, 0x6255602D, 0x62556465,
@@ -603,3 +601,11 @@ pub const EM__TARG = struct {
         0xA07C42AE, 0xA681A05C, 0x80407000, 0x46BA2200, 0x62B57100, 0xA6A1A6A0, 0x7000A6A3,
     };
 };
+
+
+//->> zigem publish #|dee0aff7a263841110274a82937bb2c1e110b0f613633261db5a17fb63783f46|#
+
+//->> EM__TARG publics
+pub const loadAll = EM__TARG.loadAll;
+
+//->> zigem publish -- end of generated code

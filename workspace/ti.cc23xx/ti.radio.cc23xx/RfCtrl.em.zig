@@ -49,3 +49,12 @@ pub const EM__TARG = struct {
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_ENABLE).* = hal.LRFDRFE_ENABLE_TOPSM_M;
     }
 };
+
+//->> zigem publish #|2973d2881453620a29742a32f84422497fafdae1a761d08983a3dcb564a0887b|#
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enableClocks = EM__TARG.enableClocks;
+pub const enableImages = EM__TARG.enableImages;
+
+//->> zigem publish -- end of generated code

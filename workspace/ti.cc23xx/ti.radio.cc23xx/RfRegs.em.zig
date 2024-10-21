@@ -7,21 +7,21 @@ pub const EM__CONFIG = struct {
     val_tab: em.Table(u16, .RO),
 };
 
-pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
-
 pub const Desc = struct {
     off: u16,
     cnt: u8,
     inc: u8,
 };
 
+pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
+
 pub const EM__META = struct {
     //
     var desc_tab = em__C.desc_tab;
     var val_tab = em__C.val_tab;
 
-    pub fn em__constructH() void {
-        const regfile = switch (RadioConfig.phy.get()) {
+    pub fn em__constructM() void {
+        const regfile = switch (RadioConfig.c_phy.getM()) {
             .PROP_250K => @embedFile("regs_prop_250k.txt"),
             .BLE_1M => @embedFile("regs_ble_1m.txt"),
             else => return,
@@ -44,7 +44,7 @@ pub const EM__META = struct {
             const hwmod = col[2];
             const bits = col[4][1 .. col[4].len - 1];
             const val: u16 = if (em.std.mem.eql(u8, col[6], "-")) 0 else parseHex(col[6][2..]);
-            Encoder.add(addr, hwmod, bits, val);
+            Encoder.addM(addr, hwmod, bits, val);
         }
         Encoder.finalize();
     }
@@ -56,11 +56,11 @@ pub const EM__META = struct {
         var cur_val: u16 = 0;
         var cur_serial: u16 = 0;
         var prev_addr: u16 = 0;
-        pub fn add(addr: u16, hwmod: []const u8, bits: []const u8, val: u16) void {
+        pub fn addM(addr: u16, hwmod: []const u8, bits: []const u8, val: u16) void {
             if (!em.std.mem.eql(u8, cur_hwmod, hwmod)) {
                 if (cur_hwmod.len != 0) {
                     flush();
-                    desc_tab.add(cur_desc);
+                    desc_tab.addM(cur_desc);
                 }
                 cur_hwmod = hwmod;
                 cur_desc.off = addr;
@@ -81,7 +81,7 @@ pub const EM__META = struct {
         }
         pub fn finalize() void {
             flush();
-            desc_tab.add(cur_desc);
+            desc_tab.addM(cur_desc);
         }
 
         fn flush() void {
@@ -89,13 +89,13 @@ pub const EM__META = struct {
             if (diff > 1) {
                 for (1..diff) |_| {
                     cur_serial += 1;
-                    val_tab.add(0);
+                    val_tab.addM(0);
                     cur_desc.cnt += 1;
                 }
             }
             //em.print("[{d}] @{X:0>4} = {X:0>4} ({d})", .{ cur_serial, cur_addr, cur_val, diff });
             cur_serial += 1;
-            val_tab.add(cur_val);
+            val_tab.addM(cur_val);
             cur_val = 0;
             cur_desc.cnt += 1;
         }
@@ -112,15 +112,11 @@ pub const EM__META = struct {
 
 pub const EM__TARG = struct {
     //
-    const desc_tab = em__C.desc_tab;
-    const val_tab = em__C.val_tab;
+    const desc_tab = em__C.desc_tab.items();
+    const val_tab = em__C.val_tab.items();
 
     const LRF_BASE_ADDR: u32 = 0x40080000;
     const PBE_RAM_BASE_ADDR: u32 = 0x40090000;
-
-    pub fn em__run() void {
-        setup();
-    }
 
     pub fn setup() void {
         var src: [*]const u16 = val_tab.ptr;
@@ -135,3 +131,13 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+
+//->> zigem publish #|53abd4154bf23c06f9ce9add22bb93a7c1420d396152db9ae92c523cd192a989|#
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const setup = EM__TARG.setup;
+
+//->> zigem publish -- end of generated code

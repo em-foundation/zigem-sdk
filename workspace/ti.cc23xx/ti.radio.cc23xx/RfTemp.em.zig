@@ -1,15 +1,13 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
-pub const TXPOWER_REFERENCE_TEMPERATURE: i16 = 25;
-pub const TXPOWER_TEMPERATURE_SCALING: i16 = 0x100;
-
-pub const EM__META = struct {};
-
 pub const EM__TARG = struct {
     //
     const hal = em.hal;
     const reg = em.reg;
+
+    pub const TXPOWER_REFERENCE_TEMPERATURE: i16 = 25;
+    pub const TXPOWER_TEMPERATURE_SCALING: i16 = 0x100;
 
     pub fn getTemperature() i16 {
         var temperature: i32 = @bitCast(reg(hal.PMUD_BASE + hal.PMUD_O_TEMP).*);
@@ -29,3 +27,13 @@ pub const EM__TARG = struct {
         return @intCast(temperature);
     }
 };
+
+
+//->> zigem publish #|b121181325d2d8ba7b90beb758ab1fa7bf7bb0cba13701b30fedc7738051250d|#
+
+//->> EM__TARG publics
+pub const TXPOWER_REFERENCE_TEMPERATURE = EM__TARG.TXPOWER_REFERENCE_TEMPERATURE;
+pub const TXPOWER_TEMPERATURE_SCALING = EM__TARG.TXPOWER_TEMPERATURE_SCALING;
+pub const getTemperature = EM__TARG.getTemperature;
+
+//->> zigem publish -- end of generated code
