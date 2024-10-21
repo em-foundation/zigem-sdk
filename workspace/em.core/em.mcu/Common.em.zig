@@ -24,20 +24,38 @@ pub const EM__CONFIG = struct {
     UsCounter: em.Proxy(UsCounterI),
 };
 
-pub const x_BusyWait = em__C.BusyWait;
-pub const x_ConsoleUart = em__C.ConsoleUart;
-pub const x_GlobalInterrupts = em__C.GlobalInterrupts;
-pub const x_Idle = em__C.Idle;
-pub const x_Mcu = em__C.Mcu;
-pub const x_MsCounter = em__C.MsCounter;
-pub const x_Uptimer = em__C.Uptimer;
-pub const x_UsCounter = em__C.UsCounter;
+pub const EM__META = struct {
+    //
+    pub const x_BusyWait = em__C.BusyWait;
+    pub const x_ConsoleUart = em__C.ConsoleUart;
+    pub const x_GlobalInterrupts = em__C.GlobalInterrupts;
+    pub const x_Idle = em__C.Idle;
+    pub const x_Mcu = em__C.Mcu;
+    pub const x_MsCounter = em__C.MsCounter;
+    pub const x_Uptimer = em__C.Uptimer;
+    pub const x_UsCounter = em__C.UsCounter;
+};
 
-pub const BusyWait = if (em.IS_META) .{} else em__C.BusyWait.get();
-pub const ConsoleUart = if (em.IS_META) .{} else em__C.ConsoleUart.get();
-pub const GlobalInterrupts = if (em.IS_META) .{} else em__C.GlobalInterrupts.get();
-pub const Idle = if (em.IS_META) .{} else em__C.Idle.get();
-pub const Mcu = if (em.IS_META) .{} else em__C.Mcu.get();
-pub const MsCounter = if (em.IS_META) .{} else em__C.MsCounter.get();
-pub const Uptimer = if (em.IS_META) .{} else em__C.Uptimer.get();
-pub const UsCounter = if (em.IS_META) .{} else em__C.UsCounter.get();
+pub const BusyWait = if (em.IS_META) .{} else em__C.BusyWait.unwrap();
+pub const ConsoleUart = if (em.IS_META) .{} else em__C.ConsoleUart.unwrap();
+pub const GlobalInterrupts = if (em.IS_META) .{} else em__C.GlobalInterrupts.unwrap();
+pub const Idle = if (em.IS_META) .{} else em__C.Idle.unwrap();
+pub const Mcu = if (em.IS_META) .{} else em__C.Mcu.unwrap();
+pub const MsCounter = if (em.IS_META) .{} else em__C.MsCounter.unwrap();
+pub const Uptimer = if (em.IS_META) .{} else em__C.Uptimer.unwrap();
+pub const UsCounter = if (em.IS_META) .{} else em__C.UsCounter.unwrap();
+
+//->> zigem publish #|54a8602e4c6beb924af813a1df60ad8a0d546d7c1d63598efdead4c0e11d8263|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const x_BusyWait = EM__META.x_BusyWait;
+pub const x_ConsoleUart = EM__META.x_ConsoleUart;
+pub const x_GlobalInterrupts = EM__META.x_GlobalInterrupts;
+pub const x_Idle = EM__META.x_Idle;
+pub const x_Mcu = EM__META.x_Mcu;
+pub const x_MsCounter = EM__META.x_MsCounter;
+pub const x_Uptimer = EM__META.x_Uptimer;
+pub const x_UsCounter = EM__META.x_UsCounter;

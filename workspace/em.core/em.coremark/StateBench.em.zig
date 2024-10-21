@@ -7,16 +7,14 @@ pub const em__C = em__U.config(EM__CONFIG);
 pub const EM__CONFIG = struct {
     memsize: em.Param(u16),
 };
-pub const c_memsize = em__C.memsize;
 
 pub const Crc = em.import.@"em.coremark/Crc";
 pub const Utils = em.import.@"em.coremark/Utils";
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
+pub const EM__META = struct {
+    //
+    pub const c_memsize = em__C.memsize;
+};
 
 pub const EM__TARG = struct {
     //
@@ -35,7 +33,7 @@ pub const EM__TARG = struct {
 
     const NUM_STATES = @typeInfo(State).Enum.fields.len;
 
-    const memsize = em__C.memsize.get();
+    const memsize = em__C.memsize.unwrap();
 
     const errpat = [_][]const u8{ "T0.3e-1F", "-T.T++Tq", "1T3.4e4z", "34.0e-T^" };
     const fltpat = [_][]const u8{ "35.54400", ".1234500", "-110.700", "+0.64400" };
@@ -44,7 +42,7 @@ pub const EM__TARG = struct {
 
     var membuf = em.std.mem.zeroes([memsize]u8);
 
-    fn dump() void {
+    pub fn dump() void {
         // TODO
         return;
     }
@@ -53,7 +51,7 @@ pub const EM__TARG = struct {
         return ch >= '0' and ch <= '9';
     }
 
-    fn kind() Utils.Kind {
+    pub fn kind() Utils.Kind {
         return .STATE;
     }
 
@@ -153,7 +151,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn print() void {
+    pub fn print() void {
         var idx: usize = 0;
         var cnt: usize = 0;
         em.print("\n\"", .{});
@@ -173,7 +171,7 @@ pub const EM__TARG = struct {
         em.print("\n\", count = {d}\n", .{cnt});
     }
 
-    fn run(arg: i16) Utils.sum_t {
+    pub fn run(arg: i16) Utils.sum_t {
         var uarg: usize = @intCast(@as(u16, @bitCast(arg)));
         if (arg < 0x22) uarg = 0x22;
         var finalcnt: [NUM_STATES]u32 = undefined;
@@ -209,7 +207,7 @@ pub const EM__TARG = struct {
         }
     }
 
-    fn setup() void {
+    pub fn setup() void {
         var seed = Utils.getSeed(1);
         var idx = @as(usize, 0);
         var total = @as(usize, 0);
@@ -244,3 +242,18 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|10cfce28fbd971af60303e496aa54da3bdb7ade5ac581af2f1f05bef55817ab4|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const c_memsize = EM__META.c_memsize;
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

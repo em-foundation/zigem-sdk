@@ -18,18 +18,18 @@ pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
-        em__C.app_ticker.set(TickerMgr.createH());
-        em__C.sys_ticker.set(TickerMgr.createH());
-        em__C.print_ticker.set(TickerMgr.createH());
+    pub fn em__constructM() void {
+        em__C.app_ticker.setM(TickerMgr.createM());
+        em__C.sys_ticker.setM(TickerMgr.createM());
+        em__C.print_ticker.setM(TickerMgr.createM());
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const app_ticker = em__C.app_ticker.get();
-    const sys_ticker = em__C.sys_ticker.get();
-    const print_ticker = em__C.print_ticker.get();
+    const app_ticker = em__C.app_ticker.unwrap();
+    const sys_ticker = em__C.sys_ticker.unwrap();
+    const print_ticker = em__C.print_ticker.unwrap();
 
     const max_sys_led_ticks = TimeTypes.Secs24p8_initMsecs(1_500); // 1.5s
     const max_app_led_ticks = TimeTypes.Secs24p8_initMsecs(2_000); // 2s
@@ -47,7 +47,7 @@ pub const EM__TARG = struct {
     pub fn em__run() void {
         em.print("\nEx01_TickerP program startup\n\n", .{});
         printStatus();
-        AppBut.onPressed(onButtonPressed, .{ .min = min_press_time, .max = max_press_time });
+        AppBut.onPressed(EM__TARG.onButtonPressed, .{ .min = min_press_time, .max = max_press_time });
         app_ticker.start(max_app_led_ticks, &appTickCb);
         sys_ticker.start(max_sys_led_ticks, &sysTickCb);
         print_ticker.start(print_ticks, &printTickCb);
@@ -124,3 +124,13 @@ pub const EM__TARG = struct {
         }
     }
 };
+
+//->> zigem publish #|de66dfad5f9bc8a2f5518ed2677570daa743506c24955da0f32ba78715460cb0|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+
+//->> EM__TARG publics
+pub const onButtonPressed = EM__TARG.onButtonPressed;

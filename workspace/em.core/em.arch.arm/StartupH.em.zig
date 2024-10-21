@@ -3,7 +3,7 @@ pub const em__U = em.module(@This(), .{
     .meta_only = true,
 });
 
-pub fn em__generateH() void {
+pub fn em__generateM() void {
     genArmStartup();
     genStartup();
 }
@@ -75,10 +75,10 @@ fn genArmStartup() void {
         \\};
         \\#endif
     ;
-    var sb = em.StringH{};
-    sb.add(em.sprint("#define __EM_BOOT_FLASH__ {d}\n\n", .{@intFromBool(em.property("em.build.BootFlash", bool, false))}));
-    sb.add(txt);
-    em.writeFile(em.out_root, "arm-startup.c", sb.get());
+    var sb = em.StringM{};
+    sb.addM(em.sprint("#define __EM_BOOT_FLASH__ {d}\n\n", .{@intFromBool(em.property("em.build.BootFlash", bool, false))}));
+    sb.addM(txt);
+    em.writeFile(em.out_root, "arm-startup.c", sb.getM());
 }
 
 fn genStartup() void {
@@ -229,3 +229,8 @@ fn genStartup() void {
     ;
     em.writeFile(em.out_root, "startup.c", txt);
 }
+
+//->> zigem publish #|d1b9474b4677bd7226be0c44fb9db3b9dd1f1d937dd52dac3ad7737b3fc593ac|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

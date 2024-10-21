@@ -6,7 +6,6 @@ pub const EM__CONFIG = struct {
     AlarmOF: em.Factory(Alarm),
     WakeupTimer: em.Proxy(WakeupTimerI),
 };
-pub const x_WakeupTimer = em__C.WakeupTimer;
 
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const TimeTypes = em.import.@"em.utils/TimeTypes";
@@ -32,22 +31,22 @@ pub const Alarm = struct {
     }
 };
 
-pub const createH = EM__META.createH;
-
 const Secs24p8 = TimeTypes.Secs24p8;
 const Thresh = WakeupTimerI.Thresh;
 
 pub const EM__META = struct {
     //
-    fn createH(fiber: FiberMgr.Obj) Obj {
-        const alarm = em__C.AlarmOF.createH(.{ ._fiber = fiber });
+    pub const x_WakeupTimer = em__C.WakeupTimer;
+
+    pub fn createM(fiber: FiberMgr.Obj) Obj {
+        const alarm = em__C.AlarmOF.createM(.{ ._fiber = fiber });
         return alarm;
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const WakeupTimer = em__C.WakeupTimer.get();
+    const WakeupTimer = em__C.WakeupTimer.unwrap();
 
     var cur_alarm: ?*Alarm = null;
 
@@ -102,3 +101,14 @@ pub const EM__TARG = struct {
         setup(alarm, WakeupTimer.secsAligned(delta));
     }
 };
+
+//->> zigem publish #|66b374ea91c6a7ba63df04b805bc28b1913b45720eb1975af352ca5b3c67e963|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const x_WakeupTimer = EM__META.x_WakeupTimer;
+pub const createM = EM__META.createM;
+
+//->> EM__TARG publics

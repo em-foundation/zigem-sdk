@@ -10,21 +10,16 @@ pub const WakeupTimerI = em.import.@"em.hal/WakeupTimerI";
 pub const HandlerFxn = WakeupTimerI.HandlerFxn;
 pub const HandlerArg = WakeupTimerI.HandlerArg;
 
-pub const disable = EM__TARG.disable;
-pub const enable = EM__TARG.enable;
-pub const secsAligned = EM__TARG.secsAligned;
-pub const secsToThresh = EM__TARG.secsToThresh;
-
 const Secs24p8 = TimeTypes.Secs24p8;
 const Thresh = WakeupTimerI.Thresh;
 
 pub const EM__TARG = struct {
     //
-    fn disable() void {
+    pub fn disable() void {
         Rtc.disable();
     }
 
-    fn enable(secs256: Secs24p8, handler: HandlerFxn) void {
+    pub fn enable(secs256: Secs24p8, handler: HandlerFxn) void {
         if (em.IS_META) return;
         Rtc.enable(secs256, @ptrCast(handler));
     }
@@ -40,3 +35,14 @@ pub const EM__TARG = struct {
         return Rtc.toThresh(secs << 8);
     }
 };
+
+//->> zigem publish #|447f3808809c1cf9bbb06b814813b9215a6972eb303acdb34c3a30c85dea2ad9|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__TARG publics
+pub const disable = EM__TARG.disable;
+pub const enable = EM__TARG.enable;
+pub const secsAligned = EM__TARG.secsAligned;
+pub const secsToThresh = EM__TARG.secsToThresh;

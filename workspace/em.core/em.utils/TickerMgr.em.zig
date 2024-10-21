@@ -28,15 +28,13 @@ pub const Ticker = struct {
     }
 };
 
-pub const createH = EM__META.createH;
-
 pub const EM__META = struct {
     //
-    fn createH() Obj {
-        const fiber = FiberMgr.createH(em__U.fxn("alarmFB", FiberMgr.BodyArg));
-        const alarm = AlarmMgr.createH(fiber);
-        const ticker = em__C.TickerOF.createH(.{ ._alarm = alarm, ._fiber = fiber });
-        fiber.O().arg = ticker.getIdx();
+    pub fn createM() Obj {
+        const fiber = FiberMgr.createM(em__U.fxn("alarmFB", FiberMgr.BodyArg));
+        const alarm = AlarmMgr.createM(fiber);
+        const ticker = em__C.TickerOF.createM(.{ ._alarm = alarm, ._fiber = fiber });
+        fiber.objM()._arg = ticker.getIdxM();
         return ticker;
     }
 };
@@ -61,3 +59,14 @@ pub const EM__TARG = struct {
         ticker._tick_cb = null;
     }
 };
+
+//->> zigem publish #|eb12c8987db987206875748eb0cbe2d86501850fae0ebd25092bfd6db68c6304|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const createM = EM__META.createM;
+
+//->> EM__TARG publics
+pub const alarmFB = EM__TARG.alarmFB;

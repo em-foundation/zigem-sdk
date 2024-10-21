@@ -11,7 +11,6 @@ pub const EM__CONFIG = struct {
     DataOF: em.Factory(Data),
     ElemOF: em.Factory(Elem),
 };
-pub const c_memsize = em__C.memsize;
 
 pub const Common = em.import.@"em.mcu/Common";
 pub const Crc = em.import.@"em.coremark/Crc";
@@ -34,36 +33,32 @@ pub const Elem = struct {
 
 pub const Comparator = fn (a: Data.Obj, b: Data.Obj) i32;
 
-pub const dump = EM__TARG.dump;
-pub const kind = EM__TARG.kind;
-pub const print = EM__TARG.print;
-pub const run = EM__TARG.run;
-pub const setup = EM__TARG.setup;
-
 pub const EM__META = struct {
     //
-    pub fn em__constructH() void {
+    pub const c_memsize = em__C.memsize;
+
+    pub fn em__constructM() void {
         const item_size = 16 + @sizeOf(Data);
-        const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.getH())) / @as(f32, @floatFromInt(item_size))))) - 3;
-        const head = em__C.ElemOF.createH(.{});
-        head.O().data = em__C.DataOF.createH(.{});
+        const max = @as(u16, @intFromFloat(@round(@as(f32, @floatFromInt(em__C.memsize.getM())) / @as(f32, @floatFromInt(item_size))))) - 3;
+        const head = em__C.ElemOF.createM(.{});
+        head.objM().data = em__C.DataOF.createM(.{});
         var p = head;
         for (0..max - 1) |_| {
-            const q = em__C.ElemOF.createH(.{});
-            q.O().data = em__C.DataOF.createH(.{});
-            p.O().next = q;
+            const q = em__C.ElemOF.createM(.{});
+            q.objM().data = em__C.DataOF.createM(.{});
+            p.objM().next = q;
             p = q;
         }
-        p.O().next = null;
-        em__C.cur_head.set(head);
-        em__C.max_elems.set(max);
+        p.objM().next = null;
+        em__C.cur_head.setM(head);
+        em__C.max_elems.setM(max);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    var cur_head = em__C.cur_head.get();
-    const max_elems = em__C.max_elems.get();
+    var cur_head = em__C.cur_head.unwrap();
+    const max_elems = em__C.max_elems.unwrap();
 
     pub fn dump() void {
         // TODO
@@ -335,3 +330,18 @@ pub const EM__TARG = struct {
         return @bitCast(ret);
     }
 };
+
+//->> zigem publish #|8ec57e3325f70fa96d3c25cfa297a2459b2f343e373c9a20317bc1e757fc755c|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
+pub const c_memsize = EM__META.c_memsize;
+
+//->> EM__TARG publics
+pub const dump = EM__TARG.dump;
+pub const kind = EM__TARG.kind;
+pub const print = EM__TARG.print;
+pub const run = EM__TARG.run;
+pub const setup = EM__TARG.setup;

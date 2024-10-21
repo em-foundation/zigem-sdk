@@ -14,3 +14,8 @@ pub fn put(data: u8) void {
     _ = data;
     return;
 }
+
+//->> zigem publish #|88fbb179e500cc48c9c71906594849fc7aba96198a476637ca8cd1630750a30a|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted

@@ -23,13 +23,12 @@ pub fn exec(top: em.Unit) !void {
     @setEvalBranchQuota(100_000);
     const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
-    callAll("em__initH", ulist_bot, false);
-    callAll("em__configureH", ulist_top, false);
+    callAll("em__initM", ulist_bot, false);
+    callAll("em__configureM", ulist_top, false);
     try mkUsedSet(top);
     try mkUsedSet(BuildH.em__U);
-    callAll("em__constructH", ulist_top, false);
-    callAll("em__generateH", ulist_top, false);
-    try genDomain();
+    callAll("em__constructM", ulist_top, false);
+    callAll("em__generateM", ulist_top, false);
     try genTarg(top, ulist_bot, ulist_top);
     std.process.exit(0);
 }
@@ -56,36 +55,15 @@ fn genConfig(unit: em.Unit, out: std.fs.File.Writer) !void {
     const cti = @typeInfo(@TypeOf(C));
     inline for (cti.Struct.fields) |fld| {
         const cfld = @field(C, fld.name);
-        try out.print("{s}", .{em.toStringPre(cfld, unit.upath, fld.name)});
+        try out.print("{s}", .{em.em__F_toStringPre(cfld, unit.upath, fld.name)});
     }
-    //inline for (cti.Struct.fields) |fld| {
-    //    // const fti = @typeInfo(@TypeOf(fld.type));
-    //    if (!em.std.mem.eql(u8, fld.name, "em__upath")) {
-    //        const cfld = @field(C, fld.name);
-    //        em.print("{s} {x}", .{ fld.name, (@intFromPtr(cfld)) });
-    //        //if (@typeInfo(@TypeOf(cfld.*)) == .Struct and @hasDecl(@TypeOf(cfld.*), "toStringDecls")) {
-    //        //    try out.print("{s}", .{cfld.toStringDecls(unit.upath, fld.name)});
-    //        //}
-    //    }
-    //}
     const cfgpath = if (!unit.generated) unit.upath else mkConfigPath(@typeName(@TypeOf(C)));
     try out.print("pub const @\"{s}__config\" = em.import.@\"{s}\".EM__CONFIG{{\n", .{ unit.upath, cfgpath });
     inline for (cti.Struct.fields) |fld| {
         const cfld = @field(C, fld.name);
-        try out.print("    .{s} = {s},\n", .{ fld.name, em.toStringAux(cfld) });
+        try out.print("    .{s} = {s},\n", .{ fld.name, em.em__F_toStringAux(cfld) });
     }
     try out.print("}};\n", .{});
-}
-
-fn genDomain() !void {
-    const file = try std.fs.createFileAbsolute(em._domain_file, .{});
-    const out = file.writer();
-    try out.print(
-        \\pub const Domain = enum {{META, TARG}};
-        \\pub const DOMAIN: Domain = .TARG;
-        \\
-    , .{});
-    file.close();
 }
 
 fn genImport(path: []const u8, out: std.fs.File.Writer) !void {

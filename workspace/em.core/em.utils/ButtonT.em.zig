@@ -2,12 +2,12 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    Edge: em.Proxy(GpioEdgeI),
+    Edge: em.Proxy(EdgeI),
     debounceF: em.Param(FiberMgr.Obj),
 };
 
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
-pub const GpioEdgeI = em.import.@"em.hal/GpioEdgeI";
+pub const EdgeI = em.import.@"em.hal/EdgeI";
 
 pub fn em__generateS(comptime name: []const u8) type {
     //
@@ -23,27 +23,24 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const ButtonI = em.import.@"em.hal/ButtonI";
         pub const Poller = em.import.@"em.mcu/Poller";
 
-        pub const x_Edge = em__C.Edge;
-
         pub const DurationMs = ButtonI.DurationMs;
         pub const OnPressedCbFxn = ButtonI.OnPressedCbFxn;
         pub const OnPressedCbArg = ButtonI.OnPressedCbArg;
 
-        pub const isPressed = EM__TARG.isPressed;
-        pub const onPressed = EM__TARG.onPressed;
-
         pub const EM__META = struct {
             //
-            pub fn em__constructH() void {
-                const fiber = FiberMgr.createH(em__U.fxn("debounceFB", FiberMgr.BodyArg));
-                em__C.debounceF.set(fiber);
-                em__C.Edge.get().setDetectHandlerH(em__U.fxn("buttonHandler", GpioEdgeI.HandlerArg));
+            pub const x_Edge = em__C.Edge;
+
+            pub fn em__constructM() void {
+                const fiber = FiberMgr.createM(em__U.fxn("debounceFB", FiberMgr.BodyArg));
+                em__C.debounceF.setM(fiber);
+                em__C.Edge.getM().setDetectHandlerM(em__U.fxn("buttonHandler", EdgeI.HandlerArg));
             }
         };
 
         pub const EM__TARG = struct {
             //
-            const Edge = em__C.Edge.get();
+            const Edge = em__C.Edge.unwrap();
 
             var cur_cb: OnPressedCbFxn = null;
             var cur_dur: u16 = 0;
@@ -51,14 +48,13 @@ pub fn em__generateS(comptime name: []const u8) type {
             var min_dur: u16 = 0;
 
             pub fn em__startup() void {
-                Edge.makeInput();
-                Edge.setInternalPullup(true);
+                Edge.init(true);
                 Edge.setDetectFallingEdge();
             }
 
-            pub fn buttonHandler(_: GpioEdgeI.HandlerArg) void {
+            pub fn buttonHandler(_: EdgeI.HandlerArg) void {
                 Edge.clearDetect();
-                if (cur_cb != null) em__C.debounceF.get().post();
+                if (cur_cb != null) em__C.debounceF.unwrap().post();
             }
 
             pub fn debounceFB(_: FiberMgr.BodyArg) void {
@@ -72,11 +68,11 @@ pub fn em__generateS(comptime name: []const u8) type {
                 cur_cb.?(.{});
             }
 
-            fn isPressed() bool {
-                return !Edge.get();
+            pub fn isPressed() bool {
+                return !Edge.getState();
             }
 
-            fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
+            pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
                 cur_cb = cb;
                 max_dur = dur.max;
                 min_dur = dur.min;
@@ -87,5 +83,19 @@ pub fn em__generateS(comptime name: []const u8) type {
                 }
             }
         };
+
+        
+        //->> zigem publish #|1143766c7f168aaa504e38b3ad17d9da7da4725f9a28ec690a60c7c1f68cc163|#
+
+        //->> EM__META publics
+        pub const x_Edge = EM__META.x_Edge;
+
+        //->> EM__TARG publics
+        pub const buttonHandler = EM__TARG.buttonHandler;
+        pub const debounceFB = EM__TARG.debounceFB;
+        pub const isPressed = EM__TARG.isPressed;
+        pub const onPressed = EM__TARG.onPressed;
+
+        //->> zigem publish -- end of generated code
     };
 }

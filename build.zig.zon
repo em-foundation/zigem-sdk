@@ -46,8 +46,8 @@
             .hash = "1220514976789d302751ef301bfa9933fbd288ed60b319da76938378d0327253e8b8",
         },
         .@"vscode-zigem" = .{
-            .url = "https://github.com/em-foundation/vscode-zigem/releases/download/v0.0.2.202409131250/vscode-zigem.zip",
-            .hash = "1220291e6f88b53eb17dbd6c47ef8f45eb8bae0a7181e51b1a3158bbe414862c110b",
+            .url = "https://github.com/em-foundation/vscode-zigem/releases/download/v0.0.2.202410171148/vscode-zigem.zip",
+            .hash = "122036a93fb4df2be8de27eb5cbc6010b231620adf85e7e13816ae85a2d9fffecaf1",
         },
     },
 }

@@ -120,7 +120,14 @@ const sram_txt =
     \\}
 ;
 
-pub fn em__generateH() void {
+pub fn em__generateM() void {
     const txt = if (em.property("em.build.BootFlash", bool, false)) sram_txt else flash_txt;
     em.writeFile(em.out_root, "linkcmd.ld", txt);
 }
+
+//->> zigem publish #|051735533bfdf927a989e95721608daddd8325589f3405b2f01caa2e3b30953c|#
+
+//->> generated source code -- do not modify
+//->> all of these lines can be safely deleted
+
+//->> EM__META publics
