@@ -13,16 +13,17 @@ pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__META = struct {
+    //
     pub fn em__configureM() void {
-        RadioConfig.phy.set(.PROP_250K);
-        const fiberF = FiberMgr.createH(em__U.fxn("fiberFB", FiberMgr.BodyArg));
-        em__C.fiberF.set(fiberF);
+        RadioConfig.c_phy.setM(.PROP_250K);
+        const fiberF = FiberMgr.createM(em__U.fxn("fiberFB", FiberMgr.BodyArg));
+        em__C.fiberF.setM(fiberF);
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const fiberF = em__C.fiberF;
+    const fiberF = em__C.fiberF.unwrap();
 
     const hal = em.hal;
     const reg = em.reg;
@@ -34,17 +35,16 @@ pub const EM__TARG = struct {
 
     pub fn fiberFB(_: FiberMgr.BodyArg) void {
         RadioDriver.enable();
-        RadioDriver.startRx(17);
-        // RadioDriver.waitReady();
+        RadioDriver.startCs(17, 0);
         while (true) {
             Common.BusyWait.wait(1_000_000);
             em.print("rssi = {x}\n", .{RadioDriver.readRssi()});
         }
-        // em.halt();
     }
 };
 
-//->> zigem publish #|50ac5027a8c88531f27b1cdb1d899ee23ad470d0834d690311c37ca7a18e455f|#
+
+//->> zigem publish #|efde8b099f5f572d61ed9d926ff9cdf9fc8dca07e01eefcee7f82b54ded1a648|#
 
 //->> EM__META publics
 

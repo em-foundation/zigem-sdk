@@ -16,16 +16,16 @@ pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 
 pub const EM__META = struct {
     pub fn em__configureM() void {
-        RadioConfig.phy.set(.PROP_250K);
+        RadioConfig.c_phy.setM(.PROP_250K);
     }
     pub fn em__constructM() void {
-        em__C.txTicker.set(TickerMgr.createH());
+        em__C.txTicker.setM(TickerMgr.createM());
     }
 };
 
 pub const EM__TARG = struct {
     //
-    const txTicker = em__C.txTicker;
+    const txTicker = em__C.txTicker.unwrap();
 
     pub fn em__run() void {
         txTicker.start(256, &tickCb);
@@ -34,18 +34,16 @@ pub const EM__TARG = struct {
 
     fn tickCb(_: TickerMgr.CallbackArg) void {
         RadioDriver.enable();
-        RadioDriver.startRx(17, 0);
+        RadioDriver.startCs(17, 0);
         Poller.upause(125);
-        //RadioDriver.waitReady();
         const rssi = RadioDriver.readRssi();
         if (rssi > -35) AppLed.wink(5);
-        //em.print("rssi = {d}\n", .{RadioDriver.readRssi()});
         RadioDriver.disable();
     }
 };
 
 
-//->> zigem publish #|4768da4e2193a492798abb9c30779c568f7d5d07a4ecb7f9f4f21c51392808bd|#
+//->> zigem publish #|a98bdd23a033fea6e7b87f6dbbbd1a61f2954011fbbe31f398d064de6baac9b7|#
 
 //->> EM__META publics
 
