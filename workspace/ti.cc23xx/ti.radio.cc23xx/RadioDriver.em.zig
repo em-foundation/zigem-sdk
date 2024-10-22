@@ -87,6 +87,10 @@ pub const EM__TARG = struct {
         }
     }
 
+    pub fn getWords(rbuf: []u32) void {
+        RfFifo.read(rbuf, rbuf.len);
+    }
+
     pub fn putWords(wbuf: []const u32) void {
         RfFifo.prepare();
         RfFifo.write(wbuf);
@@ -277,13 +281,14 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|f29f8881201b48c79b8632b4f0076364516700e7c8a7e0f655f4a93f01ba311e|#
+//->> zigem publish #|6d23d31563e65756fd7840fa120d970935c6d7d855f065062a7ae2a995455703|#
 
 //->> EM__META publics
 
 //->> EM__TARG publics
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
+pub const getWords = EM__TARG.getWords;
 pub const putWords = EM__TARG.putWords;
 pub const readRssi = EM__TARG.readRssi;
 pub const startCs = EM__TARG.startCs;
