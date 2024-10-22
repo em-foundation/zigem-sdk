@@ -20,7 +20,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FSTAT) & 0x0FFF) >> 2;
         _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
         _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 0;
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 32;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
         writeFifoPtr(reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP));
 
@@ -58,7 +58,8 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|e8c5a7e3dcedb5b12c1e5a42133f82a0f86f65b8b2b3d27dbb3cfd78a2e8d150|#
+
+//->> zigem publish #|19d1330b9dc445e47f67b3026b0cbce77330dfe27a65a62793c4cb171d59d45d|#
 
 //->> EM__TARG publics
 pub const prepare = EM__TARG.prepare;
