@@ -180,7 +180,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = timeout * 4;
         RfFreq.program(freqFromChan(chan));
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |=
-            hal.LRF_EventOpDone | hal.LRF_EventOpError | hal.LRF_EventRxNok | hal.LRF_EventRxOk;
+            hal.LRF_EventOpError | hal.LRF_EventRxNok | hal.LRF_EventRxOk;
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
@@ -256,15 +256,17 @@ pub const EM__TARG = struct {
         if (em.IS_META) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
+        // em.@"%%[>]"(mis);
+        // em.@"%%[a]"();
         if ((mis & hal.LRF_EventOpError) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
             em.fail();
         }
-        if ((mis & hal.LRF_EventRxOk) != 0) {
-            em.print("peek {x}\n", .{RfFifo.peek(0)});
-        }
+        // if ((mis & hal.LRF_EventRxOk) != 0) {
+        //     em.print("peek {x}\n", .{RfFifo.peek(0)});
+        // }
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
-        if ((mis & hal.LRF_EventOpDone) != 0) setState(.READY);
+        setState(.READY);
     }
 
     // pub fn em__onexit() void {
@@ -275,7 +277,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|1004aea21886c3df4bacd6ffa50e4cecb038fd0b857e02693c949a58d3ff117a|#
+//->> zigem publish #|f29f8881201b48c79b8632b4f0076364516700e7c8a7e0f655f4a93f01ba311e|#
 
 //->> EM__META publics
 
