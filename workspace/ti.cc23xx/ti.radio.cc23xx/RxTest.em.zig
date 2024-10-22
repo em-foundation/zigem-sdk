@@ -37,11 +37,12 @@ pub const EM__TARG = struct {
         RadioDriver.enable();
         RadioDriver.startRx(17, 0);
         RadioDriver.waitReady();
+        em.halt();
     }
 };
 
 
-//->> zigem publish #|3e117c87a8dcb9ec56d99fedb0083587d13fd37b227bebc318b6d60132bef803|#
+//->> zigem publish #|e38e65093f90fe8ae1cce0683225131fe204636d40f7d6bc1e81608f7c6fd1be|#
 
 //->> EM__META publics
 

@@ -114,57 +114,57 @@ pub const struct_T_UINT32_WRITE = extern struct {
 pub const struct_T_UINT32_READ = extern struct {
     v: u32 align(1) = @import("std").mem.zeroes(u32),
 };
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:199:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:199:27: warning: unable to translate function, demoted to extern
 pub extern fn __enable_irq() void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:210:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:210:27: warning: unable to translate function, demoted to extern
 pub extern fn __disable_irq() void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:221:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:221:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_CONTROL() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:251:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:251:27: warning: unable to translate function, demoted to extern
 pub extern fn __set_CONTROL(arg_control: u32) void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:275:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:275:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_IPSR() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:289:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:289:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_APSR() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:303:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:303:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_xPSR() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:317:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:317:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_PSP() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:347:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:347:27: warning: unable to translate function, demoted to extern
 pub extern fn __set_PSP(arg_topOfProcStack: u32) void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:371:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:371:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_MSP() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:401:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:401:27: warning: unable to translate function, demoted to extern
 pub extern fn __set_MSP(arg_topOfMainStack: u32) void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:452:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:452:31: warning: unable to translate function, demoted to extern
 pub extern fn __get_PRIMASK() u32;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:482:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:482:27: warning: unable to translate function, demoted to extern
 pub extern fn __set_PRIMASK(arg_priMask: u32) void;
 pub inline fn __get_FPSCR() u32 {
     return @as(c_uint, 0);
@@ -174,26 +174,26 @@ pub inline fn __set_FPSCR(arg_fpscr: u32) void {
     _ = &fpscr;
     _ = &fpscr;
 }
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:936:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:936:27: warning: unable to translate function, demoted to extern
 pub extern fn __ISB() void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:947:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:947:27: warning: unable to translate function, demoted to extern
 pub extern fn __DSB() void;
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:958:27: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:958:27: warning: unable to translate function, demoted to extern
 pub extern fn __DMB() void;
 pub inline fn __REV(arg_value: u32) u32 {
     var value = arg_value;
     _ = &value;
     return __builtin_bswap32(value);
 }
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:989:31: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:989:31: warning: unable to translate function, demoted to extern
 pub extern fn __REV16(arg_value: u32) u32;
 pub inline fn __REVSH(arg_value: i16) i16 {
     var value = arg_value;
@@ -272,25 +272,25 @@ pub inline fn __USAT(arg_val: i32, arg_sat: u32) u32 {
     }
     return @as(u32, @bitCast(val));
 }
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:214:14: warning: struct demoted to opaque type - has bitfield
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:214:14: warning: struct demoted to opaque type - has bitfield
 const struct_unnamed_1 = opaque {};
 pub const APSR_Type = extern union {
     b: struct_unnamed_1,
     w: u32,
 };
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:244:14: warning: struct demoted to opaque type - has bitfield
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:244:14: warning: struct demoted to opaque type - has bitfield
 const struct_unnamed_2 = opaque {};
 pub const IPSR_Type = extern union {
     b: struct_unnamed_2,
     w: u32,
 };
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:262:14: warning: struct demoted to opaque type - has bitfield
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:262:14: warning: struct demoted to opaque type - has bitfield
 const struct_unnamed_3 = opaque {};
 pub const xPSR_Type = extern union {
     b: struct_unnamed_3,
     w: u32,
 };
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:301:14: warning: struct demoted to opaque type - has bitfield
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:301:14: warning: struct demoted to opaque type - has bitfield
 const struct_unnamed_4 = opaque {};
 pub const CONTROL_Type = extern union {
     b: struct_unnamed_4,
@@ -451,9 +451,9 @@ pub fn __NVIC_GetVector(arg_IRQn_1: IRQn_Type) callconv(.C) u32 {
         if (tmp >= 0) break :blk vectors + @as(usize, @intCast(tmp)) else break :blk vectors - ~@as(usize, @bitCast(@as(isize, @intCast(tmp)) +% -1));
     }).*;
 }
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:50: warning: TODO implement translation of stmt class GCCAsmStmtClass
 
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:987:34: warning: unable to translate function, demoted to extern
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:987:34: warning: unable to translate function, demoted to extern
 pub extern fn __NVIC_SystemReset() callconv(.C) noreturn;
 pub fn SCB_GetFPUType() callconv(.C) u32 {
     return 0;
@@ -1077,53 +1077,53 @@ pub const __VTOR_PRESENT = @as(c_uint, 0x0001);
 pub const __NVIC_PRIO_BITS = @as(c_uint, 0x0002);
 pub const __CMSIS_GCC_H = "";
 pub const __ASM = @compileError("unable to translate C expr: unexpected token '__asm'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:41:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:41:11
 pub const __INLINE = @compileError("unable to translate C expr: unexpected token 'inline'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:44:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:44:11
 pub const __STATIC_INLINE = @compileError("unable to translate C expr: unexpected token 'static'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:47:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:47:11
 pub const __STATIC_FORCEINLINE = @compileError("unable to translate macro: undefined identifier `always_inline`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:50:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:50:11
 pub const __NO_RETURN = @compileError("unable to translate macro: undefined identifier `__noreturn__`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:53:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:53:11
 pub const __USED = @compileError("unable to translate macro: undefined identifier `used`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:56:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:56:11
 pub const __WEAK = @compileError("unable to translate macro: undefined identifier `weak`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:59:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:59:11
 pub const __PACKED = @compileError("unable to translate macro: undefined identifier `packed`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:62:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:62:11
 pub const __PACKED_STRUCT = @compileError("unable to translate macro: undefined identifier `packed`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:65:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:65:11
 pub const __PACKED_UNION = @compileError("unable to translate macro: undefined identifier `packed`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:68:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:68:11
 pub inline fn __UNALIGNED_UINT32(x: anytype) @TypeOf(@import("std").zig.c_translation.cast([*c]struct_T_UINT32, x).*.v) {
     _ = &x;
     return @import("std").zig.c_translation.cast([*c]struct_T_UINT32, x).*.v;
 }
 pub const __UNALIGNED_UINT16_WRITE = @compileError("unable to translate C expr: expected ')' instead got '='");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:84:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:84:11
 pub const __UNALIGNED_UINT16_READ = @compileError("unable to translate C expr: unexpected token 'const'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:92:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:92:11
 pub const __UNALIGNED_UINT32_WRITE = @compileError("unable to translate C expr: expected ')' instead got '='");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:100:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:100:11
 pub const __UNALIGNED_UINT32_READ = @compileError("unable to translate C expr: unexpected token 'const'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:108:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:108:11
 pub const __ALIGNED = @compileError("unable to translate macro: undefined identifier `aligned`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:111:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:111:11
 pub const __RESTRICT = @compileError("unable to translate C expr: unexpected token '__restrict'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:114:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:114:11
 pub const __COMPILER_BARRIER = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:117:11
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:117:11
 pub const __PROGRAM_START = @compileError("unable to translate macro: undefined identifier `__cmsis_start`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:169:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:169:9
 pub const __INITIAL_SP = @compileError("unable to translate macro: undefined identifier `__StackTop`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:173:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:173:9
 pub const __STACK_LIMIT = @compileError("unable to translate macro: undefined identifier `__StackLimit`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:177:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:177:9
 pub const __VECTOR_TABLE = @compileError("unable to translate macro: undefined identifier `__Vectors`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:181:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:181:9
 pub const __VECTOR_TABLE_ATTRIBUTE = @compileError("unable to translate macro: undefined identifier `used`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:185:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:185:9
 pub inline fn __CMSIS_GCC_OUT_REG(r: anytype) @TypeOf("=r"(r)) {
     _ = &r;
     return "=r"(r);
@@ -1137,15 +1137,15 @@ pub inline fn __CMSIS_GCC_USE_REG(r: anytype) @TypeOf("r"(r)) {
     return "r"(r);
 }
 pub const __NOP = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:906:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:906:9
 pub const __WFI = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:912:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:912:9
 pub const __WFE = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:920:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:920:9
 pub const __SEV = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:927:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:927:9
 pub const __BKPT = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/cmsis_gcc.h:1042:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/cmsis_gcc.h:1042:9
 pub const __CORE_CM0PLUS_H_GENERIC = "";
 pub const __CMSIS_VERSION_H = "";
 pub const __CM_CMSIS_VERSION_MAIN = @as(c_uint, 5);
@@ -1159,17 +1159,17 @@ pub const __FPU_USED = @as(c_uint, 0);
 pub const __CMSIS_COMPILER_H = "";
 pub const __CORE_CM0PLUS_H_DEPENDANT = "";
 pub const __I = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:172:13
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:172:13
 pub const __O = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:174:13
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:174:13
 pub const __IO = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:175:13
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:175:13
 pub const __IM = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:178:13
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:178:13
 pub const __OM = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:179:13
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:179:13
 pub const __IOM = @compileError("unable to translate C expr: unexpected token 'volatile'");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:180:13
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:180:13
 pub const APSR_N_Pos = @as(c_uint, 31);
 pub const APSR_N_Msk = @as(c_ulong, 1) << APSR_N_Pos;
 pub const APSR_Z_Pos = @as(c_uint, 30);
@@ -1267,9 +1267,9 @@ pub const SysTick_CALIB_SKEW_Msk = @as(c_ulong, 1) << SysTick_CALIB_SKEW_Pos;
 pub const SysTick_CALIB_TENMS_Pos = @as(c_uint, 0);
 pub const SysTick_CALIB_TENMS_Msk = @as(c_ulong, 0xFFFFFF);
 pub const _VAL2FLD = @compileError("unable to translate macro: undefined identifier `_Pos`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:627:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:627:9
 pub const _FLD2VAL = @compileError("unable to translate macro: undefined identifier `_Msk`");
-// ti.cc23xx/ti.distro.cc23xx/../../em.arch/em.arch.arm/cmsis/core_cm0plus.h:635:9
+// ti.cc23xx/ti.distro.cc23xx/../../em.core/em.arch.arm/cmsis/core_cm0plus.h:635:9
 pub const SCS_BASE = @as(c_ulong, 0xE000E000);
 pub const SysTick_BASE = SCS_BASE + @as(c_ulong, 0x0010);
 pub const NVIC_BASE = SCS_BASE + @as(c_ulong, 0x0100);
@@ -30576,6 +30576,39 @@ pub const RFE_COMMON_RAM_AGCINFO_MODE_M = @as(c_uint, 0x0001);
 pub const RFE_COMMON_RAM_AGCINFO_MODE_S = @as(c_uint, 0);
 pub const RFE_COMMON_RAM_AGCINFO_MODE_FAST = @as(c_uint, 0x0000);
 pub const RFE_COMMON_RAM_AGCINFO_MODE_GEN = @as(c_uint, 0x0001);
+pub const LRF_EventNone = @as(c_uint, 0) << @as(c_uint, 0);
+pub const LRF_EventOpDone = @as(c_uint, 1) << @as(c_uint, 0);
+pub const LRF_EventPingRsp = @as(c_uint, 1) << @as(c_uint, 1);
+pub const LRF_EventRxCtrl = @as(c_uint, 1) << @as(c_uint, 2);
+pub const LRF_EventRxCtrlAck = @as(c_uint, 1) << @as(c_uint, 3);
+pub const LRF_EventRxNok = @as(c_uint, 1) << @as(c_uint, 4);
+pub const LRF_EventRxIgnored = @as(c_uint, 1) << @as(c_uint, 5);
+pub const LRF_EventRxEmpty = @as(c_uint, 1) << @as(c_uint, 6);
+pub const LRF_EventRxBufFull = @as(c_uint, 1) << @as(c_uint, 7);
+pub const LRF_EventRxOk = @as(c_uint, 1) << @as(c_uint, 8);
+pub const LRF_EventTxCtrl = @as(c_uint, 1) << @as(c_uint, 9);
+pub const LRF_EventTxCtrlAckAck = @as(c_uint, 1) << @as(c_uint, 10);
+pub const LRF_EventTxRetrans = @as(c_uint, 1) << @as(c_uint, 11);
+pub const LRF_EventTxAck = @as(c_uint, 1) << @as(c_uint, 12);
+pub const LRF_EventTxDone = @as(c_uint, 1) << @as(c_uint, 13);
+pub const LRF_EventTxCtrlAck = @as(c_uint, 1) << @as(c_uint, 14);
+pub const LRF_EventOpError = @as(c_uint, 1) << @as(c_uint, 15);
+pub const LRF_EventRxfifo = @as(c_uint, 1) << @as(c_uint, 16);
+pub const LRF_EventTxfifo = @as(c_uint, 1) << @as(c_uint, 17);
+pub const LRF_EventLossOfLock = @as(c_uint, 1) << @as(c_uint, 18);
+pub const LRF_EventLock = @as(c_uint, 1) << @as(c_uint, 19);
+pub const LRF_EventRfesoft0 = @as(c_uint, 1) << @as(c_uint, 20);
+pub const LRF_EventRfesoft1 = @as(c_uint, 1) << @as(c_uint, 21);
+pub const LRF_EventRfedone = @as(c_uint, 1) << @as(c_uint, 22);
+pub const LRF_EventMdmsoft0 = @as(c_uint, 1) << @as(c_uint, 23);
+pub const LRF_EventMdmsoft1 = @as(c_uint, 1) << @as(c_uint, 24);
+pub const LRF_EventMdmsoft2 = @as(c_uint, 1) << @as(c_uint, 25);
+pub const LRF_EventMdmout = @as(c_uint, 1) << @as(c_uint, 26);
+pub const LRF_EventMdmin = @as(c_uint, 1) << @as(c_uint, 27);
+pub const LRF_EventMdmdone = @as(c_uint, 1) << @as(c_uint, 28);
+pub const LRF_EventSystim0 = @as(c_uint, 1) << @as(c_uint, 29);
+pub const LRF_EventSystim1 = @as(c_uint, 1) << @as(c_uint, 30);
+pub const LRF_EventSystim2 = @as(c_uint, 1) << @as(c_uint, 31);
 pub const IRQn = enum_IRQn;
 pub const T_UINT32 = struct_T_UINT32;
 pub const T_UINT16_WRITE = struct_T_UINT16_WRITE;

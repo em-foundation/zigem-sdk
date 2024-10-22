@@ -127,7 +127,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = timeout * 4;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = timeout * 4;
         RfFreq.program(freqFromChan(chan));
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= hal.LRF_EventOpDone | hal.LRF_EventOpError;
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
@@ -155,7 +155,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PATTERN).* = 0;
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_MODCTRL).* |= hal.LRFDMDM_MODCTRL_TONEINSERT_M;
         RfFreq.program(freqFromChan(chan));
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= hal.LRF_EventOpDone | hal.LRF_EventOpError;
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_TX;
@@ -183,7 +183,8 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = timeout * 4;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = timeout * 4;
         RfFreq.program(freqFromChan(chan));
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008191; // done | error | rx*
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |=
+            hal.LRF_EventOpDone | hal.LRF_EventOpError | hal.LRF_EventRxNok | hal.LRF_EventRxOk;
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
@@ -220,7 +221,7 @@ pub const EM__TARG = struct {
             else => {},
         }
         RfFreq.program(freqFromChan(chan));
-        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= 0x00008001; // error done
+        reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |= hal.LRF_EventOpDone | hal.LRF_EventOpError;
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
@@ -258,24 +259,25 @@ pub const EM__TARG = struct {
     export fn LRFD_IRQ0_isr() void {
         if (em.IS_META) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
+        em.print("mis = {x}\n", .{mis});
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
-        if ((mis & 0x8000) != 0) {
+        if ((mis & hal.LRF_EventOpError) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
             em.fail();
         }
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
-        setState(.READY);
+        if ((mis & hal.LRF_EventOpDone) != 0) setState(.READY);
     }
 
-    pub fn em__onexit() void {
-        const ris = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_RIS0).*;
-        const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
-        em.print("ris = {x}, mis = {x}\n", .{ ris, mis });
-    }
+    // pub fn em__onexit() void {
+    //     const ris = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_RIS0).*;
+    //     const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
+    //     em.print("ris = {x}, mis = {x}\n", .{ ris, mis });
+    // }
 };
 
 
-//->> zigem publish #|6df2a1b1d5d405de1add462b230e775f646ab4309dd3b435619c5745d5cb1d10|#
+//->> zigem publish #|8deec5c6b2a0339b8dd7b5a3d591a9c8b702d963c305c73a838221333298e1b1|#
 
 //->> EM__META publics
 pub const bindHandlerH = EM__META.bindHandlerH;
