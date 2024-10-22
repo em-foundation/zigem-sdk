@@ -28,10 +28,6 @@ pub const EM__META = struct {
     pub fn em__constructM() void {
         IntrVec.useIntrM("LRFD_IRQ0");
     }
-
-    pub fn bindHandlerH(h: em.Fxn(Handler)) void {
-        em__C.handler.set(h);
-    }
 };
 
 pub const EM__TARG = struct {
@@ -279,10 +275,9 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|b2c3faea355ee847c1707a091b76a129f30b0127f74520fba6c340f30a0d9825|#
+//->> zigem publish #|1004aea21886c3df4bacd6ffa50e4cecb038fd0b857e02693c949a58d3ff117a|#
 
 //->> EM__META publics
-pub const bindHandlerH = EM__META.bindHandlerH;
 
 //->> EM__TARG publics
 pub const disable = EM__TARG.disable;

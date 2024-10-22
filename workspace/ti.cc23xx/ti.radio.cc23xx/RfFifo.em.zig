@@ -27,8 +27,8 @@ pub const EM__TARG = struct {
         var index = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*;
         const fifosz = em.as(u32, ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG4).* & hal.LRFDPBE_FCFG4_RXSIZE_M) >> hal.LRFDPBE_FCFG4_RXSIZE_S) << 2);
         if (index >= fifosz) index -= fifosz;
-        const addr = em.as(c_int, reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* << 2);
-        return reg(hal.LRFD_BUFRAM_BASE + em.as(u32, addr)).*;
+        const addr = em.as(u32, hal.LRFD_BUFRAM_BASE + em.as(c_int, (reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* << 2)));
+        return reg(addr).*;
     }
 
     pub fn prepare() void {
@@ -79,7 +79,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|0d6fab022be774cee9bbd155fc34dcb2e7cf3b9bd11eb89e5b7cb716fa37d498|#
+//->> zigem publish #|013e218511c5aaa5c0244eb4a146c5d0f96c900441c90331c5efc0670812fccb|#
 
 //->> EM__TARG publics
 pub const peek = EM__TARG.peek;
