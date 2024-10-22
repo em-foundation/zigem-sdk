@@ -59,17 +59,17 @@ pub const EM__TARG = struct {
             const temperature = RfTemp.getTemperature();
             // em.print("coeff = {d}, ib = {d}, temp = {d}\n", .{ tempCoeff, ib, temperature });
             const IB_MIN: i32 = 1;
-            const IB_MAX = em.@"<>"(i32, hal.LRFDRFE_PA0_IB_MAX >> hal.LRFDRFE_PA0_IB_S);
-            ib += @divTrunc((temperature - RfTemp.TXPOWER_REFERENCE_TEMPERATURE) * em.@"<>"(i16, tempCoeff), RfTemp.TXPOWER_TEMPERATURE_SCALING);
+            const IB_MAX = em.as(i32, hal.LRFDRFE_PA0_IB_MAX >> hal.LRFDRFE_PA0_IB_S);
+            ib += @divTrunc((temperature - RfTemp.TXPOWER_REFERENCE_TEMPERATURE) * em.as(i16, tempCoeff), RfTemp.TXPOWER_TEMPERATURE_SCALING);
             if (ib < IB_MIN) ib = IB_MIN else if (ib > IB_MAX) ib = IB_MAX;
-            value.bits.ib = em.@"<>"(u6, ib);
+            value.bits.ib = em.as(u6, ib);
         }
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_SPARE5).* = value.raw;
     }
 };
 
 
-//->> zigem publish #|3d75759d5c03302e76f0929f7197f6d48a820dca27963577f2ed1e424290deab|#
+//->> zigem publish #|3bbd28fb881d4c613d2b0830e8de95fca0554a2f844fd5a8888caf7bea9edec6|#
 
 //->> EM__TARG publics
 pub const program = EM__TARG.program;

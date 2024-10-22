@@ -216,7 +216,7 @@ pub const EM__TARG = struct {
         const minRtrim: u32 = em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_RTRIMMIN).*;
         if (rtrim < minRtrim) rtrim = minRtrim;
         em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_DCO).* |= @intCast(rtrim << hal.LRFDRFE_DCO_TAILRESTRIM_S);
-        var rssiOffset: i32 = em.@"<>"(i32, TRIMS.trim4.rssiOffset);
+        var rssiOffset: i32 = em.as(i32, TRIMS.trim4.rssiOffset);
         if (TRIMS.revision == 4 and rssiOffset <= -4) rssiOffset += 5;
         rssiOffset += rssiTempOffset;
         rssiOffset += em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_PHYRSSIOFFSET).*;
@@ -237,7 +237,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|82f6092d8c2044f7f9828c3bcb1eafa06cb5413844f915eabf012432d881eecf|#
+//->> zigem publish #|3fb398cf131e728ca9099f693fe6fe8ec975b4c774e8e90b383bd18515679391|#
 
 //->> EM__TARG publics
 pub const apply = EM__TARG.apply;

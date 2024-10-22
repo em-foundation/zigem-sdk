@@ -805,6 +805,8 @@ pub fn property(name: []const u8, T: type, v: T) T {
 
 const @"// -------- MISC HELPERS -------- //" = {};
 
+pub const as = @"<>";
+
 pub fn @"<>"(T: type, val: anytype) T {
     const ti = @typeInfo(T);
     const vi = @typeInfo(@TypeOf(val));

@@ -55,7 +55,7 @@ pub const EM__TARG = struct {
         RfXtal.waitReady();
         RfRegs.setup();
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* = 127;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = em.@"<>"(u16, ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = em.as(u16, ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2);
         RfTrim.apply();
         switch (RadioConfig.phy) {
             .BLE_1M => {
@@ -98,7 +98,7 @@ pub const EM__TARG = struct {
 
     pub fn readRssi() i8 {
         const raw = reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M;
-        return em.@"<>"(i8, raw);
+        return em.as(i8, raw);
     }
 
     fn setState(s: State) void {
@@ -121,7 +121,7 @@ pub const EM__TARG = struct {
             (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 32; // TODO
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = timeout * 4;
@@ -150,7 +150,7 @@ pub const EM__TARG = struct {
             (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
             (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PATTERN).* = 0;
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_MODCTRL).* |= hal.LRFDMDM_MODCTRL_TONEINSERT_M;
@@ -177,7 +177,7 @@ pub const EM__TARG = struct {
             (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 32; // TODO
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = timeout * 4;
@@ -215,7 +215,7 @@ pub const EM__TARG = struct {
                     (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.@"<>"(u16, cfg_val);
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = (hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF);
             },
             else => {},
@@ -241,7 +241,7 @@ pub const EM__TARG = struct {
             reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0).* = syncWord >> 16;
             syncWordOut |= reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0BR).*;
             const syncWordLen = ((reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMSWQU0).* & hal.LRFDMDM_DEMSWQU0_REFLEN_M) + 1);
-            syncWordOut >>= em.@"<>"(u5, 32 - syncWordLen);
+            syncWordOut >>= em.as(u5, 32 - syncWordLen);
         } else {
             syncWordOut = syncWord;
         }
@@ -259,11 +259,13 @@ pub const EM__TARG = struct {
     export fn LRFD_IRQ0_isr() void {
         if (em.IS_META) return;
         const mis = reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_MIS0).*;
-        em.print("mis = {x}\n", .{mis});
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = mis;
         if ((mis & hal.LRF_EventOpError) != 0) {
             em.@"%%[>]"(em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_ENDCAUSE).*);
             em.fail();
+        }
+        if ((mis & hal.LRF_EventRxOk) != 0) {
+            em.print("peek {x}\n", .{RfFifo.peek(0)});
         }
         hal.NVIC_ClearPendingIRQ(hal.LRFD_IRQ0_IRQn);
         if ((mis & hal.LRF_EventOpDone) != 0) setState(.READY);
@@ -277,7 +279,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|8deec5c6b2a0339b8dd7b5a3d591a9c8b702d963c305c73a838221333298e1b1|#
+//->> zigem publish #|b2c3faea355ee847c1707a091b76a129f30b0127f74520fba6c340f30a0d9825|#
 
 //->> EM__META publics
 pub const bindHandlerH = EM__META.bindHandlerH;

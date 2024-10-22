@@ -19,7 +19,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_ENABLE).* = 0;
         em.reg16(hal.LRFDRFE_BASE + hal.LRFDRFE_O_PDREQ).* = 0;
         //
-        em.reg16(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_ATSTREF).* &= em.@"<>"(u16, ~hal.LRFDRFE32_ATSTREF_BIAS_M);
+        em.reg16(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_ATSTREF).* &= em.as(u16, ~hal.LRFDRFE32_ATSTREF_BIAS_M);
     }
 
     pub fn enableClocks() void {
@@ -50,7 +50,8 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|2973d2881453620a29742a32f84422497fafdae1a761d08983a3dcb564a0887b|#
+
+//->> zigem publish #|b90c5bcdb332d05ee126e5bb31f167df5984f917f799f63f120d95acf93a011f|#
 
 //->> EM__TARG publics
 pub const disable = EM__TARG.disable;

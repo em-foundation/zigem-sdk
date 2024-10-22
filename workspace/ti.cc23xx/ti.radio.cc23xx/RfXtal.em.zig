@@ -38,7 +38,7 @@ pub const EM__TARG = struct {
         const ampl: u32 = if (2 * peak > bias) 2 * peak - bias else 0;
         const trim: u32 = (reg(hal.CKMD_BASE + hal.CKMD_O_HFXTTARG).* & hal.CKMD_HFXTTARG_IREF_M) >> hal.CKMD_HFXTTARG_IREF_S;
         const adjust: i32 = if (ampl < 10 and trim < IREF_MAX) 1 else if (ampl > 16 and trim > IREF_MIN) -1 else 0;
-        setIrefTrim(em.@"<>"(u32, em.@"<>"(i32, trim) + adjust));
+        setIrefTrim(em.as(u32, em.as(i32, trim) + adjust));
         reg(hal.CKMD_BASE + hal.CKMD_O_HFXTCTL).* &= ~hal.CKMD_HFXTCTL_EN_M;
         reg(hal.CKMD_BASE + hal.CKMD_O_AMPADCCTL).* &= ~hal.CKMD_AMPADCCTL_SWOVR;
     }
@@ -105,7 +105,7 @@ export fn CPUIRQ3_isr() void {
 }
 
 
-//->> zigem publish #|f622b5be95f9ecde2986f931076809cd35f9204cd4e2281ff51dedb6f8fbeb4d|#
+//->> zigem publish #|4dfa0daa22d0a60432f27071017b2e412e29c7fe9712b7556b732373879795f8|#
 
 //->> EM__META publics
 

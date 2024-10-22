@@ -56,10 +56,10 @@ pub const EM__TARG = struct {
         if (frequencyOffset == 0) return 0;
         var absFrequencyOffset = if (frequencyOffset < 0) -frequencyOffset else frequencyOffset;
         absFrequencyOffset = (absFrequencyOffset + (1 << 5)) >> 6;
-        absFrequencyOffset *= em.@"<>"(i32, invSynthFreq);
+        absFrequencyOffset *= em.as(i32, invSynthFreq);
         absFrequencyOffset = (absFrequencyOffset + (1 << 19)) >> 20;
         const fOffRes = if (frequencyOffset < 0) -absFrequencyOffset else absFrequencyOffset;
-        return (em.@"<>"(u32, fOffRes) & hal.LRFDRFE_MOD1_FOFF_M);
+        return (em.as(u32, fOffRes) & hal.LRFDRFE_MOD1_FOFF_M);
     }
 
     fn findCalM(frequency: u32, prediv: u32) u32 {
@@ -95,7 +95,7 @@ pub const EM__TARG = struct {
         const frequencyDiv2_16 = (synthFrequency + (1 << 15)) >> 16;
         reg(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_DIVIDEND).* = 1 << 31;
         reg(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_DIVISOR).* = frequencyDiv2_16;
-        em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_K5).* = em.@"<>"(u16, frequencyDiv2_16);
+        em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_K5).* = em.as(u16, frequencyDiv2_16);
         var precalSetting = reg(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_PRE3_PRE2).*;
         const coarsePrecal = (precalSetting & hal.LRFDRFE32_PRE3_PRE2_CRSCALDIV_M) >> hal.LRFDRFE32_PRE3_PRE2_CRSCALDIV_S;
         const midPrecal = (precalSetting & (hal.LRFDRFE32_PRE3_PRE2_MIDCALDIVMSB_M | hal.LRFDRFE32_PRE3_PRE2_MIDCALDIVLSB_M)) >> hal.LRFDRFE_PRE2_MIDCALDIVLSB_S;
@@ -112,8 +112,8 @@ pub const EM__TARG = struct {
         reg(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_PLLM1).* = ((pllMBaseCompensated * precal1) << hal.LRFDRFE32_PLLM1_VAL_S);
         while ((reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_DIVSTA).* & hal.LRFDRFE_DIVSTA_STAT_M) != 0) {}
         const invSynthFreq = reg(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_QUOTIENT).*;
-        em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_RXIF).* = em.@"<>"(u16, findFoff(0, invSynthFreq)); // rxFreqOff
-        em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_TXIF).* = em.@"<>"(u16, findFoff(1_000_000, invSynthFreq)); // txFreqOff
+        em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_RXIF).* = em.as(u16, findFoff(0, invSynthFreq)); // rxFreqOff
+        em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_TXIF).* = em.as(u16, findFoff(1_000_000, invSynthFreq)); // txFreqOff
         programCMixN(1_000_000, invSynthFreq); // rxIntFreq
         switch (RadioConfig.phy) {
             .BLE_1M => programShape(BLE_1M_SHAPE, invSynthFreq << 4),
@@ -124,12 +124,12 @@ pub const EM__TARG = struct {
     fn programCMixN(rxIntFrequency: i32, invSynthFreq: u32) void {
         var absRxIntFrequency = if (rxIntFrequency < 0) -rxIntFrequency else rxIntFrequency;
         absRxIntFrequency = (absRxIntFrequency + (1 << 5)) >> 6;
-        var cMixN = em.@"<>"(u32, absRxIntFrequency) * invSynthFreq;
+        var cMixN = em.as(u32, absRxIntFrequency) * invSynthFreq;
         cMixN = ((cMixN + (1 << 3)) >> 4) * 9;
         const rightShift = (37 - 15) - findLog2Bde1(reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMMISC3).*);
-        cMixN = (cMixN + (em.@"<>"(u32, 1) << (em.@"<>"(u5, rightShift) - 1))) >> em.@"<>"(u5, rightShift);
-        const signedCMixN = if (rxIntFrequency > 0) -em.@"<>"(i32, cMixN) else em.@"<>"(i32, (cMixN));
-        cMixN = (em.@"<>"(u32, signedCMixN) & hal.LRFDMDM_DEMMISC0_CMIXN_M);
+        cMixN = (cMixN + (em.as(u32, 1) << (em.as(u5, rightShift) - 1))) >> em.as(u5, rightShift);
+        const signedCMixN = if (rxIntFrequency > 0) -em.as(i32, cMixN) else em.as(i32, (cMixN));
+        cMixN = (em.as(u32, signedCMixN) & hal.LRFDMDM_DEMMISC0_CMIXN_M);
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMMISC0).* = cMixN;
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_SPARE3).* = cMixN;
     }
@@ -145,7 +145,7 @@ pub const EM__TARG = struct {
         const log2PdifDecim: u32 = (demmisc3 & hal.LRFDMDM_DEMMISC3_PDIFDECIM_M) >> hal.LRFDMDM_DEMMISC3_PDIFDECIM_S;
         var leftShiftP: u32 = log2Bde1 + log2PdifDecim + P_SHIFT;
         var demFracP: u32 = rateWord * bde2;
-        if (demFracP > (em.@"<>"(u64, 1) << 32) / P_FACTOR) {
+        if (demFracP > (em.as(u64, 1) << 32) / P_FACTOR) {
             if ((demFracP & 1) != 0) {
                 roundingError = true;
             }
@@ -154,29 +154,29 @@ pub const EM__TARG = struct {
         }
         demFracP *= P_FACTOR;
         var demFracQ: u32 = ((pllMBase + ((1 << Q_MAGN_SHIFT) - 1)) >> Q_MAGN_SHIFT) * pre;
-        const num0Q: u32 = countLeadingZeros(em.@"<>"(u16, demFracQ >> 16));
-        // TODO const pllMShift: i32 = em.@"<>"(i32, em.@"<>"(u32, Q_MAGN_SHIFT + FRAC_EXTRA_BITS - num0Q));
+        const num0Q: u32 = countLeadingZeros(em.as(u16, demFracQ >> 16));
+        // TODO const pllMShift: i32 = em.as(i32, em.as(u32, Q_MAGN_SHIFT + FRAC_EXTRA_BITS - num0Q));
         const pllMShift: i32 = @bitCast(Q_MAGN_SHIFT + FRAC_EXTRA_BITS - num0Q);
         var pllMBaseRounded: u32 = undefined;
         if (pllMShift <= 0) {
             pllMBaseRounded = pllMBase;
             demFracQ = pllMBase * pre;
             const leftShiftQ = -pllMShift;
-            leftShiftP += em.@"<>"(u32, leftShiftQ);
-            demFracQ <<= em.@"<>"(u5, leftShiftQ);
+            leftShiftP += em.as(u32, leftShiftQ);
+            demFracQ <<= em.as(u5, leftShiftQ);
         } else {
-            const pshft5 = em.@"<>"(u5, pllMShift);
+            const pshft5 = em.as(u5, pllMShift);
             pllMBaseRounded = (pllMBase + (@as(u32, 1) << (pshft5 - 1)) >> pshft5);
             demFracQ = pllMBaseRounded * pre;
             pllMBaseRounded <<= pshft5;
-            leftShiftP -= em.@"<>"(u32, pllMShift);
+            leftShiftP -= em.as(u32, pllMShift);
         }
-        var lshft5 = em.@"<>"(u5, leftShiftP);
+        var lshft5 = em.as(u5, leftShiftP);
         if (leftShiftP >= 0) {
             demFracP <<= lshft5;
         } else {
-            lshft5 = em.@"<>"(u5, -leftShiftP);
-            if ((demFracP & ((em.@"<>"(u32, 1) << lshft5) - 1)) != 0) {
+            lshft5 = em.as(u5, -leftShiftP);
+            if ((demFracP & ((em.as(u32, 1) << lshft5) - 1)) != 0) {
                 roundingError = true;
             }
             demFracP >>= lshft5;
@@ -198,16 +198,16 @@ pub const EM__TARG = struct {
         const scale = shape.scale;
         const deviationFactor2: u32 =
             ((((deviationFactor1 >> 15) * scale) >> 1) + (((deviationFactor1 & 0x7FFF) * scale) >> 16) + (1 << 4)) >> 5;
-        var shapeGain: u32 = 8 - countLeadingZeros(em.@"<>"(u16, deviationFactor2 >> 11));
+        var shapeGain: u32 = 8 - countLeadingZeros(em.as(u16, deviationFactor2 >> 11));
         if (shapeGain > 0x7FFFFFF) shapeGain = 0;
         const startCoeff: u32 = NUM_TX_FILTER_TAPS - shape.coeff.len;
         for (0..startCoeff) |i| filterCoeff.b[i] = 0;
         for (0..NUM_TX_FILTER_TAPS - startCoeff) |i| {
-            filterCoeff.b[i + startCoeff] = em.@"<>"(u8, ((deviationFactor2 * shape.coeff[i]) + (em.@"<>"(u32, 1) << (em.@"<>"(u5, 18 + shapeGain)))) >> (em.@"<>"(u5, 19 + shapeGain)));
+            filterCoeff.b[i + startCoeff] = em.as(u8, ((deviationFactor2 * shape.coeff[i]) + (em.as(u32, 1) << (em.as(u5, 18 + shapeGain)))) >> (em.as(u5, 19 + shapeGain)));
         }
         for (0..NUM_TX_FILTER_TAPS / 4) |i| {
-            const off = em.@"<>"(u32, hal.LRFDRFE32_O_DTX1_DTX0 + em.@"<>"(c_uint, i * 4));
-            reg(em.@"<>"(u32, hal.LRFDRFE32_BASE) + off).* = filterCoeff.w[i];
+            const off = em.as(u32, hal.LRFDRFE32_O_DTX1_DTX0 + em.as(c_uint, i * 4));
+            reg(em.as(u32, hal.LRFDRFE32_BASE) + off).* = filterCoeff.w[i];
         }
         if (shapeGain > 3) shapeGain = 3;
         reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_MOD0).* = (reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_MOD0).* & ~hal.LRFDRFE_MOD0_SHPGAIN_M) | (shapeGain << hal.LRFDRFE_MOD0_SHPGAIN_S);
@@ -227,7 +227,8 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|5ac34d2ceec72c5d4177571ae19511fc14024b91e81e567507af21bf74adf883|#
+
+//->> zigem publish #|4bd2fa024af5440c43c7237217f22121b6dc27ccdb7d0e251cffc624cfd3aa23|#
 
 //->> EM__TARG publics
 pub const program = EM__TARG.program;

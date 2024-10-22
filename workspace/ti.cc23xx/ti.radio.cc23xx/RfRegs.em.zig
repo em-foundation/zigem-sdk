@@ -75,8 +75,8 @@ pub const EM__META = struct {
                 cur_addr = addr;
             }
             const idx = em.std.mem.indexOf(u8, bits, ":");
-            const hi_bit = em.@"<>"(u4, if (idx == null) parseDec(bits) else parseDec(bits[0..idx.?]));
-            const lo_bit = em.@"<>"(u4, if (idx == null) hi_bit else parseDec(bits[idx.? + 1 ..]));
+            const hi_bit = em.as(u4, if (idx == null) parseDec(bits) else parseDec(bits[0..idx.?]));
+            const lo_bit = em.as(u4, if (idx == null) hi_bit else parseDec(bits[idx.? + 1 ..]));
             cur_val |= (val << lo_bit);
         }
         pub fn finalize() void {
@@ -85,7 +85,7 @@ pub const EM__META = struct {
         }
 
         fn flush() void {
-            const diff = (cur_addr - prev_addr) >> em.@"<>"(u4, cur_desc.inc);
+            const diff = (cur_addr - prev_addr) >> em.as(u4, cur_desc.inc);
             if (diff > 1) {
                 for (1..diff) |_| {
                     cur_serial += 1;
@@ -133,7 +133,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|53abd4154bf23c06f9ce9add22bb93a7c1420d396152db9ae92c523cd192a989|#
+//->> zigem publish #|73bc269f198ff460451abd0d5320d6b3f707a6c719c1646be51274ca9d4d4bfb|#
 
 //->> EM__META publics
 
