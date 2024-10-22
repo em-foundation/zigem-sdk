@@ -37,7 +37,7 @@ pub const EM__TARG = struct {
         RadioDriver.enable();
         RadioDriver.startRx(17, 0);
         RadioDriver.waitReady();
-        var rbuf: [5]u32 = undefined;
+        var rbuf: [4]u32 = undefined;
         RadioDriver.getWords(&rbuf);
         for (&rbuf) |w| {
             em.print("{x:0>8} ", .{w});
@@ -48,7 +48,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|523e5b3f94104cdfb97aa5ce6ef73dd356f8e5873435b6400c1e443b718af6a2|#
+//->> zigem publish #|1223093d2e729f07177c512e222bd7f0873ea8d07c1c8e317753c7ed256c43a3|#
 
 //->> EM__META publics
 

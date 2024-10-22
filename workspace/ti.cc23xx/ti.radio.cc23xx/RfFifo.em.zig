@@ -38,12 +38,13 @@ pub const EM__TARG = struct {
         var rxcfg = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
         rxcfg &= ~(em.as(u32, (hal.LRFDPBE_FCFG0_RXADEAL_M | hal.LRFDPBE_FCFG0_RXACOM_M)));
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).* = rxcfg;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FSTAT) & 0x0FFF) >> 2;
-        _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
-        _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 32;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
-        writeFifoPtr(reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP));
+        // em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FSTAT) & 0x0FFF) >> 2;
+        // _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
+        // _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
+        // reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 32;
+        // em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
+        // writeFifoPtr(reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP));
 
         // TX fifo
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
@@ -60,14 +61,10 @@ pub const EM__TARG = struct {
             data[i] = reg(addr).*;
             addr += 4;
         }
-
-        // _ = EM__TARG.peek(0);
         // const fifoStart = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* & hal.LRFDPBE_FCFG3_RXSTRT_M) >> hal.LRFDPBE_FCFG3_RXSTRT_S) << 2;
         // const readPointer = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFWP).* & ~em.as(u32, 0x0003);
         // var fifoReadPtr: [*]volatile u32 = @ptrFromInt(RXF_UNWRAPPED_BASE_ADDR + fifoStart + readPointer);
-        // em.print("read start = {x}, ptr = {}\n", .{ fifoStart, readPointer });
         // for (0..word_cnt) |i| {
-        //     em.print("{}: {x}\n", .{ i, @intFromPtr(fifoReadPtr) });
         //     data[i] = fifoReadPtr[0];
         //     fifoReadPtr += 1;
         // }
@@ -131,7 +128,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|be9420d69d77183943269f94384f099415bb1efe5fe381fd48ad7d62be42af32|#
+//->> zigem publish #|1ac611aa6876e49f6518eaebfc94306c98f26e0cfbb7c6f250711caa45d34cf3|#
 
 //->> EM__TARG publics
 pub const peek = EM__TARG.peek;

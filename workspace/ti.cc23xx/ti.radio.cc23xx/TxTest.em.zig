@@ -27,7 +27,7 @@ pub const EM__TARG = struct {
     //
     const txTicker = em__C.txTicker.unwrap();
 
-    var data = [_]u32{ 0x0203000F, 0x000A0001, 0x04030201, 0x08070605, 0x00000A09 };
+    var data = [_]u32{ 0x0203000E, 0x00090001, 0x04030201, 0x08070605, 0x00000009 };
 
     pub fn em__run() void {
         txTicker.start(256, &txTickCb);
@@ -45,7 +45,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|76402b45667bec43b3d6d2c7ae74d18491334c3a6695f68cd4f503e7eef77be0|#
+//->> zigem publish #|c803f73deaaf74f161349072c3197be59a99f6bfb79606be15f59b5324017c42|#
 
 //->> EM__META publics
 

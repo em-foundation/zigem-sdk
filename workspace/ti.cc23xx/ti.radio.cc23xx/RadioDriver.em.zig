@@ -163,6 +163,7 @@ pub const EM__TARG = struct {
 
     pub fn startRx(chan: u8, timeout: u16) void {
         setState(.RX);
+        RfFifo.prepare();
         RfCtrl.enableImages();
         reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
         const cfg_val: u32 =
@@ -193,7 +194,7 @@ pub const EM__TARG = struct {
 
     pub fn startTx(chan: u8, power: i8) void {
         setState(.TX);
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RETRY >> hal.LRFDPBE_FCMD_DATA_S);
+        // reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RETRY >> hal.LRFDPBE_FCMD_DATA_S);
         RfPower.program(power);
         RfCtrl.enableImages();
         switch (RadioConfig.phy) {
@@ -281,7 +282,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|6d23d31563e65756fd7840fa120d970935c6d7d855f065062a7ae2a995455703|#
+//->> zigem publish #|311264ed035b7e220c7475bcef4a14e2eaf31990ac6950070ddcba3cc0cc23f8|#
 
 //->> EM__META publics
 
