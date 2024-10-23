@@ -92,7 +92,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn putWords(wbuf: []const u32) void {
-        RfFifo.prepare();
+        RfFifo.prepareTX();
         RfFifo.write(wbuf);
     }
 
@@ -163,7 +163,7 @@ pub const EM__TARG = struct {
 
     pub fn startRx(chan: u8, timeout: u16) void {
         setState(.RX);
-        RfFifo.prepare();
+        RfFifo.prepareRX();
         RfCtrl.enableImages();
         reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
         const cfg_val: u32 =
@@ -282,7 +282,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|311264ed035b7e220c7475bcef4a14e2eaf31990ac6950070ddcba3cc0cc23f8|#
+//->> zigem publish #|8457214f9ad7f386f018caa91911b64e962a55f9dc2a63514295e10f646044da|#
 
 //->> EM__META publics
 

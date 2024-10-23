@@ -11,18 +11,6 @@ pub const EM__TARG = struct {
     const RXF_UNWRAPPED_BASE_ADDR: u32 = 0x40093000;
     const TXF_UNWRAPPED_BASE_ADDR: u32 = 0x40093800;
 
-    // uint32_t LRF_peekRxFifo(int32_t offset)
-    // {
-    //     int32_t index = HWREG_READ_LRF(LRFDPBE_BASE + LRFDPBE_O_RXFRP) + offset;
-    //     int32_t fifosz = ((HWREG_READ_LRF(LRFDPBE_BASE + LRFDPBE_O_FCFG4) & LRFDPBE_FCFG4_RXSIZE_M) >> LRFDPBE_FCFG4_RXSIZE_S) << 2;
-    //     if (index >= fifosz)
-    //     {
-    //         index -= fifosz;
-    //     }
-    //
-    //     return HWREG_READ_LRF(LRFD_BUFRAM_BASE + (HWREG_READ_LRF(LRFDPBE_BASE + LRFDPBE_O_FCFG3) << 2) + index);
-    // }
-
     pub fn peek(_: u32) u32 {
         var index = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*;
         const fifosz = em.as(u32, ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG4).* & hal.LRFDPBE_FCFG4_RXSIZE_M) >> hal.LRFDPBE_FCFG4_RXSIZE_S) << 2);
@@ -32,21 +20,15 @@ pub const EM__TARG = struct {
         return reg(addr).*;
     }
 
-    pub fn prepare() void {
-        // RX fifo
+    pub fn prepareRX() void {
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = hal.LRFDPBE_FCMD_DATA_RXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S;
         var rxcfg = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
         rxcfg &= ~(em.as(u32, (hal.LRFDPBE_FCFG0_RXADEAL_M | hal.LRFDPBE_FCFG0_RXACOM_M)));
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).* = rxcfg;
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 32;
-        // em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FSTAT) & 0x0FFF) >> 2;
-        // _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
-        // _ = em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).*;
-        // reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 32;
-        // em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_FIFOCMDADD).* = ((hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD) & 0x0FFF) >> 2;
-        // writeFifoPtr(reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFRP).*, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP));
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFSRP).* = 256;
+    }
 
-        // TX fifo
+    pub fn prepareTX() void {
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RESET >> hal.LRFDPBE_FCMD_DATA_S);
         var txcfg = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).*;
         txcfg &= ~em.as(u32, hal.LRFDPBE_FCFG0_TXADEAL_M);
@@ -61,45 +43,7 @@ pub const EM__TARG = struct {
             data[i] = reg(addr).*;
             addr += 4;
         }
-        // const fifoStart = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* & hal.LRFDPBE_FCFG3_RXSTRT_M) >> hal.LRFDPBE_FCFG3_RXSTRT_S) << 2;
-        // const readPointer = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFWP).* & ~em.as(u32, 0x0003);
-        // var fifoReadPtr: [*]volatile u32 = @ptrFromInt(RXF_UNWRAPPED_BASE_ADDR + fifoStart + readPointer);
-        // for (0..word_cnt) |i| {
-        //     data[i] = fifoReadPtr[0];
-        //     fifoReadPtr += 1;
-        // }
-        // var index = readPointer + (word_cnt * 4);
-        // const fifosz = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG4).* & hal.LRFDPBE_FCFG4_RXSIZE_M) >> hal.LRFDPBE_FCFG4_RXSIZE_S) << 2;
-        // if (index >= fifosz) index -= fifosz;
-        // writeFifoPtr(index, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_RXFWP));
     }
-
-    // void LRF_readRxFifoWords(uint32_t *data32, uint32_t wordLength)
-    // {
-    //     /* Due to RCL-367, the packet is read from memory, and the read pointer is updated afterwards */
-    //     /* Pointer to unwrapped FIFO RAM representation */
-    //     uint32_t fifoStart = ((HWREG_READ_LRF(LRFDPBE_BASE + LRFDPBE_O_FCFG3) & LRFDPBE_FCFG3_RXSTRT_M) >> LRFDPBE_FCFG3_RXSTRT_S) << 2;
-    //     uint32_t readPointer = HWREG_READ_LRF(LRFDPBE_BASE + LRFDPBE_O_RXFRP) & ~0x0003;
-    //     volatile uint32_t *fifoReadPtr = (volatile uint32_t *) (RXF_UNWRAPPED_BASE_ADDR + fifoStart + readPointer);
-    //
-    //     /* [RCL-515 WORKAROUND]: Protect the first memory write on BLE High PG1.x due to the hardware bugs */
-    // #ifdef DeviceFamily_CC27XX
-    //     ASM_4_NOPS();
-    // #endif //DeviceFamily_CC27XX
-    //     for (uint32_t i = 0; i < wordLength; i++) {
-    //         *data32++ = *fifoReadPtr++;
-    //     }
-    //     /* Update read pointer */
-    //     int32_t index = readPointer + (wordLength * 4);
-    //     int32_t fifosz = ((HWREG_READ_LRF(LRFDPBE_BASE + LRFDPBE_O_FCFG4) & LRFDPBE_FCFG4_RXSIZE_M) >> LRFDPBE_FCFG4_RXSIZE_S) << 2;
-    //     if (index >= fifosz)
-    //     {
-    //         index -= fifosz;
-    //     }
-    //     LRF_writeFifoPtr(index, (LRFDPBE_BASE + LRFDPBE_O_RXFRP));
-    //     /* RP was moved, so RX FIFO is not deallocated */
-    //     rxFifoDeallocated = false;
-    // }
 
     pub fn write(data: []const u32) void {
         const fifoStart = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG1).* & hal.LRFDPBE_FCFG1_TXSTRT_M) >> hal.LRFDPBE_FCFG1_TXSTRT_S) << 2;
@@ -128,11 +72,12 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|1ac611aa6876e49f6518eaebfc94306c98f26e0cfbb7c6f250711caa45d34cf3|#
+//->> zigem publish #|979822f6ef8643e2890720fcd67b2902b7720a2d71fbdf8954278c5c34b38edb|#
 
 //->> EM__TARG publics
 pub const peek = EM__TARG.peek;
-pub const prepare = EM__TARG.prepare;
+pub const prepareRX = EM__TARG.prepareRX;
+pub const prepareTX = EM__TARG.prepareTX;
 pub const read = EM__TARG.read;
 pub const write = EM__TARG.write;
 
