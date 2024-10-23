@@ -28,27 +28,28 @@ pub const EM__TARG = struct {
     const hal = em.hal;
     const reg = em.reg;
 
+    var pktbuf: [32]u8 = undefined;
+
     pub fn em__run() void {
         fiberF.post();
         FiberMgr.run();
     }
 
     pub fn fiberFB(_: FiberMgr.BodyArg) void {
-        RadioDriver.enable();
-        RadioDriver.startRx(17, 0);
-        RadioDriver.waitReady();
-        var rbuf: [4]u32 = undefined;
-        RadioDriver.getWords(&rbuf);
-        for (&rbuf) |w| {
-            em.print("{x:0>8} ", .{w});
+        for (0..5) |_| {
+            RadioDriver.enable();
+            RadioDriver.startRx(17, 0);
+            RadioDriver.waitReady();
+            const pkt = RadioDriver.readPkt(&pktbuf);
+            em.print("{x:0>2}\n", .{pkt});
+            RadioDriver.disable();
         }
-        em.print("\n", .{});
         em.halt();
     }
 };
 
 
-//->> zigem publish #|1223093d2e729f07177c512e222bd7f0873ea8d07c1c8e317753c7ed256c43a3|#
+//->> zigem publish #|5c849d04d1e504a6af09dbca1d85a67c1e9dbca7a2c36435270f248973a4e3b9|#
 
 //->> EM__META publics
 

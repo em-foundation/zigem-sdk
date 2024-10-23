@@ -87,8 +87,9 @@ pub const EM__TARG = struct {
         }
     }
 
-    pub fn getWords(rbuf: []u32) void {
-        RfFifo.read(rbuf, rbuf.len);
+    pub fn readPkt(pkt: []u8) []u8 {
+        const sz = RfFifo.readPkt(pkt);
+        return pkt[0..sz];
     }
 
     pub fn readRssi() i8 {
@@ -279,14 +280,14 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|f7d98b7037be8a9099b5ab3d640615702800066e17093f2c0cf5d40f5f1ddd89|#
+//->> zigem publish #|6f55baaaa4dfa5aa50978fc2f25b7f0c4eb41ee17ea20aa78aa6c208f9143878|#
 
 //->> EM__META publics
 
 //->> EM__TARG publics
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
-pub const getWords = EM__TARG.getWords;
+pub const readPkt = EM__TARG.readPkt;
 pub const readRssi = EM__TARG.readRssi;
 pub const startCs = EM__TARG.startCs;
 pub const startCw = EM__TARG.startCw;

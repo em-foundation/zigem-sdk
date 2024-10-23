@@ -36,12 +36,26 @@ pub const EM__TARG = struct {
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG0).* = txcfg;
     }
 
-    pub fn read(data: []u32, word_cnt: usize) void {
+    pub fn readPkt(pkt: []u8) u8 {
         var addr = em.as(u32, hal.LRFD_BUFRAM_BASE + em.as(c_int, (reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* << 2)));
-        for (0..word_cnt) |i| {
-            data[i] = reg(addr).*;
-            addr += 4;
+        var word = reg(addr).*;
+        addr += 4;
+        const sz = em.as(u8, (word & 0xff) - 4);
+        word = reg(addr).*;
+        addr += 4;
+        word >>= 16;
+        var cnt: u8 = 2;
+        for (0..sz) |i| {
+            if (cnt == 0) {
+                cnt = 4;
+                word = reg(addr).*;
+                addr += 4;
+            }
+            pkt[i] = em.as(u8, word & 0xff);
+            word >>= 8;
+            cnt -= 1;
         }
+        return sz;
     }
 
     pub fn writePkt(pkt: []const u8) void {
@@ -83,13 +97,13 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|f8671f45d5c0d8e56b82253f57c752cb423ac047fefb344d4e2119b556651b5f|#
+//->> zigem publish #|a045c46a07bbb4a489f768166d1b98b8a146f6a98f7867571f207283b74aba3e|#
 
 //->> EM__TARG publics
 pub const peek = EM__TARG.peek;
 pub const prepareRX = EM__TARG.prepareRX;
 pub const prepareTX = EM__TARG.prepareTX;
-pub const read = EM__TARG.read;
+pub const readPkt = EM__TARG.readPkt;
 pub const writePkt = EM__TARG.writePkt;
 
 //->> zigem publish -- end of generated code
