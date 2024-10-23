@@ -41,7 +41,7 @@ pub const EM__TARG = struct {
             RadioDriver.startRx(17, 0);
             RadioDriver.waitReady();
             const pkt = RadioDriver.readPkt(&pktbuf);
-            em.print("{x:0>2}\n", .{pkt});
+            em.print("{x:0>2}, rssi = {d}\n", .{ pkt, RadioDriver.readRssi() });
             RadioDriver.disable();
         }
         em.halt();
@@ -49,7 +49,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|5c849d04d1e504a6af09dbca1d85a67c1e9dbca7a2c36435270f248973a4e3b9|#
+//->> zigem publish #|e8ff7881c545ee7714fdf471c55621c4a30c62c608667e2372af8b45bcc5cfd5|#
 
 //->> EM__META publics
 

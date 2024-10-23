@@ -93,8 +93,10 @@ pub const EM__TARG = struct {
     }
 
     pub fn readRssi() i8 {
-        const raw = reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M;
-        return em.as(i8, raw);
+        return switch (cur_state) {
+            .CS => em.as(i8, reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M),
+            else => em.as(i8, em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_LASTRSSI).*),
+        };
     }
 
     fn setState(s: State) void {
@@ -280,7 +282,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|6f55baaaa4dfa5aa50978fc2f25b7f0c4eb41ee17ea20aa78aa6c208f9143878|#
+//->> zigem publish #|986ed67e29ab3509d1aa4d0f554e01790a4633a0277a59bbae039b0cdf4383ea|#
 
 //->> EM__META publics
 
