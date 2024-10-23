@@ -27,25 +27,31 @@ pub const EM__TARG = struct {
     //
     const txTicker = em__C.txTicker.unwrap();
 
-    var data = [_]u32{ 0x0203000E, 0x00090001, 0x04030201, 0x08070605, 0x00000009 };
+    var dat: u8 = 0;
+
+    var pkt: [11]u8 = undefined;
 
     pub fn em__run() void {
         txTicker.start(256, &txTickCb);
+        pkt[0] = em.as(u8, pkt.len) - 1;
         FiberMgr.run();
     }
 
     fn txTickCb(_: TickerMgr.CallbackArg) void {
         AppLed.wink(5);
+        for (1..pkt.len) |i| {
+            pkt[i] = em.as(u8, dat);
+            dat += 1;
+        }
         RadioDriver.enable();
-        RadioDriver.putWords(&data);
-        RadioDriver.startTx(17, 5);
+        RadioDriver.startTx(&pkt, 17, 5);
         RadioDriver.waitReady();
         RadioDriver.disable();
     }
 };
 
 
-//->> zigem publish #|c803f73deaaf74f161349072c3197be59a99f6bfb79606be15f59b5324017c42|#
+//->> zigem publish #|67a94ace4c4ae0b534f378270a1004ac428a13bee45d6993bd6458c3d8df2005|#
 
 //->> EM__META publics
 

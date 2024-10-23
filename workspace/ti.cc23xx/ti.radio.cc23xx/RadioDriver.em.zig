@@ -91,11 +91,6 @@ pub const EM__TARG = struct {
         RfFifo.read(rbuf, rbuf.len);
     }
 
-    pub fn putWords(wbuf: []const u32) void {
-        RfFifo.prepareTX();
-        RfFifo.write(wbuf);
-    }
-
     pub fn readRssi() i8 {
         const raw = reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M;
         return em.as(i8, raw);
@@ -192,8 +187,10 @@ pub const EM__TARG = struct {
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_RX;
     }
 
-    pub fn startTx(chan: u8, power: i8) void {
+    pub fn startTx(pkt: []const u8, chan: u8, power: i8) void {
         setState(.TX);
+        // _ = pkt;
+        RfFifo.writePkt(pkt);
         // reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCMD).* = (hal.LRFDPBE_FCMD_DATA_TXFIFO_RETRY >> hal.LRFDPBE_FCMD_DATA_S);
         RfPower.program(power);
         RfCtrl.enableImages();
@@ -282,7 +279,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|8457214f9ad7f386f018caa91911b64e962a55f9dc2a63514295e10f646044da|#
+//->> zigem publish #|f7d98b7037be8a9099b5ab3d640615702800066e17093f2c0cf5d40f5f1ddd89|#
 
 //->> EM__META publics
 
@@ -290,7 +287,6 @@ pub const EM__TARG = struct {
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
 pub const getWords = EM__TARG.getWords;
-pub const putWords = EM__TARG.putWords;
 pub const readRssi = EM__TARG.readRssi;
 pub const startCs = EM__TARG.startCs;
 pub const startCw = EM__TARG.startCw;

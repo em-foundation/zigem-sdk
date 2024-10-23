@@ -39,24 +39,35 @@ pub const EM__TARG = struct {
     pub fn read(data: []u32, word_cnt: usize) void {
         var addr = em.as(u32, hal.LRFD_BUFRAM_BASE + em.as(c_int, (reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* << 2)));
         for (0..word_cnt) |i| {
-            // em.print("{}: {x}\n", .{ i, addr });
             data[i] = reg(addr).*;
             addr += 4;
         }
     }
 
-    pub fn write(data: []const u32) void {
-        const fifoStart = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG1).* & hal.LRFDPBE_FCFG1_TXSTRT_M) >> hal.LRFDPBE_FCFG1_TXSTRT_S) << 2;
-        const writePointer = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWP).* & ~em.as(u32, 0x0003);
-        var fifoWritePtr: [*]volatile u32 = @ptrFromInt(TXF_UNWRAPPED_BASE_ADDR + fifoStart + writePointer);
-        for (data) |d| {
-            fifoWritePtr[0] = d;
-            fifoWritePtr += 1;
+    pub fn writePkt(pkt: []const u8) void {
+        EM__TARG.prepareTX();
+        const sz = em.as(u8, pkt.len);
+        var word = em.as(u32, 0x02030000) | (sz + 4);
+        var addr = em.as(u32, hal.LRFD_BUFRAM_BASE + em.as(c_int, (reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG1).* << 2)));
+        reg(addr).* = word;
+        addr += 4;
+        word = em.as(u32, 0x00000001);
+        var mask: u32 = 0x00ff0000;
+        var shift: u5 = 16;
+        for (pkt) |b| {
+            if (mask == 0) {
+                mask = 0x000000ff;
+                shift = 0;
+                reg(addr).* = word;
+                addr += 4;
+                word = 0x00000000;
+            }
+            word = (word & ~mask) | em.as(u32, b) << shift;
+            mask <<= 8;
+            shift += 8;
         }
-        var index = writePointer + (data.len * 4);
-        const fifosz = ((reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG2).* & hal.LRFDPBE_FCFG2_TXSIZE_M) >> hal.LRFDPBE_FCFG2_TXSIZE_S) << 2;
-        if (index >= fifosz) index -= fifosz;
-        writeFifoPtr(index, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWP));
+        reg(addr).* = word;
+        writeFifoPtr(addr + 4, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWP));
     }
 
     fn writeFifoPtr(value: u32, regAddr: u32) void {
@@ -72,13 +83,13 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|979822f6ef8643e2890720fcd67b2902b7720a2d71fbdf8954278c5c34b38edb|#
+//->> zigem publish #|f8671f45d5c0d8e56b82253f57c752cb423ac047fefb344d4e2119b556651b5f|#
 
 //->> EM__TARG publics
 pub const peek = EM__TARG.peek;
 pub const prepareRX = EM__TARG.prepareRX;
 pub const prepareTX = EM__TARG.prepareTX;
 pub const read = EM__TARG.read;
-pub const write = EM__TARG.write;
+pub const writePkt = EM__TARG.writePkt;
 
 //->> zigem publish -- end of generated code
