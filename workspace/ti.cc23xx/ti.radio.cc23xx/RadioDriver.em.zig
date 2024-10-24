@@ -95,7 +95,7 @@ pub const EM__TARG = struct {
     pub fn readRssi() i8 {
         return switch (cur_state) {
             .CS => em.as(i8, reg(hal.LRFDRFE_BASE + hal.LRFDRFE_O_RSSI).* & hal.LRFDRFE_RSSI_VAL_M),
-            else => em.as(i8, em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_LASTRSSI).*),
+            else => em.as(i8, em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_LASTRSSI).*), // TODO + RSSI offset
         };
     }
 
@@ -178,7 +178,7 @@ pub const EM__TARG = struct {
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 32; // TODO
+        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 256; // TODO
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = timeout * 4;
         em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = timeout * 4;
         RfFreq.program(freqFromChan(chan));
@@ -282,7 +282,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|986ed67e29ab3509d1aa4d0f554e01790a4633a0277a59bbae039b0cdf4383ea|#
+//->> zigem publish #|3001f6c180ed137164109f84e5c0993377554f95d9a2850d85871e39d12045c1|#
 
 //->> EM__META publics
 
