@@ -69,6 +69,9 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FL2MASK).* = 0;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0;
             },
+            .PROP_250K => {
+                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
+            },
             else => {},
         }
         setState(.READY);
@@ -163,7 +166,6 @@ pub const EM__TARG = struct {
         setState(.RX);
         RfFifo.prepareRX();
         RfCtrl.enableImages();
-        reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
         const cfg_val: u32 =
             (0 << hal.PBE_GENERIC_RAM_OPCFG_RXFILTEROP_S) |
             (1 << hal.PBE_GENERIC_RAM_OPCFG_RXINCLUDEHDR_S) |
@@ -203,7 +205,6 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = chan | 0x40;
             },
             .PROP_250K => {
-                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
                 const cfg_val =
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_TXINFINITE_S) |
                     (0 << hal.PBE_GENERIC_RAM_OPCFG_TXPATTERN_S) |
@@ -282,7 +283,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|3001f6c180ed137164109f84e5c0993377554f95d9a2850d85871e39d12045c1|#
+//->> zigem publish #|a5deaad13e973c2a9389181a1ef7488d8b92d0a3973792c7456407af3778bda6|#
 
 //->> EM__META publics
 

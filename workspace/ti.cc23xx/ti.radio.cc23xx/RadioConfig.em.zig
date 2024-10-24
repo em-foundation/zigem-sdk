@@ -9,6 +9,7 @@ pub const EM__CONFIG = struct {
 pub const Phy = enum {
     NONE,
     BLE_1M,
+    PROP_1M,
     PROP_250K,
 };
 
