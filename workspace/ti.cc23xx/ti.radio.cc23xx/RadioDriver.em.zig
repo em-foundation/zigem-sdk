@@ -69,11 +69,8 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_FL2MASK).* = 0;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0;
             },
-            .PROP_1M => {
-                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x8E89_BED6);
-            },
-            .PROP_250K => {
-                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = updateSyncWord(0x930B_51DE);
+            .PROP_1M, .PROP_250K => {
+                reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x7B8AD0C9; // scramble(0x930B_51DE);
             },
             .NONE => {},
         }
@@ -241,21 +238,6 @@ pub const EM__TARG = struct {
         reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = op;
     }
 
-    fn updateSyncWord(syncWord: u32) u32 {
-        var syncWordOut: u32 = undefined;
-        if ((em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_PKTCFG).* & hal.PBE_GENERIC_RAM_PKTCFG_HDRORDER_M) != 0) {
-            reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0).* = syncWord & 0x0000FFFF;
-            syncWordOut = reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0BR).* << 16;
-            reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0).* = syncWord >> 16;
-            syncWordOut |= reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_PHAOUT0BR).*;
-            const syncWordLen = ((reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMSWQU0).* & hal.LRFDMDM_DEMSWQU0_REFLEN_M) + 1);
-            syncWordOut >>= em.as(u5, 32 - syncWordLen);
-        } else {
-            syncWordOut = syncWord;
-        }
-        return syncWordOut;
-    }
-
     pub fn waitReady() void {
         Idle.waitOnly(.SET);
         while (cur_state != .READY) {
@@ -289,7 +271,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|6ac56ce13bd07dc42e497a7872f570c7340112fb6c467c75ad2470811ba97127|#
+//->> zigem publish #|5136f631aed0550f442f69b29b45ae1f66d85147e9f1be373562c090bdbbb747|#
 
 //->> EM__META publics
 
