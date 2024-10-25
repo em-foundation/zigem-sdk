@@ -116,7 +116,7 @@ pub const EM__TARG = struct {
         em.reg16(hal.LRFD_RFERAM_BASE + hal.RFE_COMMON_RAM_O_TXIF).* = em.as(u16, findFoff(1_000_000, invSynthFreq)); // txFreqOff
         programCMixN(1_000_000, invSynthFreq); // rxIntFreq
         switch (RadioConfig.phy) {
-            .BLE_1M => programShape(BLE_1M_SHAPE, invSynthFreq << 4),
+            .BLE_1M, .PROP_1M => programShape(BLE_1M_SHAPE, invSynthFreq << 4),
             else => {},
         }
     }
@@ -228,7 +228,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|4bd2fa024af5440c43c7237217f22121b6dc27ccdb7d0e251cffc624cfd3aa23|#
+//->> zigem publish #|cbafe816ada37be36e7769c618557fc92585eeb2e0e150d1fc77d505b9c46ac4|#
 
 //->> EM__TARG publics
 pub const program = EM__TARG.program;

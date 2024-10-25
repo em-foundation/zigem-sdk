@@ -23,9 +23,9 @@ pub const EM__META = struct {
     pub fn em__constructM() void {
         const regfile = switch (RadioConfig.c_phy.getM()) {
             .BLE_1M => @embedFile("regs_ble_1m.txt"),
-            .PROP_1M => @embedFile("regs_prop_250k.txt"),
+            .PROP_1M => @embedFile("regs_prop_1m.txt"),
             .PROP_250K => @embedFile("regs_prop_250k.txt"),
-            else => return,
+            .NONE => return,
         };
         var pre_flag = true;
         var it = em.std.mem.splitSequence(u8, regfile, "\n");
@@ -134,7 +134,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|1f6213133a23d46148d80ba02799ed2aa32418a1436fe8944c024388d16807ec|#
+//->> zigem publish #|f02379664f3bf265060b524e5435b6b95c9a515b1fb05851b225325a45a5bf2d|#
 
 //->> EM__META publics
 

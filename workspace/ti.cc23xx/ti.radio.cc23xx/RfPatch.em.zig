@@ -18,12 +18,17 @@ pub const EM__TARG = struct {
                 loadPatch(hal.LRFD_PBERAM_BASE, LRF_PBE_binary_ble5[0..]);
                 loadPatch(hal.LRFD_RFERAM_BASE, LRF_RFE_binary_ble5[0..]);
             },
+            .PROP_1M => {
+                loadPatch(hal.LRFD_MCERAM_BASE, LRF_MCE_binary_ble5[0..]);
+                loadPatch(hal.LRFD_PBERAM_BASE, LRF_PBE_binary_generic[0..]);
+                loadPatch(hal.LRFD_RFERAM_BASE, LRF_RFE_binary_ble5[0..]);
+            },
             .PROP_250K => {
                 loadPatch(hal.LRFD_MCERAM_BASE, LRF_MCE_binary_genfsk[0..]);
                 loadPatch(hal.LRFD_PBERAM_BASE, LRF_PBE_binary_generic[0..]);
                 loadPatch(hal.LRFD_RFERAM_BASE, LRF_RFE_binary_genfsk[0..]);
             },
-            else => {},
+            .NONE => {},
         }
     }
 
@@ -603,7 +608,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|dee0aff7a263841110274a82937bb2c1e110b0f613633261db5a17fb63783f46|#
+//->> zigem publish #|7f9646a89aae48dcfc2e3b4af933bad1b9cd51091bd2385cf410bdbd0bcab3b7|#
 
 //->> EM__TARG publics
 pub const loadAll = EM__TARG.loadAll;

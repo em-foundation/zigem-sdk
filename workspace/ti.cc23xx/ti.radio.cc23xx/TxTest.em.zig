@@ -29,7 +29,7 @@ pub const EM__TARG = struct {
 
     var dat: u8 = 0;
 
-    var pkt: [11]u8 = undefined;
+    var pkt: [5]u8 = undefined;
 
     pub fn em__run() void {
         txTicker.start(256, &txTickCb);
@@ -51,7 +51,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|67a94ace4c4ae0b534f378270a1004ac428a13bee45d6993bd6458c3d8df2005|#
+//->> zigem publish #|f79dda7c0fd068d7c192da34111e40ac7183b8284a63de27c578f81eca51fee4|#
 
 //->> EM__META publics
 

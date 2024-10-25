@@ -36,20 +36,21 @@ pub const EM__TARG = struct {
     }
 
     pub fn fiberFB(_: FiberMgr.BodyArg) void {
-        for (0..5) |_| {
-            RadioDriver.enable();
+        RadioDriver.enable();
+        for (0..20) |_| {
             RadioDriver.startRx(17, 0);
             RadioDriver.waitReady();
+            AppLed.wink(5);
             const pkt = RadioDriver.readPkt(&pktbuf);
             em.print("{x:0>2}, rssi = {d}\n", .{ pkt, RadioDriver.readRssi() });
-            RadioDriver.disable();
         }
+        RadioDriver.disable();
         em.halt();
     }
 };
 
 
-//->> zigem publish #|e8ff7881c545ee7714fdf471c55621c4a30c62c608667e2372af8b45bcc5cfd5|#
+//->> zigem publish #|dbc4c076aac5cb20f8e76e8af428de4491b8addf9a59adfe22580e1808807f3e|#
 
 //->> EM__META publics
 
