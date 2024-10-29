@@ -11,6 +11,7 @@ pub const Common = em.import.@"em.mcu/Common";
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const RadioConfig = em.import.@"ti.radio.cc23xx/RadioConfig";
 pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
+pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 
 pub const EM__META = struct {
     //
@@ -38,11 +39,16 @@ pub const EM__TARG = struct {
     pub fn fiberFB(_: FiberMgr.BodyArg) void {
         for (0..20) |_| {
             RadioDriver.enable();
-            RadioDriver.startRx(17, 0);
+            RadioDriver.startRx(17, 1000);
             RadioDriver.waitReady();
-            AppLed.wink(5);
             const pkt = RadioDriver.readPkt(&pktbuf);
-            em.print("{x:0>2}, rssi = {d}\n", .{ pkt, RadioDriver.readRssi() });
+            if (pkt.len == 0) {
+                SysLed.wink(5);
+                em.print("*** timeout\n", .{});
+            } else {
+                AppLed.wink(5);
+                em.print("{x:0>2}, rssi = {d}\n", .{ pkt, RadioDriver.readRssi() });
+            }
             RadioDriver.disable();
         }
         em.halt();
@@ -50,7 +56,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|1858dd7b73be5f1df01ab3198f33437259669250dcf1637a51b5fd283567afc6|#
+//->> zigem publish #|66e77d75f6f46c5894dfffb27f953a646b4975a4dc67b635d9d9032e8a338a92|#
 
 //->> EM__META publics
 
