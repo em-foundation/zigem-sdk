@@ -231,7 +231,7 @@ pub const EM__TARG = struct {
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
         reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
         const op = switch (RadioConfig.phy) {
-            .BLE_1M => hal.PBE_BLE5_REGDEF_API_OP_ADV,
+            .BLE_1M => hal.PBE_BLE5_REGDEF_API_OP_TXRAW,
             .PROP_1M, .PROP_250K => hal.PBE_GENERIC_REGDEF_API_OP_TX,
             .NONE => unreachable,
         };
@@ -271,7 +271,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|5136f631aed0550f442f69b29b45ae1f66d85147e9f1be373562c090bdbbb747|#
+//->> zigem publish #|c2d7f014858b278cc5d1429b3c544544871f1a0456beeda94dccdfcf559af8f7|#
 
 //->> EM__META publics
 
