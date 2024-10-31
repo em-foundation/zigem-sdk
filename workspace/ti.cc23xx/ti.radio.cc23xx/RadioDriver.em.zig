@@ -170,23 +170,44 @@ pub const EM__TARG = struct {
         RfFifo.prepareRX();
         RfCtrl.enableImages();
         rx_timeout = false;
-        const cfg_val: u32 =
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXFILTEROP_S) |
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_RXINCLUDEHDR_S) |
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATNOK_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
-            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
-            // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
-            (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
-            (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 256; // TODO
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = 0;
-        em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = 0;
+        switch (RadioConfig.phy) {
+            .BLE_1M => {
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_MAXLEN).* = 37;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OPCFG).* = 0 << hal.PBE_BLE5_RAM_OPCFG_REPEAT_S;
+
+                const whiten_init = chan | 0x40;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = whiten_init;
+                // reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x8E89_BED6 ^ (em.as(u32, whiten_init) << 24);
+
+                // reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x7176_4129;
+                var demc1be0 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE0).*;
+                var demc1be2 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE2).*;
+                demc1be0 |= hal.LRFDMDM_DEMC1BE0_MASKA_M | hal.LRFDMDM_DEMC1BE0_MASKB_M;
+                demc1be2 = (demc1be2 & ~hal.LRFDMDM_DEMC1BE2_THRESHOLDC_M) | (0x7F << hal.LRFDMDM_DEMC1BE2_THRESHOLDC_S);
+                reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE0).* = demc1be0;
+                reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE2).* = demc1be2;
+            },
+            .PROP_1M, .PROP_250K => {
+                const cfg_val: u32 =
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RXFILTEROP_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_RXINCLUDEHDR_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATNOK_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_START_S) |
+                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_NOCAL_S) |
+                    // (1 << hal.PBE_GENERIC_RAM_OPCFG_FS_KEEPON_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_NEXTOP_S) |
+                    (1 << hal.PBE_GENERIC_RAM_OPCFG_SINGLE_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_IFSPERIOD_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RXREPEATOK_S) |
+                    (0 << hal.PBE_GENERIC_RAM_OPCFG_RFINTERVAL_S);
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_OPCFG).* = em.as(u16, cfg_val);
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_NESB).* = hal.PBE_GENERIC_RAM_NESB_NESBMODE_OFF;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 256; // TODO
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = 0;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = 0;
+            },
+            .NONE => {},
+        }
         var demc1be1 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE1).*;
         demc1be1 = (demc1be1 & ~hal.LRFDMDM_DEMC1BE1_THRESHOLDB_M) | (0x7F << hal.LRFDMDM_DEMC1BE1_THRESHOLDB_S);
         reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE1).* = demc1be1;
@@ -195,12 +216,17 @@ pub const EM__TARG = struct {
             hal.LRF_EventOpError | hal.LRF_EventRxNok | hal.LRF_EventRxOk | hal.LRF_EventSystim1;
         hal.NVIC_EnableIRQ(hal.LRFD_IRQ0_IRQn);
         while (reg(hal.LRFD_BUFRAM_BASE + hal.PBE_COMMON_RAM_O_MSGBOX).* == 0) {}
-        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).*;
+        reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH2CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).* + 1000;
         if (timeout > 0) {
             reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_ICLR0).* = hal.LRFDDBELL_ICLR0_SYSTIM1_M;
             reg(hal.SYSTIM_BASE + hal.SYSTIM_O_CH3CC).* = reg(hal.SYSTIM_BASE + hal.SYSTIM_O_TIME250N).* + em.as(u32, timeout) * 4000;
         }
-        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = hal.PBE_GENERIC_REGDEF_API_OP_RX;
+        const op = switch (RadioConfig.phy) {
+            .BLE_1M => hal.PBE_BLE5_REGDEF_API_OP_RXRAW,
+            .PROP_1M, .PROP_250K => hal.PBE_GENERIC_REGDEF_API_OP_RX,
+            .NONE => unreachable,
+        };
+        reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_API).* = op;
     }
 
     pub fn startTx(pkt: []const u8, chan: u8, power: i8) void {
@@ -282,7 +308,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|ea69fc056bb262753591920bafa195765b9194bdc32f3cc973e1e1ba9407a92f|#
+//->> zigem publish #|4587682a7cc69d1fe9f1f921835e4ba84689c4fdafc83a95c767d0ba3a718b80|#
 
 //->> EM__META publics
 

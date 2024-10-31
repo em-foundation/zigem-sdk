@@ -90,7 +90,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn program(frequency: u32) void {
-        const synthFrequency = frequency - 1_000_000; // tx freq offset
+        const synthFrequency = frequency - 1_000_000; // TODO: generalize for different PHYs & RX/TX
         const synthFrequencyCompensated = scaleFreqWithHFXTOffset(synthFrequency);
         const frequencyDiv2_16 = (synthFrequency + (1 << 15)) >> 16;
         reg(hal.LRFDRFE32_BASE + hal.LRFDRFE32_O_DIVIDEND).* = 1 << 31;
@@ -228,7 +228,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|cbafe816ada37be36e7769c618557fc92585eeb2e0e150d1fc77d505b9c46ac4|#
+//->> zigem publish #|20526c144fca4860e16eb5f9c5a17fb32f2d006ec4407048a93c2d45bfae7d5b|#
 
 //->> EM__TARG publics
 pub const program = EM__TARG.program;

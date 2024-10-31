@@ -29,7 +29,7 @@ pub const EM__TARG = struct {
     var pkt = [_]u8{ 0x22, 14, 0xCC, 0xCC, 0xBB, 0xBB, 0xAA, 0xAA, 4, 0x08, 'Z', 'I', 'G', 2, 0x01, 0x06 };
 
     pub fn em__run() void {
-        txTicker.start(256, &txTickCb);
+        txTicker.start(64, &txTickCb);
         FiberMgr.run();
     }
 
@@ -37,7 +37,7 @@ pub const EM__TARG = struct {
         AppLed.wink(5);
         RadioDriver.enable();
         var chan: u8 = 37;
-        while (chan < 40) : (chan += 1) {
+        while (chan < 38) : (chan += 1) {
             RadioDriver.startTx(&pkt, chan, 5);
             RadioDriver.waitReady();
         }
@@ -46,7 +46,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|2a2e019009c3f89bd75d0a7e3aee99b6ddbaf95693d4180723c1e21151eaf892|#
+//->> zigem publish #|b41a3afaa13897d254ef0891986f0075410864ecb164a7c764390b1559b8ca8c|#
 
 //->> EM__META publics
 
