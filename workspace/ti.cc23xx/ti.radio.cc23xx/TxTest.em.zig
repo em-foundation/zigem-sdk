@@ -16,7 +16,7 @@ pub const RadioDriver = em.import.@"ti.radio.cc23xx/RadioDriver";
 pub const EM__META = struct {
     //
     pub fn em__configureM() void {
-        RadioConfig.c_phy.setM(.PROP_250K);
+        RadioConfig.c_phy.setM(.PROP_1M);
     }
     pub fn em__constructM() void {
         em__C.txTicker.setM(TickerMgr.createM());
@@ -51,7 +51,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|f79dda7c0fd068d7c192da34111e40ac7183b8284a63de27c578f81eca51fee4|#
+//->> zigem publish #|bdd5ffabd78c640241635e91f60967ba30a93b8fe13458e0670c2828f188cb99|#
 
 //->> EM__META publics
 

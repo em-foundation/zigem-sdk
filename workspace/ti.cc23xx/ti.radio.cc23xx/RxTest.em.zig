@@ -16,7 +16,7 @@ pub const SysLed = em.import.@"em__distro/BoardC".SysLed;
 pub const EM__META = struct {
     //
     pub fn em__configureM() void {
-        RadioConfig.c_phy.setM(.PROP_250K);
+        RadioConfig.c_phy.setM(.PROP_1M);
         const fiberF = FiberMgr.createM(em__U.fxn("fiberFB", FiberMgr.BodyArg));
         em__C.fiberF.setM(fiberF);
     }
@@ -37,9 +37,9 @@ pub const EM__TARG = struct {
     }
 
     pub fn fiberFB(_: FiberMgr.BodyArg) void {
-        for (0..20) |_| {
+        for (0..5) |_| {
             RadioDriver.enable();
-            RadioDriver.startRx(17, 1000);
+            RadioDriver.startRx(17, 0);
             RadioDriver.waitReady();
             const pkt = RadioDriver.readPkt(&pktbuf);
             if (pkt.len == 0) {
@@ -56,7 +56,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|66e77d75f6f46c5894dfffb27f953a646b4975a4dc67b635d9d9032e8a338a92|#
+//->> zigem publish #|3040cfb443b8da020d23f2546e9a0c6479e9b9e35f25653451c7fea50cbe3e04|#
 
 //->> EM__META publics
 

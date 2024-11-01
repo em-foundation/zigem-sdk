@@ -39,9 +39,12 @@ pub const EM__TARG = struct {
     pub fn readPkt(pkt: []u8) u8 {
         var addr = em.as(u32, hal.LRFD_BUFRAM_BASE + em.as(c_int, (reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG3).* << 2)));
         var word = reg(addr).*;
+        em.print("w = {x:0>8}\n", .{word});
         addr += 4;
-        const sz = em.as(u8, (word & 0xff) - 4);
+        //const sz = em.as(u8, (word & 0xff) - 4);
+        const sz = 5;
         word = reg(addr).*;
+        em.print("w = {x:0>8}\n", .{word});
         addr += 4;
         word >>= 16;
         var cnt: u8 = 2;
@@ -49,6 +52,7 @@ pub const EM__TARG = struct {
             if (cnt == 0) {
                 cnt = 4;
                 word = reg(addr).*;
+                em.print("w[{d}] = {x:0>8}\n", .{ i, word });
                 addr += 4;
             }
             pkt[i] = em.as(u8, word & 0xff);
@@ -64,6 +68,7 @@ pub const EM__TARG = struct {
         var word = em.as(u32, 0x02030000) | (sz + 4);
         var addr = em.as(u32, hal.LRFD_BUFRAM_BASE + em.as(c_int, (reg(hal.LRFDPBE_BASE + hal.LRFDPBE_O_FCFG1).* << 2)));
         reg(addr).* = word;
+        em.print("w = {x:0>8}\n", .{word});
         addr += 4;
         word = em.as(u32, 0x00000001);
         var mask: u32 = 0x00ff0000;
@@ -73,6 +78,7 @@ pub const EM__TARG = struct {
                 mask = 0x000000ff;
                 shift = 0;
                 reg(addr).* = word;
+                em.print("w = {x:0>8}\n", .{word});
                 addr += 4;
                 word = 0x00000000;
             }
@@ -81,6 +87,8 @@ pub const EM__TARG = struct {
             shift += 8;
         }
         reg(addr).* = word;
+        em.print("w = {x:0>8}\n", .{word});
+        em.halt();
         writeFifoPtr(addr + 4, (hal.LRFDPBE_BASE + hal.LRFDPBE_O_TXFWP));
     }
 
@@ -97,7 +105,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|a045c46a07bbb4a489f768166d1b98b8a146f6a98f7867571f207283b74aba3e|#
+//->> zigem publish #|83b99315f2b64998391735599a731a944eea469275ea86a1c33b2041f3958884|#
 
 //->> EM__TARG publics
 pub const peek = EM__TARG.peek;
