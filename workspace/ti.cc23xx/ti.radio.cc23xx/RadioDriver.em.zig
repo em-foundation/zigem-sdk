@@ -177,15 +177,19 @@ pub const EM__TARG = struct {
 
                 const whiten_init = chan | 0x40;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_WHITEINIT).* = whiten_init;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRL).* = 0xDDDD;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRM).* = 0xEEEE;
+                em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_BLE5_RAM_O_OWNADRH).* = 0xFFFF;
+
                 // reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x8E89_BED6 ^ (em.as(u32, whiten_init) << 24);
 
                 // reg(hal.LRFDPBE32_BASE + hal.LRFDPBE32_O_MDMSYNCA).* = 0x7176_4129;
-                var demc1be0 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE0).*;
-                var demc1be2 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE2).*;
-                demc1be0 |= hal.LRFDMDM_DEMC1BE0_MASKA_M | hal.LRFDMDM_DEMC1BE0_MASKB_M;
-                demc1be2 = (demc1be2 & ~hal.LRFDMDM_DEMC1BE2_THRESHOLDC_M) | (0x7F << hal.LRFDMDM_DEMC1BE2_THRESHOLDC_S);
-                reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE0).* = demc1be0;
-                reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE2).* = demc1be2;
+                // var demc1be0 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE0).*;
+                // var demc1be2 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE2).*;
+                // demc1be0 |= hal.LRFDMDM_DEMC1BE0_MASKA_M | hal.LRFDMDM_DEMC1BE0_MASKB_M;
+                // demc1be2 = (demc1be2 & ~hal.LRFDMDM_DEMC1BE2_THRESHOLDC_M) | (0x7F << hal.LRFDMDM_DEMC1BE2_THRESHOLDC_S);
+                // reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE0).* = demc1be0;
+                // reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE2).* = demc1be2;
             },
             .PROP_1M, .PROP_250K => {
                 const cfg_val: u32 =
@@ -205,12 +209,12 @@ pub const EM__TARG = struct {
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_MAXLEN).* = 256; // TODO
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_RXTIMEOUT).* = 0;
                 em.reg16(hal.LRFD_BUFRAM_BASE + hal.PBE_GENERIC_RAM_O_FIRSTRXTIMEOUT).* = 0;
+                var demc1be1 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE1).*;
+                demc1be1 = (demc1be1 & ~hal.LRFDMDM_DEMC1BE1_THRESHOLDB_M) | (0x7F << hal.LRFDMDM_DEMC1BE1_THRESHOLDB_S);
+                reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE1).* = demc1be1;
             },
             .NONE => {},
         }
-        var demc1be1 = reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE1).*;
-        demc1be1 = (demc1be1 & ~hal.LRFDMDM_DEMC1BE1_THRESHOLDB_M) | (0x7F << hal.LRFDMDM_DEMC1BE1_THRESHOLDB_S);
-        reg(hal.LRFDMDM_BASE + hal.LRFDMDM_O_DEMC1BE1).* = demc1be1;
         RfFreq.program(freqFromChan(chan));
         reg(hal.LRFDDBELL_BASE + hal.LRFDDBELL_O_IMASK0).* |=
             hal.LRF_EventOpError | hal.LRF_EventRxNok | hal.LRF_EventRxOk | hal.LRF_EventSystim1;
@@ -308,7 +312,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|4587682a7cc69d1fe9f1f921835e4ba84689c4fdafc83a95c767d0ba3a718b80|#
+//->> zigem publish #|99ad73b6afa6a055d2cc238d5dec23b4b7ce6c6b321035c3febf61ae8a471b38|#
 
 //->> EM__META publics
 
