@@ -164,8 +164,9 @@ pub const Unit = struct {
         return Fxn(FT){ .em__upath = self.upath, .em__fname = name };
     }
 
-    pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
-        return Template_Unit.em__generateS(self.extendPath(as_name));
+    pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type, comptime params: anytype) type {
+        const PT = if (@hasDecl(Template_Unit, "EM__PARAMS")) Template_Unit.EM__PARAMS else struct {};
+        return Template_Unit.em__generateS(self.extendPath(as_name), std.mem.zeroInit(PT, params));
     }
 
     pub fn hasInterface(self: Self, inter: Unit) bool {

@@ -6,7 +6,7 @@ pub const EM__CONFIG = struct {
     pin: em.Param(i16),
 };
 
-pub fn em__generateS(comptime name: []const u8) type {
+pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
     return struct {
         pub const em__U = em.module(
             @This(),
@@ -109,7 +109,8 @@ pub fn em__generateS(comptime name: []const u8) type {
             }
         };
 
-        //->> zigem publish #|c98f0bd34a614805555a0802c6202527bc7868d466d1c25de8f63a6d198067e0|#
+        
+        //->> zigem publish #|7b2a53575b6b59ffcc31169e447a9c290791a6910d5b36741cefef7859424282|#
 
         //->> EM__META publics
         pub const c_pin = EM__META.c_pin;
