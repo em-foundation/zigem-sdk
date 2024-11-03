@@ -165,8 +165,7 @@ pub const Unit = struct {
     }
 
     pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type, comptime params: anytype) type {
-        const PT = if (@hasDecl(Template_Unit, "EM__PARAMS")) Template_Unit.EM__PARAMS else struct {};
-        return Template_Unit.em__generateS(self.extendPath(as_name), std.mem.zeroInit(PT, params));
+        return Template_Unit.em__generateS(self.extendPath(as_name), params);
     }
 
     pub fn hasInterface(self: Self, inter: Unit) bool {
