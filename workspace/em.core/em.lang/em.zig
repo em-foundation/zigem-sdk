@@ -230,6 +230,46 @@ fn initConfig(CT: type, upath: []const u8) CT {
     }
 }
 
+pub fn Capsule() type {
+    return if (DOMAIN == .TARG) *Capsule_T() else *Capsule_S();
+}
+
+pub fn Capsule_S() type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+
+        em__cfgid: ?*const CfgId = null,
+        em__src: []const u8 = "struct {}",
+
+        pub fn defineM(self: *Self, src: []const u8) void {
+            declare_META();
+            self.em__src = src;
+        }
+
+        pub fn em__F_toString(self: *const Self) []const u8 {
+            declare_META();
+            return sprint("@constCast(&em.Capsule_T(){{.em__Cap = {s}}})", .{self.em__src});
+        }
+
+        pub fn em__F_toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            declare_META();
+            return "";
+        }
+    };
+}
+
+pub fn Capsule_T() type {
+    return struct {
+        const Self = @This();
+        em__Cap: type,
+        pub fn unwrap(self: Self) type {
+            return self.em__Cap;
+        }
+    };
+}
+
 const CfgId = struct {
     un: []const u8,
     cn: []const u8,
