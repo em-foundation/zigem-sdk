@@ -1,31 +1,16 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
-pub const em__C = em__U.config(EM__CONFIG);
 
 pub const Access = enum { RW, RO, WO, EV };
 
 pub fn Desc(T: type, acc: Access) type {
     return struct {
-        const _acc = acc;
-        valp: *T,
+        pub const _acc = acc;
+        pub const _T = T;
     };
 }
 
-pub const EM__CONFIG = struct {};
 
-pub const EM__META = struct {
-    //
-};
-
-pub const EM__TARG = struct {
-    //
-};
-
-
-//->> zigem publish #|69fbe7cd53c79ffb6601de34332141665c46c94be98a334d8fce109ce034eff0|#
-
-//->> EM__META publics
-
-//->> EM__TARG publics
+//->> zigem publish #|91672b1eeec458c1fb73badbc337e9a310dc51b6d27b251d6cf99e9a05177981|#
 
 //->> zigem publish -- end of generated code
