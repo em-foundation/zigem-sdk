@@ -706,6 +706,10 @@ const @"// -------- TARGET GEN -------- //" = {};
 const targ = @import("../../zigem/targ.zig");
 const type_map = @import("../../zigem/type_map.zig");
 
+pub fn typestr(tn: []const u8) []const u8 {
+    return if (std.mem.indexOf(u8, tn, ".") != null) mkTypeImport(tn) else tn;
+}
+
 fn mkTypeName(T: type) []const u8 {
     const ti = @typeInfo(T);
     const tn = @typeName(T);
