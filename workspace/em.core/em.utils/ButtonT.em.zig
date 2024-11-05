@@ -9,8 +9,7 @@ pub const EM__CONFIG = struct {
 pub const FiberMgr = em.import.@"em.utils/FiberMgr";
 pub const EdgeI = em.import.@"em.hal/EdgeI";
 
-pub fn em__generateS(comptime name: []const u8) type {
-    //
+pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
     return struct {
         //
         pub const em__U = em.module(@This(), .{
@@ -85,7 +84,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         };
 
         
-        //->> zigem publish #|1143766c7f168aaa504e38b3ad17d9da7da4725f9a28ec690a60c7c1f68cc163|#
+        //->> zigem publish #|cfcefecef839538bf9c7d22db9ef78d0b4c145b68302d327fdc7fbb969715203|#
 
         //->> EM__META publics
         pub const x_Edge = EM__META.x_Edge;

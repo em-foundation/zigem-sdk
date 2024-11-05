@@ -9,7 +9,7 @@ pub const EM__CONFIG = struct {
 
 pub const GpioI = em.import.@"em.hal/GpioI";
 
-pub fn em__generateS(comptime name: []const u8) type {
+pub fn em__generateS(comptime name: []const u8, _: anytype) type {
     return struct {
         pub const em__U = em.module(
             @This(),
@@ -25,7 +25,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         pub const EdgeI = em.import.@"em.hal/EdgeI";
         pub const GpioT = em.import.@"ti.mcu.cc23xx/GpioT";
 
-        pub const Pin = em__U.Generate("Pin", GpioT);
+        pub const Pin = em__U.Generate("Pin", GpioT, .{});
 
         pub const HandlerArg = EdgeI.HandlerArg;
         pub const HandlerFxn = EdgeI.HandlerFxn;
@@ -98,7 +98,7 @@ pub fn em__generateS(comptime name: []const u8) type {
         }
 
         
-        //->> zigem publish #|bab45af6847c3103f58e3bbda24483b3fb1cb8323a0444d19d762eb5ab40f0df|#
+        //->> zigem publish #|6890d14b64f6a57e39c7cfc3fc61ecd557c8957f78e540a8cfcace1a55ad4356|#
 
         //->> EM__META publics
         pub const c_pin = EM__META.c_pin;

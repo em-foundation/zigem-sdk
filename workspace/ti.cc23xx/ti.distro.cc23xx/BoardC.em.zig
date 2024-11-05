@@ -23,21 +23,21 @@ const EdgeT = em.import.@"ti.mcu.cc23xx/EdgeT";
 const GpioT = em.import.@"ti.mcu.cc23xx/GpioT";
 const LedT = em.import.@"em.utils/LedT";
 
-pub const AppBut = em__U.Generate("AppBut", ButtonT);
-pub const AppButEdge = em__U.Generate("AppButEdge", EdgeT);
-pub const AppLed = em__U.Generate("AppLed", LedT);
-pub const AppLedPin = em__U.Generate("AppLedPin", GpioT);
-pub const AppOutPin = em__U.Generate("AppOutPin", GpioT);
-pub const DbgA = em__U.Generate("DbgA", GpioT);
-pub const DbgB = em__U.Generate("DbgB", GpioT);
-pub const DbgC = em__U.Generate("DbgC", GpioT);
-pub const DbgD = em__U.Generate("DbgD", GpioT);
-pub const FlashCLK = em__U.Generate("FlashCLK", GpioT);
-pub const FlashCS = em__U.Generate("FlashCS", GpioT);
-pub const FlashPICO = em__U.Generate("FlashPICO", GpioT);
-pub const FlashPOCI = em__U.Generate("FlashPOCI", GpioT);
-pub const SysLed = em__U.Generate("SysLed", LedT);
-pub const SysLedPin = em__U.Generate("SysLedPin", GpioT);
+pub const AppBut = em__U.Generate("AppBut", ButtonT, .{});
+pub const AppButEdge = em__U.Generate("AppButEdge", EdgeT, .{});
+pub const AppLed = em__U.Generate("AppLed", LedT, .{});
+pub const AppLedPin = em__U.Generate("AppLedPin", GpioT, .{});
+pub const AppOutPin = em__U.Generate("AppOutPin", GpioT, .{});
+pub const DbgA = em__U.Generate("DbgA", GpioT, .{});
+pub const DbgB = em__U.Generate("DbgB", GpioT, .{});
+pub const DbgC = em__U.Generate("DbgC", GpioT, .{});
+pub const DbgD = em__U.Generate("DbgD", GpioT, .{});
+pub const FlashCLK = em__U.Generate("FlashCLK", GpioT, .{});
+pub const FlashCS = em__U.Generate("FlashCS", GpioT, .{});
+pub const FlashPICO = em__U.Generate("FlashPICO", GpioT, .{});
+pub const FlashPOCI = em__U.Generate("FlashPOCI", GpioT, .{});
+pub const SysLed = em__U.Generate("SysLed", LedT, .{});
+pub const SysLedPin = em__U.Generate("SysLedPin", GpioT, .{});
 
 pub fn em__configureM() void {
     AlarmMgr.x_WakeupTimer.setM(WakeupTimer);
@@ -78,6 +78,6 @@ pub fn em__configureM() void {
 }
 
 
-//->> zigem publish #|f64a9565b02e72f4bdb4f596d2658d2576257f4f73700b23b3e7a6bb5253ac0c|#
+//->> zigem publish #|033bf47e069dabc7f4affb7c71de276182fc2632f802ca1b1f219081d90ab768|#
 
 //->> zigem publish -- end of generated code

@@ -9,7 +9,7 @@ pub const EM__CONFIG = struct {
 
 pub const GpioI = em.import.@"em.hal/GpioI";
 
-pub fn em__generateS(comptime name: []const u8) type {
+pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
     return struct {
         //
         pub const em__U = em.module(@This(), .{
@@ -66,7 +66,8 @@ pub fn em__generateS(comptime name: []const u8) type {
             }
         };
 
-        //->> zigem publish #|f4d6381a6685056a9a2c4b48a5f85ba1e48bccfe30441f3a78d0146bf8acd617|#
+        
+        //->> zigem publish #|56ca0f5854e1695d5ef13a3a18dfb687553a6ef2bdab061c8747a499491d3fc2|#
 
         //->> EM__META publics
         pub const c_active_low = EM__META.c_active_low;
