@@ -2,7 +2,6 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__T = em.template(@This(), .{});
 pub const EM__CONFIG = struct {
     em__upath: []const u8,
-    appUpath: em.Param([]const u8),
     Aux: em.Capsule(),
 };
 
@@ -18,7 +17,6 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
 
         pub const ResName = em.std.meta.FieldEnum(RT);
 
-        const AU = params.AppU;
         const RT = params.ResT;
 
         pub fn resCount() usize {
@@ -41,25 +39,32 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
 
         pub const EM__META = struct {
             //
-            pub const c_appUpath = em__C.appUpath;
+            const tags = em.std.meta.tags(ResName);
+            var app_upath: []const u8 = undefined;
 
             pub fn em__constructM() void {
-                const tags = em.std.meta.tags(ResName);
-                var sbuf = em.StringM{};
-                sbuf.addM("     struct {\n");
-                sbuf.addM("         //\n");
-                // sbuf.addM("         const App = em.import.@\"");
-                sbuf.addM("         pub fn fetch(resid: i8, src: *u32) void {");
-                sbuf.addM("             switch (resid) {");
-                for (tags, 0..) |tag, idx| {
+                var sb = em.StringM{};
+                sb.addM("           struct {\n");
+                sb.addM("               //\n");
+                sb.fmtM("               const App = em.import.@\"{s}\";\n", .{app_upath});
+                sb.addM("               pub fn fetch(resid: i8, src: *u32) void {\n");
+                sb.addM("                   switch (resid) {\n");
+                inline for (tags, 0..) |tag, idx| {
+                    // const rname = @tagName(tag);
+                    // const rdesc = @typeName(em.std.meta.FieldType(RT, tag));
+                    //em.print("name = {s}, type = {s}\n", .{ rname, rdesc });
                     _ = tag;
                     _ = idx;
                 }
-                sbuf.addM("                 else => _ = src");
-                sbuf.addM("             }");
-                sbuf.addM("         }");
-                sbuf.addM("     }");
-                em__C.Aux.defineM(sbuf.getM());
+                sb.addM("                       else => _ = src");
+                sb.addM("                   }");
+                sb.addM("               }");
+                sb.addM("           }");
+                em__C.Aux.defineM(sb.getM());
+            }
+
+            pub fn bindAppUpathM(upath: []const u8) void {
+                app_upath = upath;
             }
         };
 
@@ -68,10 +73,10 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
         };
 
         
-        //->> zigem publish #|d5a31c03255be9922c942e37e7ca7b4007d6afa71235c6b3e83d898df5abd599|#
+        //->> zigem publish #|c8f6ef647fe244c2d71a3c61f796a2e362cad88ad6f633a54c29b837c8a688cf|#
 
         //->> EM__META publics
-        pub const c_appUpath = EM__META.c_appUpath;
+        pub const bindAppUpathM = EM__META.bindAppUpathM;
 
         //->> EM__TARG publics
 
