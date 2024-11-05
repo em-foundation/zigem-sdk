@@ -1,25 +1,16 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
-pub const Schema = em.import.@"em.radio.core/Schema";
+pub const Resource = em.import.@"em.radio.core/Resource";
+pub const SchemaT = em.import.@"em.radio.core/SchemaT";
 
-pub const EM__SCHEMA = union(enum) {
-    data: Schema.Resource(i16, .RW),
+const FirstAppR = struct {
+    data: Resource.Desc(i16, .RW),
 };
 
-pub const EM__META = struct {
-    //
-};
-
-pub const EM__TARG = struct {
-    //
-};
+pub const Schema = em__U.Generate("Schema", SchemaT, SchemaT.Params{ .ResT = FirstAppR });
 
 
-//->> zigem publish #|40a7969de32b68e3f4ba0d1c7b4404c5413d1c998fa1ccb218267ddcbb4c8d08|#
-
-//->> EM__META publics
-
-//->> EM__TARG publics
+//->> zigem publish #|4a28a5a16547b7deeedb01a38841d0b822927d3a283367ca66a50f6552474796|#
 
 //->> zigem publish -- end of generated code

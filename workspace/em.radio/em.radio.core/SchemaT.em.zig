@@ -61,25 +61,17 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
 
         pub const EM__META = struct {
             //
+
+            const DispKind = enum { FETCH, STORE };
             var app_upath: []const u8 = undefined;
 
             pub fn em__constructM() void {
                 // em.print("res_list = {any}\n", .{res_list});
                 var sb = em.StringM{};
                 sb.addM("           struct {\n");
-                sb.addM("               //\n");
                 sb.fmtM("               const App = em.import.@\"{s}\";\n", .{app_upath});
-                sb.addM("               pub fn fetch(resid: i8, optr: *align(4) void) void {\n");
-                sb.addM("                   switch (resid) {\n");
-                var suf: []const u8 = "optr";
-                for (res_info_list) |ri| {
-                    if (ri.acc != .RO and ri.acc != .RW) continue;
-                    suf = "0";
-                    sb.fmtM("                   {d} => App.{s}_FETCH(@ptrCast(optr)),", .{ ri.id, ri.name });
-                }
-                sb.fmtM("                       else => _ = {s}", .{suf});
-                sb.addM("                   }");
-                sb.addM("               }");
+                genDispatch(&sb, .FETCH);
+                genDispatch(&sb, .STORE);
                 sb.addM("           }");
                 em__C.Aux.defineM(sb.getM());
             }
@@ -87,24 +79,50 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
             pub fn bindAppUpathM(upath: []const u8) void {
                 app_upath = upath;
             }
+
+            fn genDispatch(sb: *em.StringM, kind: DispKind) void {
+                const fs = @tagName(kind);
+                sb.fmtM("               pub fn {s}(resid: i8, vptr: *align(4) void) void {{\n", .{fs});
+                sb.addM("                   switch (resid) {\n");
+                var suf: []const u8 = "vptr";
+                for (res_info_list) |ri| {
+                    if (!testAcc(ri.acc, kind)) continue;
+                    suf = "0";
+                    sb.fmtM("                   {d} => App.{s}_{s}(@ptrCast(vptr)),", .{ ri.id, ri.name, fs });
+                }
+                sb.fmtM("                       else => _ = {s}", .{suf});
+                sb.addM("                   }");
+                sb.addM("               }");
+            }
+
+            fn testAcc(acc: Resource.Access, kind: DispKind) bool {
+                return switch (kind) {
+                    .FETCH => acc == .RW or acc == .RO,
+                    .STORE => acc == .RW or acc == .WO,
+                };
+            }
         };
 
         pub const EM__TARG = struct {
             //
             const Aux = em__C.Aux.unwrap();
             pub fn fetch(resid: i8, optr: *align(4) void) void {
-                Aux.fetch(resid, optr);
+                Aux.FETCH(resid, optr);
+            }
+            pub fn store(resid: i8, iptr: *align(4) void) void {
+                Aux.STORE(resid, iptr);
             }
         };
 
         
-        //->> zigem publish #|ecc15efa682b31c9f65941b61f047192568f0f15f04988db8f5c8a9c2da48baa|#
+        //->> zigem publish #|818efb5b90438b28b9ddb0a423a6f87f5607bb15c5d4d24c04a26034d9d77760|#
 
         //->> EM__META publics
         pub const bindAppUpathM = EM__META.bindAppUpathM;
 
         //->> EM__TARG publics
         pub const fetch = EM__TARG.fetch;
+        pub const store = EM__TARG.store;
 
         //->> zigem publish -- end of generated code
     };
