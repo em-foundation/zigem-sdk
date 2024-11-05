@@ -920,6 +920,9 @@ pub const StringM = struct {
     pub fn addM(self: *Self, txt: []const u8) void {
         self.em__txt = sprint("{s}{s}", .{ self.em__txt, txt });
     }
+    pub fn fmtM(self: *Self, comptime fmt: []const u8, args: anytype) void {
+        self.addM(sprint(fmt, args));
+    }
     pub fn getM(self: Self) []const u8 {
         return self.em__txt;
     }
