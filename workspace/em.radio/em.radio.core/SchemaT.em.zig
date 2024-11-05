@@ -12,10 +12,11 @@ pub const Params = struct {
 pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
     return struct {
         //
-        pub const em__U = em.module(@This(), .{ .generated = true, .name = name });
+        pub const em__U = em.module(@This(), .{ .generated = true, .name = name, .inherits = SchemaI });
         pub const em__C = em__U.config(EM__CONFIG);
 
         pub const Resource = em.import.@"em.radio.core/Resource";
+        pub const SchemaI = em.import.@"em.radio.core/SchemaI";
 
         pub const ResName = em.std.meta.FieldEnum(RT);
 
@@ -65,8 +66,7 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
             const DispKind = enum { FETCH, STORE };
             var app_upath: []const u8 = undefined;
 
-            pub fn em__constructM() void {
-                // em.print("res_list = {any}\n", .{res_list});
+            pub fn em__generateM() void {
                 var sb = em.StringM{};
                 sb.addM("           struct {\n");
                 sb.fmtM("               const App = em.import.@\"{s}\";\n", .{app_upath});
@@ -105,17 +105,18 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
 
         pub const EM__TARG = struct {
             //
-            const Aux = em__C.Aux.unwrap();
             pub fn fetch(resid: i8, optr: *align(4) void) void {
-                Aux.FETCH(resid, optr);
+                if (em.IS_META) return;
+                em__C.Aux.unwrap().FETCH(resid, optr);
             }
             pub fn store(resid: i8, iptr: *align(4) void) void {
-                Aux.STORE(resid, iptr);
+                if (em.IS_META) return;
+                em__C.Aux.unwrap().STORE(resid, iptr);
             }
         };
 
         
-        //->> zigem publish #|818efb5b90438b28b9ddb0a423a6f87f5607bb15c5d4d24c04a26034d9d77760|#
+        //->> zigem publish #|75288f48d1bd7497a4b318b1082ce19b133967af0ad0ce88631c3eef59395ada|#
 
         //->> EM__META publics
         pub const bindAppUpathM = EM__META.bindAppUpathM;

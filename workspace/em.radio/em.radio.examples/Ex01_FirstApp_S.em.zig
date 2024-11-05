@@ -10,7 +10,6 @@ const FirstAppR = struct {
 
 pub const Schema = em__U.Generate("Schema", SchemaT, SchemaT.Params{ .ResT = FirstAppR });
 
-
 //->> zigem publish #|4a28a5a16547b7deeedb01a38841d0b822927d3a283367ca66a50f6552474796|#
 
 //->> zigem publish -- end of generated code
