@@ -164,8 +164,8 @@ pub const Unit = struct {
         return Fxn(FT){ .em__upath = self.upath, .em__fname = name };
     }
 
-    pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type) type {
-        return Template_Unit.em__generateS(self.extendPath(as_name));
+    pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type, comptime params: anytype) type {
+        return Template_Unit.em__generateS(self.extendPath(as_name), params);
     }
 
     pub fn hasInterface(self: Self, inter: Unit) bool {
@@ -228,6 +228,46 @@ fn initConfig(CT: type, upath: []const u8) CT {
         const res = new_c;
         return res;
     }
+}
+
+pub fn Capsule() type {
+    return if (DOMAIN == .TARG) *Capsule_T() else *Capsule_S();
+}
+
+pub fn Capsule_S() type {
+    return struct {
+        const Self = @This();
+
+        pub const _em__builtin = {};
+
+        em__cfgid: ?*const CfgId = null,
+        em__src: []const u8 = "struct {}",
+
+        pub fn defineM(self: *Self, src: []const u8) void {
+            declare_META();
+            self.em__src = src;
+        }
+
+        pub fn em__F_toString(self: *const Self) []const u8 {
+            declare_META();
+            return sprint("@constCast(&em.Capsule_T(){{.em__Cap = {s}}})", .{self.em__src});
+        }
+
+        pub fn em__F_toStringDecls(_: *const Self, comptime _: []const u8, comptime _: []const u8) []const u8 {
+            declare_META();
+            return "";
+        }
+    };
+}
+
+pub fn Capsule_T() type {
+    return struct {
+        const Self = @This();
+        em__Cap: type,
+        pub fn unwrap(self: Self) type {
+            return self.em__Cap;
+        }
+    };
 }
 
 const CfgId = struct {
@@ -877,6 +917,9 @@ pub const StringM = struct {
     em__txt: []const u8 = "",
     pub fn addM(self: *Self, txt: []const u8) void {
         self.em__txt = sprint("{s}{s}", .{ self.em__txt, txt });
+    }
+    pub fn fmtM(self: *Self, comptime fmt: []const u8, args: anytype) void {
+        self.addM(sprint(fmt, args));
     }
     pub fn getM(self: Self) []const u8 {
         return self.em__txt;

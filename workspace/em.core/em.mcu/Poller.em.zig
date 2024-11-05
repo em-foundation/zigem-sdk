@@ -48,10 +48,8 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|a9c7e3925ef06dedb7892a6205cdfffce7c5ea11fc8e5fe60e99eee521d6e4e0|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|1b3499e06cad7b1f78367d80ec4420e9d3b5c5cd018ed68c17e2716a4481042a|#
 
 //->> EM__META publics
 pub const x_OneShot = EM__META.x_OneShot;
@@ -60,3 +58,5 @@ pub const x_OneShot = EM__META.x_OneShot;
 pub const pause = EM__TARG.pause;
 pub const poll = EM__TARG.poll;
 pub const upause = EM__TARG.upause;
+
+//->> zigem publish -- end of generated code
