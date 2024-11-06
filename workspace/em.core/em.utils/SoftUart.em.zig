@@ -1,5 +1,5 @@
 pub const em = @import("../../zigem/em.zig");
-pub const em__U = em.module(@This(), .{});
+pub const em__U = em.module(@This(), .{ .inherits = ConsoleUartI });
 pub const em__C = em__U.config(EM__CONFIG);
 
 pub const Common = em.import.@"em.mcu/Common";
@@ -25,6 +25,7 @@ pub const EM__TARG = struct {
     }
 
     pub fn put(data: u8) void {
+        if (em.IS_META) return;
         const bit_cnt = 10;
         const bit_time = 8;
         var tx_byte: u16 = (data << 1) | em.as(u16, 0x600); // ST-data8-SP-SP
@@ -45,7 +46,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|b3641ab8a61dbe7e7922cf7d5b24cfd1f0dd7191e359fd6d3e41e50404099a7f|#
+//->> zigem publish #|422daaa44158ad29f1240043c5f7adad95e624acbec510c965dd31ddd6fd49b8|#
 
 //->> EM__META publics
 pub const x_TxPin = EM__META.x_TxPin;
