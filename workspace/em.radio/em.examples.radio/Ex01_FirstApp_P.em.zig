@@ -1,9 +1,9 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{ .inherits = AppI });
 
-pub const AppI = em.import.@"em.radio.core/AppI";
-pub const AppRunner = em.import.@"em.radio.core/AppRunner";
-pub const FirstAppS = em.import.@"em.radio.examples/Ex01_FirstApp_S";
+pub const AppI = em.import.@"em.core.radio/AppI";
+pub const AppRunner = em.import.@"em.core.radio/AppRunner";
+pub const FirstAppS = em.import.@"em.examples.radio/Ex01_FirstApp_S";
 
 const RT = FirstAppS.Schema.ResType;
 const SCH = FirstAppS.Schema;
@@ -42,7 +42,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|f2cb2cf7df8a73841e310e387742d836e9db0b8a4e15fc313a14a2150ae857d1|#
+//->> zigem publish #|bfbb227eca0840016e1f9ac2e92d0c7f11e49fa7448c2b41c5e202a267bd3c7b|#
 
 //->> EM__META publics
 

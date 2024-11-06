@@ -15,8 +15,8 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
         pub const em__U = em.module(@This(), .{ .generated = true, .name = name, .inherits = SchemaI });
         pub const em__C = em__U.config(EM__CONFIG);
 
-        pub const Resource = em.import.@"em.radio.core/Resource";
-        pub const SchemaI = em.import.@"em.radio.core/SchemaI";
+        pub const Resource = em.import.@"em.core.radio/Resource";
+        pub const SchemaI = em.import.@"em.core.radio/SchemaI";
 
         pub const ResName = em.std.meta.FieldEnum(RT);
 
@@ -116,7 +116,7 @@ pub fn em__generateS(comptime name: []const u8, comptime params: Params) type {
         };
 
         
-        //->> zigem publish #|75288f48d1bd7497a4b318b1082ce19b133967af0ad0ce88631c3eef59395ada|#
+        //->> zigem publish #|dc6d227b66995d491fc2bdca0a02462e9550dfb57603a2a015efaa8418963c9e|#
 
         //->> EM__META publics
         pub const bindAppUpathM = EM__META.bindAppUpathM;

@@ -7,8 +7,8 @@ pub const EM__CONFIG = struct {
     Sch: em.Proxy(SchemaI),
 };
 
-pub const AppI = em.import.@"em.radio.core/AppI";
-pub const SchemaI = em.import.@"em.radio.core/SchemaI";
+pub const AppI = em.import.@"em.core.radio/AppI";
+pub const SchemaI = em.import.@"em.core.radio/SchemaI";
 
 pub const EM__META = struct {
     //
@@ -26,7 +26,8 @@ pub const EM__TARG = struct {
     const Sch = em__C.Sch.unwrap();
 };
 
-//->> zigem publish #|d91bebca69badda57df9021a3f2be2abfbab76ea6ff3b3413470db781d212ce6|#
+
+//->> zigem publish #|faa8d830a7f909511348b3d721282988e36c81530a3b4fa91a77f7624ebff9df|#
 
 //->> EM__META publics
 pub const x_App = EM__META.x_App;
