@@ -869,6 +869,8 @@ pub fn @"<>"(T: type, val: anytype) T {
     }
 }
 
+pub const as = @"<>";
+
 pub const assert = std.debug.assert;
 
 pub fn complog(comptime fmt: []const u8, args: anytype) void {
