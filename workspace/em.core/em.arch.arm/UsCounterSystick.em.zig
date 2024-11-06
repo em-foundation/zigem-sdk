@@ -9,9 +9,28 @@ pub const EM__TARG = struct {
     //
     const hal = em.hal;
 
+    const MAX: u32 = 0x00FFFFFF;
+    const MHZ: u32 = 48;
+
+    var thresh: u32 = undefined;
+
+    pub fn set(time_us: u32) void {
+        thresh = MAX - (time_us * MHZ);
+        EM__TARG.start();
+    }
+
+    pub fn spin() void {
+        var val: u32 = MAX;
+        const vp: *volatile u32 = &val;
+        while (val > thresh) {
+            vp.* = hal.SysTick.*.VAL;
+        }
+        hal.SysTick.*.CTRL = 0;
+    }
+
     pub fn start() void {
         hal.SysTick.*.CTRL = (1 << hal.SysTick_CTRL_CLKSOURCE_Pos) | (1 << hal.SysTick_CTRL_ENABLE_Pos);
-        hal.SysTick.*.LOAD = 0xFFFFFF;
+        hal.SysTick.*.LOAD = MAX;
         hal.SysTick.*.VAL = 0;
     }
 
@@ -26,11 +45,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|564cb582e8ce371bb3073984d86bff93c28b03fea7b99e5349cfa8441fc5f16d|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|ee084f2b8abefbfe246296bde7fc417a620ff79405061910c8e459aeb977a511|#
 
 //->> EM__TARG publics
+pub const set = EM__TARG.set;
+pub const spin = EM__TARG.spin;
 pub const start = EM__TARG.start;
 pub const stop = EM__TARG.stop;
+
+//->> zigem publish -- end of generated code

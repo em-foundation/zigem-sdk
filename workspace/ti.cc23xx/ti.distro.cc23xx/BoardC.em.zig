@@ -15,7 +15,7 @@ pub const MsCounter = em.import.@"ti.mcu.cc23xx/MsCounterGpt3";
 pub const OneShot = em.import.@"ti.mcu.cc23xx/OneShotGpt3";
 pub const Poller = em.import.@"em.mcu/Poller";
 pub const Uptimer = em.import.@"ti.mcu.cc23xx/UptimerRtc";
-pub const UsCounter = em.import.@"ti.mcu.cc23xx/UsCounterSystick";
+pub const UsCounter = em.import.@"em.arch.arm/UsCounterSystick";
 pub const WakeupTimer = em.import.@"ti.mcu.cc23xx/WakeupRtc";
 
 const ButtonT = em.import.@"em.utils/ButtonT";
@@ -78,6 +78,6 @@ pub fn em__configureM() void {
 }
 
 
-//->> zigem publish #|033bf47e069dabc7f4affb7c71de276182fc2632f802ca1b1f219081d90ab768|#
+//->> zigem publish #|d2463318f5266596229ae30cc47ecb38d48d0894807972cfaa48e6696221ad5e|#
 
 //->> zigem publish -- end of generated code
