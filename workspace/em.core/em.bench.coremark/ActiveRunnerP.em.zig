@@ -2,8 +2,8 @@ pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{});
 
 pub const Common = em.import.@"em.mcu/Common";
-pub const CoreBench = em.import.@"em.coremark/CoreBench";
-pub const Utils = em.import.@"em.coremark/Utils";
+pub const CoreBench = em.import.@"em.bench.coremark/CoreBench";
+pub const Utils = em.import.@"em.bench.coremark/Utils";
 
 pub const ITERATIONS: u16 = 10;
 
@@ -30,7 +30,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|25f5fa9778df1ff86b6b50c3639b69b695098745bb786d44c26782f8a7b81cc7|#
+//->> zigem publish #|3ba8b9b2eb9850d106f373258b39222fa757febbabb6d53fbb8033343cfbc7c1|#
 
 //->> EM__TARG publics
 
