@@ -3,15 +3,22 @@ pub const em__U = em.interface(@This(), .{});
 
 pub const TimeTypes = em.import.@"em.utils/TimeTypes";
 
-pub const EM__SPEC = struct {
-    read: *const @TypeOf(read) = &read,
+pub const EM__TARG = struct {
+    read: fn () TimeTypes.RawTime,
 };
 
-pub fn read() TimeTypes.RawTime {
-    return TimeTypes.RawTime_ZERO();
+
+//->> zigem publish #|7601f49ca0a97533e1222b2d7013693459f211635b3333610e1e5e142c722cf1|#
+
+pub fn read () TimeTypes.RawTime {
+    // TODO
+    return em.std.mem.zeroes(TimeTypes.RawTime);
 }
 
-//->> zigem publish #|0fdde95c722ae422832579747cff61f7c0be45e003a0c4f8711538179c4ce571|#
+const em__Self = @This();
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+pub const EM__SPEC = struct {
+    read: *const @TypeOf(em__Self.read) = &em__Self.read,
+};
+
+//->> zigem publish -- end of generated code

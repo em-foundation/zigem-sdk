@@ -9,21 +9,31 @@ pub const DurationMs = struct {
 pub const OnPressedCbFxn = em.Fxn(OnPressedCbArg);
 pub const OnPressedCbArg = struct {};
 
-pub const EM__SPEC = struct {
-    isPressed: *const @TypeOf(isPressed) = &isPressed,
-    onPressed: *const @TypeOf(onPressed) = &onPressed,
+pub const EM__TARG = struct {
+    isPressed: fn () bool,
+    onPressed: fn (cb: OnPressedCbFxn, dur: DurationMs) void,
 };
 
-pub fn isPressed() bool {
-    return false;
+
+//->> zigem publish #|89cfe51509bfcfe4d76e855b24cb7a13b25dbf1032f1f1fd4de21f6e750f0a74|#
+
+pub fn isPressed () bool {
+    // TODO
+    return em.std.mem.zeroes(bool);
 }
 
-pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
+pub fn onPressed (cb: OnPressedCbFxn, dur: DurationMs) void {
+    // TODO
     _ = cb;
     _ = dur;
+    return em.std.mem.zeroes(void);
 }
 
-//->> zigem publish #|605df5f273cde1465b99d2152afe0ca98b758f6eac5d5499101122bf7f36920c|#
+const em__Self = @This();
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+pub const EM__SPEC = struct {
+    isPressed: *const @TypeOf(em__Self.isPressed) = &em__Self.isPressed,
+    onPressed: *const @TypeOf(em__Self.onPressed) = &em__Self.onPressed,
+};
+
+//->> zigem publish -- end of generated code

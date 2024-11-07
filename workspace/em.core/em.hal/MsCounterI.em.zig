@@ -1,20 +1,29 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
-pub const EM__SPEC = struct {
-    start: *const @TypeOf(start) = &start,
-    stop: *const @TypeOf(stop) = &stop,
+pub const EM__TARG = struct {
+    start: fn () void,
+    stop: fn () u32,
 };
 
-pub fn start() void {
-    return;
+
+//->> zigem publish #|d6343c89276ff399a77b8575e624499e165b0197ca8c29031431dcad83736d3e|#
+
+pub fn start () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn stop() u32 {
-    return 0;
+pub fn stop () u32 {
+    // TODO
+    return em.std.mem.zeroes(u32);
 }
 
-//->> zigem publish #|c66b56bc5e6da0b8e481295a76f88690b60da0bacf3e18ba16804a2a3d9ab584|#
+const em__Self = @This();
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+pub const EM__SPEC = struct {
+    start: *const @TypeOf(em__Self.start) = &em__Self.start,
+    stop: *const @TypeOf(em__Self.stop) = &em__Self.stop,
+};
+
+//->> zigem publish -- end of generated code
