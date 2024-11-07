@@ -88,6 +88,7 @@ pub fn em__configureM() void {
     AppButEdge.c_pin.setM(BOARD.Pin_AppBut);
     AppLedPin.c_pin.setM(BOARD.Pin_AppLed);
     AppLed.x_Pin.setM(AppLedPin);
+    AppLed.c_active_low.setM(BOARD.activeLowLed);
     AppOutPin.c_pin.setM(BOARD.Pin_AppOut);
     AppOutUart.x_TxPin.setM(AppOutPin);
     BoardController.x_Led.setM(SysLed);
@@ -118,9 +119,10 @@ pub fn em__configureM() void {
     Poller.x_OneShot.setM(OneShot);
     SysLedPin.c_pin.setM(BOARD.Pin_SysLed);
     SysLed.x_Pin.setM(SysLedPin);
+    SysLed.c_active_low.setM(BOARD.activeLowLed);
 }
 
 
-//->> zigem publish #|9e3a113be137c1093b1a02e0b243cd48bf7e8ec478afe8678e912038cdfcd630|#
+//->> zigem publish #|2e088ac70efdbfbc3a0688f799439a86072182227ecae464b49b72a56b66714d|#
 
 //->> zigem publish -- end of generated code
