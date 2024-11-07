@@ -43,6 +43,7 @@ pub fn addPackage(name: []const u8) anyerror!void {
 }
 
 pub fn addSetup(name: []const u8) anyerror!void {
+    if (!cur_props.contains(PROP_EXTENDS)) try cur_props.put(PROP_EXTENDS, name);
     var seg_iter = std.mem.splitSequence(u8, name, SETUP_SEP);
     const seg0 = seg_iter.first();
     const seg1 = seg_iter.next().?;
@@ -65,7 +66,10 @@ fn addWorkspaceProps(ppath: []const u8) anyerror!void {
     if (!std.mem.endsWith(u8, ppath, "local.ini") or !has_setup) try applyExtends(pm);
     try applyRequires(pm);
     var ent_iter = pm.iterator();
-    while (ent_iter.next()) |e| try cur_props.put(e.key_ptr.*, e.value_ptr.*);
+    while (ent_iter.next()) |e| {
+        if (std.mem.eql(u8, e.key_ptr.*, PROP_EXTENDS) and cur_props.contains(PROP_EXTENDS)) continue;
+        try cur_props.put(e.key_ptr.*, e.value_ptr.*);
+    }
 }
 
 fn applyExtends(pm: PropMap) anyerror!void {
