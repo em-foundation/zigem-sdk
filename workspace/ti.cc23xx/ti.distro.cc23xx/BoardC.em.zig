@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.composite(@This(), .{});
 
-pub const BoardInfoC = em.import.@"em.build.misc/BoardInfoC";
+pub const BoardInfoC = em.import.@"em.lang/BoardInfoC";
 
 pub const AlarmMgr = em.import.@"em.utils/AlarmMgr";
 pub const AppOutUart = em.import.@"ti.mcu.cc23xx/ConsoleUart0";
@@ -117,6 +117,6 @@ pub fn em__configureM() void {
 }
 
 
-//->> zigem publish #|d64421d5386d708485135167f2261f5f5f1f0d66a48807653a10ba345aec2c31|#
+//->> zigem publish #|a955c565543691ef7c9cb46812470d06c402b70796db82541bc750b68a0d98ca|#
 
 //->> zigem publish -- end of generated code

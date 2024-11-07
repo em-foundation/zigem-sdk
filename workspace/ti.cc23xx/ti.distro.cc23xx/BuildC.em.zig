@@ -1,12 +1,10 @@
 pub const em = @import("../../zigem/em.zig");
-pub const em__U = em.module(@This(), .{
-    .meta_only = true,
-});
+pub const em__U = em.composite(@This(), .{});
 
 pub const BoardC = em.import.@"em__distro/BoardC";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
-pub const LinkerH = em.import.@"em.build.misc/LinkerH";
-pub const StartupH = em.import.@"em.arch.arm/StartupH";
+pub const LinkerC = em.import.@"em.build.misc/LinkerC";
+pub const StartupC = em.import.@"em.arch.arm/StartupC";
 
 pub fn em__configureM() void {
     const nvic_intrs = [_][]const u8{
@@ -35,7 +33,7 @@ pub fn em__configureM() void {
     }
 }
 
-//->> zigem publish #|943e41e45af33391ef31430f8526732013cb4807be3ae021510dba1db6c3c615|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|2a01713f0555712c049021f3866e68ba5f81f770c9e0f0af5d1b7477fe50dc7b|#
+
+//->> zigem publish -- end of generated code

@@ -19,14 +19,14 @@ inline fn callAll(comptime fname: []const u8, ulist: []const em.Unit, filter_use
 }
 
 pub fn exec(top: em.Unit) !void {
-    const BuildH = em.import.@"em__distro/BuildH";
+    const BuildC = em.import.@"em__distro/BuildC";
     @setEvalBranchQuota(100_000);
-    const ulist_bot = mkUnitList(top, mkUnitList(BuildH.em__U, &.{}));
+    const ulist_bot = mkUnitList(top, mkUnitList(BuildC.em__U, &.{}));
     const ulist_top = revUnitList(ulist_bot);
     callAll("em__initM", ulist_bot, false);
     callAll("em__configureM", ulist_top, false);
     try mkUsedSet(top);
-    try mkUsedSet(BuildH.em__U);
+    try mkUsedSet(BuildC.em__U);
     callAll("em__constructM", ulist_top, false);
     callAll("em__generateM", ulist_top, false);
     try genTarg(top, ulist_bot, ulist_top);
@@ -99,7 +99,7 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     ;
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
-        if (u.kind == .module and !u.meta_only and !u.legacy) {
+        if (u.kind == .module and !u.legacy) {
             //const @"// -------- BUILTIN FXNS -------- //" = {};
 
             try out.print("const @\"// {0s} {1s} {0s} //\" = {{}};\n\n", .{ "-" ** 8, u.upath });

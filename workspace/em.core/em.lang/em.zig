@@ -39,7 +39,6 @@ fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     return Unit{
         .This = This,
         .generated = opts.generated,
-        .meta_only = opts.meta_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
         .Itab = if (kind == .interface) ItabType(This) else void,
         .IT = if (@hasDecl(This, "em__I")) This.em__I else void,
@@ -120,7 +119,6 @@ pub const UnitKind = enum {
 
 pub const UnitOpts = struct {
     name: ?[]const u8 = null,
-    meta_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: type = void,
@@ -131,7 +129,6 @@ pub const Unit = struct {
 
     kind: UnitKind,
     upath: []const u8,
-    meta_only: bool = false,
     legacy: bool = false,
     generated: bool = false,
     inherits: ?Unit,
