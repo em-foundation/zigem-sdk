@@ -37,7 +37,7 @@ pub fn asI(I: type, U: type) I.EM__SPEC {
 fn mkUnit(This: type, kind: UnitKind, opts: UnitOpts) Unit {
     const un = if (opts.name != null) opts.name.? else @as([]const u8, @field(type_map, @typeName(This)));
     return Unit{
-        ._U = This,
+        .This = This,
         .generated = opts.generated,
         .meta_only = opts.meta_only,
         .inherits = if (opts.inherits == void) null else opts.inherits.em__U,
@@ -129,7 +129,6 @@ pub const UnitOpts = struct {
 pub const Unit = struct {
     const Self = @This();
 
-    _U: type,
     kind: UnitKind,
     upath: []const u8,
     meta_only: bool = false,
@@ -138,6 +137,7 @@ pub const Unit = struct {
     inherits: ?Unit,
     Itab: type,
     IT: type,
+    This: type,
 
     pub fn config(self: Self, comptime CT: type) CT {
         switch (DOMAIN) {
@@ -839,7 +839,7 @@ pub fn property(name: []const u8, T: type, v: T) T {
     switch (ti) {
         .Bool => return std.mem.eql(u8, vs, "true"),
         .ComptimeInt, .Int => return std.fmt.parseInt(T, vs, 0),
-        else => return std.mem.zeroes(T),
+        else => return vs,
     }
 }
 
