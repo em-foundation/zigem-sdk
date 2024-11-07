@@ -3,7 +3,7 @@ pub const em__U = em.composite(@This(), .{});
 
 pub const BoardC = em.import.@"em__distro/BoardC";
 pub const IntrVec = em.import.@"em.arch.arm/IntrVec";
-pub const LinkerC = em.import.@"em.build.misc/LinkerC";
+pub const LinkerC = em.import.@"em__distro/LinkerC";
 pub const StartupC = em.import.@"em.arch.arm/StartupC";
 
 pub fn em__configureM() void {
@@ -34,6 +34,6 @@ pub fn em__configureM() void {
 }
 
 
-//->> zigem publish #|2a01713f0555712c049021f3866e68ba5f81f770c9e0f0af5d1b7477fe50dc7b|#
+//->> zigem publish #|33084f5ce3a5d2e4a5415af0de444a4249ac1380a08c769e16b1d460ca404dff|#
 
 //->> zigem publish -- end of generated code
