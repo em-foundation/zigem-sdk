@@ -48,11 +48,29 @@ const Context = struct {
 
     pub fn addDoc(self: *Context, path: []const u8) !void {
         const norm = try Fs.normalize(path);
+        var uri_path = norm;
+        if (builtin.target.os.tag == .windows) {
+            var buf = try Heap.get().alloc(u8, norm.len + 2);
+            var idx: usize = 0;
+            for (norm) |c| {
+                if (c == ':') {
+                    buf[idx + 0] = '%';
+                    buf[idx + 1] = '3';
+                    buf[idx + 2] = 'A';
+                    idx += 3;
+                    continue;
+                }
+                buf[idx] = if (c == '\\') '/' else c;
+                idx += 1;
+            }
+            uri_path = buf;
+        }
         self.uri = try std.fmt.allocPrint(
             Heap.get(),
             "file:///{s}",
-            .{norm},
+            .{uri_path},
         );
+        std.debug.print("uri = {s}\n", .{self.uri});
         self.source = Fs.readFileZ(norm);
         const params = types.DidOpenTextDocumentParams{
             .textDocument = .{
