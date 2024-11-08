@@ -28,7 +28,6 @@ var has_setup: bool = undefined;
 var root_dir: []const u8 = undefined;
 
 pub fn addPackage(name: []const u8) anyerror!void {
-    // std.log.info("adding package {s}", .{name});
     if (done_set.contains(name)) return;
     if (work_set.contains(name)) std.zig.fatal("package cycle in {s}", .{name});
     try work_set.put(name, {});
@@ -43,7 +42,6 @@ pub fn addPackage(name: []const u8) anyerror!void {
 }
 
 pub fn addSetup(name: []const u8) anyerror!void {
-    if (!cur_props.contains(PROP_EXTENDS)) try cur_props.put(PROP_EXTENDS, name);
     var seg_iter = std.mem.splitSequence(u8, name, SETUP_SEP);
     const seg0 = seg_iter.first();
     const seg1 = seg_iter.next().?;
@@ -67,7 +65,7 @@ fn addWorkspaceProps(ppath: []const u8) anyerror!void {
     try applyRequires(pm);
     var ent_iter = pm.iterator();
     while (ent_iter.next()) |e| {
-        if (std.mem.eql(u8, e.key_ptr.*, PROP_EXTENDS) and cur_props.contains(PROP_EXTENDS)) continue;
+        if (has_setup and std.mem.eql(u8, e.key_ptr.*, PROP_EXTENDS)) continue;
         try cur_props.put(e.key_ptr.*, e.value_ptr.*);
     }
 }
@@ -96,9 +94,10 @@ pub fn getProps() PropMap {
     return cur_props;
 }
 
-pub fn init(dir: []const u8, sflg: bool) void {
+pub fn init(dir: []const u8, sname: ?[]const u8) !void {
     root_dir = dir;
-    has_setup = sflg;
+    has_setup = sname != null;
+    if (sname) |sn| try cur_props.put(PROP_EXTENDS, sn);
 }
 
 pub fn print() void {
@@ -129,59 +128,3 @@ fn readProps(path: []const u8) !PropMap {
     }
     return pm;
 }
-
-// function applyBundleProps(bundle: string, doneSet: Set<string>, workSet: Set<string>): void {
-//     if (doneSet.has(bundle)) return
-//     if (workSet.has(bundle)) throw `bundle cycle in '${bundle}'`
-//     let ppath = findBundle(bundle)
-//     if (!Fs.existsSync(ppath)) throw `can't find '${bundle}/bundles.properties'`
-//     let pm = readProps(ppath)
-//     applyRequires(pm, doneSet, workSet)
-//     pm.forEach((v, k) => props.set(k, v))
-//     doneSet.add(bundle)
-//     pathSet.add(Path.dirname(ppath))
-// }
-//
-// function applyExtends(pm: Map<string, string>, doneSet: Set<string>, workSet: Set<string>) {
-//     let exts = pm.get(PROP_EXTENDS)
-//     if (!exts) return
-//     let setups = String(exts).trim().split(/[,]+/).filter(b => b.length)
-//     applySetups(setups, doneSet, workSet)
-// }
-//
-// function applyLocalProps(doneSet: Set<string>, workSet: Set<string>) {
-//     let ppath = Path.join(rootdir, 'local.properties')
-//     if (!Fs.existsSync(ppath)) return
-//     applyWorkspaceProps(ppath, doneSet, workSet)
-// }
-//
-// function applyRequires(pm: Map<string, string>, doneSet: Set<string>, workSet: Set<string>) {
-//     let reqs = pm.get(PROP_REQUIRES)
-//     if (reqs) {
-//         String(reqs).trim().split(/[^\w\._]+/).filter(b => b.length).forEach(b => applyBundleProps(b, doneSet, workSet))
-//     }
-// }
-//
-// function applySetups(setups: string[], doneSet: Set<string>, workSet: Set<string>) {
-//     setups.forEach(sn => {
-//         let segs = sn.split(SETUP_SEP)
-//         let bdir = Path.dirname(findBundle(segs[0]))
-//         let fn = `setup-${segs[1]}.properties`
-//         let ppath = Path.join(bdir, fn)
-//         if (!Fs.existsSync(ppath)) {
-//             Err.report(`can't find '${fn}'`)
-//             return
-//         }
-//         applyWorkspaceProps(ppath, doneSet, workSet)
-//     })
-// }
-//
-// function applyWorkspaceProps(ppath: string, doneSet: Set<string>, workSet: Set<string>) {
-//     let pm = readProps(ppath)
-//     if (!ppath.endsWith('local.properties') || !curSetup) applyExtends(pm, doneSet, workSet)
-//     applyRequires(pm, doneSet, workSet)
-//     pm.forEach((v, k) => props.set(k, v))
-// }
-//
-//
-//
