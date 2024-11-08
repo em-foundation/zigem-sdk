@@ -122,7 +122,6 @@ pub fn em__configureM() void {
     SysLed.c_active_low.setM(BOARD.activeLowLed);
 }
 
-
 //->> zigem publish #|2e088ac70efdbfbc3a0688f799439a86072182227ecae464b49b72a56b66714d|#
 
 //->> zigem publish -- end of generated code
