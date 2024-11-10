@@ -17,17 +17,19 @@ const Annotator = struct {
         code: u8,
     };
 
-    var item_list = std.ArrayList(Item).init(Heap.get());
+    item_list: std.ArrayList(Item) = std.ArrayList(Item).init(Heap.get()),
 
-    pub fn addItem(item: Item) !void {
-        try item_list.append(item);
+    pub fn addItem(self: *Annotator, item: Item) !void {
+        try self.item_list.append(item);
     }
 
-    pub fn applyItems(src: []const u8) ![]const u8 {
+    pub fn applyItems(self: Annotator, src: []const u8) ![]const u8 {
         var last: usize = 0;
+        var src_lines = SrcLines{};
+        try src_lines.addSrc(src);
         var sb = Out.StringBuf{};
-        for (item_list.items) |item| {
-            const cur = SrcLines.getOffset(item.line) + item.pos;
+        for (self.item_list.items) |item| {
+            const cur = src_lines.getOffset(item.line) + item.pos;
             sb.fmt("{s}#{c}", .{ src[last..cur], item.code });
             last = cur;
         }
@@ -35,8 +37,8 @@ const Annotator = struct {
         return sb.get();
     }
 
-    pub fn print() void {
-        for (item_list.items) |item| {
+    pub fn print(self: Annotator) void {
+        for (self.item_list.items) |item| {
             std.debug.print("item({c}, {d}, {d})\n", .{ item.code, item.line, item.pos });
         }
     }
@@ -64,7 +66,7 @@ const Context = struct {
 
     pub fn init() !Context {
         const server = try Server.create(Heap.get());
-        // errdefer server.destroy();
+        // defer server.destroy();
         try server.updateConfiguration2(default_config);
         var ctx: Context = .{
             .server = server,
@@ -175,42 +177,46 @@ const SemTokStream = struct {
 };
 
 const SrcLines = struct {
-    var off_list = std.ArrayList(usize).init(Heap.get());
-    pub fn addSrc(src: []const u8) !void {
-        try off_list.append(0);
+    off_list: std.ArrayList(usize) = std.ArrayList(usize).init(Heap.get()),
+    pub fn addSrc(self: *SrcLines, src: []const u8) !void {
+        try self.off_list.append(0);
         var start: usize = 0;
         while (std.mem.indexOfScalarPos(u8, src, start, '\n')) |idx| {
-            // if (std.mem.startsWith(u8, src[start..], "//->> zigem publish")) break;
-            try off_list.append(idx);
+            try self.off_list.append(idx);
             start = idx + 1;
         }
     }
-    pub fn getCount() usize {
-        return off_list.items.len - 1;
+    pub fn getCount(self: SrcLines) usize {
+        return self.off_list.items.len - 1;
     }
-    pub fn getOffset(lineno: usize) usize {
-        return off_list.items[lineno - 1];
+    pub fn getOffset(self: SrcLines, lineno: usize) usize {
+        return self.off_list.items[lineno - 1];
     }
 };
 
-pub fn exec(path: []const u8) !void {
-    var ctx = try Context.init();
-    defer ctx.deinit();
-    std.log.debug("\n", .{});
-    try ctx.addDoc(path);
-    const toks = try ctx.parseDoc();
+var cur_ctx: Context = undefined;
+var cur_debug: bool = false;
+
+pub fn exec(path: []const u8) ![]const u8 {
+    if (cur_debug) std.log.debug("\n", .{});
+    try cur_ctx.addDoc(path);
+    const toks = try cur_ctx.parseDoc();
     var tok_str = SemTokStream.init(toks);
+    var annotator = Annotator{};
     while (tok_str.next()) |tok| {
-        std.log.debug("{d},{d} {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
+        if (cur_debug) std.log.debug("{d},{d} {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
         const code: u8 = switch (tok.ttype) {
             .function, .method => 'f',
             .namespace, .type => 't',
             else => 0,
         };
-        if (code != 0) try Annotator.addItem(.{ .code = code, .line = tok.line, .pos = tok.col + tok.len });
+        if (code != 0) try annotator.addItem(.{ .code = code, .line = tok.line, .pos = tok.col + tok.len });
     }
-    const src = ctx.getSource();
-    try SrcLines.addSrc(src);
-    const res = try Annotator.applyItems(src);
-    std.log.debug("\n---\n{s}---\n", .{res});
+    const src = cur_ctx.getSource();
+    return try annotator.applyItems(src);
+}
+
+pub fn setup(debug: bool) !void {
+    cur_ctx = try Context.init();
+    cur_debug = debug;
 }

@@ -3,8 +3,10 @@ const std = @import("std");
 const Fs = @import("Fs.zig");
 const Heap = @import("Heap.zig");
 const Out = @import("Out.zig");
+const Renderer = @import("Renderer.zig");
 
 pub fn generate(ppath: []const u8, outdir: []const u8) !void {
+    try Renderer.setup(false);
     const pname = Fs.basename(ppath);
     const poutdir = Fs.join(&.{ outdir, pname });
     if (Fs.exists(poutdir)) Fs.delete(poutdir);
@@ -23,10 +25,10 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
         \\      - {1s}/{0s}/index.md
         \\
     , .{ pname, oname });
-    var dir_iter = Fs.openDir(ppath).iterate();
-    while (try dir_iter.next()) |ent| {
-        if (ent.kind != .directory or ent.name[0] == '.') continue;
-        const bname = ent.name;
+    var pdir_iter = Fs.openDir(ppath).iterate();
+    while (try pdir_iter.next()) |ent1| {
+        if (ent1.kind != .directory or ent1.name[0] == '.') continue;
+        const bname = ent1.name;
         const boutdir = Fs.join(&.{ poutdir, bname });
         Fs.mkdirs(poutdir, bname);
         file = try Out.open(Fs.join(&.{ boutdir, "index.md" }));
@@ -41,6 +43,28 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
             \\        - {1s}/{2s}/{0s}/index.md
             \\
         , .{ bname, oname, pname });
+        var bdir_iter = Fs.openDir(Fs.join(&.{ ppath, bname })).iterate();
+        while (try bdir_iter.next()) |ent2| {
+            const suf = ".em.zig";
+            if (ent2.kind != .file or !std.mem.endsWith(u8, ent2.name, suf)) continue;
+            const uname = ent2.name[0 .. ent2.name.len - suf.len];
+            std.log.debug("unit {s}", .{uname});
+            const src = try Renderer.exec(Fs.join(&.{ ppath, bname, ent2.name }));
+            file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
+            file.print(
+                \\<script>document.querySelector('body').classList.add('em-content')</script>
+                \\# unit `{1s}`
+                \\```zigem linenums="1" title="{0s}/{1s}.em.zig"
+                \\{2s}
+                \\```
+                \\
+            , .{ bname, uname, src });
+            file.close();
+            sb.fmt(
+                \\        - {0s}: {1s}/{2s}/{3s}/{0s}.md
+                \\
+            , .{ uname, oname, pname, bname });
+        }
     }
     const yfile = Fs.join(&.{ outdir, "../../mkdocs.yml" });
     const ytext = Fs.readFile(yfile);
@@ -63,18 +87,6 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
     file.close();
 }
 
-// #-- em.bench
-//     - em.bench:
-//       - cargo/em.bench/index.md
-//       - em.coremark:
-//         - cargo/em.bench/em.coremark/index.md
-
-//     var file = try Out.open(Fs.join(&.{ gen_root, "imports.zig" }));
-//     const pre =
-//         \\const em = @import("./em.zig");
-//         \\
-//         \\
-//     ;
 //     file.print(pre, .{});
 //     for (Props.getPackages().items) |pkgpath| {
 //         var iter = Fs.openDir(pkgpath).iterate();

@@ -24,6 +24,7 @@ var params = struct {
     pkg: []const u8 = undefined,
     setup: ?[]const u8 = null,
     unit: []const u8 = undefined,
+    verbose: bool = false,
     work: []const u8 = ".",
 }{};
 
@@ -103,7 +104,8 @@ fn doRefresh() !void {
 }
 
 fn doRender() !void {
-    try Renderer.exec(params.unit);
+    try Renderer.setup(params.verbose);
+    _ = try Renderer.exec(params.unit);
     try printDone();
 }
 
@@ -223,6 +225,14 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.setup),
     };
 
+    const verbose_opt = cli.Option{
+        .long_name = "verbose",
+        .help = "Verbose output",
+        .required = false,
+        .value_name = "VERBOSE",
+        .value_ref = runner.mkRef(&params.verbose),
+    };
+
     const work_opt = cli.Option{
         .long_name = "workspace",
         .short_alias = 'w',
@@ -332,6 +342,7 @@ pub fn main() !void {
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
             file_opt,
+            verbose_opt,
             work_opt,
         },
         .target = cli.CommandTarget{
