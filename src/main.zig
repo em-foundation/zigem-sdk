@@ -5,6 +5,7 @@ const cli = @import("zig-cli");
 
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
+const Markdown = @import("Markdown.zig");
 const Parser = @import("Parser.zig");
 const Props = @import("./Props.zig");
 const Publisher = @import("./Publisher.zig");
@@ -19,6 +20,8 @@ var params = struct {
     force: bool = false,
     load: bool = false,
     meta: bool = false,
+    out: []const u8 = undefined,
+    pkg: []const u8 = undefined,
     setup: ?[]const u8 = null,
     unit: []const u8 = undefined,
     work: []const u8 = ".",
@@ -68,6 +71,13 @@ fn doCompile() !void {
     stdout = try execMake("load");
     // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     try writer.print("done.\n", .{});
+}
+
+fn doMarkdown() !void {
+    const wpath = try Fs.normalize(params.work);
+    const ppath = Fs.slashify(Fs.join(&.{ wpath, params.pkg }));
+    const opath = try Fs.normalize(params.out);
+    try Markdown.generate(ppath, opath);
 }
 
 fn doParse() !void {
@@ -186,6 +196,24 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.meta),
     };
 
+    const out_opt = cli.Option{
+        .long_name = "output",
+        .short_alias = 'o',
+        .help = "Output path",
+        .required = true,
+        .value_name = "OPATH",
+        .value_ref = runner.mkRef(&params.out),
+    };
+
+    const pkg_opt = cli.Option{
+        .long_name = "package",
+        .short_alias = 'p',
+        .help = "Package name",
+        .required = true,
+        .value_name = "PNAME",
+        .value_ref = runner.mkRef(&params.pkg),
+    };
+
     const setup_opt = cli.Option{
         .long_name = "setup",
         .short_alias = 's',
@@ -237,6 +265,19 @@ pub fn main() !void {
         },
         .target = cli.CommandTarget{
             .action = cli.CommandAction{ .exec = doCompile },
+        },
+    };
+
+    const markdown_cmd = cli.Command{
+        .name = "markdown",
+        .description = cli.Description{ .one_line = "*** WIP ***" },
+        .options = &.{
+            out_opt,
+            pkg_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doMarkdown },
         },
     };
 
@@ -306,6 +347,7 @@ pub fn main() !void {
                     check_cmd,
                     clean_cmd,
                     compile_cmd,
+                    markdown_cmd,
                     parse_cmd,
                     properties_cmd,
                     publish_cmd,

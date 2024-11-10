@@ -48,31 +48,31 @@ pub fn normalize(path: []const u8) ![]const u8 {
 }
 
 pub fn openDir(path: []const u8) fs.Dir {
-    const dir = fs.openDirAbsolute(path, .{ .iterate = true }) catch fatal("Path.openDir: {s}", .{path});
+    const dir = fs.openDirAbsolute(path, .{ .iterate = true }) catch fatal("Fs.openDir: {s}", .{path});
     return dir;
 }
 
 pub fn openFile(path: []const u8) fs.File {
-    const file = fs.openFileAbsolute(path, .{ .mode = .read_only }) catch fatal("Path.openFile: {s}", .{path});
+    const file = fs.openFileAbsolute(path, .{ .mode = .read_only }) catch fatal("Fs.openFile: {s}", .{path});
     return file;
 }
 
 pub fn readFile(path: []const u8) []const u8 {
     const file = openFile(path);
     defer file.close();
-    const buf = file.readToEndAlloc(Heap.get(), MAX_BYTES) catch fatal("Path.readFile: {s}", .{path});
+    const buf = file.readToEndAlloc(Heap.get(), MAX_BYTES) catch fatal("Fs.readFile: {s}", .{path});
     return buf;
 }
 
 pub fn readFileZ(path: []const u8) [:0]const u8 {
     const file = openFile(path);
     defer file.close();
-    const buf = file.readToEndAllocOptions(Heap.get(), MAX_BYTES, null, @alignOf(u8), 0) catch fatal("Path.readFile", .{});
+    const buf = file.readToEndAllocOptions(Heap.get(), MAX_BYTES, null, @alignOf(u8), 0) catch fatal("Fs.readFile", .{});
     return buf;
 }
 
 pub fn slashify(path: []const u8) []const u8 {
-    const dupe = Heap.get().dupe(u8, path) catch fatal("Path.slashify: {s}", .{path});
+    const dupe = Heap.get().dupe(u8, path) catch fatal("Fs.slashify: {s}", .{path});
     std.mem.replaceScalar(u8, dupe, '\\', '/');
     return dupe;
 }
