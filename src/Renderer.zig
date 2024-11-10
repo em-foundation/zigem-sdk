@@ -3,10 +3,44 @@ const zls = @import("zls");
 
 const Fs = @import("Fs.zig");
 const Heap = @import("Heap.zig");
+const Out = @import("Out.zig");
 
 const builtin = @import("builtin");
 
 const types = zls.types;
+
+const Annotator = struct {
+    //
+    pub const Item = struct {
+        line: usize,
+        pos: usize,
+        code: u8,
+    };
+
+    var item_list = std.ArrayList(Item).init(Heap.get());
+
+    pub fn addItem(item: Item) !void {
+        try item_list.append(item);
+    }
+
+    pub fn applyItems(src: []const u8) ![]const u8 {
+        var last: usize = 0;
+        var sb = Out.StringBuf{};
+        for (item_list.items) |item| {
+            const cur = SrcLines.getOffset(item.line) + item.pos;
+            sb.fmt("{s}#{c}", .{ src[last..cur], item.code });
+            last = cur;
+        }
+        sb.fmt("{s}\n", .{src[last..]});
+        return sb.get();
+    }
+
+    pub fn print() void {
+        for (item_list.items) |item| {
+            std.debug.print("item({c}, {d}, {d})\n", .{ item.code, item.line, item.pos });
+        }
+    }
+};
 
 const Context = struct {
     //
@@ -24,12 +58,13 @@ const Context = struct {
     };
 
     server: *Server,
-    source: [:0]const u8 = &[_:0]u8{},
+    // source: [:0]const u8 = &[_:0]u8{},
+    source: []const u8 = &[_]u8{},
     uri: []const u8 = &[_]u8{},
 
     pub fn init() !Context {
         const server = try Server.create(Heap.get());
-        errdefer server.destroy();
+        // errdefer server.destroy();
         try server.updateConfiguration2(default_config);
         var ctx: Context = .{
             .server = server,
@@ -70,8 +105,11 @@ const Context = struct {
             "file:///{s}",
             .{uri_path},
         );
-        std.debug.print("uri = {s}\n", .{self.uri});
         self.source = Fs.readFileZ(norm);
+        if (std.mem.indexOf(u8, self.source, "//->> zigem publish")) |idx| {
+            self.source = self.source[0..idx];
+        }
+        self.source = std.mem.trim(u8, self.source, &std.ascii.whitespace);
         const params = types.DidOpenTextDocumentParams{
             .textDocument = .{
                 .uri = self.uri,
@@ -83,7 +121,7 @@ const Context = struct {
         _ = try self.server.sendNotificationSync(Heap.get(), "textDocument/didOpen", params);
     }
 
-    pub fn getSource(self: Context) [:0]const u8 {
+    pub fn getSource(self: Context) []const u8 {
         return self.source;
     }
 
@@ -137,14 +175,21 @@ const SemTokStream = struct {
 };
 
 const SrcLines = struct {
-    iter: std.mem.SplitIterator(u8, .scalar),
-    pub fn init(src: []const u8) SrcLines {
-        return SrcLines{
-            .iter = std.mem.splitScalar(u8, src, '\n'),
-        };
+    var off_list = std.ArrayList(usize).init(Heap.get());
+    pub fn addSrc(src: []const u8) !void {
+        try off_list.append(0);
+        var start: usize = 0;
+        while (std.mem.indexOfScalarPos(u8, src, start, '\n')) |idx| {
+            // if (std.mem.startsWith(u8, src[start..], "//->> zigem publish")) break;
+            try off_list.append(idx);
+            start = idx + 1;
+        }
     }
-    pub fn next(self: *SrcLines) ?[]const u8 {
-        return self.iter.next();
+    pub fn getCount() usize {
+        return off_list.items.len - 1;
+    }
+    pub fn getOffset(lineno: usize) usize {
+        return off_list.items[lineno - 1];
     }
 };
 
@@ -153,19 +198,19 @@ pub fn exec(path: []const u8) !void {
     defer ctx.deinit();
     std.log.debug("\n", .{});
     try ctx.addDoc(path);
-    // var lines = SrcLines.init(ctx.getSource());
-    // while (lines.next()) |line| {
-    //     std.log.debug("line: {s}", .{line});
-    // }
     const toks = try ctx.parseDoc();
     var tok_str = SemTokStream.init(toks);
     while (tok_str.next()) |tok| {
-        std.log.debug("{d:>3},{d:>3}:    {s} [{d}]", .{ tok.line, tok.col, @tagName(tok.ttype), tok.tmods });
-        // switch (tok.ttype) {
-        //     .function, .type => {
-        //         std.log.debug("{d:>3},{d:>3}:    {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
-        //     },
-        //     else => {},
-        // }
+        std.log.debug("{d},{d} {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
+        const code: u8 = switch (tok.ttype) {
+            .function, .method => 'f',
+            .namespace, .type => 't',
+            else => 0,
+        };
+        if (code != 0) try Annotator.addItem(.{ .code = code, .line = tok.line, .pos = tok.col + tok.len });
     }
+    const src = ctx.getSource();
+    try SrcLines.addSrc(src);
+    const res = try Annotator.applyItems(src);
+    std.log.debug("\n---\n{s}---\n", .{res});
 }
