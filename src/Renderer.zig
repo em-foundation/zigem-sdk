@@ -17,7 +17,11 @@ const Annotator = struct {
         code: u8,
     };
 
-    item_list: std.ArrayList(Item) = std.ArrayList(Item).init(Heap.get()),
+    item_list: std.ArrayList(Item),
+
+    pub fn init() Annotator {
+        return Annotator{ .item_list = std.ArrayList(Item).init(Heap.get()) };
+    }
 
     pub fn addItem(self: *Annotator, item: Item) !void {
         try self.item_list.append(item);
@@ -25,7 +29,7 @@ const Annotator = struct {
 
     pub fn applyItems(self: Annotator, src: []const u8) ![]const u8 {
         var last: usize = 0;
-        var src_lines = SrcLines{};
+        var src_lines = SrcLines.init();
         try src_lines.addSrc(src);
         var sb = Out.StringBuf{};
         for (self.item_list.items) |item| {
@@ -66,7 +70,7 @@ const Context = struct {
 
     pub fn init() !Context {
         const server = try Server.create(Heap.get());
-        // defer server.destroy();
+        errdefer server.destroy();
         try server.updateConfiguration2(default_config);
         var ctx: Context = .{
             .server = server,
@@ -177,7 +181,10 @@ const SemTokStream = struct {
 };
 
 const SrcLines = struct {
-    off_list: std.ArrayList(usize) = std.ArrayList(usize).init(Heap.get()),
+    off_list: std.ArrayList(usize),
+    pub fn init() SrcLines {
+        return SrcLines{ .off_list = std.ArrayList(usize).init(Heap.get()) };
+    }
     pub fn addSrc(self: *SrcLines, src: []const u8) !void {
         try self.off_list.append(0);
         var start: usize = 0;
@@ -202,7 +209,7 @@ pub fn exec(path: []const u8) ![]const u8 {
     try cur_ctx.addDoc(path);
     const toks = try cur_ctx.parseDoc();
     var tok_str = SemTokStream.init(toks);
-    var annotator = Annotator{};
+    var annotator = Annotator.init();
     while (tok_str.next()) |tok| {
         if (cur_debug) std.log.debug("{d},{d} {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
         const code: u8 = switch (tok.ttype) {
@@ -213,7 +220,8 @@ pub fn exec(path: []const u8) ![]const u8 {
         if (code != 0) try annotator.addItem(.{ .code = code, .line = tok.line, .pos = tok.col + tok.len });
     }
     const src = cur_ctx.getSource();
-    return try annotator.applyItems(src);
+    const res = try annotator.applyItems(src);
+    return res;
 }
 
 pub fn setup(debug: bool) !void {

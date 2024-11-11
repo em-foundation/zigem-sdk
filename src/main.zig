@@ -105,8 +105,8 @@ fn doRefresh() !void {
 
 fn doRender() !void {
     try Renderer.setup(params.verbose);
-    _ = try Renderer.exec(params.unit);
-    try printDone();
+    const src = try Renderer.exec(params.unit);
+    _ = try writer.write(src);
 }
 
 fn execMake(goal: []const u8) ![]const u8 {
