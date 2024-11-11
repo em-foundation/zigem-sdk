@@ -1,6 +1,6 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
-    .inherits = em.import.@"em.coremark/BenchAlgI",
+    .inherits = em.import.@"em.bench.coremark/BenchAlgI",
 });
 pub const em__C = em__U.config(EM__CONFIG);
 
@@ -12,8 +12,8 @@ pub const EM__CONFIG = struct {
     matC: em.Table(matres_t, .RW),
 };
 
-pub const Crc = em.import.@"em.coremark/Crc";
-pub const Utils = em.import.@"em.coremark/Utils";
+pub const Crc = em.import.@"em.bench.coremark/Crc";
+pub const Utils = em.import.@"em.bench.coremark/Utils";
 
 pub const matdat_t = i16;
 pub const matres_t = i32;
@@ -200,10 +200,8 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|fc37a8998b0858335d1f46ff256f3d92a740cd03842004455d02162a3ee11019|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|0fc8aa1ded3a816b9442a391dbbcc94cc9c314197f460e4a7ff7baa94733849d|#
 
 //->> EM__META publics
 pub const c_memsize = EM__META.c_memsize;
@@ -214,3 +212,5 @@ pub const kind = EM__TARG.kind;
 pub const print = EM__TARG.print;
 pub const run = EM__TARG.run;
 pub const setup = EM__TARG.setup;
+
+//->> zigem publish -- end of generated code

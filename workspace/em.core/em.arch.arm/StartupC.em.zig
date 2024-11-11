@@ -1,7 +1,5 @@
 pub const em = @import("../../zigem/em.zig");
-pub const em__U = em.module(@This(), .{
-    .meta_only = true,
-});
+pub const em__U = em.composite(@This(), .{});
 
 pub fn em__generateM() void {
     genArmStartup();
@@ -230,7 +228,7 @@ fn genStartup() void {
     em.writeFile(em.out_root, "startup.c", txt);
 }
 
-//->> zigem publish #|d1b9474b4677bd7226be0c44fb9db3b9dd1f1d937dd52dac3ad7737b3fc593ac|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|d1538caaabc1cf76587bd00c5d7891a39cfb8c4f18f35cac1bab21ce9e852ca1|#
+
+//->> zigem publish -- end of generated code

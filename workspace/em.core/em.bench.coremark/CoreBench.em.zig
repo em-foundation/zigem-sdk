@@ -1,13 +1,13 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.module(@This(), .{
-    .inherits = em.import.@"em.coremark/BenchAlgI",
+    .inherits = em.import.@"em.bench.coremark/BenchAlgI",
 });
 
-pub const Crc = em.import.@"em.coremark/Crc";
-pub const ListBench = em.import.@"em.coremark/ListBench";
-pub const MatrixBench = em.import.@"em.coremark/MatrixBench";
-pub const StateBench = em.import.@"em.coremark/StateBench";
-pub const Utils = em.import.@"em.coremark/Utils";
+pub const Crc = em.import.@"em.bench.coremark/Crc";
+pub const ListBench = em.import.@"em.bench.coremark/ListBench";
+pub const MatrixBench = em.import.@"em.bench.coremark/MatrixBench";
+pub const StateBench = em.import.@"em.bench.coremark/StateBench";
+pub const Utils = em.import.@"em.bench.coremark/Utils";
 
 pub const NUM_ALGS: u8 = 3;
 pub const TOTAL_DATA_SIZE: u16 = 2000;
@@ -63,10 +63,8 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|41be640228e015f80e059bb65448f42eb2398c1682ce7468468b5236f92b8ce8|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|161d1beba491a4f334accbb121f91bda14c7a619e190cabc8a1624071ad09b35|#
 
 //->> EM__META publics
 
@@ -76,3 +74,5 @@ pub const kind = EM__TARG.kind;
 pub const print = EM__TARG.print;
 pub const run = EM__TARG.run;
 pub const setup = EM__TARG.setup;
+
+//->> zigem publish -- end of generated code

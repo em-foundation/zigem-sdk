@@ -1,15 +1,23 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
-pub const EM__SPEC = struct {
-    wait: *const @TypeOf(wait) = &wait,
+pub const EM__TARG = struct {
+    wait: fn (usecs: u32) void,
 };
 
-pub fn wait(usecs: u32) void {
+
+//->> zigem publish #|d28d3ca1774f4ed7b0e0737cf54d214d4372baee8fe22cffeff9c4bba74ca271|#
+
+pub fn wait (usecs: u32) void {
+    // TODO
     _ = usecs;
+    return em.std.mem.zeroes(void);
 }
 
-//->> zigem publish #|8a65d4df045206bd2afaa643ceff3d0deb4848ff24c006df0417998e0583a42a|#
+const em__Self = @This();
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+pub const EM__SPEC = struct {
+    wait: *const @TypeOf(em__Self.wait) = &em__Self.wait,
+};
+
+//->> zigem publish -- end of generated code

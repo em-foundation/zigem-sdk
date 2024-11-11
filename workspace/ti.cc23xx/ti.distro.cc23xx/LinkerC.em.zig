@@ -1,9 +1,5 @@
 pub const em = @import("../../zigem/em.zig");
-pub const em__U = em.module(@This(), .{
-    .meta_only = true,
-});
-
-pub const EM__META = struct {};
+pub const em__U = em.composite(@This(), .{});
 
 const flash_txt =
     \\MEMORY {
@@ -125,9 +121,7 @@ pub fn em__generateM() void {
     em.writeFile(em.out_root, "linkcmd.ld", txt);
 }
 
-//->> zigem publish #|051735533bfdf927a989e95721608daddd8325589f3405b2f01caa2e3b30953c|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|4aa4684856a59c0bf9f9553ba8ff50676201473b24ea6d250fd72eca9a5b0478|#
 
-//->> EM__META publics
+//->> zigem publish -- end of generated code

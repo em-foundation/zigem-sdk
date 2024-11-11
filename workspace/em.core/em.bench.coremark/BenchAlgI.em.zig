@@ -1,7 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
-pub const Utils = em.import.@"em.coremark/Utils";
+pub const Utils = em.import.@"em.bench.coremark/Utils";
 
 pub const EM__TARG = struct {
     dump: fn () void,
@@ -12,7 +12,7 @@ pub const EM__TARG = struct {
 };
 
 
-//->> zigem publish #|b4731ba0ded5f2d50e02a520eca132aa0195d0b2a953268da75755e599746676|#
+//->> zigem publish #|bf25a7f48bc28c8ea67cbefa2597e03d34bd452fdc348d417818d250ac49ea06|#
 
 pub fn dump () void {
     // TODO

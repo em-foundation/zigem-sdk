@@ -1,20 +1,29 @@
 pub const em = @import("../../zigem/em.zig");
 pub const em__U = em.interface(@This(), .{});
 
-pub const EM__SPEC = struct {
-    exec: *const @TypeOf(exec) = &exec,
-    wakeup: *const @TypeOf(wakeup) = &wakeup,
+pub const EM__TARG = struct {
+    exec: fn () void,
+    wakeup: fn () void,
 };
 
-pub fn exec() void {
-    return;
+
+//->> zigem publish #|1d857d8cc6405e3810e94f16e172f89421166fd5306ce96eeea2105b118c2dc7|#
+
+pub fn exec () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-pub fn wakeup() void {
-    return;
+pub fn wakeup () void {
+    // TODO
+    return em.std.mem.zeroes(void);
 }
 
-//->> zigem publish #|b760dc08a42f753cc27fb978495cb7c21687288753a1fb4820fe438dc7a66ba6|#
+const em__Self = @This();
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+pub const EM__SPEC = struct {
+    exec: *const @TypeOf(em__Self.exec) = &em__Self.exec,
+    wakeup: *const @TypeOf(em__Self.wakeup) = &em__Self.wakeup,
+};
+
+//->> zigem publish -- end of generated code
