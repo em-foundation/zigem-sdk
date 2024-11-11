@@ -8,7 +8,6 @@ const Renderer = @import("Renderer.zig");
 var zigem_exe: []const u8 = &.{};
 
 pub fn generate(ppath: []const u8, outdir: []const u8) !void {
-    try Renderer.setup(false);
     const pname = Fs.basename(ppath);
     const poutdir = Fs.join(&.{ outdir, pname });
     if (Fs.exists(poutdir)) Fs.delete(poutdir);
@@ -50,8 +49,8 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
             const suf = ".em.zig";
             if (ent2.kind != .file or !std.mem.endsWith(u8, ent2.name, suf)) continue;
             const uname = ent2.name[0 .. ent2.name.len - suf.len];
-            std.log.debug("unit {s}", .{uname});
-            const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })));
+            std.log.debug("unit {s}/{s}", .{ bname, uname });
+            const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })), false);
             file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
             file.print(
                 \\<script>document.querySelector('body').classList.add('em-content')</script>

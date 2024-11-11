@@ -104,8 +104,7 @@ fn doRefresh() !void {
 }
 
 fn doRender() !void {
-    try Renderer.setup(params.verbose);
-    const src = try Renderer.exec(params.unit);
+    const src = try Renderer.exec(params.unit, params.verbose);
     _ = try writer.write(src);
 }
 

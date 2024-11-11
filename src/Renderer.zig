@@ -17,10 +17,18 @@ const Annotator = struct {
         code: u8,
     };
 
+    allocator: std.mem.Allocator,
     item_list: std.ArrayList(Item),
 
-    pub fn init() Annotator {
-        return Annotator{ .item_list = std.ArrayList(Item).init(Heap.get()) };
+    pub fn init(allocator: std.mem.Allocator) Annotator {
+        return Annotator{
+            .allocator = allocator,
+            .item_list = std.ArrayList(Item).init(allocator),
+        };
+    }
+
+    pub fn deinit(self: *Annotator) void {
+        self.item_list.deinit();
     }
 
     pub fn addItem(self: *Annotator, item: Item) !void {
@@ -29,7 +37,8 @@ const Annotator = struct {
 
     pub fn applyItems(self: Annotator, src: []const u8) ![]const u8 {
         var last: usize = 0;
-        var src_lines = SrcLines.init();
+        var src_lines = SrcLines.init(self.allocator);
+        defer src_lines.deinit();
         try src_lines.addSrc(src);
         var sb = Out.StringBuf{};
         for (self.item_list.items) |item| {
@@ -63,26 +72,28 @@ const Context = struct {
         .global_cache_path = null,
     };
 
+    allocator: std.mem.Allocator,
     server: *Server,
     // source: [:0]const u8 = &[_:0]u8{},
     source: []const u8 = &[_]u8{},
     uri: []const u8 = &[_]u8{},
 
-    pub fn init() !Context {
-        const server = try Server.create(Heap.get());
+    pub fn init(allocator: std.mem.Allocator) !Context {
+        const server = try Server.create(allocator);
         errdefer server.destroy();
         try server.updateConfiguration2(default_config);
         var ctx: Context = .{
+            .allocator = allocator,
             .server = server,
         };
-        _ = try ctx.server.sendRequestSync(Heap.get(), "initialize", .{ .capabilities = .{} });
-        _ = try ctx.server.sendNotificationSync(Heap.get(), "initialized", .{});
+        _ = try ctx.server.sendRequestSync(allocator, "initialize", .{ .capabilities = .{} });
+        _ = try ctx.server.sendNotificationSync(allocator, "initialized", .{});
         return ctx;
     }
 
     pub fn deinit(self: *Context) void {
-        _ = self.server.sendRequestSync(Heap.get(), "shutdown", {}) catch unreachable;
-        self.server.sendNotificationSync(Heap.get(), "exit", {}) catch unreachable;
+        _ = self.server.sendRequestSync(self.allocator, "shutdown", {}) catch unreachable;
+        self.server.sendNotificationSync(self.allocator, "exit", {}) catch unreachable;
         std.debug.assert(self.server.status == .exiting_success);
         self.server.destroy();
     }
@@ -91,7 +102,7 @@ const Context = struct {
         const norm = try Fs.normalize(path);
         var uri_path = norm;
         if (builtin.target.os.tag == .windows) {
-            var buf = try Heap.get().alloc(u8, norm.len + 2);
+            var buf = try self.allocator.alloc(u8, norm.len + 2);
             var idx: usize = 0;
             for (norm) |c| {
                 if (c == ':') {
@@ -107,7 +118,7 @@ const Context = struct {
             uri_path = buf;
         }
         self.uri = try std.fmt.allocPrint(
-            Heap.get(),
+            self.allocator,
             "file:///{s}",
             .{uri_path},
         );
@@ -124,7 +135,7 @@ const Context = struct {
                 .text = self.source,
             },
         };
-        _ = try self.server.sendNotificationSync(Heap.get(), "textDocument/didOpen", params);
+        _ = try self.server.sendNotificationSync(self.allocator, "textDocument/didOpen", params);
     }
 
     pub fn getSource(self: Context) []const u8 {
@@ -135,7 +146,7 @@ const Context = struct {
         const params = types.SemanticTokensParams{
             .textDocument = .{ .uri = self.uri },
         };
-        const rsp = try self.server.sendRequestSync(Heap.get(), "textDocument/semanticTokens/full", params) orelse {
+        const rsp = try self.server.sendRequestSync(self.allocator, "textDocument/semanticTokens/full", params) orelse {
             std.debug.print("Server returned `null` as the result\n", .{});
             return error.InvalidResponse;
         };
@@ -160,6 +171,9 @@ const SemTokStream = struct {
             .data = data,
         };
     }
+    pub fn deinit(self: *SemTokStream) void {
+        _ = self;
+    }
     pub fn next(self: *SemTokStream) ?Token {
         if (self.idx >= self.data.len) return null;
         const chunk = self.data[self.idx .. self.idx + 5];
@@ -182,8 +196,11 @@ const SemTokStream = struct {
 
 const SrcLines = struct {
     off_list: std.ArrayList(usize),
-    pub fn init() SrcLines {
-        return SrcLines{ .off_list = std.ArrayList(usize).init(Heap.get()) };
+    pub fn init(allocator: std.mem.Allocator) SrcLines {
+        return SrcLines{ .off_list = std.ArrayList(usize).init(allocator) };
+    }
+    pub fn deinit(self: *SrcLines) void {
+        self.off_list.deinit();
     }
     pub fn addSrc(self: *SrcLines, src: []const u8) !void {
         try self.off_list.append(0);
@@ -201,17 +218,19 @@ const SrcLines = struct {
     }
 };
 
-var cur_ctx: Context = undefined;
-var cur_debug: bool = false;
-
-pub fn exec(path: []const u8) ![]const u8 {
-    if (cur_debug) std.log.debug("\n", .{});
-    try cur_ctx.addDoc(path);
-    const toks = try cur_ctx.parseDoc();
+pub fn exec(path: []const u8, debug: bool) ![]const u8 {
+    const allocator = Heap.get();
+    var ctx = try Context.init(allocator);
+    // defer ctx.deinit();
+    if (debug) std.log.debug("\n", .{});
+    try ctx.addDoc(path);
+    const toks = try ctx.parseDoc();
     var tok_str = SemTokStream.init(toks);
-    var annotator = Annotator.init();
+    // defer tok_str.deinit();
+    var annotator = Annotator.init(allocator);
+    // defer annotator.deinit();
     while (tok_str.next()) |tok| {
-        if (cur_debug) std.log.debug("{d},{d} {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
+        if (debug) std.log.debug("{d},{d} {s}", .{ tok.line, tok.col, @tagName(tok.ttype) });
         const code: u8 = switch (tok.ttype) {
             .function, .method => 'f',
             .namespace, .type => 't',
@@ -219,12 +238,7 @@ pub fn exec(path: []const u8) ![]const u8 {
         };
         if (code != 0) try annotator.addItem(.{ .code = code, .line = tok.line, .pos = tok.col + tok.len });
     }
-    const src = cur_ctx.getSource();
+    const src = ctx.getSource();
     const res = try annotator.applyItems(src);
     return res;
-}
-
-pub fn setup(debug: bool) !void {
-    cur_ctx = try Context.init();
-    cur_debug = debug;
 }
