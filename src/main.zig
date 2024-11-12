@@ -17,6 +17,7 @@ var writer: @TypeOf(std.io.getStdOut().writer()) = undefined;
 var t0: f80 = 0.0;
 
 var params = struct {
+    delay: u32 = 0,
     force: bool = false,
     load: bool = false,
     meta: bool = false,
@@ -78,7 +79,7 @@ fn doMarkdown() !void {
     const wpath = try Fs.normalize(params.work);
     const ppath = Fs.slashify(Fs.join(&.{ wpath, params.pkg }));
     const opath = try Fs.normalize(params.out);
-    try Markdown.generate(ppath, opath);
+    try Markdown.generate(ppath, opath, params.delay);
 }
 
 fn doParse() !void {
@@ -161,6 +162,14 @@ pub fn main() !void {
     writer = std.io.getStdOut().writer();
     t0 = @floatFromInt(std.time.milliTimestamp());
     var runner = try cli.AppRunner.init(Heap.get());
+
+    const delay_opt = cli.Option{
+        .long_name = "delay",
+        .help = "Delay count",
+        .required = false,
+        .value_name = "DELAY",
+        .value_ref = runner.mkRef(&params.delay),
+    };
 
     const file_opt = cli.Option{
         .long_name = "file",
@@ -281,6 +290,7 @@ pub fn main() !void {
         .name = "markdown",
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
+            delay_opt,
             out_opt,
             pkg_opt,
             work_opt,

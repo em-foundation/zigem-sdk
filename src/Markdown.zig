@@ -15,7 +15,7 @@ fn delay(dt: u32) void {
     }
 }
 
-pub fn generate(ppath: []const u8, outdir: []const u8) !void {
+pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32) !void {
     const pname = Fs.basename(ppath);
     const poutdir = Fs.join(&.{ outdir, pname });
     if (Fs.exists(poutdir)) Fs.delete(poutdir);
@@ -58,7 +58,7 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
             if (ent2.kind != .file or !std.mem.endsWith(u8, ent2.name, suf)) continue;
             const uname = ent2.name[0 .. ent2.name.len - suf.len];
             std.log.debug("unit {s}/{s}", .{ bname, uname });
-            delay(1_000_000_000);
+            delay(delay_cnt * 1_000_000);
             const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })), false);
             file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
             file.print(
