@@ -18,11 +18,11 @@ const PkgList = std.ArrayList([]const u8);
 const PropMap = std.StringHashMap([]const u8);
 const PropSet = std.StringHashMap(void);
 
-var cur_pkgs = PkgList.init(Heap.get());
-var cur_props = PropMap.init(Heap.get());
+var cur_pkgs: PkgList = undefined;
+var cur_props: PropMap = undefined;
 
-var done_set = PropSet.init(Heap.get());
-var work_set = PropSet.init(Heap.get());
+var done_set: PropSet = undefined;
+var work_set: PropSet = undefined;
 
 var has_setup: bool = undefined;
 var root_dir: []const u8 = undefined;
@@ -95,6 +95,10 @@ pub fn getProps() PropMap {
 }
 
 pub fn init(dir: []const u8, sname: ?[]const u8) !void {
+    cur_pkgs = PkgList.init(Heap.get());
+    cur_props = PropMap.init(Heap.get());
+    done_set = PropSet.init(Heap.get());
+    work_set = PropSet.init(Heap.get());
     root_dir = dir;
     has_setup = sname != null;
     if (sname) |sn| try cur_props.put(PROP_EXTENDS, sn);
