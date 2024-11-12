@@ -149,7 +149,7 @@ pub fn exec(path: []const u8, debug: bool) ![]const u8 {
         }
         if (code != 0) try annotator.addItem(.{ .code = code, .line = tok.line, .pos = tok.col + tok.len });
     }
-    annotator.print();
+    // annotator.print();
     const res = try annotator.applyItems(src, src_lines);
     return res;
 }

@@ -7,6 +7,14 @@ const Renderer = @import("Renderer.zig");
 
 var zigem_exe: []const u8 = &.{};
 
+fn delay(dt: u32) void {
+    var dummy: u32 = 0;
+    const dp: *volatile u32 = &dummy;
+    for (0..dt) |_| {
+        dp.* = 0;
+    }
+}
+
 pub fn generate(ppath: []const u8, outdir: []const u8) !void {
     const pname = Fs.basename(ppath);
     const poutdir = Fs.join(&.{ outdir, pname });
@@ -15,7 +23,7 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
     var file = try Out.open(Fs.join(&.{ poutdir, "index.md" }));
     file.print(
         \\<script>document.querySelector('body').classList.add('em-content')</script>
-        \\# package `{s}`
+        \\# {{[ze,kr]package}}&thinsp;{{[fn]{s}}}
         \\
     , .{pname});
     file.close();
@@ -35,7 +43,7 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
         file = try Out.open(Fs.join(&.{ boutdir, "index.md" }));
         file.print(
             \\<script>document.querySelector('body').classList.add('em-content')</script>
-            \\# bucket `{s}`
+            \\# {{[ze,kr]bucket}}&thinsp;{{[fn]{s}}}
             \\
         , .{bname});
         file.close();
@@ -50,11 +58,12 @@ pub fn generate(ppath: []const u8, outdir: []const u8) !void {
             if (ent2.kind != .file or !std.mem.endsWith(u8, ent2.name, suf)) continue;
             const uname = ent2.name[0 .. ent2.name.len - suf.len];
             std.log.debug("unit {s}/{s}", .{ bname, uname });
+            delay(1_000_000_000);
             const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })), false);
             file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
             file.print(
                 \\<script>document.querySelector('body').classList.add('em-content')</script>
-                \\# unit `{1s}`
+                \\# {{[ze,kr]unit}}&thinsp;{{[ze,kt]{1s}}}
                 \\```zigem linenums="1" title="{0s}/{1s}.em.zig"
                 \\{2s}
                 \\```
