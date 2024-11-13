@@ -38,7 +38,7 @@ pub const EM__TARG = struct {
             const bits11: u8 = @intCast(cnt & 0b0011);
             em.@"%%[c:]"(bits11);
             em.@"%%[>]"(bits11);
-            em.print("cnt = {d} (0x{x:0>4}), bits11 = {d}", .{ cnt, cnt, bits11 });
+            em.print("cnt = {d} (0x{x:0>4}), bits11 = {d}\n", .{ cnt, cnt, bits11 });
         }
         AppLed.off();
     }
