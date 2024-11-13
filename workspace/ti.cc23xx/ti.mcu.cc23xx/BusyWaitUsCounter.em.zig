@@ -13,10 +13,13 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|535fadd7e9e00e3f80a0d95623ac2a05b52f54a2c4cc3d0a8f7278a3384aeab1|#
+//->> zigem publish #|abd32b29a9e024f865184a74bc0b131a0b362a2dabf9548b935632e65212d1a7|#
 
 //->> EM__TARG publics
 pub const wait = EM__TARG.wait;
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

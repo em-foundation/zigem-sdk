@@ -45,11 +45,14 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|8cb4f8cc44ece76da3ecdf6d137092eec9e1031ac113136f83ed895aa329c2ba|#
+//->> zigem publish #|750dad6aedac4fe960613f13aa01f85e0183d761b9accc784a330338c6e9b03d|#
 
 //->> EM__META publics
 
 //->> EM__TARG publics
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

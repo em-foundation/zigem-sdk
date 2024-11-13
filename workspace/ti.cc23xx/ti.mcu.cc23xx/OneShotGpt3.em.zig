@@ -64,10 +64,9 @@ export fn LGPT3_COMB_isr() void {
     EM__TARG.LGPT3_COMB_isr();
 }
 
-//->> zigem publish #|ab3d0b77b634fb64bfa5aeaca5fcb581947f5e702b0a8328b11ef3d10a2797c0|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|ab3d0b77b634fb64bfa5aeaca5fcb581947f5e702b0a8328b11ef3d10a2797c0|#
 
 //->> EM__META publics
 
@@ -75,3 +74,7 @@ export fn LGPT3_COMB_isr() void {
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
 pub const uenable = EM__TARG.uenable;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

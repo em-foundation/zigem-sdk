@@ -31,9 +31,9 @@
             .hash = "12205de1eef9492a1cbee4461db6d9db803f14b32e5309ee4a036ac5a3d2a7640902",
             .lazy = true,
         },
-        .@"ti-uniflash-macos-x86_64" = .{
-            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-macos-x86_64.tar.gz",
-            .hash = "12203b87852ad433493c47cb209df32a3090d1b5605526c7d85bb3d980db079d5f31",
+        .@"ti-uniflash-macos-x86_64" = .{ // dummy
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-linux-x86_64.zip",
+            .hash = "12205de1eef9492a1cbee4461db6d9db803f14b32e5309ee4a036ac5a3d2a7640902",
             .lazy = true,
         },
         .@"arm-binutils-macos-x86_64" = .{
@@ -46,8 +46,8 @@
             .hash = "1220514976789d302751ef301bfa9933fbd288ed60b319da76938378d0327253e8b8",
         },
         .@"vscode-zigem" = .{
-            .url = "https://github.com/em-foundation/vscode-zigem/releases/download/v0.0.2.202410171148/vscode-zigem.zip",
-            .hash = "122036a93fb4df2be8de27eb5cbc6010b231620adf85e7e13816ae85a2d9fffecaf1",
+            .url = "https://github.com/em-foundation/vscode-zigem/releases/download/v0.0.3.202411131849/vscode-zigem.zip",
+            .hash = "1220ef6dc8b6fe57e5738b45a84327e84285b9252d7f878e9fd8b0518a754bb45dcb",
         },
     },
 }

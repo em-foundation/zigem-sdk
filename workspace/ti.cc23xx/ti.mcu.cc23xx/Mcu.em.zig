@@ -42,10 +42,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|7bba569ce6131e5ade9864b523dee82df30f2bbb3d8543376effd557bb0d4aa8|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|7bba569ce6131e5ade9864b523dee82df30f2bbb3d8543376effd557bb0d4aa8|#
 
 //->> EM__TARG publics
 pub const startup = EM__TARG.startup;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

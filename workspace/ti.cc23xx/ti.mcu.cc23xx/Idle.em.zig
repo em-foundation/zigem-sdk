@@ -103,10 +103,9 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|dc5e3ffee8fcc9470051565da4b8e1471f50639f764cbecb4dc697bb6e0ade94|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|dc5e3ffee8fcc9470051565da4b8e1471f50639f764cbecb4dc697bb6e0ade94|#
 
 //->> EM__META publics
 pub const addSleepEnterCbM = EM__META.addSleepEnterCbM;
@@ -116,3 +115,7 @@ pub const addSleepLeaveCbM = EM__META.addSleepLeaveCbM;
 pub const exec = EM__TARG.exec;
 pub const pause = EM__TARG.pause;
 pub const waitOnly = EM__TARG.waitOnly;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

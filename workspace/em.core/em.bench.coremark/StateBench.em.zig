@@ -243,8 +243,9 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|9d7c0eeb300ec9ee4e3f1b8d8dbe1382852c64cf7381389dfbeced00ba82fe3a|#
+//->> zigem publish #|1a05710310352dca4da6f01e7d79de2de06a445ec3c3aecbb108a616c2ba18a6|#
 
 //->> EM__META publics
 pub const c_memsize = EM__META.c_memsize;
@@ -257,3 +258,5 @@ pub const run = EM__TARG.run;
 pub const setup = EM__TARG.setup;
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

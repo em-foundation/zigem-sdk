@@ -140,13 +140,16 @@ pub const EM__TARG = struct {
 //    end
 //    fail
 
-//->> zigem publish #|24a8465cad4c5c963349d5271cd50739e6bfe5ca3ef4f67f2a67a6d420dc2cd2|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|24a8465cad4c5c963349d5271cd50739e6bfe5ca3ef4f67f2a67a6d420dc2cd2|#
 
 //->> EM__META publics
 pub const addIntrM = EM__META.addIntrM;
 pub const useIntrM = EM__META.useIntrM;
 
 //->> EM__TARG publics
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

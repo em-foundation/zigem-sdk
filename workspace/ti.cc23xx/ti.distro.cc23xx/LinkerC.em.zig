@@ -121,7 +121,10 @@ pub fn em__generateM() void {
     em.writeFile(em.out_root, "linkcmd.ld", txt);
 }
 
+//#region zigem
 
-//->> zigem publish #|4aa4684856a59c0bf9f9553ba8ff50676201473b24ea6d250fd72eca9a5b0478|#
+//->> zigem publish #|01a8cf5e4d65f126f41153c42f382b98cf6d3bbda69e7cc3984431058d6bdfd0|#
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

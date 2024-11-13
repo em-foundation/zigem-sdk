@@ -5,6 +5,7 @@ const cli = @import("zig-cli");
 
 const Fs = @import("./Fs.zig");
 const Heap = @import("./Heap.zig");
+const Markdown = @import("Markdown.zig");
 const Parser = @import("Parser.zig");
 const Props = @import("./Props.zig");
 const Publisher = @import("./Publisher.zig");
@@ -16,11 +17,15 @@ var writer: @TypeOf(std.io.getStdOut().writer()) = undefined;
 var t0: f80 = 0.0;
 
 var params = struct {
+    delay: u32 = 0,
     force: bool = false,
     load: bool = false,
     meta: bool = false,
+    out: []const u8 = undefined,
+    pkg: []const u8 = undefined,
     setup: ?[]const u8 = null,
     unit: []const u8 = undefined,
+    verbose: bool = false,
     work: []const u8 = ".",
 }{};
 
@@ -70,6 +75,13 @@ fn doCompile() !void {
     try writer.print("done.\n", .{});
 }
 
+fn doMarkdown() !void {
+    const wpath = try Fs.normalize(params.work);
+    const ppath = Fs.slashify(Fs.join(&.{ wpath, params.pkg }));
+    const opath = try Fs.normalize(params.out);
+    try Markdown.generate(ppath, opath, params.delay);
+}
+
 fn doParse() !void {
     try Parser.exec(params.unit);
 }
@@ -93,8 +105,8 @@ fn doRefresh() !void {
 }
 
 fn doRender() !void {
-    try Renderer.exec(params.unit);
-    try printDone();
+    const src = try Renderer.exec(params.unit, params.verbose);
+    _ = try writer.write(src);
 }
 
 fn execMake(goal: []const u8) ![]const u8 {
@@ -151,6 +163,14 @@ pub fn main() !void {
     t0 = @floatFromInt(std.time.milliTimestamp());
     var runner = try cli.AppRunner.init(Heap.get());
 
+    const delay_opt = cli.Option{
+        .long_name = "delay",
+        .help = "Delay count",
+        .required = false,
+        .value_name = "DELAY",
+        .value_ref = runner.mkRef(&params.delay),
+    };
+
     const file_opt = cli.Option{
         .long_name = "file",
         .short_alias = 'f',
@@ -186,6 +206,24 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.meta),
     };
 
+    const out_opt = cli.Option{
+        .long_name = "output",
+        .short_alias = 'o',
+        .help = "Output path",
+        .required = true,
+        .value_name = "OPATH",
+        .value_ref = runner.mkRef(&params.out),
+    };
+
+    const pkg_opt = cli.Option{
+        .long_name = "package",
+        .short_alias = 'p',
+        .help = "Package name",
+        .required = true,
+        .value_name = "PNAME",
+        .value_ref = runner.mkRef(&params.pkg),
+    };
+
     const setup_opt = cli.Option{
         .long_name = "setup",
         .short_alias = 's',
@@ -193,6 +231,14 @@ pub fn main() !void {
         .required = false,
         .value_name = "SETUP",
         .value_ref = runner.mkRef(&params.setup),
+    };
+
+    const verbose_opt = cli.Option{
+        .long_name = "verbose",
+        .help = "Verbose output",
+        .required = false,
+        .value_name = "VERBOSE",
+        .value_ref = runner.mkRef(&params.verbose),
     };
 
     const work_opt = cli.Option{
@@ -237,6 +283,20 @@ pub fn main() !void {
         },
         .target = cli.CommandTarget{
             .action = cli.CommandAction{ .exec = doCompile },
+        },
+    };
+
+    const markdown_cmd = cli.Command{
+        .name = "markdown",
+        .description = cli.Description{ .one_line = "*** WIP ***" },
+        .options = &.{
+            delay_opt,
+            out_opt,
+            pkg_opt,
+            work_opt,
+        },
+        .target = cli.CommandTarget{
+            .action = cli.CommandAction{ .exec = doMarkdown },
         },
     };
 
@@ -291,6 +351,7 @@ pub fn main() !void {
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
             file_opt,
+            verbose_opt,
             work_opt,
         },
         .target = cli.CommandTarget{
@@ -306,6 +367,7 @@ pub fn main() !void {
                     check_cmd,
                     clean_cmd,
                     compile_cmd,
+                    markdown_cmd,
                     parse_cmd,
                     properties_cmd,
                     publish_cmd,

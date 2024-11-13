@@ -45,10 +45,9 @@ pub const MsCounter = if (em.IS_META) .{} else em__C.MsCounter.unwrap();
 pub const Uptimer = if (em.IS_META) .{} else em__C.Uptimer.unwrap();
 pub const UsCounter = if (em.IS_META) .{} else em__C.UsCounter.unwrap();
 
-//->> zigem publish #|54a8602e4c6beb924af813a1df60ad8a0d546d7c1d63598efdead4c0e11d8263|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|54a8602e4c6beb924af813a1df60ad8a0d546d7c1d63598efdead4c0e11d8263|#
 
 //->> EM__META publics
 pub const x_BusyWait = EM__META.x_BusyWait;
@@ -59,3 +58,7 @@ pub const x_Mcu = EM__META.x_Mcu;
 pub const x_MsCounter = EM__META.x_MsCounter;
 pub const x_Uptimer = EM__META.x_Uptimer;
 pub const x_UsCounter = EM__META.x_UsCounter;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

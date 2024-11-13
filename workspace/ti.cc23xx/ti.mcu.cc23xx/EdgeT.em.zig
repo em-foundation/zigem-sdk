@@ -97,8 +97,9 @@ pub fn em__generateS(comptime name: []const u8, _: anytype) type {
             return m;
         }
 
-        
-        //->> zigem publish #|6890d14b64f6a57e39c7cfc3fc61ecd557c8957f78e540a8cfcace1a55ad4356|#
+//#region zigem
+
+        //->> zigem publish #|43535e26b201046f7de5809c877206332a176a0cf03ff1688413cb7056b93414|#
 
         //->> EM__META publics
         pub const c_pin = EM__META.c_pin;
@@ -114,5 +115,7 @@ pub fn em__generateS(comptime name: []const u8, _: anytype) type {
         pub const setDetectRisingEdge = EM__TARG.setDetectRisingEdge;
 
         //->> zigem publish -- end of generated code
+
+//#endregion zigem
     };
 }

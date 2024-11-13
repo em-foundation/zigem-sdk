@@ -14,10 +14,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|ad71067bbd793e62046a7b9387d053694e9f359133eea3a3b1b8ead65c58c2cb|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|ad71067bbd793e62046a7b9387d053694e9f359133eea3a3b1b8ead65c58c2cb|#
 
 //->> EM__TARG publics
 pub const enterStandby = EM__TARG.enterStandby;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

@@ -38,24 +38,25 @@ pub fn exec(path: []const u8, force: bool) !void {
     }
     const src = try ast.render(Heap.get());
 
-    const mark = std.mem.indexOf(u8, src, "//->>");
-    const src_pre = if (mark) |m| src[0..m] else src;
+    var legacy = false;
+    var mark = std.mem.indexOf(u8, src, "//#region zigem");
+    if (mark == null) {
+        mark = std.mem.indexOf(u8, src, "//->>");
+        legacy = true;
+    }
+    const src_pre = std.mem.trimRight(u8, if (mark) |m| src[0..m] else src, &std.ascii.whitespace);
     var digest: [32]u8 = undefined;
     std.crypto.hash.sha2.Sha256.hash(src_pre, &digest, .{});
     const hbuf = std.fmt.bytesToHex(digest, .lower);
     var done = false;
-    if (mark) |m| {
-        const suf = src[m..];
+    if (!legacy and mark != null) {
+        const suf = src[mark.?..];
         const idx1 = std.mem.indexOf(u8, suf, "|").?;
         const suf1 = suf[idx1 + 1 ..];
         const idx2 = std.mem.indexOf(u8, suf1, "|").?;
         const suf2 = suf1[0..idx2];
         done = !force and std.mem.eql(u8, &hbuf, suf2);
     }
-
-    // zigemTest();
-    // print("exit.\n", .{});
-    // std.process.exit(0);
 
     file = try Out.open(norm);
     defer file.close();
@@ -83,9 +84,22 @@ pub fn exec(path: []const u8, force: bool) !void {
         tab = "";
     }
 
-    file.print("{s}\n{s}//->> zigem publish #|{s}|#\n", .{ src_hd, tab, hbuf });
+    file.print(
+        \\{s}
+        \\
+        \\//#region zigem
+        \\
+        \\{s}//->> zigem publish #|{s}|#
+        \\
+    , .{ src_hd, tab, hbuf });
     if (kind == .interface) try genSpec() else genDecls();
-    file.print("\n{s}//->> zigem publish -- end of generated code\n", .{tab});
+    file.print(
+        \\
+        \\{s}//->> zigem publish -- end of generated code
+        \\
+        \\//#endregion zigem
+        \\
+    , .{tab});
     file.print("{s}", .{src_tl});
 }
 
