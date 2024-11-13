@@ -10,7 +10,7 @@ meta:
 	@rm -f $(GEN)/targ.zig
 	@touch $(GEN)/targ.zig
 	@rm -rf $(OUT)/*
-	@cp $(GEN)/domain-meta.zig $(GEN)/domain.zig
+	@cp $(GEN)/domain-META.zig $(GEN)/domain.zig
 	@zig build-exe -I. -femit-bin=$(OUT)/meta-main.exe $(MAIN)
 	@$(OUT)/meta-main.exe 
 	@zig fmt $(GEN)/targ.zig 2>&1 >/dev/null
@@ -52,7 +52,7 @@ TARG_OPTS=\
 	-O ReleaseSmall	\
 
 targ:
-	@cp $(GEN)/domain-targ.zig $(GEN)/domain.zig
+	@cp $(GEN)/domain-TARG.zig $(GEN)/domain.zig
 	@zig build-exe -I. $(TARG_OPTS) -femit-asm=$(OUT)/main.asm -femit-bin=$(OUT)/main.out --script $(OUT)/linkcmd.ld $(OUT)/startup.c $(MAIN)
 	@rm -f $(OUT)/main.out.o
 	@$(OBJCOPY) -O ihex $(OUT)/main.out $(OUT)/main.out.hex
