@@ -125,12 +125,15 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|de66dfad5f9bc8a2f5518ed2677570daa743506c24955da0f32ba78715460cb0|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|de66dfad5f9bc8a2f5518ed2677570daa743506c24955da0f32ba78715460cb0|#
 
 //->> EM__META publics
 
 //->> EM__TARG publics
 pub const onButtonPressed = EM__TARG.onButtonPressed;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

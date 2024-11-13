@@ -5,8 +5,9 @@ pub const EM__TARG = struct {
     wait: fn (usecs: u32) void,
 };
 
+//#region zigem
 
-//->> zigem publish #|d28d3ca1774f4ed7b0e0737cf54d214d4372baee8fe22cffeff9c4bba74ca271|#
+//->> zigem publish #|a1ae67a83e3ce70177e73ae5aa87d189d36f245152deadd19f7f39f9b339655a|#
 
 pub fn wait (usecs: u32) void {
     // TODO
@@ -21,3 +22,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

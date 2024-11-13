@@ -228,7 +228,10 @@ fn genStartup() void {
     em.writeFile(em.out_root, "startup.c", txt);
 }
 
+//#region zigem
 
-//->> zigem publish #|d1538caaabc1cf76587bd00c5d7891a39cfb8c4f18f35cac1bab21ce9e852ca1|#
+//->> zigem publish #|92838f3f0604e637db58e182a764bb0f1478c90b877bbb40c56ab063cea42c52|#
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

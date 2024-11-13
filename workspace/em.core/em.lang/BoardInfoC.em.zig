@@ -11,6 +11,10 @@ pub fn initFrom(BC: type) BC.BoardInfo {
     return res;
 }
 
-//->> zigem publish #|2a536a4e16838f1c8072086c2a82f5a11defe242b90130308540f87ff21233ee|#
+//#region zigem
+
+//->> zigem publish #|cea13fe334282efca78b67796e2473f2b4b47d63023568f94f6b484832b60487|#
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

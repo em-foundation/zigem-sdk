@@ -68,10 +68,9 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|785aee5039f0087001cc24b2ece7a86e1c67703a3d2793396b29b7755b708b4f|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|785aee5039f0087001cc24b2ece7a86e1c67703a3d2793396b29b7755b708b4f|#
 
 //->> EM__META publics
 pub const x_CS = EM__META.x_CS;
@@ -80,3 +79,7 @@ pub const x_PICO = EM__META.x_PICO;
 pub const x_POCI = EM__META.x_POCI;
 
 //->> EM__TARG publics
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

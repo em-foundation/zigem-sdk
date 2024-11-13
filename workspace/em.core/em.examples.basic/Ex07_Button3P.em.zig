@@ -33,10 +33,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|0e27453b208da6d2f2c3e62941d7050711c53790325bada8f007ee1644ce8b4e|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|0e27453b208da6d2f2c3e62941d7050711c53790325bada8f007ee1644ce8b4e|#
 
 //->> EM__TARG publics
 pub const onPressedCb = EM__TARG.onPressedCb;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

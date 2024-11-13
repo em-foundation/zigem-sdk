@@ -29,13 +29,16 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|56fd55c8b3b195d743b156b6e20f16213fc91285b959b022a1d6cda0dacae4fc|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|56fd55c8b3b195d743b156b6e20f16213fc91285b959b022a1d6cda0dacae4fc|#
 
 //->> EM__META publics
 pub const c_scalar = EM__META.c_scalar;
 
 //->> EM__TARG publics
 pub const wait = EM__TARG.wait;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

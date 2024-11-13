@@ -36,13 +36,16 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|3d1539f9000dcdadbc29dcb9a3608001eb78c7259c93bafaa297cf2f86bb2597|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|3d1539f9000dcdadbc29dcb9a3608001eb78c7259c93bafaa297cf2f86bb2597|#
 
 //->> EM__TARG publics
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
 pub const isEnabled = EM__TARG.isEnabled;
 pub const restore = EM__TARG.restore;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

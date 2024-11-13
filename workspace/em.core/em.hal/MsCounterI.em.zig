@@ -6,8 +6,9 @@ pub const EM__TARG = struct {
     stop: fn () u32,
 };
 
+//#region zigem
 
-//->> zigem publish #|d6343c89276ff399a77b8575e624499e165b0197ca8c29031431dcad83736d3e|#
+//->> zigem publish #|816fd929aac36e0e00ae635fe44e4a9325212fec5a7236379284427f9cd04c8f|#
 
 pub fn start () void {
     // TODO
@@ -27,3 +28,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

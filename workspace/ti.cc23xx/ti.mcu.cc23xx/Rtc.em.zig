@@ -67,10 +67,9 @@ export fn CPUIRQ0_isr() void {
     EM__TARG.CPUIRQ0_isr();
 }
 
-//->> zigem publish #|c3439747d7fd1854741f00935f4c0cbda1d0f6af598277d3db7d47b6776e99c8|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|c3439747d7fd1854741f00935f4c0cbda1d0f6af598277d3db7d47b6776e99c8|#
 
 //->> EM__META publics
 
@@ -79,3 +78,7 @@ pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
 pub const getRawTime = EM__TARG.getRawTime;
 pub const toThresh = EM__TARG.toThresh;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

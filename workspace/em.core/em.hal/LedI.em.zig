@@ -7,19 +7,21 @@ pub const EM__TARG = struct {
     toggle: fn () void,
 };
 
-//->> zigem publish #|1c55db3091534441c24369c70c4a2fe8ea7addca24a81ea9c3480173364e557a|#
+//#region zigem
 
-fn off () void {
+//->> zigem publish #|51c3c1e7aca4d14155f6633e113eac8eef014b952183b2211f4c3ce478dd5270|#
+
+pub fn off () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-fn on () void {
+pub fn on () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-fn toggle () void {
+pub fn toggle () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
@@ -33,3 +35,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

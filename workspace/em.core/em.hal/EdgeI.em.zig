@@ -18,8 +18,9 @@ pub const EM__TARG = struct {
     setDetectRisingEdge: fn () void,
 };
 
+//#region zigem
 
-//->> zigem publish #|e60d4295a05c95e33399c031fb0827d8cbf7bf2aaea1e26f04a16ef9dbfaa599|#
+//->> zigem publish #|63191059c51afe3902035e6f2921cf6cc929fdc3d49e75cccd1a4e82e14b13e6|#
 
 pub fn setDetectHandlerM (h: HandlerFxn) void {
     // TODO
@@ -77,3 +78,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

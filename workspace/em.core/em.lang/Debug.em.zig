@@ -96,10 +96,9 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|e0466044edba7fbe70926aad54f46c38fd937ce9b399f863d341dc4675c5d3cd|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|e0466044edba7fbe70926aad54f46c38fd937ce9b399f863d341dc4675c5d3cd|#
 
 //->> EM__META publics
 pub const x_DbgA = EM__META.x_DbgA;
@@ -114,3 +113,7 @@ pub const plus = EM__TARG.plus;
 pub const pulse = EM__TARG.pulse;
 pub const reset = EM__TARG.reset;
 pub const startup = EM__TARG.startup;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

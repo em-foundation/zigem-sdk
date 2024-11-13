@@ -45,8 +45,9 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|422daaa44158ad29f1240043c5f7adad95e624acbec510c965dd31ddd6fd49b8|#
+//->> zigem publish #|0f5b195afe6143700997bcdb2effb28d47b4482ee656e2acc18543b1c60470d6|#
 
 //->> EM__META publics
 pub const x_TxPin = EM__META.x_TxPin;
@@ -55,3 +56,5 @@ pub const x_TxPin = EM__META.x_TxPin;
 pub const put = EM__TARG.put;
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

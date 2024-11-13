@@ -44,12 +44,15 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|cc9fa597e73e317ae0db5b8247a21eda5e32b2175805744c156fd835e9c53359|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|cc9fa597e73e317ae0db5b8247a21eda5e32b2175805744c156fd835e9c53359|#
 
 //->> EM__META publics
 
 //->> EM__TARG publics
 pub const blinkFB = EM__TARG.blinkFB;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

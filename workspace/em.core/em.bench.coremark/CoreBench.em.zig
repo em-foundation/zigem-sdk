@@ -63,8 +63,9 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|161d1beba491a4f334accbb121f91bda14c7a619e190cabc8a1624071ad09b35|#
+//->> zigem publish #|c23c0ef34ff07ada1c1d55f09a67962e7fca4cf20fe46b856b163983225fbdc8|#
 
 //->> EM__META publics
 
@@ -76,3 +77,5 @@ pub const run = EM__TARG.run;
 pub const setup = EM__TARG.setup;
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

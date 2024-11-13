@@ -59,12 +59,15 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|1561c4421e821d80c6feeb3e6a47c53365d4b624bdb5382a71dafcfb1ff26e55|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|1561c4421e821d80c6feeb3e6a47c53365d4b624bdb5382a71dafcfb1ff26e55|#
 
 //->> EM__META publics
 pub const x_Led = EM__META.x_Led;
 
 //->> EM__TARG publics
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

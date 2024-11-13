@@ -102,13 +102,16 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|66b374ea91c6a7ba63df04b805bc28b1913b45720eb1975af352ca5b3c67e963|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|66b374ea91c6a7ba63df04b805bc28b1913b45720eb1975af352ca5b3c67e963|#
 
 //->> EM__META publics
 pub const x_WakeupTimer = EM__META.x_WakeupTimer;
 pub const createM = EM__META.createM;
 
 //->> EM__TARG publics
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

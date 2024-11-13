@@ -109,8 +109,9 @@ pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
             }
         };
 
-        
-        //->> zigem publish #|7b2a53575b6b59ffcc31169e447a9c290791a6910d5b36741cefef7859424282|#
+//#region zigem
+
+        //->> zigem publish #|37d5e111461df117fcfba9ebc04a79bc9c6d6db4accca26f0c162e158d724760|#
 
         //->> EM__META publics
         pub const c_pin = EM__META.c_pin;
@@ -131,5 +132,7 @@ pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
         pub const toggle = EM__TARG.toggle;
 
         //->> zigem publish -- end of generated code
+
+//#endregion zigem
     };
 }
