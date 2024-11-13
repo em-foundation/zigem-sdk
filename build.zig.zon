@@ -31,9 +31,9 @@
             .hash = "12205de1eef9492a1cbee4461db6d9db803f14b32e5309ee4a036ac5a3d2a7640902",
             .lazy = true,
         },
-        .@"ti-uniflash-macos-x86_64" = .{
-            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-macos-x86_64.tar.gz",
-            .hash = "12203b87852ad433493c47cb209df32a3090d1b5605526c7d85bb3d980db079d5f31",
+        .@"ti-uniflash-macos-x86_64" = .{ // dummy
+            .url = "https://github.com/em-foundation/tools-pkg/releases/download/ti-uniflash-8.7.0/ti-uniflash-linux-x86_64.zip",
+            .hash = "12205de1eef9492a1cbee4461db6d9db803f14b32e5309ee4a036ac5a3d2a7640902",
             .lazy = true,
         },
         .@"arm-binutils-macos-x86_64" = .{
