@@ -14,11 +14,11 @@ if [ "$clean" != "" ] && [ "$clean" != "$deep" ] && [ "$clean" != "$deepLong" ];
 fi
 
 echo clean workspace
-rm -rf $SCRIPT_DIR/workspace/{zigem,.zigem-main.zig}
+rm -rf $SCRIPT_DIR/../workspace/{zigem,.zigem-main.zig,.zigem-check.zig}
 
 if [ "$clean" != "" ] ; then
     echo clean zig build artifacts
-    rm -rf $SCRIPT_DIR/{.zig-cache,zig-out,zigem}
+    rm -rf $SCRIPT_DIR/../{.zig-cache,zig-out,zigem}
 
     echo clean zig global cache
     rm -rf $HOME/.cache/zig
