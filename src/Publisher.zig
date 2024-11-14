@@ -170,7 +170,12 @@ fn genSpec() !void {
             const fname = ast.tokenSlice(fld.main_token);
             file.print("\npub fn {s} (", .{fname});
             try fn_list.append(fname);
-            const fn_proto = ast.fnProtoSimple(&buf, fld.data.lhs);
+            const fn_node = astNode(fld.data.lhs);
+            const fn_proto = switch (fn_node.tag) {
+                .fn_proto_simple => ast.fnProtoSimple(&buf, fld.data.lhs),
+                .fn_proto_multi => ast.fnProtoMulti(fld.data.lhs),
+                else => unreachable,
+            };
             var iter = fn_proto.iterate(&ast);
             var param_list = std.ArrayList(Ast.full.FnProto.Param).init(Heap.get());
             while (iter.next()) |par| try param_list.append(par);

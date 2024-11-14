@@ -94,8 +94,9 @@ fn doProperties() !void {
 }
 
 fn doPublish() !void {
+    if (params.force) try writer.print("{s}\n", .{params.unit});
     try Publisher.exec(params.unit, params.force);
-    try printDone();
+    if (!params.force) try printDone();
 }
 
 fn doRefresh() !void {
