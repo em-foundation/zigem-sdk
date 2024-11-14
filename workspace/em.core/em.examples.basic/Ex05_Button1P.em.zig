@@ -41,8 +41,9 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|d91e073f81777153e824043bf08476551c6d70086260b5f6b0e9fe335978bfb1|#
+//->> zigem publish #|9fbd3e112114f2a9fca3e0b2ca82704d4b82396d0ca9d9831174e3f95ecec93e|#
 
 //->> EM__META publics
 
@@ -50,3 +51,5 @@ pub const EM__TARG = struct {
 pub const handler = EM__TARG.handler;
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

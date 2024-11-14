@@ -7,8 +7,9 @@ pub const EM__TARG = struct {
     read: fn () TimeTypes.RawTime,
 };
 
+//#region zigem
 
-//->> zigem publish #|7601f49ca0a97533e1222b2d7013693459f211635b3333610e1e5e142c722cf1|#
+//->> zigem publish #|e62fe37cdc91d4a28079688d2f0ae4c9580333e55b8d28e1d327221944fd6a3d|#
 
 pub fn read () TimeTypes.RawTime {
     // TODO
@@ -22,3 +23,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

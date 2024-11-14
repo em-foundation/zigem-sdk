@@ -8,8 +8,9 @@ pub const EM__TARG = struct {
     restore: fn (key: u32) void,
 };
 
+//#region zigem
 
-//->> zigem publish #|0cdfe908e957c3c76ae2ebfbac3aaf5656e0461d27932a6a44809beb29390b7c|#
+//->> zigem publish #|326987bd5181a370484d14c7883c5276c1ef65f15d92c270f3a438eea5bf6714|#
 
 pub fn disable () u32 {
     // TODO
@@ -42,3 +43,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

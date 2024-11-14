@@ -66,8 +66,9 @@ pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
             }
         };
 
-        
-        //->> zigem publish #|56ca0f5854e1695d5ef13a3a18dfb687553a6ef2bdab061c8747a499491d3fc2|#
+//#region zigem
+
+        //->> zigem publish #|37f0e85bb5afa70f017a283a384da63be2a5fb67155932e7fcd4113b7d246de3|#
 
         //->> EM__META publics
         pub const c_active_low = EM__META.c_active_low;
@@ -80,5 +81,7 @@ pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
         pub const wink = EM__TARG.wink;
 
         //->> zigem publish -- end of generated code
+
+//#endregion zigem
     };
 }

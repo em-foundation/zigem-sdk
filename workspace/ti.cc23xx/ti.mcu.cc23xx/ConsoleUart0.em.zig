@@ -58,10 +58,9 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|23088d3ec420f88e5f8d765e10272b527e8cc26ccc99921b9682990d886ace75|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|23088d3ec420f88e5f8d765e10272b527e8cc26ccc99921b9682990d886ace75|#
 
 //->> EM__META publics
 pub const x_TxPin = EM__META.x_TxPin;
@@ -71,3 +70,7 @@ pub const flush = EM__TARG.flush;
 pub const put = EM__TARG.put;
 pub const sleepEnter = EM__TARG.sleepEnter;
 pub const sleepLeave = EM__TARG.sleepLeave;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

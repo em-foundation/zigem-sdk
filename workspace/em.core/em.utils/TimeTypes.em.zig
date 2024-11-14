@@ -24,7 +24,10 @@ pub fn Secs24p8_ZERO() Secs24p8 {
     return 0;
 }
 
+//#region zigem
+
 //->> zigem publish #|05cd2faffe5dea87004327d564e79d8bdb22b73ae1ef76e66cbd42ebae44cdcc|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

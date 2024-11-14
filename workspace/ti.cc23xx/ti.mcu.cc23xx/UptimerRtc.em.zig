@@ -14,10 +14,13 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|793380061099d71157a4cd1a1c0e26225ae76d5574387f9802b101af2b14d79a|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|793380061099d71157a4cd1a1c0e26225ae76d5574387f9802b101af2b14d79a|#
 
 //->> EM__TARG publics
 pub const read = EM__TARG.read;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

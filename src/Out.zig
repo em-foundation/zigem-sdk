@@ -22,6 +22,9 @@ pub const StringBuf = struct {
     pub fn add(self: *StringBuf, txt: []const u8) void {
         self.txt = sprint("{s}{s}", .{ self.txt, txt });
     }
+    pub fn fmt(self: *StringBuf, comptime fmtstr: []const u8, args: anytype) void {
+        self.add(sprint(fmtstr, args));
+    }
     pub fn get(self: StringBuf) []const u8 {
         return self.txt;
     }

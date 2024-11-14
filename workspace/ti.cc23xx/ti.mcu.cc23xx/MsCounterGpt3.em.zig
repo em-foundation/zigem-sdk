@@ -22,11 +22,14 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|f72d469222d5a6fc2659f42a47b9b7ba99190e2bf12b14302ba016fac5b6db23|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|f72d469222d5a6fc2659f42a47b9b7ba99190e2bf12b14302ba016fac5b6db23|#
 
 //->> EM__TARG publics
 pub const start = EM__TARG.start;
 pub const stop = EM__TARG.stop;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

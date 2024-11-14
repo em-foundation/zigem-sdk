@@ -16,9 +16,12 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
+
 //->> zigem publish #|b60290887ce23c79598b43df0dd6ab7b31615d0bb08f5c5c3c8a4cf77136a3ab|#
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
-
 //->> EM__TARG publics
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

@@ -47,8 +47,9 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|7adb02546c1fee15e426f5a8ec387abccd48bfbc8cca6696ccb965b78a562035|#
+//->> zigem publish #|e5aff7aa38aca43e11ae0af5f26e497c670fdc3b5b458ea3b802902e59d2a64e|#
 
 //->> EM__META publics
 
@@ -57,3 +58,5 @@ pub const blinkFB = EM__TARG.blinkFB;
 pub const handler = EM__TARG.handler;
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

@@ -83,8 +83,9 @@ pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
             }
         };
 
-        
-        //->> zigem publish #|cfcefecef839538bf9c7d22db9ef78d0b4c145b68302d327fdc7fbb969715203|#
+//#region zigem
+
+        //->> zigem publish #|0b519d914b8f8244830f877e932a806b76fc6b7cd71fcd7fd85641adc11c269a|#
 
         //->> EM__META publics
         pub const x_Edge = EM__META.x_Edge;
@@ -96,5 +97,7 @@ pub fn em__generateS(comptime name: []const u8, comptime _: anytype) type {
         pub const onPressed = EM__TARG.onPressed;
 
         //->> zigem publish -- end of generated code
+
+//#endregion zigem
     };
 }

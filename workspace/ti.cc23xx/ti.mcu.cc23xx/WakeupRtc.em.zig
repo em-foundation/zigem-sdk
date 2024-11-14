@@ -36,13 +36,16 @@ pub const EM__TARG = struct {
     }
 };
 
-//->> zigem publish #|447f3808809c1cf9bbb06b814813b9215a6972eb303acdb34c3a30c85dea2ad9|#
+//#region zigem
 
-//->> generated source code -- do not modify
-//->> all of these lines can be safely deleted
+//->> zigem publish #|447f3808809c1cf9bbb06b814813b9215a6972eb303acdb34c3a30c85dea2ad9|#
 
 //->> EM__TARG publics
 pub const disable = EM__TARG.disable;
 pub const enable = EM__TARG.enable;
 pub const secsAligned = EM__TARG.secsAligned;
 pub const secsToThresh = EM__TARG.secsToThresh;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

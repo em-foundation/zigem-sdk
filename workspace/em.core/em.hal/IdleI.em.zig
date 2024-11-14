@@ -6,8 +6,9 @@ pub const EM__TARG = struct {
     wakeup: fn () void,
 };
 
+//#region zigem
 
-//->> zigem publish #|1d857d8cc6405e3810e94f16e172f89421166fd5306ce96eeea2105b118c2dc7|#
+//->> zigem publish #|442e6a657dca90a320ecb372ab0b6eea02139295d3280ab536e559a93edfa392|#
 
 pub fn exec () void {
     // TODO
@@ -27,3 +28,5 @@ pub const EM__SPEC = struct {
 };
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

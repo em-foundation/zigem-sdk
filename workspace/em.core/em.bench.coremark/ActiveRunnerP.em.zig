@@ -29,9 +29,12 @@ pub const EM__TARG = struct {
     }
 };
 
+//#region zigem
 
-//->> zigem publish #|3ba8b9b2eb9850d106f373258b39222fa757febbabb6d53fbb8033343cfbc7c1|#
+//->> zigem publish #|66d5e165b12a38a90b3466f8cda5a640c2985ee56a370012e47cde8c1c688de1|#
 
 //->> EM__TARG publics
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem

@@ -33,7 +33,10 @@ pub fn em__configureM() void {
     }
 }
 
+//#region zigem
 
-//->> zigem publish #|33084f5ce3a5d2e4a5415af0de444a4249ac1380a08c769e16b1d460ca404dff|#
+//->> zigem publish #|520713e31feb976cc13bff9f2dd4128d74381b2a3279ed139f053c40112c59da|#
 
 //->> zigem publish -- end of generated code
+
+//#endregion zigem
