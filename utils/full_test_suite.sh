@@ -37,7 +37,15 @@ while getopts ":hbp" option; do
 done
 
 ${SCRIPT_DIR}/clean.sh -d
+if [ "${promptBetween}" != "" ]; then
+   read -p ">>> Once ready, press enter to continue"
+fi
+
 ${SCRIPT_DIR}/install.sh
+if [ "${promptBetween}" != "" ]; then
+   read -p ">>> Once ready, press enter to continue"
+fi
+
 ${SCRIPT_DIR}/basic_tests.sh $buildOnly $promptBetween
 ${SCRIPT_DIR}/combo_tests.sh $buildOnly $promptBetween
 
