@@ -23,4 +23,20 @@ pub fn isPressed () bool {
     return em.std.mem.zeroes(bool);
 }
 
-pub fn onPressed (
+pub fn onPressed (cb: OnPressedCbFxn, dur: DurationMs) void {
+    // TODO
+    _ = cb;
+    _ = dur;
+    return em.std.mem.zeroes(void);
+}
+
+const em__Self = @This();
+
+pub const EM__SPEC = struct {
+    isPressed: *const @TypeOf(em__Self.isPressed) = &em__Self.isPressed,
+    onPressed: *const @TypeOf(em__Self.onPressed) = &em__Self.onPressed,
+};
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem

@@ -21,4 +21,30 @@ pub fn disable () void {
     return em.std.mem.zeroes(void);
 }
 
-pub fn enable (
+pub fn enable (msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    // TODO
+    _ = msecs;
+    _ = handler;
+    _ = arg;
+    return em.std.mem.zeroes(void);
+}
+
+pub fn uenable (usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+    // TODO
+    _ = usecs;
+    _ = handler;
+    _ = arg;
+    return em.std.mem.zeroes(void);
+}
+
+const em__Self = @This();
+
+pub const EM__SPEC = struct {
+    disable: *const @TypeOf(em__Self.disable) = &em__Self.disable,
+    enable: *const @TypeOf(em__Self.enable) = &em__Self.enable,
+    uenable: *const @TypeOf(em__Self.uenable) = &em__Self.uenable,
+};
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem
