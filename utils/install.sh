@@ -10,4 +10,12 @@ zig build
 printf "\nVerifying zigem installation\n"
 zig build verify
 
+latestVsix=$(ls zig-out/tools/vscode-zigem*.vsix | tail -n 1)
+if [ "$latestVsix" != "" ]; then
+  printf "\nInstall vscode extension $latestVsix\n"
+  code --install-extension $latestVsix
+else
+  printf "\nNo vscode extension found in zig-out/tools\n"
+fi
+
 popd > /dev/null
