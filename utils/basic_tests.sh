@@ -25,7 +25,7 @@ RunTest() {
     title="(build only)"
   fi
   printf "\n${1} ${title}\n"
-  zigem compile -f ${1} ${load} | grep 'image size:'
+  ${SCRIPT_DIR}/../zig-out/bin/zigem compile -f ${1} ${load} | grep 'image size:'
   if [ "${3}" == "" ]; then
     printf "${2}"
   fi
