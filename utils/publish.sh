@@ -27,19 +27,8 @@ fi
 
 pushd ${SCRIPT_DIR}/../ > /dev/null
 
-printf "\n${Green}>>> Install zigem <<<${Color_Off}\n"
-zig build
-
-printf "\n${Green}>>> Verify zigem installation <<<${Color_Off}\n"
-zig build verify
-
-latestVsix=$(ls zig-out/tools/vscode-zigem*.vsix | tail -n 1)
-if [ "$latestVsix" != "" ]; then
-  printf "\n${Green}>>> Install zigem vscode extension <<<${Color_Off}\n"
-  code --install-extension $latestVsix
-else
-  printf "\nNo vscode extension found in zig-out/tools\n"
-fi
-printf "${Green}>>> Installation complete <<<${Color_Off}\n"
+printf "\n${Green}>>> Publishing zig.em files <<<${Color_Off}\n"
+printf "$(find ${SCRIPT_DIR}/../workspace/ -name '*.em.zig' -exec ${SCRIPT_DIR}/../zig-out/bin/zigem publish -f {} --force \; | wc -l) files published\n"
+printf "${Green}>>> Publishing zig.em files complete <<<${Color_Off}\n"
 
 popd > /dev/null

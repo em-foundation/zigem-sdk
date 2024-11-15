@@ -98,6 +98,6 @@ RunTest "em.core/em.examples.basic/Ex10_PollerP.em.zig" "    you should see 5 ve
 RunTest "em.core/em.examples.basic/Ex11_Alarm1P.em.zig" "    you should see occasional blinks of the green LED\n" "$buildOnly" "$promptBetween"
 RunTest "em.core/em.examples.basic/Ex12_Alarm2P.em.zig" "    you should see occasional blinks of the green LED\n" "$buildOnly" "$promptBetween"
 RunTest "em.core/em.examples.basic/Ex13_TickerP.em.zig" "    you should see occasional blinks of the red and green LEDs\n" "$buildOnly" "$promptBetween"
-printf "\n${Green}>>> Basic Examples Tests complete <<<${Color_Off}\n"
+printf "${Green}>>> Basic Examples Tests complete <<<${Color_Off}\n"
 
 popd > /dev/null

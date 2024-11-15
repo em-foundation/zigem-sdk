@@ -71,7 +71,12 @@ if [ "${promptBetween}" != "" ]; then
    read -p ">>> Once ready, press enter to continue"
 fi
 
+${SCRIPT_DIR}/publish.sh
+if [ "${promptBetween}" != "" ]; then
+   read -p ">>> Once ready, press enter to continue"
+fi
+
 ${SCRIPT_DIR}/basic_tests.sh $buildOnly $promptBetween
 ${SCRIPT_DIR}/combo_tests.sh $buildOnly $promptBetween
 
-printf "\n${Green}>>> Full Test Suite complete <<<${Color_Off}\n"
+printf "${Green}>>> Full Test Suite complete <<<${Color_Off}\n"

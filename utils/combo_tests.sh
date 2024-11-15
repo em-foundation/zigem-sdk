@@ -91,6 +91,6 @@ fi
 
 printf "\n${Green}>>> Combo Examples Tests ${title} <<<${Color_Off}\n"
 RunTest "em.core/em.examples.combo/Ex01_TickerP.em.zig" "    you should see occasional blinks of the red and green LEDs\n    and button clicks should change the rate\n    and printout on the serial port\n" "$buildOnly" "$promptBetween"
-printf "\n${Green}>>> Combo Examples Tests complete <<<${Color_Off}\n"
+printf "${Green}>>> Combo Examples Tests complete <<<${Color_Off}\n"
 
 popd > /dev/null
