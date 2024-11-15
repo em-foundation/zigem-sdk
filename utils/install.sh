@@ -28,10 +28,18 @@ fi
 pushd ${SCRIPT_DIR}/../ > /dev/null
 
 printf "\n${Green}>>> Install zigem <<<${Color_Off}\n"
-zig build
+if [ "$(which zig)" == "" ]; then
+  printf "${Red}*** Required zig program not found in path ***${Color_Off}\n"
+else
+  zig build
+fi
 
 printf "\n${Green}>>> Verify zigem installation <<<${Color_Off}\n"
-zig build verify
+if [ "$(which make)" == "" ]; then
+  printf "${Red}*** Required make program not found in path ***${Color_Off}\n"
+else
+  zig build verify
+fi
 
 latestVsix=$(ls zig-out/tools/vscode-zigem*.vsix | tail -n 1)
 if [ "$latestVsix" != "" ]; then
