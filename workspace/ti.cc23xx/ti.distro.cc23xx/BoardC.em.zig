@@ -120,11 +120,13 @@ pub fn em__configureM() void {
     SysLedPin.c_pin.setM(BOARD.Pin_SysLed);
     SysLed.x_Pin.setM(SysLedPin);
     SysLed.c_active_low.setM(BOARD.activeLowLed);
+    //
+    em.setUsed(BoardController);
 }
 
 //#region zigem
 
-//->> zigem publish #|25b8e801accba5be95a343ef0bd4347c70e5930f93af93bb2c0ef6d2b871708e|#
+//->> zigem publish #|aeb19b692c3e06a5c3fd4317627a9cac805dc238d3aa49c151e41c80dc562243|#
 
 //->> zigem publish -- end of generated code
 

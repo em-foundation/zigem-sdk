@@ -30,6 +30,7 @@ pub fn exec(top: em.Unit) !void {
     callAll("em__constructM", ulist_top, false);
     callAll("em__generateM", ulist_top, false);
     try genTarg(top, ulist_bot, ulist_top);
+    printUsed();
     std.process.exit(0);
 }
 
@@ -167,10 +168,11 @@ fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const e
     return res ++ .{unit};
 }
 
-fn mkUsedSet(comptime unit: em.Unit) !void {
-    if (unit.kind == .composite or unit.kind == .template) return;
+fn mkUsedSet(unit: em.Unit) !void {
+    if (unit.kind == .interface or unit.kind == .template) return;
     if (!unit.legacy) {
-        try used_set.put(unit.upath, {});
+        em.Unit.setUsed(unit.upath);
+        if (unit.kind == .composite) return;
         const U = unit.resolve();
         inline for (@typeInfo(U).Struct.decls) |d| {
             const decl = @field(U, d.name);
@@ -179,7 +181,22 @@ fn mkUsedSet(comptime unit: em.Unit) !void {
                 try mkUsedSet(@as(em.Unit, @field(decl, "em__U")));
             }
         }
-        // TODO: handle em.Proxy configs
+        if (!@hasDecl(U, "em__C")) return;
+        const C = @field(U, "em__C");
+        const cti = @typeInfo(@TypeOf(C));
+        inline for (cti.Struct.fields) |fld| {
+            const cfld = @field(C, fld.name);
+            if (em.em__F_getUpath(cfld)) |upath| {
+                em.Unit.setUsed(upath);
+            }
+        }
+    }
+}
+
+fn printUsed() void {
+    var iter = em.Unit.getUsed().keyIterator();
+    while (iter.next()) |e| {
+        em.print("uses {s}", .{e.*});
     }
 }
 
