@@ -28,7 +28,7 @@ fi
 pushd ${SCRIPT_DIR}/../ > /dev/null
 
 printf "\n${Green}>>> Publishing zig.em files <<<${Color_Off}\n"
-autocrlf=$(git config -l | grep autocrlf)
+autocrlf=$(git config --global -l | grep autocrlf)
 if [[ ( "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ) && "$autocrlf" != "input" ]]; then
   printf "${Red}*** Do 'git config --global core.autocrlf input' before zigem publish${Color_Off}\n"
 else
