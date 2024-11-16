@@ -16,12 +16,12 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|d2ea981c3b349d0aae1e801149109dc1aebec7d30a53abbb9782049f9d3ab3df|#
 
-pub fn disable () void {
+pub fn disable() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn enable (msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+pub fn enable(msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
     // TODO
     _ = msecs;
     _ = handler;
@@ -29,7 +29,7 @@ pub fn enable (msecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
     return em.std.mem.zeroes(void);
 }
 
-pub fn uenable (usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
+pub fn uenable(usecs: u32, handler: HandlerFxn, arg: em.ptr_t) void {
     // TODO
     _ = usecs;
     _ = handler;
