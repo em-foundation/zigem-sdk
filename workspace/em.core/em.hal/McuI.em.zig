@@ -9,7 +9,7 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|c9ce771217648090ac2d64f8c504c0b2bdec75ae47aac16541998582a980bb2e|#
 
-pub fn startup () void {
+pub fn startup() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
