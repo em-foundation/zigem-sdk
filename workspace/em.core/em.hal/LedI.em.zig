@@ -11,17 +11,17 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|51c3c1e7aca4d14155f6633e113eac8eef014b952183b2211f4c3ce478dd5270|#
 
-pub fn off() void {
+pub fn off () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn on() void {
+pub fn on () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn toggle() void {
+pub fn toggle () void {
     // TODO
     return em.std.mem.zeroes(void);
 }

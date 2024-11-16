@@ -15,27 +15,27 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|167b75f9974ac36360e1aef418491cceb903b4275be4ffb0f684ca60591f6178|#
 
-pub fn dump() void {
+pub fn dump () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn kind() Utils.Kind {
+pub fn kind () Utils.Kind {
     // TODO
     return em.std.mem.zeroes(Utils.Kind);
 }
 
-pub fn print() void {
+pub fn print () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn run() void {
+pub fn run () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn setup() void {
+pub fn setup () void {
     // TODO
     return em.std.mem.zeroes(void);
 }

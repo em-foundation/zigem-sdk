@@ -10,12 +10,12 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|816fd929aac36e0e00ae635fe44e4a9325212fec5a7236379284427f9cd04c8f|#
 
-pub fn start() void {
+pub fn start () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn stop() u32 {
+pub fn stop () u32 {
     // TODO
     return em.std.mem.zeroes(u32);
 }

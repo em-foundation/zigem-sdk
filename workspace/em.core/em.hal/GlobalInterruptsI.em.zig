@@ -12,22 +12,22 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|326987bd5181a370484d14c7883c5276c1ef65f15d92c270f3a438eea5bf6714|#
 
-pub fn disable() u32 {
+pub fn disable () u32 {
     // TODO
     return em.std.mem.zeroes(u32);
 }
 
-pub fn enable() void {
+pub fn enable () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn isEnabled() bool {
+pub fn isEnabled () bool {
     // TODO
     return em.std.mem.zeroes(bool);
 }
 
-pub fn restore(key: u32) void {
+pub fn restore (key: u32) void {
     // TODO
     _ = key;
     return em.std.mem.zeroes(void);

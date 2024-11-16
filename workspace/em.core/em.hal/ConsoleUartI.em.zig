@@ -10,12 +10,12 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|b23527ebc56b47f60c03afe5548aaec1a3be803275428383bdc63a47b35bf32f|#
 
-pub fn flush() void {
+pub fn flush () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn put(data: u8) void {
+pub fn put (data: u8) void {
     // TODO
     _ = data;
     return em.std.mem.zeroes(void);

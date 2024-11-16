@@ -12,23 +12,23 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|569193189ef856e6f0552f3259cbca38d975b4bd4d0c8655dce5e54e179a359c|#
 
-pub fn set(time_us: u32) void {
+pub fn set (time_us: u32) void {
     // TODO
     _ = time_us;
     return em.std.mem.zeroes(void);
 }
 
-pub fn spin() void {
+pub fn spin () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn start() void {
+pub fn start () void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn stop(o_raw: ?*u32) u32 {
+pub fn stop (o_raw: ?*u32) u32 {
     // TODO
     _ = o_raw;
     return em.std.mem.zeroes(u32);
