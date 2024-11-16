@@ -25,12 +25,12 @@ pub fn exec(top: em.Unit) !void {
     const ulist_top = revUnitList(ulist_bot);
     callAll("em__initM", ulist_bot, false);
     callAll("em__configureM", ulist_top, false);
-    try mkUsedSet(top);
-    try mkUsedSet(BuildC.em__U);
+    try mkUsedSet(top, ulist_bot);
+    try mkUsedSet(BuildC.em__U, ulist_bot);
     callAll("em__constructM", ulist_top, false);
     callAll("em__generateM", ulist_top, false);
     try genTarg(top, ulist_bot, ulist_top);
-    printUsed();
+    printUsed(ulist_bot);
     std.process.exit(0);
 }
 
@@ -168,9 +168,10 @@ fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const e
     return res ++ .{unit};
 }
 
-fn mkUsedSet(unit: em.Unit) !void {
+fn mkUsedSet(unit: em.Unit, ulist: []const em.Unit) anyerror!void {
     if (unit.kind == .interface or unit.kind == .template) return;
     if (!unit.legacy) {
+        if (em.Unit.getUsed().contains(unit.upath)) return;
         em.Unit.setUsed(unit.upath);
         if (unit.kind == .composite) return;
         const U = unit.resolve();
@@ -178,7 +179,7 @@ fn mkUsedSet(unit: em.Unit) !void {
             const decl = @field(U, d.name);
             const Decl = @TypeOf(decl);
             if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__U")) {
-                try mkUsedSet(@as(em.Unit, @field(decl, "em__U")));
+                try mkUsedSet(@as(em.Unit, @field(decl, "em__U")), ulist);
             }
         }
         if (!@hasDecl(U, "em__C")) return;
@@ -187,16 +188,24 @@ fn mkUsedSet(unit: em.Unit) !void {
         inline for (cti.Struct.fields) |fld| {
             const cfld = @field(C, fld.name);
             if (em.em__F_getUpath(cfld)) |upath| {
+                em.print("proxy {s} = {s}", .{ fld.name, upath });
                 em.Unit.setUsed(upath);
+                inline for (ulist) |u| {
+                    if (std.mem.eql(u8, u.upath, upath)) try mkUsedSet(u, ulist);
+                }
             }
         }
     }
 }
 
-fn printUsed() void {
-    var iter = em.Unit.getUsed().keyIterator();
-    while (iter.next()) |e| {
-        em.print("uses {s}", .{e.*});
+fn printUsed(comptime ulist: []const em.Unit) void {
+    const set = em.Unit.getUsed();
+    inline for (ulist) |u| {
+        if (u.kind == .module and !u.legacy) {
+            const upath = u.upath;
+            const pre = if (set.contains(upath)) "**" else "  ";
+            em.print("{s} {s}", .{ pre, upath });
+        }
     }
 }
 
