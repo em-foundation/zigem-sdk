@@ -37,15 +37,17 @@ pub fn exec(top: em.Unit) !void {
 
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
-        const U = u.resolve();
-        comptime var pre_o: ?[]const u8 = null;
-        if (@hasDecl(U, fname)) pre_o = "";
-        if (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname)) pre_o = "EM__TARG.";
-        if (pre_o) |pre| {
-            try out.print("    ", .{});
-            try genImport(u.upath, out);
-            try out.print(".{s}{s}();\n", .{ pre, fname });
-            if (mode == .first) break;
+        if (used_set.contains(u.upath)) {
+            const U = u.resolve();
+            comptime var pre_o: ?[]const u8 = null;
+            if (@hasDecl(U, fname)) pre_o = "";
+            if (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname)) pre_o = "EM__TARG.";
+            if (pre_o) |pre| {
+                try out.print("    ", .{});
+                try genImport(u.upath, out);
+                try out.print(".{s}{s}();\n", .{ pre, fname });
+                if (mode == .first) break;
+            }
         }
     }
 }
@@ -101,6 +103,7 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     ;
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
+        // if (used_set.contains(u.upath)) {
         if (u.kind == .module and !u.legacy) {
             //const @"// -------- BUILTIN FXNS -------- //" = {};
 
