@@ -25,6 +25,7 @@ pub fn exec(top: em.Unit) !void {
     const ulist_top = revUnitList(ulist_bot);
     callAll("em__initM", ulist_bot, false);
     callAll("em__configureM", ulist_top, false);
+    try prepUsedSet(ulist_bot);
     try mkUsedSet(top, ulist_bot);
     try mkUsedSet(BuildC.em__U, ulist_bot);
     callAll("em__constructM", ulist_top, false);
@@ -171,8 +172,8 @@ fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const e
 fn mkUsedSet(unit: em.Unit, ulist: []const em.Unit) anyerror!void {
     if (unit.kind == .interface or unit.kind == .template) return;
     if (!unit.legacy) {
-        if (em.Unit.getUsed().contains(unit.upath)) return;
-        em.Unit.setUsed(unit.upath);
+        if (used_set.contains(unit.upath)) return;
+        try used_set.put(unit.upath, {});
         if (unit.kind == .composite) return;
         const U = unit.resolve();
         inline for (@typeInfo(U).Struct.decls) |d| {
@@ -188,7 +189,6 @@ fn mkUsedSet(unit: em.Unit, ulist: []const em.Unit) anyerror!void {
         inline for (cti.Struct.fields) |fld| {
             const cfld = @field(C, fld.name);
             if (em.em__F_getUpath(cfld)) |upath| {
-                em.print("proxy {s} = {s}", .{ fld.name, upath });
                 em.Unit.setUsed(upath);
                 inline for (ulist) |u| {
                     if (std.mem.eql(u8, u.upath, upath)) try mkUsedSet(u, ulist);
@@ -198,12 +198,17 @@ fn mkUsedSet(unit: em.Unit, ulist: []const em.Unit) anyerror!void {
     }
 }
 
+fn prepUsedSet(ulist: []const em.Unit) !void {
+    inline for (ulist) |u| {
+        if (em.Unit.getUsed().contains(u.upath)) try mkUsedSet(u, ulist);
+    }
+}
+
 fn printUsed(comptime ulist: []const em.Unit) void {
-    const set = em.Unit.getUsed();
     inline for (ulist) |u| {
         if (u.kind == .module and !u.legacy) {
             const upath = u.upath;
-            const pre = if (set.contains(upath)) "**" else "  ";
+            const pre = if (used_set.contains(upath)) "**" else "  ";
             em.print("{s} {s}", .{ pre, upath });
         }
     }
