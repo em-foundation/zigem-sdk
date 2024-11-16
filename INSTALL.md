@@ -12,6 +12,10 @@ Please visit the ZigEm blog: https://blog.zigem.tech/ for much more information 
 
 ZigEm requires one of three different PC / Operating Systems for development, compilation, etc.  Only 64-bit x86 architectures are supported.  And only Ubuntu, MacOS and Windows are supported.
 
+### Make
+
+ZigEm requires make to be installed and in the path.  On Windows, you'll need to download and install make (https://gnuwin32.sourceforge.net/packages/make.htm).
+
 ### Git
 
 If using a Windows PC, you'll need to download and install `Git for Windows` (https://git-scm.com/download/win) and use a `git bash` window to do the below.
