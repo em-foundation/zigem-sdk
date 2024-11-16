@@ -28,7 +28,12 @@ fi
 pushd ${SCRIPT_DIR}/../ > /dev/null
 
 printf "\n${Green}>>> Publishing zig.em files <<<${Color_Off}\n"
-printf "$(find ${SCRIPT_DIR}/../workspace/ -name '*.em.zig' -exec ${SCRIPT_DIR}/../zig-out/bin/zigem publish -f {} --force \; | wc -l) files published\n"
-printf "${Green}>>> Publishing zig.em files complete <<<${Color_Off}\n"
+autocrlf=$(git config -l | grep autocrlf)
+if [[ ( "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ) && "$autocrlf" != "input" ]]; then
+  printf "${Red}*** Do 'git config --global core.autocrlf input' before zigem publish${Color_Off}\n"
+else
+  printf "$(find ${SCRIPT_DIR}/../workspace/ -name '*.em.zig' -exec ${SCRIPT_DIR}/../zig-out/bin/zigem publish -f {} --force \; | wc -l) files published\n"
+  printf "${Green}>>> Publishing zig.em files complete <<<${Color_Off}\n"
+fi
 
 popd > /dev/null
