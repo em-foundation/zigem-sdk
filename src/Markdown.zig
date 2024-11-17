@@ -15,18 +15,21 @@ fn delay(dt: u32) void {
     }
 }
 
-pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32) !void {
+pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32, dry: bool) !void {
     const pname = Fs.basename(ppath);
     const poutdir = Fs.join(&.{ outdir, pname });
-    if (Fs.exists(poutdir)) Fs.delete(poutdir);
-    Fs.mkdirs(outdir, pname);
-    var file = try Out.open(Fs.join(&.{ poutdir, "index.md" }));
-    file.print(
-        \\<script>document.querySelector('body').classList.add('em-content')</script>
-        \\# {{[ze,kr]package}}&thinsp;{{[fn]{s}}}
-        \\
-    , .{pname});
-    file.close();
+    var file: *Out.File = undefined;
+    if (!dry) {
+        if (Fs.exists(poutdir)) Fs.delete(poutdir);
+        Fs.mkdirs(outdir, pname);
+        file = try Out.open(Fs.join(&.{ poutdir, "index.md" }));
+        file.print(
+            \\<script>document.querySelector('body').classList.add('em-content')</script>
+            \\# {{[ze,kr]package}}&thinsp;{{[fn]{s}}}
+            \\
+        , .{pname});
+        file.close();
+    }
     const oname = Fs.basename(outdir);
     var sb = Out.StringBuf{};
     sb.fmt(
@@ -40,13 +43,15 @@ pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32) !void {
         const bname = ent1.name;
         const boutdir = Fs.join(&.{ poutdir, bname });
         Fs.mkdirs(poutdir, bname);
-        file = try Out.open(Fs.join(&.{ boutdir, "index.md" }));
-        file.print(
-            \\<script>document.querySelector('body').classList.add('em-content')</script>
-            \\# {{[ze,kr]bucket}}&thinsp;{{[fn]{s}}}
-            \\
-        , .{bname});
-        file.close();
+        if (!dry) {
+            file = try Out.open(Fs.join(&.{ boutdir, "index.md" }));
+            file.print(
+                \\<script>document.querySelector('body').classList.add('em-content')</script>
+                \\# {{[ze,kr]bucket}}&thinsp;{{[fn]{s}}}
+                \\
+            , .{bname});
+            file.close();
+        }
         sb.fmt(
             \\      - {0s}:
             \\        - {1s}/{2s}/{0s}/index.md
@@ -60,22 +65,26 @@ pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32) !void {
             std.log.debug("unit {s}/{s}", .{ bname, uname });
             delay(delay_cnt * 1_000_000);
             const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })), false);
-            file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
-            file.print(
-                \\<script>document.querySelector('body').classList.add('em-content')</script>
-                \\# {{[ze,kr]unit}}&thinsp;{{[ze,kt]{1s}}}
-                \\```zigem linenums="1" title="{0s}/{1s}.em.zig"
-                \\{2s}
-                \\```
-                \\
-            , .{ bname, uname, src });
-            file.close();
+            if (!dry) {
+                file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
+                file.print(
+                    \\<script>document.querySelector('body').classList.add('em-content')</script>
+                    \\# {{[ze,kr]unit}}&thinsp;{{[ze,kt]{1s}}}
+                    \\```zigem linenums="1" title="{0s}/{1s}.em.zig"
+                    \\{2s}
+                    \\```
+                    \\
+                , .{ bname, uname, src });
+                file.close();
+            }
             sb.fmt(
                 \\        - {0s}: {1s}/{2s}/{3s}/{0s}.md
                 \\
             , .{ uname, oname, pname, bname });
         }
     }
+    if (dry) return;
+
     const yfile = Fs.join(&.{ outdir, "../../mkdocs.yml" });
     const ytext = Fs.readFile(yfile);
     var split_iter = std.mem.split(u8, ytext, "\n#==<");

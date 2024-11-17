@@ -131,3 +131,32 @@ pub fn parse(path: []const u8) !Ast {
     const ast = try Ast.parse(Heap.get(), source, .zig);
     return ast;
 }
+
+pub fn printTree(ast: Ast) void {
+    std.debug.print(
+        \\printTree:
+        \\nodes   tag                            lhs         rhs         ln   col   tok
+        \\-----------------------------------------------------------------------------
+        \\
+    , .{});
+    for (ast.nodes.items(.tag), ast.nodes.items(.data), ast.nodes.items(.main_token), 0..) |tag, data, main_token, i| {
+        const loc = ast.tokenLocation(0, main_token);
+        std.debug.print(
+            "    {d:<3} {s:<30} {d:<11} {d:<11} {d:<4} {d:<5} {d:<5} {s}\n",
+            .{ i, @tagName(tag), data.lhs, data.rhs, loc.line + 1, loc.column + 1, main_token, ast.tokenSlice(main_token) },
+        );
+    }
+
+    std.debug.print(
+        \\
+        \\tokens  tag                  start
+        \\----------------------------------
+        \\
+    , .{});
+    for (ast.tokens.items(.tag), ast.tokens.items(.start), 0..) |tag, start, i| {
+        std.debug.print(
+            "    {d:<3} {s:<20} {d:<}\n",
+            .{ i, @tagName(tag), start },
+        );
+    }
+}

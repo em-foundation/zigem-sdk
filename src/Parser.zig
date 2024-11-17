@@ -8,24 +8,25 @@ var ast: std.zig.Ast = undefined;
 
 pub fn exec(path: []const u8) !void {
     ast = try AstUtils.parse(path);
-    for (ast.rootDecls()) |idx| {
-        const node = ast.nodes.get(idx);
-        switch (node.tag) {
-            .simple_var_decl => {
-                const tok = ast.tokenSlice(node.main_token);
-                if (!std.mem.eql(u8, tok, "const")) continue;
-                const d = ast.simpleVarDecl(idx);
-                if (d.ast.mut_token == 0) continue;
-                const mut = ast.tokenSlice(d.ast.mut_token - 1);
-                if (!std.mem.eql(u8, mut, "pub")) continue;
-                const name = ast.tokenSlice(node.main_token + 1);
-                if (!std.mem.eql(u8, name, "EM__META") and !std.mem.eql(u8, name, "EM__TARG")) continue;
-                print("pub const {s}\n", .{name});
-                walkScope(node.data.rhs);
-            },
-            else => {},
-        }
-    }
+    AstUtils.printTree(ast);
+    // for (ast.rootDecls()) |idx| {
+    //     const node = ast.nodes.get(idx);
+    //     switch (node.tag) {
+    //         .simple_var_decl => {
+    //             const tok = ast.tokenSlice(node.main_token);
+    //             if (!std.mem.eql(u8, tok, "const")) continue;
+    //             const d = ast.simpleVarDecl(idx);
+    //             if (d.ast.mut_token == 0) continue;
+    //             const mut = ast.tokenSlice(d.ast.mut_token - 1);
+    //             if (!std.mem.eql(u8, mut, "pub")) continue;
+    //             const name = ast.tokenSlice(node.main_token + 1);
+    //             if (!std.mem.eql(u8, name, "EM__META") and !std.mem.eql(u8, name, "EM__TARG")) continue;
+    //             print("pub const {s}\n", .{name});
+    //             walkScope(node.data.rhs);
+    //         },
+    //         else => {},
+    //     }
+    // }
     // var iter = AstUtils.NodeIter.init(&ast);
     // while (try iter.next()) |val| {
     //     if (val.direction != .down) continue;
