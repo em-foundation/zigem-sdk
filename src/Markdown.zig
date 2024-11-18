@@ -16,6 +16,7 @@ fn delay(dt: u32) void {
 }
 
 pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32, dry: bool) !void {
+    zigem_exe = try std.process.getEnvVarOwned(Heap.get(), "ZIGEM");
     const pname = Fs.basename(ppath);
     const poutdir = Fs.join(&.{ outdir, pname });
     var file: *Out.File = undefined;
@@ -64,7 +65,17 @@ pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32, dry: bool
             const uname = ent2.name[0 .. ent2.name.len - suf.len];
             std.log.debug("unit {s}/{s}", .{ bname, uname });
             delay(delay_cnt * 1_000_000);
-            const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })), false);
+            var src: []const u8 = undefined;
+            for (0..3) |_| {
+                src = try render(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })));
+                if (src.len > 0) break;
+                std.debug.print("*** retry\n", .{});
+            }
+            if (src.len == 0) {
+                std.debug.print("*** fail\n", .{});
+                std.process.exit(1);
+            }
+            // const src = try Renderer.exec(Fs.slashify(Fs.join(&.{ ppath, bname, ent2.name })), false);
             if (!dry) {
                 file = try Out.open(Fs.join(&.{ boutdir, Out.sprint("{s}.md", .{uname}) }));
                 file.print(
@@ -107,17 +118,14 @@ pub fn generate(ppath: []const u8, outdir: []const u8, delay_cnt: u32, dry: bool
 }
 
 fn render(path: []const u8) ![]const u8 {
-    if (zigem_exe.len == 0) zigem_exe = try std.process.getEnvVarOwned(Heap.get(), "ZIGEM");
     const argv = [_][]const u8{ zigem_exe, "render", "-f", path };
     const proc = try std.process.Child.run(.{
         .allocator = Heap.get(),
         .argv = &argv,
     });
-    if (proc.stderr.len > 0) {
-        try std.io.getStdErr().writeAll(proc.stderr);
-    }
-    if (proc.term.Exited != 0) {
-        std.process.exit(1);
+    switch (proc.term) {
+        .Signal => return "",
+        else => {},
     }
     return proc.stdout;
 }
