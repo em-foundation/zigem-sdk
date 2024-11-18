@@ -101,9 +101,7 @@ fn doPublish() !void {
 }
 
 fn doRefresh() !void {
-    std.debug.print("***activate\n", .{});
     try Session.activate(.{ .work = params.work, .mode = .REFRESH });
-    std.debug.print("***doRefresh\n", .{});
     try Session.doRefresh();
     try printDone();
 }
