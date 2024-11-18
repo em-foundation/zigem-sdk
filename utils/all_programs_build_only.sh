@@ -27,15 +27,21 @@ fi
 
 pushd ${SCRIPT_DIR}/../workspace > /dev/null
 
+printf "\n${Green}>>> Building all setups / programs in em.core <<<${Color_Off}\n"
+printf "| Setup                 | Program                                               | text  | const | data  | bss  |\n"
+printf "| --------------------- | ----------------------------------------------------- | ----- | ----- | ----- | ---- |\n"
+chips=ti.cc23xx
 programs=$(find em.core -name '*P.em.zig' | sort)
-printf "\n${Green}>>> Building all programs in em.core <<<${Color_Off}\n"
-
-printf "| Program                                               | text  | const | data  | bss  |\n"
-printf "| ----------------------------------------------------- | ----- | ----- | ----- | ---- |\n"
-for program in $programs; do
-  result=$(${SCRIPT_DIR}/../zig-out/bin/zigem compile -f ${program} | grep 'image size:' | awk '{print $4, $7, $10, $13}' | sed 's/(/\t| /g' | sed 's/)//g')
-  printf '| %-50s%s |\n' "$program" "$result"
+for chip in $chips; do
+  setups=$(find ${chip} -name 'setup-*.ini' | sort)
+  for setup in $setups; do
+    setup2=$(echo -n $setup | sed 's/\//:\/\//' | sed 's/setup-\|\.ini//g')
+    for program in $programs; do
+      result=$(${SCRIPT_DIR}/../zig-out/bin/zigem compile --setup ${setup2} -f ${program} | grep 'image size:' | awk '{print $4, $7, $10, $13}' | sed 's/(/\t| /g' | sed 's/)//g')
+      printf '| %s\t| %-50s %s |\n' "$setup2" "$program" "$result"
+    done
+  done
 done
-printf "${Green}>>> Building all programs in em.core complete <<<${Color_Off}\n"
+printf "${Green}>>> Building all setups / programs in em.core complete <<<${Color_Off}\n"
 
 popd > /dev/null
