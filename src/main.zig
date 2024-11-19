@@ -22,6 +22,7 @@ var params = struct {
     force: bool = false,
     load: bool = false,
     meta: bool = false,
+    jsonStdout: bool = false,
     out: []const u8 = ".",
     pkg: []const u8 = "em.core",
     setup: ?[]const u8 = null,
@@ -68,47 +69,59 @@ fn doCompile() !void {
     try Session.activate(.{ .work = params.work, .mode = .COMPILE, .bundle = bn, .setup = params.setup });
     try Session.doRefresh();
     try Session.doBuild(un);
-    // try writer.print("compiling META ...\n", .{});
-    // try writer.print("    board: {s}\n", .{Session.getBoard()});
-    // try writer.print("    setup: {s}\n", .{Session.getSetup()});
+    if (!params.jsonStdout) {
+        try writer.print("compiling META ...\n", .{});
+        try writer.print("    board: {s}\n", .{Session.getBoard()});
+        try writer.print("    setup: {s}\n", .{Session.getSetup()});
+    }
     var stdout = try execMake("meta");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     if (params.meta) {
-        // try printDone();
+        try printDone();
         return;
     }
-    // try writer.print("compiling TARG ...\n", .{});
-    stdout = try execMake("targ");
-    const sha32 = Fs.readFile(Fs.join(&.{ Session.getOutRoot(), "main.out.sha32" }));
-    // try writer.print("    image sha: {s}", .{sha32}); // contains \n
-    const sz = try getSizes(stdout);
-    // try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
-    // try printDone();
-    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
-    if (params.load) {
-        // try writer.print("loading...\n", .{});
-        stdout = try execMake("load");
-        // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
-        // try writer.print("done.\n", .{});
+    if (!params.jsonStdout) {
+        try writer.print("compiling TARG ...\n", .{});
     }
-    const t3: f80 = @floatFromInt(std.time.milliTimestamp());
-    results.program = params.unit;
-    results.board = Session.getBoard();
-    results.setup = Session.getSetup();
-    results.sha = sha32[0 .. sha32.len - 1]; // strip new line
-    results.textSize = sz[0];
-    results.constSize = sz[1];
-    results.dataSize = sz[2];
-    results.bssSize = sz[3];
-    results.secondsToBuild = (t2 - t0) / 1000.0;
-    results.secondsToLoad = if (params.load) (t3 - t2) / 1000.0 else 0.0;
-    results.secondsTotal = results.secondsToBuild + results.secondsToLoad;
-    results.load = params.load;
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    const resultsJson = try std.json.stringifyAlloc(allocator, results, .{ .whitespace = .indent_2 });
-    defer allocator.free(resultsJson);
-    try writer.print("{s}\n", .{resultsJson});
+    stdout = try execMake("targ");
+    const sz = try getSizes(stdout);
+    const sha32 = Fs.readFile(Fs.join(&.{ Session.getOutRoot(), "main.out.sha32" }));
+    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
+    if (!params.jsonStdout) {
+        try writer.print("    image sha: {s}", .{sha32}); // contains \n
+        try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
+        try printDone();
+    }
+    if (params.load) {
+        if (!params.jsonStdout) {
+            try writer.print("loading...\n", .{});
+        }
+        stdout = try execMake("load");
+        if (!params.jsonStdout) {
+            if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
+            try writer.print("done.\n", .{});
+        }
+    }
+    if (params.jsonStdout) {
+        const t3: f80 = @floatFromInt(std.time.milliTimestamp());
+        results.program = params.unit;
+        results.board = Session.getBoard();
+        results.setup = Session.getSetup();
+        results.sha = sha32[0 .. sha32.len - 1]; // strip new line
+        results.textSize = sz[0];
+        results.constSize = sz[1];
+        results.dataSize = sz[2];
+        results.bssSize = sz[3];
+        results.secondsToBuild = (t2 - t0) / 1000.0;
+        results.secondsToLoad = if (params.load) (t3 - t2) / 1000.0 else 0.0;
+        results.secondsTotal = results.secondsToBuild + results.secondsToLoad;
+        results.load = params.load;
+        var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+        const allocator = gpa.allocator();
+        const resultsJson = try std.json.stringifyAlloc(allocator, results, .{ .whitespace = .indent_2 });
+        defer allocator.free(resultsJson);
+        try writer.print("{s}\n", .{resultsJson});
+    }
 }
 
 fn doMarkdown() !void {
@@ -190,8 +203,10 @@ fn getSizes(lines: []const u8) ![4]usize {
 }
 
 fn printDone() !void {
-    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
-    try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+    if (!params.jsonStdout) {
+        const t2: f80 = @floatFromInt(std.time.milliTimestamp());
+        try writer.print("done in {d:.2} seconds\n", .{(t2 - t0) / 1000.0});
+    }
 }
 
 pub fn main() !void {
@@ -278,6 +293,14 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.setup),
     };
 
+    const json_stdout_opt = cli.Option{
+        .long_name = "json-stdout",
+        .help = "stdout results json format",
+        .required = false,
+        .value_name = "JSON",
+        .value_ref = runner.mkRef(&params.jsonStdout),
+    };
+
     const verbose_opt = cli.Option{
         .long_name = "verbose",
         .help = "Verbose output",
@@ -325,6 +348,7 @@ pub fn main() !void {
             meta_opt,
             setup_opt,
             work_opt,
+            json_stdout_opt,
         },
         .target = cli.CommandTarget{
             .action = cli.CommandAction{ .exec = doCompile },
