@@ -41,13 +41,9 @@ else
   zig build verify
 fi
 
-latestVsix=$(ls zig-out/tools/vscode-zigem*.vsix | tail -n 1)
-if [ "$latestVsix" != "" ]; then
-  printf "\n${Green}>>> Install zigem vscode extension <<<${Color_Off}\n"
-  code --install-extension $latestVsix
-else
-  printf "\nNo vscode extension found in zig-out/tools\n"
-fi
+zigemExtensionId=the-em-foundation.vscode-zigem
+printf "\n${Green}>>> Install zigem vscode extension <<<${Color_Off}\n"
+code --install-extension $zigemExtensionId --force
 printf "${Green}>>> Installation complete <<<${Color_Off}\n"
 
 popd > /dev/null
