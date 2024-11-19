@@ -28,8 +28,8 @@ fi
 pushd ${SCRIPT_DIR}/../workspace > /dev/null
 
 printf "\n${Green}>>> Building all setups / programs in em.core <<<${Color_Off}\n"
-printf "| Setup                 | Program                                               | text  | const | data  | bss  |\n"
-printf "| --------------------- | ----------------------------------------------------- | ----- | ----- | ----- | ---- |\n"
+printf "| Setup                 | Program                                               | text  | const | data  | bss   |\n"
+printf "| --------------------- | ----------------------------------------------------- | ----- | ----- | ----- | ----- |\n"
 chips=ti.cc23xx
 programs=$(find em.core -name '*P.em.zig' | sort)
 for chip in $chips; do
@@ -38,7 +38,7 @@ for chip in $chips; do
     setup2=$(echo -n $setup | sed 's/\//:\/\//' | sed 's/setup-\|\.ini//g')
     for program in $programs; do
       result=$(${SCRIPT_DIR}/../zig-out/bin/zigem compile --setup ${setup2} -f ${program} | grep 'image size:' | awk '{print $4, $7, $10, $13}' | sed 's/(/\t| /g' | sed 's/)//g')
-      printf '| %s\t| %-50s %s |\n' "$setup2" "$program" "$result"
+      printf '| %s\t| %-50s %s\t|\n' "$setup2" "$program" "$result"
     done
   done
 done
