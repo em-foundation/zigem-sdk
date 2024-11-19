@@ -30,6 +30,21 @@ var params = struct {
     work: []const u8 = ".",
 }{};
 
+var results = struct {
+    program: []const u8 = "",
+    board: []const u8 = "",
+    setup: []const u8 = "",
+    sha: []const u8 = "",
+    textSize: usize = 0,
+    constSize: usize = 0,
+    dataSize: usize = 0,
+    bssSize: usize = 0,
+    secondsToBuild: f80 = 0.0,
+    secondsToLoad: f80 = 0.0,
+    secondsTotal: f80 = 0.0,
+    load: bool = false,
+}{};
+
 fn doCheck() !void {
     const path = params.unit;
     const idx = std.mem.indexOf(u8, path, "/").?;
@@ -53,27 +68,47 @@ fn doCompile() !void {
     try Session.activate(.{ .work = params.work, .mode = .COMPILE, .bundle = bn, .setup = params.setup });
     try Session.doRefresh();
     try Session.doBuild(un);
-    try writer.print("compiling META ...\n", .{});
-    try writer.print("    board: {s}\n", .{Session.getBoard()});
-    try writer.print("    setup: {s}\n", .{Session.getSetup()});
+    // try writer.print("compiling META ...\n", .{});
+    // try writer.print("    board: {s}\n", .{Session.getBoard()});
+    // try writer.print("    setup: {s}\n", .{Session.getSetup()});
     var stdout = try execMake("meta");
     if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
     if (params.meta) {
-        try printDone();
+        // try printDone();
         return;
     }
-    try writer.print("compiling TARG ...\n", .{});
+    // try writer.print("compiling TARG ...\n", .{});
     stdout = try execMake("targ");
     const sha32 = Fs.readFile(Fs.join(&.{ Session.getOutRoot(), "main.out.sha32" }));
-    try writer.print("    image sha: {s}", .{sha32}); // contains \n
+    // try writer.print("    image sha: {s}", .{sha32}); // contains \n
     const sz = try getSizes(stdout);
-    try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
-    try printDone();
-    if (!params.load) return;
-    try writer.print("loading...\n", .{});
-    stdout = try execMake("load");
-    // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
-    try writer.print("done.\n", .{});
+    // try writer.print("    image size: text ({d}) + const ({d}) + data ({d}) + bss ({d})\n", .{ sz[0], sz[1], sz[2], sz[3] });
+    // try printDone();
+    const t2: f80 = @floatFromInt(std.time.milliTimestamp());
+    if (params.load) {
+        // try writer.print("loading...\n", .{});
+        stdout = try execMake("load");
+        // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
+        // try writer.print("done.\n", .{});
+    }
+    const t3: f80 = @floatFromInt(std.time.milliTimestamp());
+    results.program = params.unit;
+    results.board = Session.getBoard();
+    results.setup = Session.getSetup();
+    results.sha = sha32[0 .. sha32.len - 1]; // strip new line
+    results.textSize = sz[0];
+    results.constSize = sz[1];
+    results.dataSize = sz[2];
+    results.bssSize = sz[3];
+    results.secondsToBuild = (t2 - t0) / 1000.0;
+    results.secondsToLoad = if (params.load) (t3 - t2) / 1000.0 else 0.0;
+    results.secondsTotal = results.secondsToBuild + results.secondsToLoad;
+    results.load = params.load;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    const resultsJson = try std.json.stringifyAlloc(allocator, results, .{ .whitespace = .indent_2 });
+    defer allocator.free(resultsJson);
+    try writer.print("{s}\n", .{resultsJson});
 }
 
 fn doMarkdown() !void {
