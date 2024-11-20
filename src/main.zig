@@ -98,7 +98,7 @@ fn doCompile() !void {
         }
         stdout = try execMake("load");
         if (!params.jsonStdout) {
-            if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
+            // if (stdout.len > 0) std.log.debug("stdout = {s}", .{stdout});
             try writer.print("done.\n", .{});
         }
     }
