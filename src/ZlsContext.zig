@@ -86,7 +86,7 @@ const Context = struct {
             .{uri_path},
         );
         self.source = Fs.readFileZ(norm);
-        if (std.mem.indexOf(u8, self.source, "//")) |idx| {
+        if (std.mem.indexOf(u8, self.source, "//#region zigem")) |idx| {
             self.source = self.source[0..idx];
         }
         self.source = std.mem.trim(u8, self.source, &std.ascii.whitespace);
