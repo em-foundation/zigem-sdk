@@ -125,7 +125,8 @@ pub const UnitOpts = struct {
 };
 
 pub const Unit = struct {
-    const Self = @This();
+    //
+    var used_set = std.StringHashMap(void).init(getHeap());
 
     kind: UnitKind,
     upath: []const u8,
@@ -136,7 +137,7 @@ pub const Unit = struct {
     IT: type,
     This: type,
 
-    pub fn config(self: Self, comptime CT: type) CT {
+    pub fn config(self: Unit, comptime CT: type) CT {
         switch (DOMAIN) {
             .META, .TARG_CHECK => {
                 return initConfig(CT, self.upath);
@@ -147,25 +148,29 @@ pub const Unit = struct {
         }
     }
 
-    fn extendPath(self: Self, comptime name: []const u8) []const u8 {
+    fn extendPath(self: Unit, comptime name: []const u8) []const u8 {
         return self.upath ++ "__" ++ name;
     }
 
-    pub fn failif(self: Self, cond: bool, msg: []const u8) void {
+    pub fn failif(self: Unit, cond: bool, msg: []const u8) void {
         if (!cond) return;
         std.log.err("{s}: {s}", .{ self.upath, msg });
         fail();
     }
 
-    pub fn fxn(self: Self, name: []const u8, FT: type) Fxn(FT) {
+    pub fn fxn(self: Unit, name: []const u8, FT: type) Fxn(FT) {
         return Fxn(FT){ .em__upath = self.upath, .em__fname = name };
     }
 
-    pub fn Generate(self: Self, as_name: []const u8, comptime Template_Unit: type, comptime params: anytype) type {
+    pub fn getUsed() std.StringHashMap(void) {
+        return used_set;
+    }
+
+    pub fn Generate(self: Unit, as_name: []const u8, comptime Template_Unit: type, comptime params: anytype) type {
         return Template_Unit.em__generateS(self.extendPath(as_name), params);
     }
 
-    pub fn hasInterface(self: Self, inter: Unit) bool {
+    pub fn hasInterface(self: Unit, inter: Unit) bool {
         if (self.kind == .interface and std.mem.eql(u8, self.upath, inter.upath)) return true;
         comptime var iu = self.inherits;
         inline while (iu) |iuval| : (iu = iuval.inherits) {
@@ -174,7 +179,7 @@ pub const Unit = struct {
         return false;
     }
 
-    pub fn resolve(self: Self) type {
+    pub fn resolve(self: Unit) type {
         var it = std.mem.splitSequence(u8, self.upath, "__");
         var U = @field(import, it.first());
         inline while (it.next()) |seg| {
@@ -183,10 +188,19 @@ pub const Unit = struct {
         return U;
     }
 
-    pub fn scope(self: Self) type {
+    pub fn scope(self: Unit) type {
         return self.resolve();
     }
+
+    pub fn setUsed(upath: []const u8) void {
+        used_set.put(upath, {}) catch unreachable;
+    }
 };
+
+pub fn used(U: anytype) void {
+    const unit: Unit = U.em__U;
+    Unit.setUsed(unit.upath);
+}
 
 fn unitTypeName(unit: type) []const u8 {
     const tn: []const u8 = @typeName(unit);
@@ -194,6 +208,26 @@ fn unitTypeName(unit: type) []const u8 {
 }
 
 const @"// -------- CONFIG FLDS -------- //" = {};
+
+pub fn em__F_getUpath(v: anytype) ?[]const u8 {
+    const T = @TypeOf(v);
+    const ti = @typeInfo(T);
+    var res: ?[]const u8 = null;
+    switch (ti) {
+        .Pointer => |info| {
+            if (info.size == .One) {
+                res = em__F_getUpath(v.*);
+            }
+        },
+        .Struct => {
+            if (@hasField(T, "em__upath")) {
+                res = v.em__upath;
+            }
+        },
+        else => {},
+    }
+    return res;
+}
 
 fn initConfig(CT: type, upath: []const u8) CT {
     comptime {
@@ -454,6 +488,7 @@ pub fn Proxy_S(I: type) type {
     return struct {
         const Self = @This();
         pub const _em__builtin = {};
+        pub const _em__proxy = {};
 
         em__cfgid: ?*const CfgId = null,
         em__iobj: I.EM__SPEC = asI(I, I),
