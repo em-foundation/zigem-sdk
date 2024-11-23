@@ -197,7 +197,7 @@ pub const Unit = struct {
     }
 };
 
-pub fn setUsed(U: anytype) void {
+pub fn used(U: anytype) void {
     const unit: Unit = U.em__U;
     Unit.setUsed(unit.upath);
 }

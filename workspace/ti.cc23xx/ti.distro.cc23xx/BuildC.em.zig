@@ -32,15 +32,15 @@ pub fn em__configureM() void {
         IntrVec.addIntrM(n);
     }
     //
-    em.setUsed(BoardC);
-    em.setUsed(IntrVec);
-    em.setUsed(LinkerC);
-    em.setUsed(StartupC);
+    em.used(BoardC);
+    em.used(IntrVec);
+    em.used(LinkerC);
+    em.used(StartupC);
 }
 
 //#region zigem
 
-//->> zigem publish #|f259f4ef1e8dd3593ca2c27278a0783d58c7a02b9235422a2ec707e2c6db5604|#
+//->> zigem publish #|cdcebc2181313e86e0f4d2eadb5da00d4a54d339bc0da6947ddff5e164029e92|#
 
 //->> zigem publish -- end of generated code
 

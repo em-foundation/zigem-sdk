@@ -121,13 +121,13 @@ pub fn em__configureM() void {
     SysLed.x_Pin.setM(SysLedPin);
     SysLed.c_active_low.setM(BOARD.activeLowLed);
     //
-    em.setUsed(BoardController);
-    em.setUsed(ExtFlashDisabler);
+    em.used(BoardController);
+    em.used(ExtFlashDisabler);
 }
 
 //#region zigem
 
-//->> zigem publish #|14738cf706bacd2059805ca379ae0026f6177cd66fea5eb2c116499791e0bafb|#
+//->> zigem publish #|bc765e8ecff788d359fe89c884b795eed41839e7f128206ae63ad07e3032dd7e|#
 
 //->> zigem publish -- end of generated code
 
