@@ -28,10 +28,10 @@ pub fn exec(top: em.Unit) !void {
     try prepUsedSet(ulist_bot);
     try mkUsedSet(top, ulist_bot);
     try mkUsedSet(BuildC.em__U, ulist_bot);
-    callAll("em__constructM", ulist_top, false);
-    callAll("em__generateM", ulist_top, false);
+    callAll("em__constructM", ulist_top, true);
+    callAll("em__generateM", ulist_top, true);
     try genTarg(top, ulist_bot, ulist_top);
-    printUsed(ulist_bot);
+    // printUsed(ulist_bot);
     std.process.exit(0);
 }
 
@@ -103,8 +103,8 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     ;
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
-        // if (used_set.contains(u.upath)) {
-        if (u.kind == .module and !u.legacy) {
+        if (used_set.contains(u.upath)) {
+            // if (u.kind == .module and !u.legacy) {
             //const @"// -------- BUILTIN FXNS -------- //" = {};
 
             try out.print("const @\"// {0s} {1s} {0s} //\" = {{}};\n\n", .{ "-" ** 8, u.upath });
