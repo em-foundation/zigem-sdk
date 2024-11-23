@@ -25,25 +25,29 @@ pub fn exec(top: em.Unit) !void {
     const ulist_top = revUnitList(ulist_bot);
     callAll("em__initM", ulist_bot, false);
     callAll("em__configureM", ulist_top, false);
-    try mkUsedSet(top);
-    try mkUsedSet(BuildC.em__U);
-    callAll("em__constructM", ulist_top, false);
-    callAll("em__generateM", ulist_top, false);
+    try prepUsedSet(ulist_bot);
+    try mkUsedSet(top, ulist_bot);
+    try mkUsedSet(BuildC.em__U, ulist_bot);
+    callAll("em__constructM", ulist_top, true);
+    callAll("em__generateM", ulist_top, true);
     try genTarg(top, ulist_bot, ulist_top);
+    // printUsed(ulist_bot);
     std.process.exit(0);
 }
 
 fn genCall(comptime fname: []const u8, ulist: []const em.Unit, mode: enum { all, first }, out: std.fs.File.Writer) !void {
     inline for (ulist) |u| {
-        const U = u.resolve();
-        comptime var pre_o: ?[]const u8 = null;
-        if (@hasDecl(U, fname)) pre_o = "";
-        if (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname)) pre_o = "EM__TARG.";
-        if (pre_o) |pre| {
-            try out.print("    ", .{});
-            try genImport(u.upath, out);
-            try out.print(".{s}{s}();\n", .{ pre, fname });
-            if (mode == .first) break;
+        if (used_set.contains(u.upath)) {
+            const U = u.resolve();
+            comptime var pre_o: ?[]const u8 = null;
+            if (@hasDecl(U, fname)) pre_o = "";
+            if (@hasDecl(U, "EM__TARG") and @hasDecl(U.EM__TARG, fname)) pre_o = "EM__TARG.";
+            if (pre_o) |pre| {
+                try out.print("    ", .{});
+                try genImport(u.upath, out);
+                try out.print(".{s}{s}();\n", .{ pre, fname });
+                if (mode == .first) break;
+            }
         }
     }
 }
@@ -99,7 +103,8 @@ fn genTarg(cur_top: em.Unit, ulist_bot: []const em.Unit, ulist_top: []const em.U
     ;
     try out.print(fmt, .{});
     inline for (ulist_bot) |u| {
-        if (u.kind == .module and !u.legacy) {
+        if (used_set.contains(u.upath)) {
+            // if (u.kind == .module and !u.legacy) {
             //const @"// -------- BUILTIN FXNS -------- //" = {};
 
             try out.print("const @\"// {0s} {1s} {0s} //\" = {{}};\n\n", .{ "-" ** 8, u.upath });
@@ -167,19 +172,48 @@ fn mkUnitList(comptime unit: em.Unit, comptime ulist: []const em.Unit) []const e
     return res ++ .{unit};
 }
 
-fn mkUsedSet(comptime unit: em.Unit) !void {
-    if (unit.kind == .composite or unit.kind == .template) return;
+fn mkUsedSet(unit: em.Unit, ulist: []const em.Unit) anyerror!void {
+    if (unit.kind == .interface or unit.kind == .template) return;
     if (!unit.legacy) {
+        if (used_set.contains(unit.upath)) return;
         try used_set.put(unit.upath, {});
+        if (unit.kind == .composite) return;
         const U = unit.resolve();
         inline for (@typeInfo(U).Struct.decls) |d| {
             const decl = @field(U, d.name);
             const Decl = @TypeOf(decl);
             if (Decl == type and @typeInfo(decl) == .Struct and @hasDecl(decl, "em__U")) {
-                try mkUsedSet(@as(em.Unit, @field(decl, "em__U")));
+                try mkUsedSet(@as(em.Unit, @field(decl, "em__U")), ulist);
             }
         }
-        // TODO: handle em.Proxy configs
+        if (!@hasDecl(U, "em__C")) return;
+        const C = @field(U, "em__C");
+        const cti = @typeInfo(@TypeOf(C));
+        inline for (cti.Struct.fields) |fld| {
+            const cfld = @field(C, fld.name);
+            if (em.em__F_getUpath(cfld)) |upath| {
+                em.Unit.setUsed(upath);
+                inline for (ulist) |u| {
+                    if (std.mem.eql(u8, u.upath, upath)) try mkUsedSet(u, ulist);
+                }
+            }
+        }
+    }
+}
+
+fn prepUsedSet(ulist: []const em.Unit) !void {
+    inline for (ulist) |u| {
+        if (em.Unit.getUsed().contains(u.upath)) try mkUsedSet(u, ulist);
+    }
+}
+
+fn printUsed(comptime ulist: []const em.Unit) void {
+    inline for (ulist) |u| {
+        if (u.kind == .module and !u.legacy) {
+            const upath = u.upath;
+            const pre = if (used_set.contains(upath)) "**" else "  ";
+            em.print("{s} {s}", .{ pre, upath });
+        }
     }
 }
 

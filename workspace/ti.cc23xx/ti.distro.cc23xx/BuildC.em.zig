@@ -31,11 +31,16 @@ pub fn em__configureM() void {
     for (nvic_intrs) |n| {
         IntrVec.addIntrM(n);
     }
+    //
+    em.used(BoardC);
+    em.used(IntrVec);
+    em.used(LinkerC);
+    em.used(StartupC);
 }
 
 //#region zigem
 
-//->> zigem publish #|520713e31feb976cc13bff9f2dd4128d74381b2a3279ed139f053c40112c59da|#
+//->> zigem publish #|cdcebc2181313e86e0f4d2eadb5da00d4a54d339bc0da6947ddff5e164029e92|#
 
 //->> zigem publish -- end of generated code
 
