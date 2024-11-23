@@ -168,7 +168,7 @@ fn genSpec() !void {
             var buf: [1]Ast.Node.Index = undefined;
             const fld = astNode(fld_idx);
             const fname = ast.tokenSlice(fld.main_token);
-            file.print("\npub fn {s} (", .{fname});
+            file.print("\npub fn {s}(", .{fname});
             try fn_list.append(fname);
             const fn_node = astNode(fld.data.lhs);
             const fn_proto = switch (fn_node.tag) {

@@ -20,25 +20,25 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|f0c99e989a005fbc6e76c98f35562ac809fdd625261513d71ad0ce7ce2d224b6|#
 
-pub fn disable () void {
+pub fn disable() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn enable (thresh: Thresh, handler: HandlerFxn) void {
+pub fn enable(thresh: Thresh, handler: HandlerFxn) void {
     // TODO
     _ = thresh;
     _ = handler;
     return em.std.mem.zeroes(void);
 }
 
-pub fn secsAligned (secs: Secs24p8) Secs24p8 {
+pub fn secsAligned(secs: Secs24p8) Secs24p8 {
     // TODO
     _ = secs;
     return em.std.mem.zeroes(Secs24p8);
 }
 
-pub fn secsToThresh (secs: Secs24p8) Thresh {
+pub fn secsToThresh(secs: Secs24p8) Thresh {
     // TODO
     _ = secs;
     return em.std.mem.zeroes(Thresh);

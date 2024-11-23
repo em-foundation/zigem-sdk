@@ -22,44 +22,44 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|63191059c51afe3902035e6f2921cf6cc929fdc3d49e75cccd1a4e82e14b13e6|#
 
-pub fn setDetectHandlerM (h: HandlerFxn) void {
+pub fn setDetectHandlerM(h: HandlerFxn) void {
     // TODO
     _ = h;
     return em.std.mem.zeroes(void);
 }
 
-pub fn clearDetect () void {
+pub fn clearDetect() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn disableDetect () void {
+pub fn disableDetect() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn enableDetect () void {
+pub fn enableDetect() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn getState () bool {
+pub fn getState() bool {
     // TODO
     return em.std.mem.zeroes(bool);
 }
 
-pub fn init (pullup: bool) void {
+pub fn init(pullup: bool) void {
     // TODO
     _ = pullup;
     return em.std.mem.zeroes(void);
 }
 
-pub fn setDetectFallingEdge () void {
+pub fn setDetectFallingEdge() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn setDetectRisingEdge () void {
+pub fn setDetectRisingEdge() void {
     // TODO
     return em.std.mem.zeroes(void);
 }

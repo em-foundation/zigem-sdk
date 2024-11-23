@@ -18,11 +18,12 @@ var t0: f80 = 0.0;
 
 var params = struct {
     delay: u32 = 0,
+    dry: bool = false,
     force: bool = false,
     load: bool = false,
     meta: bool = false,
-    out: []const u8 = undefined,
-    pkg: []const u8 = undefined,
+    out: []const u8 = ".",
+    pkg: []const u8 = "em.core",
     setup: ?[]const u8 = null,
     unit: []const u8 = undefined,
     verbose: bool = false,
@@ -79,7 +80,7 @@ fn doMarkdown() !void {
     const wpath = try Fs.normalize(params.work);
     const ppath = Fs.slashify(Fs.join(&.{ wpath, params.pkg }));
     const opath = try Fs.normalize(params.out);
-    try Markdown.generate(ppath, opath, params.delay);
+    try Markdown.generate(ppath, opath, params.delay, params.dry);
 }
 
 fn doParse() !void {
@@ -172,7 +173,15 @@ pub fn main() !void {
         .value_ref = runner.mkRef(&params.delay),
     };
 
-    const file_opt = cli.Option{
+    const dry_opt = cli.Option{
+        .long_name = "dry-run",
+        .help = "Dry run - no output",
+        .required = false,
+        .value_name = "DRY",
+        .value_ref = runner.mkRef(&params.dry),
+    };
+
+    const file_req = cli.Option{
         .long_name = "file",
         .short_alias = 'f',
         .help = "Workspace-relative path to a <unit>.em.zig source file",
@@ -211,7 +220,7 @@ pub fn main() !void {
         .long_name = "output",
         .short_alias = 'o',
         .help = "Output path",
-        .required = true,
+        .required = false,
         .value_name = "OPATH",
         .value_ref = runner.mkRef(&params.out),
     };
@@ -220,7 +229,7 @@ pub fn main() !void {
         .long_name = "package",
         .short_alias = 'p',
         .help = "Package name",
-        .required = true,
+        .required = false,
         .value_name = "PNAME",
         .value_ref = runner.mkRef(&params.pkg),
     };
@@ -255,7 +264,7 @@ pub fn main() !void {
         .name = "check",
         .description = cli.Description{ .one_line = "semantic checking" },
         .options = &.{
-            file_opt,
+            file_req,
             work_opt,
         },
         .target = cli.CommandTarget{
@@ -276,7 +285,7 @@ pub fn main() !void {
     const compile_cmd = cli.Command{
         .name = "compile",
         .options = &.{
-            file_opt,
+            file_req,
             load_opt,
             meta_opt,
             setup_opt,
@@ -292,6 +301,7 @@ pub fn main() !void {
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
             delay_opt,
+            dry_opt,
             out_opt,
             pkg_opt,
             work_opt,
@@ -305,7 +315,7 @@ pub fn main() !void {
         .name = "parse",
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
-            file_opt,
+            file_req,
             work_opt,
         },
         .target = cli.CommandTarget{
@@ -328,7 +338,7 @@ pub fn main() !void {
         .name = "publish",
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
-            file_opt,
+            file_req,
             force_opt,
             work_opt,
         },
@@ -351,7 +361,7 @@ pub fn main() !void {
         .name = "render",
         .description = cli.Description{ .one_line = "*** WIP ***" },
         .options = &.{
-            file_opt,
+            file_req,
             verbose_opt,
             work_opt,
         },

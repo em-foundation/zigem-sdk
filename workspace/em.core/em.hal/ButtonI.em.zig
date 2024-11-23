@@ -18,12 +18,12 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|d46018d836c0692c1854d1acf230d714561f9bce6b62defa43a3c81ccb19d570|#
 
-pub fn isPressed () bool {
+pub fn isPressed() bool {
     // TODO
     return em.std.mem.zeroes(bool);
 }
 
-pub fn onPressed (cb: OnPressedCbFxn, dur: DurationMs) void {
+pub fn onPressed(cb: OnPressedCbFxn, dur: DurationMs) void {
     // TODO
     _ = cb;
     _ = dur;

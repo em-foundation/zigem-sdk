@@ -25,7 +25,7 @@ if [ -t 1 ]; then
   fi
 fi
 
-buildOnly=
+load=
 promptBetween=
 
 Help()
@@ -34,7 +34,7 @@ Help()
    echo "Run basic end-to-end tests"
    echo
    echo "options:"
-   echo "b     Build only -- do not load/run"
+   echo "l     Load/run after build"
    echo "p     Prompt between tests"
    echo "h     Print this Help."
    echo
@@ -47,7 +47,7 @@ while getopts ":hbp" option; do
          exit
          ;;
       b)
-         buildOnly="-b"
+         load="-l"
          ;;
       p)
          promptBetween="-p"
@@ -71,7 +71,12 @@ if [ "${promptBetween}" != "" ]; then
    read -p ">>> Once ready, press enter to continue"
 fi
 
-${SCRIPT_DIR}/basic_tests.sh $buildOnly $promptBetween
-${SCRIPT_DIR}/combo_tests.sh $buildOnly $promptBetween
+${SCRIPT_DIR}/publish.sh
+if [ "${promptBetween}" != "" ]; then
+   read -p ">>> Once ready, press enter to continue"
+fi
 
-printf "\n${Green}>>> Full Test Suite complete <<<${Color_Off}\n"
+${SCRIPT_DIR}/basic_tests.sh $load $promptBetween
+${SCRIPT_DIR}/combo_tests.sh $load $promptBetween
+
+printf "${Green}>>> Full Test Suite complete <<<${Color_Off}\n"

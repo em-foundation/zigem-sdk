@@ -25,7 +25,7 @@ if [ -t 1 ]; then
   fi
 fi
 
-buildOnly=
+load=
 promptBetween=
 
 Help()
@@ -34,20 +34,16 @@ Help()
    echo "Run basic end-to-end tests"
    echo
    echo "options:"
-   echo "b     Build only -- do not load/run"
+   echo "l     Load/run after build"
    echo "p     Prompt between tests"
    echo "h     Print this Help."
    echo
 }
 
 RunTest() {
-  load="-l"
-  if [ "${3}" != "" ]; then
-    load=
-  fi
   printf "\n${1}\n"
-  ${SCRIPT_DIR}/../zig-out/bin/zigem compile -f ${1} ${load} | grep 'image size:'
-  if [ "${3}" == "" ]; then
+  ${SCRIPT_DIR}/../zig-out/bin/zigem compile -f ${1} ${3} | grep 'image size:'
+  if [ "${3}" != "" ]; then
     printf "${2}"
   fi
   if [ "${4}" != "" ]; then
@@ -62,8 +58,7 @@ while getopts ":hbp" option; do
          exit
          ;;
       b)
-         buildOnly="-b"
-         load=""
+         load="-l"
          ;;
       p)
          promptBetween="-p"
@@ -77,7 +72,7 @@ done
 
 pushd ${SCRIPT_DIR}/../workspace > /dev/null
 
-if [ "$buildOnly" == "" ]; then
+if [ "$load" != "" ]; then
   printf "${Yellow}\nBe sure that CC2340 LaunchPad is connected via XDS-100\n"
   printf "Also start SerialMonitor listening to the XDS-100 port at 115200,8n1n\n\n${Color_Off}"
   if [ "$promptBetween" != "" ]; then
@@ -85,12 +80,12 @@ if [ "$buildOnly" == "" ]; then
   fi
 fi
 title="(build, load, and run)"
-if [ "${buildOnly}" != "" ]; then
+if [ "${load}" == "" ]; then
   title="(build only)"
 fi
 
 printf "\n${Green}>>> Combo Examples Tests ${title} <<<${Color_Off}\n"
-RunTest "em.core/em.examples.combo/Ex01_TickerP.em.zig" "    you should see occasional blinks of the red and green LEDs\n    and button clicks should change the rate\n    and printout on the serial port\n" "$buildOnly" "$promptBetween"
-printf "\n${Green}>>> Combo Examples Tests complete <<<${Color_Off}\n"
+RunTest "em.core/em.examples.combo/Ex01_TickerP.em.zig" "    you should see occasional blinks of the red and green LEDs\n    and button clicks should change the rate\n    and printout on the serial port\n" "$load" "$promptBetween"
+printf "${Green}>>> Combo Examples Tests complete <<<${Color_Off}\n"
 
 popd > /dev/null

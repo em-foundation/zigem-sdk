@@ -20,64 +20,64 @@ pub const EM__TARG = struct {
 
 //->> zigem publish #|5da84e4f063a5e563749846aee51180218ad02f3ab5b440dc1f55cd71e9b6bac|#
 
-pub fn clear () void {
+pub fn clear() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn functionSelect (select: u8) void {
+pub fn functionSelect(select: u8) void {
     // TODO
     _ = select;
     return em.std.mem.zeroes(void);
 }
 
-pub fn get () bool {
+pub fn get() bool {
     // TODO
     return em.std.mem.zeroes(bool);
 }
 
-pub fn isInput () bool {
+pub fn isInput() bool {
     // TODO
     return em.std.mem.zeroes(bool);
 }
 
-pub fn isOutput () bool {
+pub fn isOutput() bool {
     // TODO
     return em.std.mem.zeroes(bool);
 }
 
-pub fn makeInput () void {
+pub fn makeInput() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn makeOutput () void {
+pub fn makeOutput() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn pinId () i16 {
+pub fn pinId() i16 {
     // TODO
     return em.std.mem.zeroes(i16);
 }
 
-pub fn reset () void {
+pub fn reset() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn set () void {
+pub fn set() void {
     // TODO
     return em.std.mem.zeroes(void);
 }
 
-pub fn setInternalPullup (enable: bool) void {
+pub fn setInternalPullup(enable: bool) void {
     // TODO
     _ = enable;
     return em.std.mem.zeroes(void);
 }
 
-pub fn toggle () void {
+pub fn toggle() void {
     // TODO
     return em.std.mem.zeroes(void);
 }

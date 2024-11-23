@@ -47,4 +47,4 @@ if [ "$clean" != "" ] ; then
     echo "    Clean zig global cache"
     rm -rf $HOME/.cache/zig
 fi
-printf "\n${Green}>>> Clean Workspace completed <<<${Color_Off}\n"
+printf "${Green}>>> Clean Workspace complete <<<${Color_Off}\n"

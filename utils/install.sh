@@ -28,18 +28,22 @@ fi
 pushd ${SCRIPT_DIR}/../ > /dev/null
 
 printf "\n${Green}>>> Install zigem <<<${Color_Off}\n"
-zig build
+if [ "$(which zig)" == "" ]; then
+  printf "${Red}*** Required zig program not found in path ***${Color_Off}\n"
+else
+  zig build --release=safe --summary all
+fi
 
 printf "\n${Green}>>> Verify zigem installation <<<${Color_Off}\n"
-zig build verify
-
-latestVsix=$(ls zig-out/tools/vscode-zigem*.vsix | tail -n 1)
-if [ "$latestVsix" != "" ]; then
-  printf "\n${Green}>>> Install zigem vscode extension <<<${Color_Off}\n"
-  code --install-extension $latestVsix
+if [ "$(which make)" == "" ]; then
+  printf "${Red}*** Required make program not found in path ***${Color_Off}\n"
 else
-  printf "\nNo vscode extension found in zig-out/tools\n"
+  zig build verify
 fi
-printf "\n${Green}>>> Installation complete <<<${Color_Off}\n"
+
+zigemExtensionId=the-em-foundation.vscode-zigem
+printf "\n${Green}>>> Install zigem vscode extension <<<${Color_Off}\n"
+code --install-extension $zigemExtensionId --force
+printf "${Green}>>> Installation complete <<<${Color_Off}\n"
 
 popd > /dev/null
