@@ -31,7 +31,7 @@ printf "\n${Green}>>> Install zigem <<<${Color_Off}\n"
 if [ "$(which zig)" == "" ]; then
   printf "${Red}*** Required zig program not found in path ***${Color_Off}\n"
 else
-  zig build
+  zig build --release=safe --summary all
 fi
 
 printf "\n${Green}>>> Verify zigem installation <<<${Color_Off}\n"
