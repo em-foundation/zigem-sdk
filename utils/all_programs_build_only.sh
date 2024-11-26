@@ -27,9 +27,16 @@ fi
 
 pushd ${SCRIPT_DIR}/../workspace > /dev/null
 
+mrFilename=all_programs_build_only_most_recent.log
+lrFilename=all_programs_build_only_last.log
+if [ -f "${SCRIPT_DIR}/${mrFilename}" ]; then
+  mv ${SCRIPT_DIR}/${mrFilename} ${SCRIPT_DIR}/${lrFilename}
+fi
 printf "\n${Green}>>> Building all setups / programs in em.core <<<${Color_Off}\n"
 printf "| Setup                 | Program                                               | text  | const | data  | bss   |\n"
 printf "| --------------------- | ----------------------------------------------------- | ----- | ----- | ----- | ----- |\n"
+printf "| Setup                 | Program                                               | text  | const | data  | bss   |\n" >> ${SCRIPT_DIR}/${mrFilename}
+printf "| --------------------- | ----------------------------------------------------- | ----- | ----- | ----- | ----- |\n" >> ${SCRIPT_DIR}/${mrFilename}
 chips=ti.cc23xx
 programs=$(find em.core -name '*P.em.zig' | sort)
 for chip in $chips; do
@@ -39,9 +46,15 @@ for chip in $chips; do
     for program in $programs; do
       result=$(${SCRIPT_DIR}/../zig-out/bin/zigem compile --setup ${setup2} -f ${program} | grep 'image size:' | awk '{print $4, $7, $10, $13}' | sed 's/(/\t| /g' | sed 's/)//g')
       printf '| %s\t| %-50s %s\t|\n' "$setup2" "$program" "$result"
+      printf '| %s\t| %-50s %s\t|\n' "$setup2" "$program" "$result" >> ${SCRIPT_DIR}/${mrFilename}
     done
   done
 done
 printf "${Green}>>> Building all setups / programs in em.core complete <<<${Color_Off}\n"
+if [ -f ${SCRIPT_DIR}/${mrFilename} ] && [ -f ${SCRIPT_DIR}/${lrFilename} ]; then
+  printf "\n${Green}>>> Difference from last results <<<${Color_Off}\n"
+  diff ${SCRIPT_DIR}/${lrFilename} ${SCRIPT_DIR}/${mrFilename}
+  printf "${Green}>>> Difference from last results complete <<<${Color_Off}\n"
+fi
 
 popd > /dev/null
