@@ -25,12 +25,39 @@ if [ -t 1 ]; then
   fi
 fi
 
+Help()
+{
+   # Display Help
+   echo "Run all programs build-only tests"
+   echo
+   echo "options:"
+   echo "c     Compare results with prior run"
+   echo "h     Print this Help."
+   echo
+}
+
+compare=
+while getopts ":hc" option; do
+   case $option in
+      h)
+         Help
+         exit;;
+      c)
+         compare="true";;
+     \?)
+         echo "Error: Invalid option"
+         exit;;
+   esac
+done
+
 pushd ${SCRIPT_DIR}/../workspace > /dev/null
 
 mrFilename=all_programs_build_only_most_recent.log
 lrFilename=all_programs_build_only_last.log
-if [ -f "${SCRIPT_DIR}/${mrFilename}" ]; then
+if [ "$compare" == "true" ] && [ -f "${SCRIPT_DIR}/${mrFilename}" ]; then
   mv ${SCRIPT_DIR}/${mrFilename} ${SCRIPT_DIR}/${lrFilename}
+else
+  rm -f ${SCRIPT_DIR}/${mrFilename}
 fi
 printf "\n${Green}>>> Building all setups / programs in em.core <<<${Color_Off}\n"
 printf "| Setup                 | Program                                               | text  | const | data  | bss   |\n"
@@ -51,7 +78,7 @@ for chip in $chips; do
   done
 done
 printf "${Green}>>> Building all setups / programs in em.core complete <<<${Color_Off}\n"
-if [ -f ${SCRIPT_DIR}/${mrFilename} ] && [ -f ${SCRIPT_DIR}/${lrFilename} ]; then
+if [ "$compare" == "true" ] && [ -f ${SCRIPT_DIR}/${mrFilename} ] && [ -f ${SCRIPT_DIR}/${lrFilename} ]; then
   printf "\n${Green}>>> Difference from last results <<<${Color_Off}\n"
   diff ${SCRIPT_DIR}/${lrFilename} ${SCRIPT_DIR}/${mrFilename}
   printf "${Green}>>> Difference from last results complete <<<${Color_Off}\n"
