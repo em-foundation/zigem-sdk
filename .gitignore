@@ -11,3 +11,4 @@ workspace/.out
 workspace/.main-*.zig
 workspace/.zigem-*.zig
 utils/*.log
+utils/*.log~

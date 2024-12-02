@@ -31,22 +31,26 @@ Help()
    echo "Run all programs build-only tests"
    echo
    echo "options:"
-   echo "c     Compare results with prior run"
+   echo "c     Compare this run's results with prior results"
+   echo "m     Use most recent results as prior results"
    echo "h     Print this Help."
    echo
 }
 
 compare=
-while getopts ":hc" option; do
+useMostRecent=
+while getopts ":hcm" option; do
    case $option in
       h)
          Help
          exit;;
       c)
          compare="true";;
+      m)
+         useMostRecent="true";;
      \?)
          echo "Error: Invalid option"
-         exit;;
+         exit 1;;
    esac
 done
 
@@ -54,11 +58,20 @@ pushd ${SCRIPT_DIR}/../workspace > /dev/null
 
 mrFilename=all_programs_build_only_most_recent.log
 lrFilename=all_programs_build_only_last.log
-if [ "$compare" == "true" ] && [ -f "${SCRIPT_DIR}/${mrFilename}" ]; then
+if [ "$useMostRecent" == "true" ] && [ ! -f "${SCRIPT_DIR}/${mrFilename}" ]; then
+  echo "Error: No most recent results to use.  Run without -c and -m."
+  exit 1
+elif [ "$useMostRecent" == "true" ]; then
+  if [ -f "${SCRIPT_DIR}/${lrFilename}" ]; then
+    mv ${SCRIPT_DIR}/${lrFilename} ${SCRIPT_DIR}/${lrFilename}~
+  fi
   mv ${SCRIPT_DIR}/${mrFilename} ${SCRIPT_DIR}/${lrFilename}
-else
-  rm -f ${SCRIPT_DIR}/${mrFilename}
 fi
+if [ "$compare" == "true" ] && [ ! -f "${SCRIPT_DIR}/${lrFilename}" ]; then
+  echo "Error: No last results to compare.  Run with -c and -m to use most recent results."
+  exit 1
+fi
+rm -f ${SCRIPT_DIR}/${mrFilename}
 printf "\n${Green}>>> Building all setups / programs in em.core <<<${Color_Off}\n"
 printf "| Setup                 | Program                                               | text  | const | data  | bss   |\n"
 printf "| --------------------- | ----------------------------------------------------- | ----- | ----- | ----- | ----- |\n"
