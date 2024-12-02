@@ -19,6 +19,8 @@ pub fn build(b: *std.Build) void {
         exe.root_module.addImport(name, dep.module(name));
     }
 
+    exe.root_module.addImport("zls", b.dependency("zigem-zls", .{}).module("zls"));
+
     const chmod_step = b.addSystemCommand(&.{ "chmod", "-R", "777", "zig-out/tools" });
     exe.step.dependOn(&chmod_step.step);
 
@@ -34,17 +36,12 @@ pub fn build(b: *std.Build) void {
         }
     }
 
-    b.installDirectory(.{
-        .source_dir = b.dependency("vscode-zigem", .{}).path("."),
-        .install_dir = std.Build.InstallDir{ .custom = "tools" },
-        .install_subdir = "",
-    });
-    b.installArtifact(b.dependency("zls-em", .{}).artifact("zls-em"));
+    b.installArtifact(b.dependency("zigem-zls", .{}).artifact("zigem-zls"));
     b.installArtifact(exe);
 
     const verify_exe = b.addRunArtifact(exe);
     verify_exe.setCwd(std.Build.LazyPath{ .src_path = .{ .owner = b, .sub_path = "workspace" } });
-    verify_exe.addArgs(&.{ "compile", "-f", "em.core/em.examples.basic/BlinkerP.em.zig" });
+    verify_exe.addArgs(&.{ "compile", "-f", "em.core/em.examples.basic/Ex02_BlinkerP.em.zig" });
     const verify_step = b.step("verify", "Verify ZigEM");
     verify_step.dependOn(&verify_exe.step);
 

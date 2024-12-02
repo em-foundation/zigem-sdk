@@ -1,11 +1,7 @@
 pub const em = @import("../../zigem/em.zig");
-pub const em__U = em.module(@This(), .{
-    .inherits = em.import.@"em.hal/MsCounterI",
-});
+pub const em__U = em.module(@This(), .{ .inherits = MsCounterI });
 
-pub const EM__META = struct {
-    //
-};
+pub const MsCounterI = em.import.@"em.hal/MsCounterI";
 
 pub const EM__TARG = struct {
     //
@@ -25,3 +21,15 @@ pub const EM__TARG = struct {
         return dt;
     }
 };
+
+//#region zigem
+
+//->> zigem publish #|f72d469222d5a6fc2659f42a47b9b7ba99190e2bf12b14302ba016fac5b6db23|#
+
+//->> EM__TARG publics
+pub const start = EM__TARG.start;
+pub const stop = EM__TARG.stop;
+
+//->> zigem publish -- end of generated code
+
+//#endregion zigem
